@@ -56,6 +56,10 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - Covers the full path from setup through literature review, extraction, pre-registration, wet-lab execution, result comparison, closed-loop update, and manuscript audit.
   - Includes current completed work, known problems, next actions, and a handoff protocol for other AI agents.
 - Added `docs/PROJECT_WORKFLOW_ZH.md`, a Chinese version of the operating manual for the project owner, human reviewers, wet-lab collaborators, and Chinese-speaking AI handoffs.
+- Reworked both operating manuals into a more maintainable standard-doc structure after reviewing established documentation guidance:
+  - Separates document rules, project summary, repository map, roles, artifact registry, lifecycle overview, stage checklists, parallel plan, current record, and AI handoff protocol.
+  - Adds stable stage IDs S0-S11 and a central artifact registry so future updates have obvious locations.
+  - Keeps current project status in one section instead of mixing it through procedural text.
 
 ## Results
 

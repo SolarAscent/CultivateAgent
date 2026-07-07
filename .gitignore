@@ -6,6 +6,8 @@
 data/**
 !data/.gitkeep
 !data/library.example.bib
+!data/literature/
+!data/literature/*.tsv
 *.sqlite
 *.sqlite3
 *.db

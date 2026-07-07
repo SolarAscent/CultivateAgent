@@ -29,6 +29,8 @@ proposer. See [`docs/OPTIMIZATION.md`](docs/OPTIMIZATION.md).
 
 For the first wet-lab-facing target and entry criteria, see
 [`docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md`](docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md).
+The current bovine-focused corpus manifest and human review queue are summarized
+in [`docs/BOVINE_CORPUS_MANIFEST.md`](docs/BOVINE_CORPUS_MANIFEST.md).
 
 ---
 

@@ -82,6 +82,7 @@ CultivateAgent/
   docs/
     ARCHITECTURE.md                 技术架构
     OPTIMIZATION.md                 优化层设计
+    AI_FOR_SCIENCE_METHOD_REVIEW.md 来自 AI-for-science 文献的算法路线
     PROJECT_WORKFLOW.md             英文操作手册
     PROJECT_WORKFLOW_ZH.md          本手册
     LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md
@@ -129,6 +130,7 @@ CultivateAgent/
 | Corpus summary | `docs/BOVINE_CORPUS_MANIFEST.md` | `[AI]` | manifest 或 review gate 变化 |
 | 抽取评估 | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | evaluation run 后 |
 | 优化评估 | `docs/OPTIMIZATION_BENCHMARK.md` | `[AI]` | optimizer benchmark 后 |
+| AI-for-science 方法综述 | `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md` 和 `data/literature/ai_for_science_method_sources.tsv` | `[AI]` + `[复核]` | 文献支持的算法或流程决策 |
 | 证据表 | `data/literature/bovine_evidence_table.tsv` | `[AI]` + `[复核]` | 全文抽取后 |
 | 候选变量 | `docs/CANDIDATE_VARIABLES.md` | `[AI]` + `[人工]` | 证据复核后 |
 | 设计包 | `docs/wetlab/ROUND_<n>_DESIGN_PACKET.md` | `[AI]` + `[实验]` + `[复核]` | 每轮湿实验前 |
@@ -475,6 +477,7 @@ AI 线：
 - Bovine manifest v0 有 44 条记录。
 - Human review queue v0 有 30 个 open tasks。
 - 英文和中文操作手册已存在。
+- AI-for-science 方法综述已存在，并将 S3 全文抽取可靠性确定为当前最高价值技术瓶颈。
 
 ### 9.2 已知问题
 
@@ -496,6 +499,12 @@ AI 线：
 4. `[AI]` 建立 adjudicated bovine evidence table。
 5. `[复核]` 决定哪些变量可进入第一轮 search space。
 6. `[AI]` 只有在前置 gate 通过后，才起草第一版 design packet。
+
+当前算法路线：
+
+- 按 `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md` 执行。
+- 在生成新的湿实验方案前，优先实现 structured-paper objects、section-routed
+  extraction、operator-level coverage/grounding metrics，以及和人工复核队列的连接。
 
 ## 10. AI 接管协议
 

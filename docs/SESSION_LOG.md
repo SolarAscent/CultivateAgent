@@ -60,6 +60,11 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - Separates document rules, project summary, repository map, roles, artifact registry, lifecycle overview, stage checklists, parallel plan, current record, and AI handoff protocol.
   - Adds stable stage IDs S0-S11 and a central artifact registry so future updates have obvious locations.
   - Keeps current project status in one section instead of mixing it through procedural text.
+- Reviewed AI-for-science, scientific RAG, scientific information extraction, document parsing/ETL, and Bayesian optimization sources to decide the next highest-value technical work:
+  - Added `data/literature/ai_for_science_method_sources.tsv` with 16 reviewed sources and project lessons.
+  - Added `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`.
+  - Decision: prioritize S3 full-text extraction reliability through structured paper objects, section-routed extraction, operator-level coverage/grounding metrics, and human-review integration before generating new wet-lab design packets.
+  - Human/external blockers recorded rather than guessed: paywalled PDFs/supplements, Gemini credentials, OpenAI quota, lab constraints, and final human evidence approval.
 
 ## Results
 

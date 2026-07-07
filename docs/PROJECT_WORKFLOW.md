@@ -88,6 +88,7 @@ CultivateAgent/
   docs/
     ARCHITECTURE.md                 technical architecture
     OPTIMIZATION.md                 optimization design
+    AI_FOR_SCIENCE_METHOD_REVIEW.md algorithm roadmap from reviewed AI-for-science literature
     PROJECT_WORKFLOW.md             this manual
     PROJECT_WORKFLOW_ZH.md          Chinese manual
     LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md
@@ -136,6 +137,7 @@ Conflict rules:
 | Corpus summary | `docs/BOVINE_CORPUS_MANIFEST.md` | `[AI]` | Manifest or review gate change |
 | Extraction reports | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | Evaluation run |
 | Optimization report | `docs/OPTIMIZATION_BENCHMARK.md` | `[AI]` | Optimizer benchmark |
+| AI-for-science method review | `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md` and `data/literature/ai_for_science_method_sources.tsv` | `[AI]` + `[REVIEW]` | Literature-backed algorithm or pipeline decision |
 | Evidence table | `data/literature/bovine_evidence_table.tsv` | `[AI]` + `[REVIEW]` | After full-text extraction |
 | Candidate variables | `docs/CANDIDATE_VARIABLES.md` | `[AI]` + `[HUMAN]` | After evidence review |
 | Design packet | `docs/wetlab/ROUND_<n>_DESIGN_PACKET.md` | `[AI]` + `[LAB]` + `[REVIEW]` | Before each wet-lab round |
@@ -507,6 +509,8 @@ Update this section after major sessions.
 - Bovine manifest v0 contains 44 records.
 - Human review queue v0 contains 30 open tasks.
 - English and Chinese operating manuals exist.
+- AI-for-science method review exists and identifies S3 full-text extraction
+  reliability as the current highest-value technical bottleneck.
 
 ### 9.2 Known Problems
 
@@ -530,6 +534,13 @@ Update this section after major sessions.
 4. `[AI]` Build the adjudicated bovine evidence table.
 5. `[REVIEW]` Decide which variables can enter the first search space.
 6. `[AI]` Draft the first design packet only after earlier gates pass.
+
+Current algorithm roadmap:
+
+- Follow `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`.
+- Prioritize structured-paper objects, section-routed extraction, operator-level
+  coverage/grounding metrics, and human-review integration before new wet-lab
+  proposal generation.
 
 ## 10. AI Handoff Protocol
 

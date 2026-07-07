@@ -50,6 +50,11 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - `data/literature/bovine_corpus_manifest.tsv`: 44 records, including 10 core sources, 1 core-context source, 21 context sources, 8 deferred sources, and 4 background-only records.
   - `data/literature/bovine_human_review_queue.tsv`: 30 open decision-critical review tasks for formulation, dose, endpoint, cost, safety, and transferability checks.
   - `docs/BOVINE_CORPUS_MANIFEST.md`: summary, current gate status, and immediate next steps.
+- Added `docs/PROJECT_WORKFLOW.md` as the end-to-end operating manual:
+  - Starts from developer-oriented repository structure and current interface.
+  - Defines human, AI, lab, review, and gate responsibilities.
+  - Covers the full path from setup through literature review, extraction, pre-registration, wet-lab execution, result comparison, closed-loop update, and manuscript audit.
+  - Includes current completed work, known problems, next actions, and a handoff protocol for other AI agents.
 
 ## Results
 

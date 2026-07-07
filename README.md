@@ -8,8 +8,7 @@ structured, **evidence-grounded** knowledge base, and then uses that knowledge
 base to propose *medium-formulation* changes conditioned on user objectives
 (proliferation, cost, differentiation retention, 3D tissue-readiness).
 
-It is modeled on **ReactionSeek** (Li et al., *Nature Communications*, 2026) —
-an LLM + domain-tool hybrid that mines reaction data from the organic-synthesis
+It is modeled on an LLM + domain-tool hybrid that mines reaction data from the organic-synthesis
 literature — and adapts that recipe to cell-culture media. See
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full design and the
 mapping to ReactionSeek.

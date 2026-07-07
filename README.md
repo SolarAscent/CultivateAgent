@@ -32,7 +32,8 @@ The current bovine-focused corpus manifest and human review queue are summarized
 in [`docs/BOVINE_CORPUS_MANIFEST.md`](docs/BOVINE_CORPUS_MANIFEST.md).
 For the end-to-end project operating manual, including developer orientation,
 human/AI/lab checklists, gates, handoff rules, and current status, see
-[`docs/PROJECT_WORKFLOW.md`](docs/PROJECT_WORKFLOW.md).
+[`docs/PROJECT_WORKFLOW.md`](docs/PROJECT_WORKFLOW.md) or the Chinese version
+[`docs/PROJECT_WORKFLOW_ZH.md`](docs/PROJECT_WORKFLOW_ZH.md).
 
 ---
 

@@ -55,6 +55,7 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - Defines human, AI, lab, review, and gate responsibilities.
   - Covers the full path from setup through literature review, extraction, pre-registration, wet-lab execution, result comparison, closed-loop update, and manuscript audit.
   - Includes current completed work, known problems, next actions, and a handoff protocol for other AI agents.
+- Added `docs/PROJECT_WORKFLOW_ZH.md`, a Chinese version of the operating manual for the project owner, human reviewers, wet-lab collaborators, and Chinese-speaking AI handoffs.
 
 ## Results
 

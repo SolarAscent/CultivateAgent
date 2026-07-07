@@ -2,6 +2,8 @@
 
 Date: 2026-07-07
 
+Chinese version: [`PROJECT_WORKFLOW_ZH.md`](PROJECT_WORKFLOW_ZH.md)
+
 Audience: developers, wet-lab collaborators, literature reviewers, and AI agents
 that need to continue the same project without stepping on each other.
 

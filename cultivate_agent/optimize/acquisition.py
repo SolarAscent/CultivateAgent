@@ -67,6 +67,8 @@ def propose_qparego(
     *,
     surrogate_backend: str = "gp",
     preference_weights: Optional[np.ndarray] = None,
+    prior_log: Optional[np.ndarray] = None,
+    prior_weight: float = 0.0,
     seed: int = 0,
 ) -> Tuple[List[int], np.ndarray]:
     """Select ``batch_size`` pool rows via q-ParEGO.
@@ -81,6 +83,13 @@ def propose_qparego(
     chosen: List[int] = []
     last_scores = np.zeros(len(X_pool))
 
+    # πBO prior factor over the pool: α'(x) = α(x) · π(x)^prior_weight
+    # (Hvarfner et al., ICLR 2022). prior_log is unnormalized log π(x).
+    prior_factor = None
+    if prior_log is not None and prior_weight > 0:
+        pl = np.asarray(prior_log, float)
+        prior_factor = np.exp(prior_weight * (pl - pl.max()))  # stabilized, positive
+
     for _ in range(min(batch_size, len(X_pool))):
         w = random_simplex_weights(m, rng)
         if preference_weights is not None:
@@ -93,6 +102,8 @@ def propose_qparego(
         gp = make_surrogate(surrogate_backend).fit(X_obs, g)
         mu, sigma = gp.predict(X_pool)
         ei = expected_improvement(mu, sigma, best=float(g.min()))
+        if prior_factor is not None:
+            ei = ei * prior_factor
         if chosen:
             ei[chosen] = -np.inf   # sample batch without replacement
         idx = int(np.argmax(ei))

@@ -95,12 +95,17 @@ class MultiObjectiveBO:
         pool_size: int = 2000,
         preference_weights: Optional[Dict[str, float]] = None,
         extra_candidates: Optional[List[Dict[str, object]]] = None,
+        evidence_prior=None,
     ) -> List[Suggestion]:
         """Propose the next batch of formulations to test.
 
         ``extra_candidates`` (e.g. LLM-proposed formulations) are added to the
         candidate pool so the acquisition can score them alongside random
         exploration — this is the hook the LLM-guided loop uses.
+
+        ``evidence_prior`` (an :class:`~cultivate_agent.optimize.priors.EvidencePrior`)
+        biases the acquisition toward literature-supported regions early on
+        (πBO), decaying as observations accumulate.
         """
         # Cold start: not enough data to fit a surrogate -> space-filling design.
         if self.n_observed < max(2, len(self.objectives) + 1):
@@ -111,7 +116,7 @@ class MultiObjectiveBO:
         if self.backend in {"botorch", "botorch-log"}:
             return self._ask_botorch(batch_size, pool_size, preference_weights, extra_candidates)
 
-        return self._ask_gp(batch_size, pool_size, preference_weights, extra_candidates)
+        return self._ask_gp(batch_size, pool_size, preference_weights, extra_candidates, evidence_prior)
 
     def _candidate_pool(self, pool_size: int, extra: Optional[List[Dict[str, object]]]):
         X_pool = self.space.sample_encoded(pool_size, seed=self.seed + self.n_observed)
@@ -122,7 +127,7 @@ class MultiObjectiveBO:
             sources = ["llm"] * len(X_extra) + sources
         return X_pool, sources
 
-    def _ask_gp(self, batch_size, pool_size, preference_weights, extra):
+    def _ask_gp(self, batch_size, pool_size, preference_weights, extra, evidence_prior=None):
         X_obs = np.array(self._X)
         Y_min = self._to_min(np.array(self._Y))
         X_pool, sources = self._candidate_pool(pool_size, extra)
@@ -133,9 +138,15 @@ class MultiObjectiveBO:
             if pref.sum() == 0:
                 pref = None
 
+        prior_log = prior_weight = None
+        if evidence_prior is not None:
+            prior_log = evidence_prior.log_prior(X_pool)
+            prior_weight = evidence_prior.decayed_weight(self.n_observed)
+
         idx, scores = propose_qparego(
             X_obs, Y_min, X_pool, batch_size,
-            surrogate_backend=self.surrogate_backend, preference_weights=pref, seed=self.seed,
+            surrogate_backend=self.surrogate_backend, preference_weights=pref,
+            prior_log=prior_log, prior_weight=(prior_weight or 0.0), seed=self.seed,
         )
         out = []
         for i in idx:

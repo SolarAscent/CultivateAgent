@@ -53,6 +53,7 @@ class OptimizationProposal:
     n_observed: int = 0
     llm_caveats: List[str] = field(default_factory=list)
     evidence: List[dict] = field(default_factory=list)
+    context_dependent_components: List[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {
@@ -67,6 +68,7 @@ class OptimizationProposal:
             "n_observed": self.n_observed,
             "llm_caveats": self.llm_caveats,
             "evidence": self.evidence,
+            "context_dependent_components": self.context_dependent_components,
         }
 
 
@@ -153,6 +155,7 @@ class EvidenceGuidedMOBO:
         n_llm_candidates: int = 4,
         observed_formulations: Optional[List[Dict[str, object]]] = None,
         observed_values: Optional[List[Dict[str, float]]] = None,
+        evidence_prior=None,
     ) -> OptimizationProposal:
         # 1) fold in any measured results
         if observed_formulations and observed_values:
@@ -176,9 +179,11 @@ class EvidenceGuidedMOBO:
 
         pref = weights.normalized if hasattr(weights, "normalized") else dict(weights)
 
-        # 3) BO scores LLM candidates alongside principled exploration
+        # 3) BO scores LLM candidates alongside principled exploration,
+        #    biased by the literature evidence prior (πBO, decaying with data).
         suggestions: List[Suggestion] = self.mobo.ask(
             batch_size, preference_weights=pref, extra_candidates=llm_forms or None,
+            evidence_prior=evidence_prior,
         )
 
         # 4) annotate LLM-derived items with their citations/rationale
@@ -194,9 +199,16 @@ class EvidenceGuidedMOBO:
             batch.append(item)
 
         pf = [{"formulation": f, "objectives": v} for f, v in self.mobo.pareto()]
+        flagged = list(getattr(evidence_prior, "flagged_context_dependent", []) or [])
+        if flagged:
+            caveats.append(
+                "Context-dependent (high-heterogeneity) components the batch explores "
+                "rather than assumes: " + ", ".join(flagged) + "."
+            )
         return OptimizationProposal(
             batch=batch, pareto_front=pf, hypervolume=self.mobo.hypervolume(),
             n_observed=self.mobo.n_observed, llm_caveats=caveats, evidence=evidence,
+            context_dependent_components=flagged,
         )
 
 

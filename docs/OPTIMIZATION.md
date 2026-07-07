@@ -48,6 +48,17 @@ is *how the literature and an LLM are folded into that loop*.
                                        run in the wet lab; tell() results ──────────────────────┘
 ```
 
+**Evidence-derived priors (new).** The hierarchical evidence layer
+(`docs/EVIDENCE_SYNTHESIS.md`) converts heterogeneous literature into posterior
+"is component X beneficial?" beliefs. `optimize/priors.EvidencePrior` turns those
+into a prior `π(x)` over the design space and injects it into the acquisition
+following **πBO** (Hvarfner et al., ICLR 2022): `α'(x) = α(x)·π(x)^(β/(1+n))`, so
+the literature steers early batches and the wet-lab data takes over as `n` grows.
+Components with **high heterogeneity (I²)** get a *flat* prior and are flagged
+"test directly" rather than biased. Verified offline: a strong FGF2-beneficial /
+FBS-detrimental prior raises the FGF2 and lowers the FBS levels the early batch
+explores; the high-I² component is flagged, not biased.
+
 Three ideas are fused:
 
 1. **Literature-defined space & priors** (`space_from_kb`). The KB's component

@@ -4,6 +4,7 @@ from .benchmark import SyntheticMediumObjective
 from .llm_mobo import BatchItem, EvidenceGuidedMOBO, OptimizationProposal
 from .mobo import MultiObjectiveBO, Objective, Suggestion
 from .pareto import hypervolume, non_dominated_mask, pareto_front
+from .priors import ComponentBelief, EvidencePrior
 from .space import MediumDesignSpace, Parameter, default_medium_space, space_from_kb
 
 __all__ = [
@@ -11,5 +12,6 @@ __all__ = [
     "MediumDesignSpace", "Parameter", "default_medium_space", "space_from_kb",
     "SyntheticMediumObjective",
     "EvidenceGuidedMOBO", "OptimizationProposal", "BatchItem",
+    "EvidencePrior", "ComponentBelief",
     "pareto_front", "non_dominated_mask", "hypervolume",
 ]

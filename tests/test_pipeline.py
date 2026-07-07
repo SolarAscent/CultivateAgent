@@ -196,6 +196,51 @@ The method supports future medium optimization."""
     assert meta["structured_source"] == "plain_text"
 
 
+def test_structured_paper_from_grobid_tei_xml():
+    from cultivate_agent.schema import structured_paper_from_grobid_tei_xml
+
+    tei = """<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title level="a">Bovine medium paper</title></titleStmt>
+    </fileDesc>
+    <profileDesc>
+      <abstract><p>We report a serum-free bovine myoblast medium.</p></abstract>
+    </profileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div>
+        <head>Materials and Methods</head>
+        <p>Cells were cultured in DMEM/F12 with FGF2.</p>
+        <p>The formulation used recombinant albumin.</p>
+      </div>
+      <div>
+        <head>Results</head>
+        <p>Proliferation increased over six days.</p>
+      </div>
+      <figure type="table">
+        <head>Table 1</head>
+        <figDesc>Medium component concentrations.</figDesc>
+      </figure>
+      <figure>
+        <head>Figure 1</head>
+        <figDesc>Growth curve.</figDesc>
+      </figure>
+    </body>
+  </text>
+</TEI>"""
+    paper = structured_paper_from_grobid_tei_xml("tei-1", tei)
+    assert paper.source == "grobid_tei"
+    assert paper.title == "Bovine medium paper"
+    assert paper.abstract and "serum-free" in paper.abstract
+    assert [s.title for s in paper.sections] == ["Materials and Methods", "Results"]
+    assert paper.sections[0].paragraphs[0].paragraph_id == "S1.p1"
+    assert paper.tables and "Medium component" in (paper.tables[0].caption or "")
+    assert paper.figures and "Growth curve" in (paper.figures[0].caption or "")
+
+
 # --------------------------------------------------------------------------- #
 # Knowledge base + retrieval                                                  #
 # --------------------------------------------------------------------------- #

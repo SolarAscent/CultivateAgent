@@ -23,6 +23,8 @@ from .structured_paper import (
     PaperSection,
     PaperTable,
     StructuredPaper,
+    structured_paper_from_grobid_tei_path,
+    structured_paper_from_grobid_tei_xml,
     structured_paper_from_text,
 )
 
@@ -37,4 +39,5 @@ __all__ = [
     # structured paper
     "PaperParagraph", "PaperSection", "PaperTable", "PaperFigure",
     "StructuredPaper", "structured_paper_from_text",
+    "structured_paper_from_grobid_tei_xml", "structured_paper_from_grobid_tei_path",
 ]

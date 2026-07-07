@@ -9,7 +9,9 @@ base to propose *medium-formulation* changes conditioned on user objectives
 (proliferation, cost, differentiation retention, 3D tissue-readiness).
 The extractor now has a first structured-paper layer: plain text can be converted
 into section/paragraph objects, and extraction can route medium fields toward
-Methods/media/cell-culture sections before prompting.
+Methods/media/cell-culture sections before prompting. It can also parse
+GROBID-flavored TEI XML that has already been produced by an external GROBID
+run into the same structured-paper object.
 
 It is modeled on an LLM + domain-tool hybrid that mines reaction data from the organic-synthesis
 literature — and adapts that recipe to cell-culture media. See

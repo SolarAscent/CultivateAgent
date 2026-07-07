@@ -56,10 +56,11 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - Covers the full path from setup through literature review, extraction, pre-registration, wet-lab execution, result comparison, closed-loop update, and manuscript audit.
   - Includes current completed work, known problems, next actions, and a handoff protocol for other AI agents.
 - Added `docs/PROJECT_WORKFLOW_ZH.md`, a Chinese version of the operating manual for the project owner, human reviewers, wet-lab collaborators, and Chinese-speaking AI handoffs.
-- Reworked both operating manuals into a more maintainable standard-doc structure after reviewing established documentation guidance:
-  - Separates document rules, project summary, repository map, roles, artifact registry, lifecycle overview, stage checklists, parallel plan, current record, and AI handoff protocol.
+- Reworked both operating manuals into a more maintainable standard-doc structure after reviewing established documentation guidance from Diataxis, Google Developer Documentation Style Guide, Microsoft Learn contributor guidance, and GitLab documentation style guidance:
+  - Reorganized the manuals around a stable project definition, deliverable model, repository map, role/decision rights, artifact registry, lifecycle overview, stage SOPs, parallel-work protocol, current project ledger, and AI handoff protocol.
   - Adds stable stage IDs S0-S11 and a central artifact registry so future updates have obvious locations.
-  - Keeps current project status in one section instead of mixing it through procedural text.
+  - Keeps current status, completed work, blockers, and next actions in one ledger section instead of mixing progress records through procedural text.
+  - Synchronized the English and Chinese manuals so both versions use the same structure and status model.
 - Reviewed AI-for-science, scientific RAG, scientific information extraction, document parsing/ETL, and Bayesian optimization sources to decide the next highest-value technical work:
   - Added `data/literature/ai_for_science_method_sources.tsv` with 16 reviewed sources and project lessons.
   - Added `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`.
@@ -71,6 +72,10 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - `extract_paper` / `extract_blocks` now accept an optional `structured_paper` and route context using block-specific section hints.
   - Extraction metadata now records structured source, routed section IDs, section hints, and whether section routing was used.
   - Added tests for structured fallback parsing and structured section-routed extraction.
+- Added no-dependency parsing for GROBID-flavored TEI XML that has already been produced externally:
+  - `structured_paper_from_grobid_tei_xml` and `structured_paper_from_grobid_tei_path` parse title, abstract, body `div/head/p` sections, table captions, and figure captions.
+  - Added GROBID TEI documentation to the method source registry.
+  - This does not run a GROBID service/client yet; PDF-to-TEI generation remains a next step.
 
 ## Results
 
@@ -92,7 +97,7 @@ Branch: `session/eval-retrieval-mobo-hardening`
 
 ## Final Verification
 
-- Latest `.venv/bin/python -m pytest -q`: 28 passed, 3 warnings.
+- Latest `.venv/bin/python -m pytest -q`: 29 passed, 3 warnings.
 - Warnings:
   - BoTorch recommends replacing legacy `qNoisyExpectedHypervolumeImprovement` with `qLogNoisyExpectedHypervolumeImprovement`.
   - PyTorch sparse invariant warning from `linear_operator`.

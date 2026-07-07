@@ -100,7 +100,9 @@ Project implication:
   - table ID and caption,
   - figure caption,
   - source page where available.
-- Use GROBID as an optional backend when available.
+- Use GROBID as an optional backend when available. CultivateAgent now has a
+  no-dependency parser for GROBID-flavored TEI XML that has already been
+  produced externally; it does not yet run the GROBID service or batch client.
 - Preserve the current PyMuPDF/plain-text fallback.
 
 ### 2.5 LLM document pipelines should be modular and operator-evaluated
@@ -188,7 +190,7 @@ Acceptance criteria:
 - Structured extraction can address passages by `paper_id:section_id:paragraph_id`.
   **Partially implemented through stable section/paragraph IDs.**
 - Tables and captions can be routed to dose/endpoint extraction.
-  **Not yet implemented beyond schema placeholders.**
+  **Partially implemented for GROBID TEI figure/table captions.**
 
 ### R2. Section-routed extraction
 
@@ -271,8 +273,8 @@ These are not adopted now:
 
 ## 5. Immediate Implementation Tasks
 
-1. Add optional GROBID import path on top of the implemented plain-text
-   structured-paper fallback.
+1. Add optional GROBID service/client invocation on top of the implemented
+   plain-text fallback and TEI XML parser.
 2. Create `bovine_evidence_table.tsv` from P1 full text.
 3. Build section-routed extraction operators for medium components, dose ranges,
    endpoints, and quotes.
@@ -302,6 +304,8 @@ Key sources include:
 - Coscientist and ChemCrow: tool-augmented scientific agents.
 - PaperQA2 and OpenScholar: full-text, citation-backed scientific RAG.
 - Dagdelen et al. and Shamsabadi et al.: structured scientific IE.
-- GROBID and S2ORC: structured scientific document parsing.
+- GROBID and S2ORC: structured scientific document parsing. GROBID TEI parsing
+  is now supported for title, abstract, body sections, table captions, and
+  figure captions.
 - DocETL: modular LLM document processing.
 - TuRBO, SCBO, JES, and DPP-BBO: later optimization roadmap candidates.

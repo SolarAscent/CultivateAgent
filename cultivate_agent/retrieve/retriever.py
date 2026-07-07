@@ -10,9 +10,10 @@ agent does not care which is active.
 from __future__ import annotations
 
 import math
+import os
 import re
 from dataclasses import dataclass
-from typing import List, Optional, Sequence, Tuple
+from typing import Callable, Dict, List, Optional, Sequence
 
 _TOKEN_RE = re.compile(r"[a-z0-9][a-z0-9\-/]+")
 
@@ -90,6 +91,81 @@ class BM25Retriever(Retriever):
         ]
 
 
+class EmbeddingRetriever(Retriever):
+    """Semantic retriever with optional external embedding backends.
+
+    Backends are lazy so the default offline install stays light:
+    ``local`` uses a tiny deterministic concept embedding for tests and demos;
+    ``sentence-transformers`` loads a local SentenceTransformer model; and
+    ``openai`` calls the OpenAI embeddings API only when explicitly requested.
+    """
+
+    def __init__(
+        self,
+        *,
+        backend: str = "local",
+        model: Optional[str] = None,
+        embed_fn: Optional[Callable[[Sequence[str]], Sequence[Sequence[float]]]] = None,
+    ):
+        self.backend = backend
+        self.model = model
+        self.embed_fn = embed_fn
+        self._docs: List[Document] = []
+        self._vectors: List[List[float]] = []
+        self._sentence_model = None
+        self._openai_client = None
+
+    def index(self, docs: Sequence[Document]) -> None:
+        self._docs = list(docs)
+        self._vectors = self._embed([d.text for d in self._docs])
+
+    def search(self, query: str, top_k: int = 10) -> List[Hit]:
+        if not self._docs:
+            return []
+        qvec = self._embed([query])[0]
+        qtokens = _tokenize(query)
+        scored = []
+        for d, vec in zip(self._docs, self._vectors):
+            score = _cosine(qvec, vec)
+            if score > 0:
+                scored.append((d, score))
+        scored.sort(key=lambda t: t[1], reverse=True)
+        return [
+            Hit(doc_id=d.doc_id, score=float(s), title=d.title, snippet=_snippet(d.text, qtokens))
+            for d, s in scored[:top_k]
+        ]
+
+    def _embed(self, texts: Sequence[str]) -> List[List[float]]:
+        if self.embed_fn is not None:
+            return [list(map(float, row)) for row in self.embed_fn(texts)]
+        if self.backend == "local":
+            return [_local_semantic_vector(t) for t in texts]
+        if self.backend in {"sentence-transformers", "sentence_transformers", "sbert"}:
+            if self._sentence_model is None:
+                try:
+                    from sentence_transformers import SentenceTransformer  # type: ignore
+                except ImportError as e:  # pragma: no cover - optional dependency
+                    raise ImportError(
+                        "EmbeddingRetriever backend='sentence-transformers' requires "
+                        "sentence-transformers. Install the optional dependency or use backend='local'."
+                    ) from e
+                self._sentence_model = SentenceTransformer(self.model or "sentence-transformers/all-MiniLM-L6-v2")
+            return [list(map(float, row)) for row in self._sentence_model.encode(list(texts), normalize_embeddings=True)]
+        if self.backend == "openai":
+            if self._openai_client is None:
+                try:
+                    from openai import OpenAI  # type: ignore
+                except ImportError as e:  # pragma: no cover - optional dependency
+                    raise ImportError("EmbeddingRetriever backend='openai' requires the openai package.") from e
+                self._openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY") or None)
+            resp = self._openai_client.embeddings.create(
+                model=self.model or "text-embedding-3-small",
+                input=list(texts),
+            )
+            return [list(map(float, item.embedding)) for item in resp.data]
+        raise ValueError(f"unknown embedding backend: {self.backend}")
+
+
 class _SimpleTfIdf:
     """Dependency-free lexical fallback so retrieval works without rank_bm25."""
 
@@ -126,6 +202,44 @@ def _snippet(text: str, query_tokens: List[str], *, width: int = 240) -> str:
             start = max(0, i - width // 2)
             return text[start : start + width].strip()
     return text[:width].strip()
+
+
+_CONCEPTS: Dict[str, List[str]] = {
+    "serum_free": [
+        "serum-free", "serumfree", "xeno-free", "animal-component-free", "animal-free",
+        "chemically-defined", "defined", "without-serum", "no-serum",
+    ],
+    "bovine_satellite": ["bovine", "cattle", "cow", "satellite", "myoblast", "muscle-stem"],
+    "proliferation": ["proliferation", "proliferate", "growth", "expansion", "doubling", "mitogen"],
+    "differentiation": ["differentiation", "myogenic", "myotube", "maturation", "fusion"],
+    "medium": ["medium", "media", "formulation", "culture", "nutrient"],
+    "cost": ["cost", "low-cost", "cheap", "price", "economic", "affordable"],
+    "growth_factor": ["fgf2", "bfgf", "igf", "insulin", "growth-factor", "growth-factors", "mitogens"],
+    "conditioned": ["conditioned", "secreted", "spent", "recycled", "supernatant"],
+    "tissue": ["construct", "3d", "tissue", "scaffold", "bioartificial", "readiness"],
+}
+
+
+def _local_semantic_vector(text: str) -> List[float]:
+    """Small deterministic concept embedding used when optional deps are absent."""
+    toks = set(_tokenize(text))
+    text_low = (text or "").lower()
+    vec = []
+    for terms in _CONCEPTS.values():
+        score = 0.0
+        for term in terms:
+            norm = term.lower()
+            if norm in toks or norm.replace("-", " ") in text_low or norm in text_low:
+                score += 1.0
+        vec.append(score)
+    return vec
+
+
+def _cosine(a: Sequence[float], b: Sequence[float]) -> float:
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb) if na and nb else 0.0
 
 
 # --------------------------------------------------------------------------- #

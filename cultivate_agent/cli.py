@@ -97,11 +97,18 @@ def cmd_ingest(args) -> int:
         extract_figures=cfg.ingest.extract_figures and not args.no_images,
         extract_tables=cfg.ingest.extract_tables,
         page_image_dpi=cfg.ingest.page_image_dpi,
+        grobid_tei=args.grobid_tei,
+        grobid_url=args.grobid_url,
+        grobid_timeout=args.grobid_timeout,
         force=args.force,
         on_progress=progress,
     )
     with_text = sum(1 for r in results if r.status.has_fulltext)
-    print(f"\nIngested {len(results)} papers into {cfg.papers_dir} ({with_text} with full text).")
+    with_tei = sum(1 for r in results if r.status.has_structured_fulltext)
+    print(
+        f"\nIngested {len(results)} papers into {cfg.papers_dir} "
+        f"({with_text} with full text, {with_tei} with structured TEI)."
+    )
 
     kb = _kb(cfg)
     for _, meta in iter_ingested(cfg.papers_dir):
@@ -138,6 +145,7 @@ def cmd_extract(args) -> int:
     cfg = _apply_overrides(load_config(root=args.root), args)
     from .extract import extract_paper
     from .ingest import iter_ingested
+    from .schema import structured_paper_from_grobid_tei_path
 
     client = cfg.make_llm_client()
     kb = _kb(cfg)
@@ -148,6 +156,18 @@ def cmd_extract(args) -> int:
         if args.limit and n >= args.limit:
             break
         text = paths.read_fulltext()
+        structured_paper = None
+        if paths.fulltext_xml.exists():
+            try:
+                structured_paper = structured_paper_from_grobid_tei_path(
+                    meta.ref.paper_id,
+                    paths.fulltext_xml,
+                    title=meta.ref.title or None,
+                )
+                if not text.strip():
+                    text = structured_paper.all_text()
+            except Exception as e:  # noqa: BLE001
+                print(f"! TEI parse failed for {meta.ref.paper_id}; using plain text fallback: {e}")
         if not text.strip():
             print(f"- skip (no text): {meta.ref.paper_id}")
             continue
@@ -159,6 +179,7 @@ def cmd_extract(args) -> int:
             max_context_chars=cfg.extract.max_context_chars,
             verify_evidence=cfg.extract.require_evidence,
             triage_category=meta.triage_category,
+            structured_paper=structured_paper,
         )
         kb.upsert_paper(meta.ref, triage_category=meta.triage_category)
         kb.upsert_extraction(ext)
@@ -243,6 +264,7 @@ def cmd_design(args) -> int:
         client, retriever, kb,
         actionable_variables=cfg.design.actionable_variables or None,
         top_k=cfg.retrieve.top_k,
+        verify_citations=args.verify_citations,
     ).recommend(weights, context, n_candidates=args.n)
     kb.close()
 
@@ -349,7 +371,8 @@ def cmd_optimize(args) -> int:
     client = cfg.make_llm_client()
     recommender = MediumRecommender(client, retriever, kb,
                                     actionable_variables=cfg.design.actionable_variables or None,
-                                    top_k=cfg.retrieve.top_k)
+                                    top_k=cfg.retrieve.top_k,
+                                    verify_citations=args.verify_citations)
     mobo = MultiObjectiveBO(space, objectives, backend=args.backend)
     egm = EvidenceGuidedMOBO(mobo, recommender, normalizer=ComponentNormalizer(cfg.ontology_dir))
     proposal = egm.propose(weights, context, batch_size=args.batch)
@@ -497,6 +520,9 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--bibtex", help="path to .bib (default: config)")
     sp.add_argument("--limit", type=int, help="only first N refs")
     sp.add_argument("--no-images", action="store_true", help="skip page-image / figure rendering")
+    sp.add_argument("--grobid-tei", action="store_true", help="also call GROBID and save fulltext.xml TEI")
+    sp.add_argument("--grobid-url", default="http://localhost:8070", help="GROBID service URL")
+    sp.add_argument("--grobid-timeout", type=float, default=60.0, help="seconds to wait for one GROBID PDF request")
     sp.add_argument("--force", action="store_true", help="re-run even if outputs exist")
     add_llm_flags(sp)
     sp.set_defaults(func=cmd_ingest)
@@ -530,6 +556,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--product", help="target product type")
     sp.add_argument("--starting-medium", help="current formulation to improve on")
     sp.add_argument("--n", type=int, default=3, help="number of candidates")
+    sp.add_argument("--verify-citations", action="store_true", help="run a second LLM verifier over candidate citations")
     sp.add_argument("--json", action="store_true", help="emit JSON instead of markdown")
     add_llm_flags(sp)
     sp.set_defaults(func=cmd_design)
@@ -545,7 +572,8 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--starting-medium", help="current formulation to improve on")
     sp.add_argument("--batch", type=int, default=4, help="experiments per batch")
     sp.add_argument("--rounds", type=int, default=6, help="rounds (demo mode)")
-    sp.add_argument("--backend", default="gp", help="gp | botorch")
+    sp.add_argument("--backend", default="gp", help="gp | botorch | botorch-log")
+    sp.add_argument("--verify-citations", action="store_true", help="run a second LLM verifier over LLM-seeded candidate citations")
     sp.add_argument("--json", action="store_true", help="emit JSON")
     add_llm_flags(sp)
     sp.set_defaults(func=cmd_optimize)

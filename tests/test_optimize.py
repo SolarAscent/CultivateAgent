@@ -51,13 +51,27 @@ def test_space_from_kb(tmp_path):
     ROOT = __import__("pathlib").Path(__file__).resolve().parents[1]
     kb = KnowledgeBase(tmp_path / "kb.sqlite", normalizer=ComponentNormalizer(ROOT / "config" / "ontology"))
     ext = PaperExtraction(paper_id="p1")
-    ext.medium_info = MediumInfo(growth_factors=["bFGF"], basal_medium=["DMEM/F12"])
+    ext.medium_info = MediumInfo(
+        growth_factors=["bFGF"],
+        basal_medium=["DMEM/F12"],
+        hydrolysates_or_extracts=["soy hydrolysate", "microalgae extract"],
+    )
     kb.upsert_paper(PaperRef(paper_id="p1", title="t"))
     kb.upsert_extraction(ext)
     space = space_from_kb(kb)
     names = [p.name for p in space.parameters]
     assert "FGF2" in names          # canonicalized from bFGF, promoted into the space
+    assert "soy-protein-hydrolysate" in names
+    assert "algae-extract" in names
     assert "basal_medium" in names
+    ranges = {p.name: (p.low, p.high, p.unit, p.component_class) for p in space.parameters}
+    assert ranges["soy-protein-hydrolysate"] == (0.0, 20.0, "g/L", "hydrolysate")
+    assert ranges["algae-extract"] == (0.0, 20.0, "g/L", "extract")
+    kb.conn.execute(
+        "UPDATE medium_components SET role='supplement' WHERE canonical='soy-protein-hydrolysate'"
+    )
+    kb.conn.commit()
+    assert kb.component_counts(role="hydrolysate") == [("soy-protein-hydrolysate", 1)]
     kb.close()
 
 
@@ -164,3 +178,41 @@ def test_evidence_guided_mobo_end_to_end():
     assert proposal.n_observed == 6
     assert len(proposal.evidence) >= 1          # retrieval surfaced the paper
     assert any(c for c in proposal.llm_caveats)  # guardrail caveat present
+
+
+def test_botorch_backend_demo_path_if_available():
+    pytest.importorskip("torch")
+    pytest.importorskip("botorch")
+    pytest.importorskip("gpytorch")
+
+    from cultivate_agent.optimize import MultiObjectiveBO, SyntheticMediumObjective, default_medium_space
+
+    space = default_medium_space()
+    obj = SyntheticMediumObjective(noise=0.0)
+    mobo = MultiObjectiveBO(space, obj.objectives, backend="botorch", seed=0)
+    init = space.sample(6, seed=0)
+    mobo.tell(init, obj.evaluate_many(init))
+    sugg = mobo.ask(2, pool_size=32, preference_weights={"proliferation": 0.6, "cost": 0.4})
+    assert len(sugg) == 2
+    assert all(s.note == "qNEHVI" for s in sugg)
+
+
+def test_botorch_log_backend_demo_path_if_available():
+    pytest.importorskip("torch")
+    pytest.importorskip("botorch")
+    pytest.importorskip("gpytorch")
+
+    from cultivate_agent.optimize import MultiObjectiveBO, SyntheticMediumObjective, default_medium_space
+
+    mo_acq = pytest.importorskip("botorch.acquisition.multi_objective")
+    if not hasattr(mo_acq, "qLogNoisyExpectedHypervolumeImprovement"):
+        pytest.skip("installed BoTorch does not expose qLogNEHVI")
+    space = default_medium_space()
+    obj = SyntheticMediumObjective(noise=0.0)
+    mobo = MultiObjectiveBO(space, obj.objectives, backend="botorch-log", seed=0)
+    init = space.sample(6, seed=0)
+    mobo.tell(init, obj.evaluate_many(init))
+    extra = [{"basal_medium": "DMEM/F12", "FGF2": 20.0, "FBS": 2.0}]
+    sugg = mobo.ask(2, pool_size=32, preference_weights={"proliferation": 0.6, "cost": 0.4}, extra_candidates=extra)
+    assert len(sugg) == 2
+    assert all(s.note == "qLogNEHVI" for s in sugg)

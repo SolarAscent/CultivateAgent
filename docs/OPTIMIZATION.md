@@ -83,7 +83,8 @@ Three ideas are fused:
 |---|---|---|---|
 | `gp` (default) | numpy RBF GP | q-ParEGO (EI over random scalarizations) | none |
 | `sklearn` | scikit-learn GP | q-ParEGO | scikit-learn |
-| `botorch` | GPyTorch GP | **qNEHVI** (direct hypervolume) | torch, botorch, gpytorch |
+| `botorch` | GPyTorch GP | qNEHVI (direct hypervolume) | torch, botorch, gpytorch |
+| `botorch-log` | GPyTorch GP | **qLogNEHVI** (numerically improved noisy hypervolume) | torch, botorch, gpytorch |
 
 The numpy path always runs; BoTorch is the production upgrade.
 
@@ -92,6 +93,9 @@ The numpy path always runs; BoTorch is the production upgrade.
 ```bash
 # Offline closed-loop demo on a synthetic objective (no KB, no API key):
 cultivate optimize --demo --rounds 6 --batch 4
+
+# Production-style optional backend with improved qNEHVI numerics:
+cultivate optimize --demo --rounds 6 --batch 4 --backend botorch-log
 
 # Live: propose the next pre-registerable batch from your KB + the LLM:
 cultivate optimize --weights "proliferation=0.6,cost=0.4" \

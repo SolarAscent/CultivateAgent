@@ -7,9 +7,16 @@ CultivateAgent turns a pile of cultivated-meat / tissue-engineering papers into 
 structured, **evidence-grounded** knowledge base, and then uses that knowledge
 base to propose *medium-formulation* changes conditioned on user objectives
 (proliferation, cost, differentiation retention, 3D tissue-readiness).
+The extractor now has a first structured-paper layer: plain text can be converted
+into section/paragraph objects, and extraction can route medium fields toward
+Methods/media/cell-culture sections before prompting. It can also parse
+GROBID-flavored TEI XML that has already been produced by an external GROBID
+run into the same structured-paper object. When a GROBID service is running,
+`cultivate ingest --grobid-tei` can also submit PDFs to
+`processFulltextDocument`, save the returned TEI as `fulltext.xml`, and let
+`cultivate extract` use that structured file automatically.
 
-It is modeled on **ReactionSeek** (Li et al., *Nature Communications*, 2026) —
-an LLM + domain-tool hybrid that mines reaction data from the organic-synthesis
+It is modeled on an LLM + domain-tool hybrid that mines reaction data from the organic-synthesis
 literature — and adapts that recipe to cell-culture media. See
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full design and the
 mapping to ReactionSeek.
@@ -26,6 +33,17 @@ The last stage — `optimize` — closes the loop: it proposes a **pre-registera
 batch of next experiments** on the cost/performance Pareto front using
 multi-objective Bayesian optimization warm-started by the literature and an LLM
 proposer. See [`docs/OPTIMIZATION.md`](docs/OPTIMIZATION.md).
+
+For the first wet-lab-facing target and entry criteria, see
+[`docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md`](docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md).
+The current bovine-focused corpus manifest and human review queue are summarized
+in [`docs/BOVINE_CORPUS_MANIFEST.md`](docs/BOVINE_CORPUS_MANIFEST.md).
+For the end-to-end project operating manual, including developer orientation,
+human/AI/lab checklists, gates, handoff rules, and current status, see
+[`docs/PROJECT_WORKFLOW.md`](docs/PROJECT_WORKFLOW.md) or the Chinese version
+[`docs/PROJECT_WORKFLOW_ZH.md`](docs/PROJECT_WORKFLOW_ZH.md).
+For the current AI-for-science method review and algorithm roadmap, see
+[`docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`](docs/AI_FOR_SCIENCE_METHOD_REVIEW.md).
 
 ---
 
@@ -88,6 +106,8 @@ cultivate smoke         # runs ingest→extract→normalize→KB→retrieve→de
 ```bash
 # 1. Export your Zotero library to BibTeX (data/library.bib), then:
 cultivate ingest                     # build data/papers/<slug>/ folders + full text
+# Optional structured full text: start GROBID separately, then:
+cultivate ingest --grobid-tei --grobid-url http://localhost:8070
 
 # 2. Tier papers A/B/C (evidence-backed, reproducible):
 cultivate triage
@@ -105,11 +125,19 @@ cultivate design \
   --cell "bovine satellite cells" --species bovine --stage expansion \
   --scaffold "gelatin-alginate hydrogel"
 
+# Optional: ask a second LLM pass to verify that candidate citations support
+# the proposed medium changes, downgrading unsupported claims in the output.
+cultivate design --verify-citations \
+  --weights "proliferation=0.6,cost=0.3,differentiation_retention=0.1" \
+  --cell "bovine satellite cells" --species bovine
+
 # 6. Optimize: propose the next PRE-REGISTERABLE batch of experiments:
 cultivate optimize --weights "proliferation=0.6,cost=0.4" \
   --cell "bovine satellite cells" --species bovine --batch 4
 # ...or watch the closed loop converge offline (no KB / API key):
 cultivate optimize --demo --rounds 6
+# optional BoTorch log-qNEHVI backend:
+cultivate optimize --demo --rounds 6 --backend botorch-log
 ```
 
 ### Reproduce the model comparison
@@ -122,6 +150,20 @@ cultivate extract --tier A --provider openai    --model gpt-5.4
 cultivate extract --tier A --provider anthropic --model claude-opus-4-6
 cultivate extract --tier A --provider gemini    --model gemini-3.1-pro
 ```
+
+The offline evaluation fixture can also be re-run with live provider calls when
+API keys are present:
+
+```bash
+python scripts/evaluate_medium_corpus.py \
+  --live-provider openai:gpt-5.4 \
+  --live-provider anthropic:claude-opus-4-6 \
+  --live-provider gemini:gemini-3.1-pro \
+  --provider openai:gpt-5.4
+```
+
+If a provider is unavailable, the agreement report records the failure instead
+of fabricating a comparison.
 
 ---
 
@@ -157,7 +199,7 @@ cultivate schema --json          # full JSON Schema
 cultivate_agent/
   schema/       evidence primitives, the A–M schema, paper records + folder layout
   llm/          provider-agnostic client (openai / anthropic / gemini / mock)
-  ingest/       BibTeX parsing, PDF→text/figures/tables, per-paper folder builder
+  ingest/       BibTeX parsing, PDF→text/figures/tables, optional GROBID TEI, per-paper folder builder
   triage/       A/B/C relevance classifier (evidence-backed)
   extract/      domain prompts + evidence-grounded schema extractor
   normalize/    ontology component canonicalization + provenance-preserving units
@@ -179,10 +221,10 @@ Run the tests: `pip install pytest && pytest -q` (14 tests, all offline).
 
 ## Status & scope
 
-Runnable and tested offline (35 tests): ingestion, the schema, grounded
+Runnable and tested offline: ingestion, the schema, grounded
 extraction, normalization, the knowledge base, retrieval, the goal-conditioned
 recommender, **and the evidence-grounded multi-objective Bayesian optimizer**
-(GP surrogate + q-ParEGO, with an optional BoTorch/qNEHVI backend). The
+(GP surrogate + q-ParEGO, with optional BoTorch qNEHVI/qLogNEHVI backends). The
 optimizer is the "closed-loop, experimentally-testable" route the record's
 abstract promised, made pre-registerable.
 

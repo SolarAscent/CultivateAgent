@@ -31,6 +31,9 @@ CLASS_RANGES = {
     "growth_factor": (0.0, 100.0, "ng/mL"),
     "small_molecule": (0.0, 10.0, "uM"),
     "supplement": (0.0, 20.0, "x/%"),
+    "defined_supplement": (0.0, 1.0, "x"),
+    "hydrolysate": (0.0, 20.0, "g/L"),
+    "extract": (0.0, 20.0, "g/L"),
     "amino_acid": (0.0, 10.0, "mM"),
     "carbon_source": (0.0, 25.0, "mM"),
     "trace_element": (0.0, 100.0, "nM"),
@@ -162,7 +165,19 @@ def space_from_kb(kb, *, max_components: int = 10, min_papers: int = 1) -> Mediu
     params.append(Parameter("FBS", "continuous", *CLASS_RANGES["serum"][:2], unit="%", component_class="serum"))
 
     chosen = 0
-    for role in ("growth_factor", "small_molecule", "supplement"):
+    medium_roles = (
+        "growth_factor",
+        "small_molecule",
+        "supplement",
+        "defined_supplement",
+        "albumin_substitute",
+        "hydrolysate",
+        "extract",
+        "amino_acid",
+        "carbon_source",
+        "trace_element",
+    )
+    for role in medium_roles:
         for canonical, n in kb.component_counts(role=role):
             if chosen >= max_components or n < min_papers:
                 break

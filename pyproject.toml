@@ -23,6 +23,7 @@ anthropic = ["anthropic>=0.40"]
 gemini = ["google-genai>=0.3"]
 ingest = ["bibtexparser>=1.4", "pymupdf>=1.24"]
 retrieve = ["rank-bm25>=0.2.2", "numpy>=1.26"]
+embeddings = ["sentence-transformers>=3.0"]
 optimize = ["numpy>=1.26"]                       # numpy GP + q-ParEGO (default)
 optimize-sklearn = ["numpy>=1.26", "scikit-learn>=1.4"]
 optimize-botorch = ["numpy>=1.26", "torch>=2.2", "botorch>=0.11", "gpytorch>=1.11"]

@@ -95,10 +95,12 @@ Gemini comparison a one-liner. `temperature=0` and JSON-extraction robustness
 Taking the critique seriously about scope, the following are **intentionally not
 built here**, with notes on where they'd attach:
 
-* **Verifier / critique loop.** The one defensible reason to go "multi-agent":
-  a proposer whose formulations are challenged by a feasibility/verifier agent,
-  iterating to convergence. Attach around `design/recommender.py` as a loop that
-  re-prompts with the verifier's objections. *Not pretended to exist today.*
+* **Verifier / critique loop — optional first pass built.** `MediumRecommender`
+  can now run a second LLM pass with `verify_citations=True` (CLI:
+  `cultivate design --verify-citations`). It checks whether each candidate's
+  cited paper IDs and evidence snippets support the proposed medium change, then
+  labels the change as `supported`, `partial`, or `unsupported` and adds caveats
+  for downgraded claims. It is a one-shot verifier, not an iterative debate loop.
 * **Predictive modeling — now partially built.** The `optimize/` layer adds a GP
   surrogate + multi-objective Bayesian optimization that consumes the KB
   (`space_from_kb`) and proposes pre-registerable experiment batches. See

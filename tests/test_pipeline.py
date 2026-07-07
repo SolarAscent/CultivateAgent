@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from pathlib import Path
+import threading
 
 import pytest
 
@@ -113,6 +115,185 @@ def test_extraction_flags_unverified_quote():
     assert "UNVERIFIED" in (ev.location or "")
 
 
+def test_extraction_accepts_schema_attribute_block_names():
+    from cultivate_agent.extract import extract_paper
+    from cultivate_agent.llm import get_client
+    from cultivate_agent.schema.paper import PaperRef
+
+    payload = json.dumps({
+        "blocks": {
+            "medium_info": {"serum_free_status": "serum-free"},
+            "fast_triage": {"main_track": "medium"},
+        },
+        "evidence": {
+            "medium_info.serum_free_status": {"quote": "serum-free expansion", "confidence": "high"},
+            "fast_triage.main_track": {"quote": "culture medium optimization", "confidence": "high"},
+        },
+    })
+    client = get_client("mock", "m", responses=[payload])
+    text = "The paper reports culture medium optimization for serum-free expansion."
+    ext = extract_paper(client, PaperRef(paper_id="p3"), text, triage_blocks=["B", "E"], full=False)
+    assert ext.fast_triage.main_track == "medium"
+    assert ext.medium_info.serum_free_status == "serum-free"
+    assert "E.serum_free_status" in ext.evidence
+    assert "B.main_track" in ext.evidence
+
+
+def test_structured_paper_from_text_sections():
+    from cultivate_agent.schema import structured_paper_from_text
+
+    text = """Title line
+
+Abstract
+We optimize bovine myoblast expansion medium.
+
+Materials and Methods
+Cells were cultured in DMEM/F12 with FGF2.
+
+Results
+The serum-free condition supported proliferation."""
+    paper = structured_paper_from_text("p-structured", text, title="Title line")
+    assert paper.abstract and "bovine myoblast" in paper.abstract
+    titles = [s.title.lower() for s in paper.sections]
+    assert any("materials and methods" in t for t in titles)
+    assert any("results" in t for t in titles)
+    assert paper.all_text().count("DMEM/F12") == 1
+
+
+def test_extraction_uses_structured_section_routing():
+    from cultivate_agent.extract import extract_paper
+    from cultivate_agent.llm import get_client
+    from cultivate_agent.schema import structured_paper_from_text
+    from cultivate_agent.schema.paper import PaperRef
+
+    payload = json.dumps({
+        "blocks": {"E": {"basal_medium": ["DMEM/F12"], "serum_free_status": "serum-free"}},
+        "evidence": {
+            "E.basal_medium": {"quote": "DMEM/F12 with FGF2", "confidence": "high"},
+            "E.serum_free_status": {"quote": "serum-free medium", "confidence": "high"},
+        },
+    })
+    text = """Abstract
+This work studies bovine cells.
+
+Methods
+The cells were cultured in serum-free medium based on DMEM/F12 with FGF2.
+
+Discussion
+The method supports future medium optimization."""
+    paper = structured_paper_from_text("p4", text)
+    client = get_client("mock", "m", responses=[payload])
+    ext = extract_paper(
+        client,
+        PaperRef(paper_id="p4"),
+        text,
+        triage_blocks=["E"],
+        full=False,
+        structured_paper=paper,
+    )
+    meta = ext.extraction_meta["passes"][0]
+    assert ext.medium_info.basal_medium == ["DMEM/F12"]
+    assert meta["used_section_routing"] is True
+    assert meta["routed_section_ids"]
+    assert meta["structured_source"] == "plain_text"
+
+
+def test_structured_paper_from_grobid_tei_xml():
+    from cultivate_agent.schema import structured_paper_from_grobid_tei_xml
+
+    tei = """<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title level="a">Bovine medium paper</title></titleStmt>
+    </fileDesc>
+    <profileDesc>
+      <abstract><p>We report a serum-free bovine myoblast medium.</p></abstract>
+    </profileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div>
+        <head>Materials and Methods</head>
+        <p>Cells were cultured in DMEM/F12 with FGF2.</p>
+        <p>The formulation used recombinant albumin.</p>
+      </div>
+      <div>
+        <head>Results</head>
+        <p>Proliferation increased over six days.</p>
+      </div>
+      <figure type="table">
+        <head>Table 1</head>
+        <figDesc>Medium component concentrations.</figDesc>
+      </figure>
+      <figure>
+        <head>Figure 1</head>
+        <figDesc>Growth curve.</figDesc>
+      </figure>
+    </body>
+  </text>
+</TEI>"""
+    paper = structured_paper_from_grobid_tei_xml("tei-1", tei)
+    assert paper.source == "grobid_tei"
+    assert paper.title == "Bovine medium paper"
+    assert paper.abstract and "serum-free" in paper.abstract
+    assert [s.title for s in paper.sections] == ["Materials and Methods", "Results"]
+    assert paper.sections[0].paragraphs[0].paragraph_id == "S1.p1"
+    assert paper.tables and "Medium component" in (paper.tables[0].caption or "")
+    assert paper.figures and "Growth curve" in (paper.figures[0].caption or "")
+
+
+def test_grobid_client_writes_and_parses_tei(tmp_path):
+    from cultivate_agent.ingest import (
+        process_fulltext_document,
+        structured_paper_from_grobid_pdf,
+        write_fulltext_tei,
+    )
+
+    tei = """<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <text><body><div><head>Methods</head><p>Cells used DMEM/F12.</p></div></body></text>
+</TEI>"""
+    seen = {}
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_POST(self):  # noqa: N802
+            seen["path"] = self.path
+            length = int(self.headers["Content-Length"])
+            body = self.rfile.read(length)
+            seen["body"] = body
+            self.send_response(200)
+            self.send_header("Content-Type", "application/xml")
+            self.end_headers()
+            self.wfile.write(tei.encode("utf-8"))
+
+        def log_message(self, *args):  # noqa: D102
+            return
+
+    server = HTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    base_url = f"http://127.0.0.1:{server.server_port}"
+    pdf = tmp_path / "paper.pdf"
+    pdf.write_bytes(b"%PDF-1.4\nfake test pdf")
+
+    try:
+        text = process_fulltext_document(pdf, base_url=base_url, timeout=5)
+        out = write_fulltext_tei(pdf, tmp_path / "fulltext.xml", base_url=base_url, timeout=5)
+        paper = structured_paper_from_grobid_pdf("p-grobid", pdf, base_url=base_url, timeout=5)
+    finally:
+        server.shutdown()
+        server.server_close()
+
+    assert seen["path"] == "/api/processFulltextDocument"
+    assert b'name="input"; filename="paper.pdf"' in seen["body"]
+    assert b'name="consolidateHeader"' in seen["body"]
+    assert "DMEM/F12" in text
+    assert out.read_text(encoding="utf-8") == tei
+    assert paper.source == "grobid_tei"
+    assert paper.sections[0].title == "Methods"
+
+
 # --------------------------------------------------------------------------- #
 # Knowledge base + retrieval                                                  #
 # --------------------------------------------------------------------------- #
@@ -129,6 +310,7 @@ def test_kb_roundtrip_and_flatten(tmp_path):
     kb.upsert_extraction(ext)
     assert kb.stats()["medium_components"] == 2
     assert "p1" in kb.papers_with_component("FGF2")   # canonicalized in the flatten step
+    assert "p1" in kb.papers_with_component("FGF2", role="growth_factor")
     assert kb.get_extraction("p1").medium_info.serum_free_status == "serum-free"
     kb.close()
 
@@ -142,6 +324,25 @@ def test_retriever_returns_relevant_doc():
         Document("b", "scaffold gelatin alginate 3D printing texture", "B"),
     ])
     hits = r.search("serum-free FGF2 proliferation", top_k=2)
+    assert hits and hits[0].doc_id == "a"
+
+
+def test_embedding_retriever_handles_semantic_mismatch():
+    from cultivate_agent.retrieve import BM25Retriever, Document, EmbeddingRetriever
+
+    docs = [
+        Document("a", "serum-free FGF2 bovine satellite cell proliferation medium", "A"),
+        Document("b", "alginate scaffold texture printing mechanics", "B"),
+    ]
+    query = "animal-component-free cattle myoblast expansion with mitogens"
+
+    bm25 = BM25Retriever()
+    bm25.index(docs)
+    emb = EmbeddingRetriever(backend="local")
+    emb.index(docs)
+
+    assert bm25.search(query, top_k=2) == []
+    hits = emb.search(query, top_k=2)
     assert hits and hits[0].doc_id == "a"
 
 
@@ -176,6 +377,40 @@ def test_recommender_enforces_actionable_whitelist():
     )
     changes = {c.variable: c.is_actionable for c in rec.candidates[0].changes}
     assert changes["serum_level"] is True and changes["scaffold"] is False
+
+
+def test_recommender_verifier_downgrades_unsupported_citation():
+    from cultivate_agent.design import DesignContext, MediumRecommender, ObjectiveWeights
+    from cultivate_agent.llm import get_client
+    from cultivate_agent.retrieve import BM25Retriever, Document
+
+    design = json.dumps({"candidates": [{
+        "name": "c", "changes": [
+            {"variable": "growth_factors", "change": "add FGF2 at 20 ng/mL",
+             "rationale": "FGF2 supports expansion", "cited_paper_ids": ["p1"]},
+            {"variable": "small_molecules", "change": "add CHIR99021",
+             "rationale": "Wnt activation", "cited_paper_ids": ["p1"]},
+        ],
+    }]})
+    verification = json.dumps({
+        "checks": [
+            {"candidate_index": 1, "change_index": 1, "support": "supported", "reason": "FGF2 appears in evidence"},
+            {"candidate_index": 1, "change_index": 2, "support": "unsupported", "reason": "CHIR99021 is absent from evidence"},
+        ],
+        "caveats": ["one unsupported claim"],
+    })
+    client = get_client("mock", "m", responses=[design, verification])
+    r = BM25Retriever()
+    r.index([Document("p1", "serum-free medium with FGF2 supports bovine proliferation", "A")])
+    rec = MediumRecommender(client, r, verify_citations=True).recommend(
+        ObjectiveWeights(weights={"proliferation": 1.0}), DesignContext(), n_candidates=1
+    )
+
+    changes = rec.candidates[0].changes
+    assert changes[0].evidence_support == "supported"
+    assert changes[1].evidence_support == "unsupported"
+    assert "VERIFIER: unsupported" in changes[1].rationale
+    assert any("downgraded" in c for c in rec.caveats)
 
 
 # --------------------------------------------------------------------------- #

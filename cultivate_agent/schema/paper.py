@@ -65,6 +65,8 @@ class IngestStatus(BaseModel):
     n_tables: int = 0
     fulltext_chars: int = 0
     text_extractor: Optional[str] = None      # "pymupdf" | "pdftotext" | "manual"
+    has_structured_fulltext: bool = False
+    structured_extractor: Optional[str] = None  # e.g. "grobid"
     ingested_at: Optional[str] = None
     warnings: List[str] = Field(default_factory=list)
 

@@ -143,11 +143,13 @@ def cmd_triage(args) -> int:
 
 def cmd_extract(args) -> int:
     cfg = _apply_overrides(load_config(root=args.root), args)
-    from .extract import extract_paper
+    from .extract import OperatorExtractor, extract_paper
     from .ingest import iter_ingested
     from .schema import structured_paper_from_grobid_tei_path
 
     client = cfg.make_llm_client()
+    mode = getattr(args, "mode", "blocks")
+    operator_extractor = OperatorExtractor(client, verify_evidence=cfg.extract.require_evidence) if mode == "operators" else None
     kb = _kb(cfg)
     n = 0
     for paths, meta in iter_ingested(cfg.papers_dir):
@@ -171,24 +173,29 @@ def cmd_extract(args) -> int:
         if not text.strip():
             print(f"- skip (no text): {meta.ref.paper_id}")
             continue
-        ext = extract_paper(
-            client, meta.ref, text,
-            triage_blocks=cfg.extract.triage_blocks,
-            full_blocks=cfg.extract.full_blocks,
-            full=not args.triage_only,
-            max_context_chars=cfg.extract.max_context_chars,
-            verify_evidence=cfg.extract.require_evidence,
-            triage_category=meta.triage_category,
-            structured_paper=structured_paper,
-        )
+        if operator_extractor is not None:
+            ext = operator_extractor.extract(meta.ref, structured_paper or text)
+            ext.triage_category = meta.triage_category
+        else:
+            ext = extract_paper(
+                client, meta.ref, text,
+                triage_blocks=cfg.extract.triage_blocks,
+                full_blocks=cfg.extract.full_blocks,
+                full=not args.triage_only,
+                max_context_chars=cfg.extract.max_context_chars,
+                verify_evidence=cfg.extract.require_evidence,
+                triage_category=meta.triage_category,
+                structured_paper=structured_paper,
+            )
         kb.upsert_paper(meta.ref, triage_category=meta.triage_category)
         kb.upsert_extraction(ext)
-        g = None
-        for p in (ext.extraction_meta or {}).get("passes", []) or []:
-            if p.get("grounding_rate") is not None:
-                g = p["grounding_rate"]
-                break
-        print(f"+ extracted {meta.ref.paper_id}  (grounding={g})")
+        g = (ext.extraction_meta or {}).get("grounding_rate")
+        if g is None:
+            for p in (ext.extraction_meta or {}).get("passes", []) or []:
+                if p.get("grounding_rate") is not None:
+                    g = p["grounding_rate"]
+                    break
+        print(f"+ extracted {meta.ref.paper_id}  (mode={mode}, grounding={g})")
         n += 1
     kb.close()
     print(f"\nExtracted {n} papers into {cfg.kb_file}")
@@ -227,6 +234,53 @@ def cmd_stats(args) -> int:
     for name, count in kb.component_counts(role="growth_factor")[:10]:
         print(f"  {count:3d}  {name}")
     kb.close()
+    return 0
+
+
+def cmd_evidence(args) -> int:
+    """Extract quoted directional effects over the corpus, synthesize, store + export."""
+    cfg = _apply_overrides(load_config(root=args.root), args)
+    from .evidence import extract_effects, synthesize
+    from .ingest import iter_ingested
+    from .normalize import ComponentNormalizer
+
+    client = cfg.make_llm_client()
+    normalizer = ComponentNormalizer(cfg.ontology_dir)
+    kb = _kb(cfg)
+    items = []
+    n = 0
+    for paths, meta in iter_ingested(cfg.papers_dir):
+        if args.limit and n >= args.limit:
+            break
+        text = paths.read_fulltext()
+        if not text.strip():
+            continue
+        found = extract_effects(client, meta.ref, text, args.outcome, normalizer=normalizer,
+                                verify_evidence=cfg.extract.require_evidence)
+        items.extend(found)
+        n += 1
+        print(f"  {meta.ref.paper_id}: {len(found)} directional effect(s)")
+
+    summaries = synthesize(items)
+    kb.upsert_evidence_summaries(summaries)
+
+    out = Path(args.out or (cfg.data_path / "exports")) / f"evidence_{args.outcome}.csv"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    import csv as _csv
+    with out.open("w", newline="", encoding="utf-8") as f:
+        w = _csv.writer(f)
+        w.writerow(["component", "outcome", "context", "k", "method", "p_beneficial",
+                    "ci_low", "ci_high", "i_squared", "context_dependent", "paper_ids", "note"])
+        for s in summaries:
+            w.writerow([s.component, s.outcome, s.context_key, s.k, s.method, s.p_beneficial,
+                        s.ci_low, s.ci_high, s.i_squared, s.context_dependent,
+                        ";".join(s.paper_ids), s.note])
+    kb.close()
+    print(f"\nSynthesized {len(summaries)} (component,outcome,context) summaries from {len(items)} "
+          f"effects over {n} papers -> {out}")
+    for s in summaries[:12]:
+        flag = "  [context-dependent: TEST DIRECTLY]" if s.context_dependent else ""
+        print(f"  {s.component:24s} p_beneficial={s.p_beneficial:.2f} (k={s.k}, {s.method}){flag}")
     return 0
 
 
@@ -375,7 +429,17 @@ def cmd_optimize(args) -> int:
                                     verify_citations=args.verify_citations)
     mobo = MultiObjectiveBO(space, objectives, backend=args.backend)
     egm = EvidenceGuidedMOBO(mobo, recommender, normalizer=ComponentNormalizer(cfg.ontology_dir))
-    proposal = egm.propose(weights, context, batch_size=args.batch)
+
+    evidence_prior = None
+    if args.evidence_prior:
+        from .optimize import EvidencePrior
+        # Highest-weighted objective drives the prior's evidence direction.
+        primary = max(weights.normalized, key=weights.normalized.get)
+        evidence_prior = EvidencePrior.from_kb(kb, space, primary)
+        if evidence_prior.raw_beliefs:
+            print(f"Evidence prior ({primary}):\n{evidence_prior.describe()}\n")
+
+    proposal = egm.propose(weights, context, batch_size=args.batch, evidence_prior=evidence_prior)
     kb.close()
 
     if args.json:
@@ -536,6 +600,9 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--tier", help="only papers in this tier (A/B/C)")
     sp.add_argument("--limit", type=int)
     sp.add_argument("--triage-only", action="store_true", help="run only fast-triage blocks")
+    sp.add_argument("--mode", choices=["blocks", "operators"], default="blocks",
+                    help="extraction strategy: 'blocks' (2 large passes) or 'operators' "
+                         "(several small, section-routed operators; more reliable with real LLMs)")
     add_llm_flags(sp)
     sp.set_defaults(func=cmd_extract)
 
@@ -545,6 +612,14 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("stats", help="knowledge-base summary")
     sp.set_defaults(func=cmd_stats)
+
+    sp = sub.add_parser("evidence", help="synthesize literature evidence into priors (P(component beneficial))")
+    sp.add_argument("--outcome", default="proliferation",
+                    help="outcome to synthesize evidence for (e.g. proliferation)")
+    sp.add_argument("--limit", type=int, help="only first N papers")
+    sp.add_argument("--out", help="output directory")
+    add_llm_flags(sp)
+    sp.set_defaults(func=cmd_evidence)
 
     sp = sub.add_parser("design", help="goal-conditioned medium recommendation")
     sp.add_argument("--preset", help="objective-weight preset from config")
@@ -574,6 +649,8 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--rounds", type=int, default=6, help="rounds (demo mode)")
     sp.add_argument("--backend", default="gp", help="gp | botorch | botorch-log")
     sp.add_argument("--verify-citations", action="store_true", help="run a second LLM verifier over LLM-seeded candidate citations")
+    sp.add_argument("--evidence-prior", action="store_true",
+                    help="bias the batch with literature evidence priors (run `cultivate evidence` first)")
     sp.add_argument("--json", action="store_true", help="emit JSON")
     add_llm_flags(sp)
     sp.set_defaults(func=cmd_optimize)

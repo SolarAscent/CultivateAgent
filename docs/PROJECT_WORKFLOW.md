@@ -4,6 +4,16 @@ Status: active
 Last updated: 2026-07-08
 Chinese version: [`PROJECT_WORKFLOW_ZH.md`](PROJECT_WORKFLOW_ZH.md)
 
+> **Session 2 additions (see `SESSION_LOG.md`).** Two new stages sit between
+> extraction and optimization: (1) **operator extraction** — `cultivate extract
+> --mode operators` splits the A–M schema into small section-routed operators
+> (more reliable with real LLMs); (2) **evidence synthesis** — `cultivate evidence
+> --outcome <o>` pools heterogeneous cross-paper effects via random-effects
+> meta-analysis into `P(component beneficial)`+I² posteriors, stored in the KB and
+> injected into `cultivate optimize --evidence-prior` as πBO priors (never labels;
+> high-I² components are flagged "test directly"). Details:
+> [`EVIDENCE_SYNTHESIS.md`](EVIDENCE_SYNTHESIS.md), [`OPTIMIZATION.md`](OPTIMIZATION.md).
+
 This is the controlling project manual for CultivateAgent. It is written for
 developers, literature reviewers, wet-lab collaborators, project owners, and AI
 agents that need to continue the same project without creating conflicting

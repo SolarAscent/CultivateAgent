@@ -127,3 +127,110 @@ Branch: `session/eval-retrieval-mobo-hardening`
 1. Run `cultivate ingest --grobid-tei` against accessible P1 PDFs with a running GROBID service, then inspect how many `fulltext.xml` files were produced.
 2. Build `data/literature/bovine_evidence_table.tsv` from P1 full text and TEI-routed extraction.
 3. Extend the one-shot verifier into an optional repair loop that asks the proposer to revise unsupported changes before final output.
+
+---
+
+# Session 2 (Claude) — operator extraction + evidence synthesis
+
+Date: 2026-07-08
+Branch: `session/operator-extraction-evidence-synthesis` (from `main` after merging Session 1)
+
+## Review of Session 1 (Codex)
+
+- Verified 8 sampled corpus DOIs against Crossref: all real; no fabricated citations.
+- Confirmed the honest reporting (live extraction F1~0.25, `nonmissing_fraction=0.0`).
+- Merged `session/eval-retrieval-mobo-hardening` into `main` (30 tests green).
+- Recorded the key prior art Codex found — Cai et al. 2023, "Multi-objective Bayesian
+  algorithm automatically discovers low-cost high-growth serum-free media" (Eng. Life
+  Sci., DOI 10.1002/elsc.202300005) — as `M024` in the method registry; must be cited
+  and differentiated.
+
+## Changes Made
+
+- **Phase B — operator-decomposition extraction** (`extract/operators.py`):
+  - 5 operators (`context`, `medium`, `dose`, `endpoints`, `findings`) owning DISJOINT
+    field sets, each with a tiny focused prompt and section routing.
+  - `OperatorExtractor.extract(ref, text|StructuredPaper)` merges operator outputs into a
+    `PaperExtraction`, verifies each evidence quote, and records per-operator status
+    (`ok|empty|call_error|parse_error`), coverage, and grounding — so live failures are
+    diagnosable instead of one opaque score.
+  - CLI: `cultivate extract --mode operators` (default remains `blocks`).
+  - Grounded in schema-reduction / modular-document IE work (SchemaRAG arXiv:2607.00008,
+    schema-aware IE arXiv:2505.14992, DocETL) recorded as `M019`/`M020`.
+  - Tests: 4 added (disjoint fields, merge+grounding, failure-diagnosability, unverified
+    quote flagging).
+
+## Results
+
+- `pytest -q`: 34 passed (was 30).
+- Offline operator extraction over a synthetic bovine serum-free excerpt populated
+  blocks B/D/E/I/J/K/M and recorded per-operator coverage/grounding.
+
+## Rationale
+
+Session 1 correctly diagnosed that the monolithic all-A-M prompt is the cause of the
+live-extraction failure but did not yet implement the fix. Phase B implements it.
+The next live run should compare `--mode operators` vs `--mode blocks` on real papers.
+
+- **Phase C — hierarchical Bayesian evidence synthesis** (`evidence/`): the answer to
+  the record's outcome-comparability critique. `meta_analysis.py` pools heterogeneous
+  cross-paper effects via DerSimonian-Laird random-effects (M021) + Higgins-Thompson
+  I² (M022), with a Beta-Binomial fallback (direction-only evidence). High I² →
+  "context-dependent, test directly" instead of a fake confident estimate.
+  `effect_operator.py` produces quoted directional `EvidenceItem`s and drops any
+  ungrounded claim (never co-occurrence). Closed-form, numpy-only. 6 tests;
+  `docs/EVIDENCE_SYNTHESIS.md`.
+- **Phase D — evidence-derived πBO priors** (`optimize/priors.py`): `EvidencePrior`
+  maps evidence posteriors to a prior over the design space and injects it into the
+  acquisition (πBO, Hvarfner et al. ICLR 2022 / M025), decaying as observations accrue;
+  high-I² components get a flat prior and are surfaced in the proposal's
+  `context_dependent_components`. Verified: prior raises beneficial-FGF2 / lowers
+  detrimental-FBS in early batches. 4 tests.
+
+## Session 2 Results
+
+- `pytest -q`: 44 passed (was 30 at session start).
+- New end-to-end capability: literature → operator extraction → evidence synthesis →
+  πBO prior → evidence-guided MOBO batch, all offline-validated with the mock LLM.
+
+## Session 2 — What I Did NOT Do (needs a live LLM / human)
+
+- Did not run live real-LLM extraction (owner's OpenAI quota was exhausted last session;
+  no Gemini key). `--mode operators` is ready for that comparison.
+- Did not yet wire `extract_effects` into a CLI command over the real corpus (needs
+  live LLM); the math + operator are offline-tested and ready.
+
+## Session 2 — Next 3 Steps
+
+1. Live: run `cultivate extract --mode operators` on 1-2 P1 full-text papers; inspect raw
+   responses; compare coverage/grounding vs `--mode blocks`.
+2. Add a `cultivate evidence` CLI: run `extract_effects` over the corpus for a chosen
+   outcome, synthesize summaries, and export an evidence table with quotes + I².
+3. Wire `EvidencePrior.from_summaries(kb-derived)` into `cultivate optimize` so the
+   proposed batch is literature-prior-guided end to end.
+
+## Session 2 (cont.) — Phases F & G
+
+- **Phase F — evidence pipeline integration**: `kb` `evidence_summaries` table +
+  upsert/read; `cultivate evidence --outcome <o>` (extract_effects → synthesize →
+  store + export); `EvidencePrior.from_kb`; `cultivate optimize --evidence-prior`.
+  Pipeline is now ingest→triage→extract→normalize→KB→**evidence**→retrieve→design→optimize.
+- **Phase G — honest benchmark of the evidence prior** (`scripts/benchmark_evidence_prior.py`,
+  `docs/EVIDENCE_PRIOR_BENCHMARK.md`):
+  - Found and FIXED a real design flaw: the linear "beneficial → prefer maximum dose"
+    prior **overshot** interior optima (saturating benefit + linear cost) and hurt even
+    when it named the right components. Replaced with a saturating inclusion reward
+    (Michaelis-Menten-like), which is also more biologically faithful.
+  - Honest result: on easy/saturating objectives the prior is ~neutral; on **sparse**
+    problems (few of many components matter) a **correct prior accelerates early search
+    (+0.03–0.05 normalized-HV at 13–17 experiments)**, a **wrong prior costs experiments**
+    (recovering via the πBO decay), and the advantage fades late (BO catches up). This
+    validates using directional evidence for inclusion/direction decisions, not dose
+    tuning — and justifies the flat prior + "test directly" flag on high-I² components.
+  - Tests: 46 pass (was 30 at session start).
+
+## Session 2 — Verified literature (Crossref/arXiv), recorded in method registry M019–M025
+
+SchemaRAG (2607.00008), schema-aware IE (2505.14992), DerSimonian-Laird 1986, Higgins-
+Thompson I² 2002, Röver 2020 heterogeneity priors, Cai et al. 2023 (elsc.202300005, prior
+art), πBO Hvarfner et al. ICLR 2022 (2204.11051). All DOIs/arXiv IDs verified.

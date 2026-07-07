@@ -53,9 +53,19 @@ CREATE TABLE IF NOT EXISTS triage (
     category TEXT, rationale TEXT, evidence_quote TEXT,
     main_track TEXT, target_product_type TEXT, is_core_for_modeling TEXT
 );
+CREATE TABLE IF NOT EXISTS evidence_summaries (
+    component TEXT, outcome TEXT, context_key TEXT,
+    k INTEGER, method TEXT, p_beneficial REAL,
+    pooled_effect REAL, ci_low REAL, ci_high REAL,
+    i_squared REAL, tau_squared REAL, context_dependent INTEGER,
+    n_continuous INTEGER, n_direction INTEGER,
+    paper_ids_json TEXT, note TEXT,
+    PRIMARY KEY (component, outcome, context_key)
+);
 CREATE INDEX IF NOT EXISTS idx_comp_canonical ON medium_components(canonical);
 CREATE INDEX IF NOT EXISTS idx_comp_role ON medium_components(role);
 CREATE INDEX IF NOT EXISTS idx_papers_triage ON papers(triage_category);
+CREATE INDEX IF NOT EXISTS idx_evsumm_outcome ON evidence_summaries(outcome);
 """
 
 _LIST_ROLES = {
@@ -184,6 +194,49 @@ class KnowledgeBase:
     # ------------------------------------------------------------------ #
     # Readers                                                            #
     # ------------------------------------------------------------------ #
+    def upsert_evidence_summaries(self, summaries) -> None:
+        """Persist evidence-synthesis summaries (from ``cultivate_agent.evidence``)."""
+        for s in summaries:
+            self.conn.execute(
+                """INSERT INTO evidence_summaries(component, outcome, context_key, k, method, p_beneficial,
+                       pooled_effect, ci_low, ci_high, i_squared, tau_squared, context_dependent,
+                       n_continuous, n_direction, paper_ids_json, note)
+                   VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                   ON CONFLICT(component, outcome, context_key) DO UPDATE SET
+                     k=excluded.k, method=excluded.method, p_beneficial=excluded.p_beneficial,
+                     pooled_effect=excluded.pooled_effect, ci_low=excluded.ci_low, ci_high=excluded.ci_high,
+                     i_squared=excluded.i_squared, tau_squared=excluded.tau_squared,
+                     context_dependent=excluded.context_dependent, n_continuous=excluded.n_continuous,
+                     n_direction=excluded.n_direction, paper_ids_json=excluded.paper_ids_json, note=excluded.note""",
+                (s.component, s.outcome, s.context_key, s.k, s.method, s.p_beneficial,
+                 s.pooled_effect, s.ci_low, s.ci_high, s.i_squared, s.tau_squared,
+                 int(s.context_dependent), s.n_continuous, s.n_direction,
+                 json.dumps(s.paper_ids), s.note),
+            )
+        self.conn.commit()
+
+    def get_evidence_summaries(self, *, outcome: Optional[str] = None) -> list:
+        """Read evidence summaries back as :class:`EvidenceSummary` objects."""
+        from ..evidence.meta_analysis import EvidenceSummary
+
+        sql = "SELECT * FROM evidence_summaries"
+        args: Tuple = ()
+        if outcome:
+            sql += " WHERE outcome=?"
+            args = (outcome,)
+        out = []
+        for r in self.conn.execute(sql, args):
+            out.append(EvidenceSummary(
+                component=r["component"], outcome=r["outcome"], context_key=r["context_key"],
+                k=r["k"], method=r["method"], p_beneficial=r["p_beneficial"],
+                pooled_effect=r["pooled_effect"], ci_low=r["ci_low"], ci_high=r["ci_high"],
+                variance=None, i_squared=r["i_squared"], tau_squared=r["tau_squared"],
+                context_dependent=bool(r["context_dependent"]),
+                n_continuous=r["n_continuous"], n_direction=r["n_direction"],
+                paper_ids=json.loads(r["paper_ids_json"] or "[]"), quotes=[], note=r["note"] or "",
+            ))
+        return out
+
     def get_extraction(self, paper_id: str) -> Optional[PaperExtraction]:
         row = self.conn.execute("SELECT json FROM extractions WHERE paper_id=?", (paper_id,)).fetchone()
         return PaperExtraction.model_validate_json(row["json"]) if row else None

@@ -130,7 +130,17 @@ PDFs (Zotero)┘                            │
                                           │
                  kb.KnowledgeBase ────────┤─▶ extractions / evidence / medium_components (normalized)
                                           │
-                 retrieve.build_corpus ───┤─▶ BM25 index
-                                          │
-                 design.MediumRecommender ┴─▶ Recommendation (candidates + citations + caveats)
+                 evidence.extract_effects ┤─▶ EvidenceItem[] ─▶ meta_analysis.synthesize
+                                          │        └─▶ EvidenceSummary[] (P(beneficial), I²) ─▶ KB
+                                          │                                        │
+                 retrieve.build_corpus ───┤─▶ BM25 / embedding index               │ EvidencePrior (πBO)
+                                          │                                        ▼
+                 design.MediumRecommender ┴─▶ EvidenceGuidedMOBO.propose ─▶ pre-registerable batch
 ```
+
+**Extraction has two modes** (`extract --mode`): `blocks` (2 large passes) and
+`operators` (small, section-routed, disjoint-field operators — reliable with real
+LLMs; see `extract/operators.py`). **Evidence synthesis** (`evidence/`) is the
+honest answer to outcome comparability — see
+[`EVIDENCE_SYNTHESIS.md`](EVIDENCE_SYNTHESIS.md) — feeding the optimizer priors, not
+labels.

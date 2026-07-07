@@ -1,7 +1,7 @@
 # CultivateAgent 项目手册
 
 状态：使用中  
-最后更新：2026-07-07  
+最后更新：2026-07-08
 English version: [`PROJECT_WORKFLOW.md`](PROJECT_WORKFLOW.md)
 
 这是 CultivateAgent 的控制性项目手册，给开发者、文献复核者、湿实验合作者、
@@ -261,6 +261,8 @@ Checklist：
 - [ ] `[AI]` 导入 BibTeX、PDF、全文或外部生成的 structured paper 文件。
 - [ ] `[AI]` 可用时优先使用结构化解析：GROBID TEI、structured text sections
   或未来 PDF backend。
+- [ ] `[AI]` 如果 GROBID service 可用，先运行 `cultivate ingest --grobid-tei`，
+  让 PDF 生成 `fulltext.xml` 后再进入抽取。
 - [ ] `[AI]` 对 P1/P2 文献运行 triage 和 extraction。
 - [ ] `[AI]` 导出 screening、component、evidence、extraction tables。
 - [ ] `[AI]` 记录 extraction coverage、non-missing fields 和 grounding rate。
@@ -272,6 +274,8 @@ Checklist：
 
 ```bash
 cultivate ingest
+# 可选：已有运行中的 GROBID service 时使用
+cultivate ingest --grobid-tei --grobid-url http://localhost:8070
 cultivate triage
 cultivate extract --tier A
 cultivate export
@@ -484,7 +488,7 @@ AI 线：
 | S0 | Package 可安装，测试通过，smoke 通过，demo optimization 通过 | Provider credentials 和 quota 属于外部条件 | 每次改动后保持 gate 绿色 |
 | S1 | Wet-lab target 和边界已记录 | 除非新 decision record，否则 scope 不能漂移 | 保持 bovine expansion-medium focus |
 | S2 | 44 条 bovine manifest 和 30 项 review queue 已建 | P1 人工复核和全文获取未完成 | 人工复核 H001-H016；AI 拉取 P1 全文 |
-| S3 | Structured paper schema、plain-text fallback、section routing、GROBID TEI parser 已有 | PDF-to-TEI service/client 未实现；corpus 尚未全文抽取 | 增加 PDF-to-structured backend 并跑 P1 extraction |
+| S3 | Structured paper schema、plain-text fallback、section routing、GROBID TEI parser 和 optional GROBID service client 已有 | P1 corpus 尚未批量转换/抽取；GROBID service 是否可用属于外部条件 | 对可访问 P1 PDFs 运行 `cultivate ingest --grobid-tei`，再抽取 |
 | S4 | Review queue 已有 | 尚无 adjudicated evidence table | 把人工 notes 转成结构化 adjudication |
 | S5 | Ontology 可把更多 component classes 暴露给 search space | Candidate variables 未批准 | 只在 S3-S4 gate 后建立 |
 | S6 | MOBO backend 和 benchmark script 已有 | 尚未在 bovine evidence 上跑 robustness | S5 后跑 retrieval 和 optimizer sensitivity |
@@ -497,7 +501,7 @@ AI 线：
 ### 9.2 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- 最新验证：`.venv/bin/python -m pytest -q` 为 29 passed，3 个已知 warnings。
+- 最新验证：`.venv/bin/python -m pytest -q` 为 30 passed，3 个已知 warnings。
 - Smoke pipeline 通过。
 - Demo optimization loop 通过。
 - Extraction evaluator 已有。
@@ -513,6 +517,8 @@ AI 线：
 - Extractor 可以根据 structured sections 路由不同 block 的上下文，并记录 routing
   metadata。
 - 已能把外部 GROBID 生成的 TEI XML 解析为 `StructuredPaper`。
+- `cultivate ingest --grobid-tei` 可以调用运行中的 GROBID service，保存
+  `fulltext.xml`；`cultivate extract` 会用该 TEI 做 structured section routing。
 
 ### 9.3 已完成的文献和计划工作
 
@@ -530,8 +536,8 @@ AI 线：
 - Gemini live comparison 未完成，因为没有 Gemini/Google key。
 - OpenAI raw-response debugging 遇到 insufficient quota。
 - 当前 corpus manifest 尚未全文抽取。
-- Optional GROBID service/client 执行尚未实现；当前只支持解析已有
-  GROBID-flavored TEI XML 和 plain text。
+- GROBID service 是否可用属于外部条件；如果没有运行中的 service，ingestion
+  会保留 plain-text fallback，并把失败记录为 warning。
 - Human review queue 仍未完成。
 - Cost、supplier、food-grade annotations 不完整。
 - In-silico robustness 尚未在 bovine manifest 上运行。
@@ -540,8 +546,8 @@ AI 线：
 
 ### 9.5 近期下一步
 
-1. `[AI]` 增加 optional GROBID service/client 执行或其他 structured PDF backend，
-   用于从 PDF 生成 TEI。
+1. `[AI]` 对可访问的 P1 PDFs 运行 optional GROBID TEI 生成：
+   `cultivate ingest --grobid-tei`，然后检查 coverage。
 2. `[AI]` 拉取所有 P1 core records 的全文。
 3. `[AI]` 抽取 exact formulations、dose ranges、endpoints、quotes。
 4. `[人工]` 复核 `H001-H016`。

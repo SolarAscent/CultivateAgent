@@ -11,7 +11,10 @@ The extractor now has a first structured-paper layer: plain text can be converte
 into section/paragraph objects, and extraction can route medium fields toward
 Methods/media/cell-culture sections before prompting. It can also parse
 GROBID-flavored TEI XML that has already been produced by an external GROBID
-run into the same structured-paper object.
+run into the same structured-paper object. When a GROBID service is running,
+`cultivate ingest --grobid-tei` can also submit PDFs to
+`processFulltextDocument`, save the returned TEI as `fulltext.xml`, and let
+`cultivate extract` use that structured file automatically.
 
 It is modeled on an LLM + domain-tool hybrid that mines reaction data from the organic-synthesis
 literature — and adapts that recipe to cell-culture media. See
@@ -103,6 +106,8 @@ cultivate smoke         # runs ingest→extract→normalize→KB→retrieve→de
 ```bash
 # 1. Export your Zotero library to BibTeX (data/library.bib), then:
 cultivate ingest                     # build data/papers/<slug>/ folders + full text
+# Optional structured full text: start GROBID separately, then:
+cultivate ingest --grobid-tei --grobid-url http://localhost:8070
 
 # 2. Tier papers A/B/C (evidence-backed, reproducible):
 cultivate triage
@@ -194,7 +199,7 @@ cultivate schema --json          # full JSON Schema
 cultivate_agent/
   schema/       evidence primitives, the A–M schema, paper records + folder layout
   llm/          provider-agnostic client (openai / anthropic / gemini / mock)
-  ingest/       BibTeX parsing, PDF→text/figures/tables, per-paper folder builder
+  ingest/       BibTeX parsing, PDF→text/figures/tables, optional GROBID TEI, per-paper folder builder
   triage/       A/B/C relevance classifier (evidence-backed)
   extract/      domain prompts + evidence-grounded schema extractor
   normalize/    ontology component canonicalization + provenance-preserving units

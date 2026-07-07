@@ -1,6 +1,6 @@
 # Session Log
 
-Date: 2026-07-07
+Date: 2026-07-07 / 2026-07-08
 
 Branch: `session/eval-retrieval-mobo-hardening`
 
@@ -62,7 +62,7 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - Keeps current status, completed work, blockers, and next actions in one ledger section instead of mixing progress records through procedural text.
   - Synchronized the English and Chinese manuals so both versions use the same structure and status model.
 - Reviewed AI-for-science, scientific RAG, scientific information extraction, document parsing/ETL, and Bayesian optimization sources to decide the next highest-value technical work:
-  - Added `data/literature/ai_for_science_method_sources.tsv` with 16 reviewed sources and project lessons.
+  - Added `data/literature/ai_for_science_method_sources.tsv`, now at 18 reviewed sources after the GROBID service documentation update, with project lessons.
   - Added `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`.
   - Decision: prioritize S3 full-text extraction reliability through structured paper objects, section-routed extraction, operator-level coverage/grounding metrics, and human-review integration before generating new wet-lab design packets.
   - Human/external blockers recorded rather than guessed: paywalled PDFs/supplements, Gemini credentials, OpenAI quota, lab constraints, and final human evidence approval.
@@ -76,6 +76,14 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - `structured_paper_from_grobid_tei_xml` and `structured_paper_from_grobid_tei_path` parse title, abstract, body `div/head/p` sections, table captions, and figure captions.
   - Added GROBID TEI documentation to the method source registry.
   - This does not run a GROBID service/client yet; PDF-to-TEI generation remains a next step.
+- Added optional GROBID service/client ingestion after reviewing the GROBID Service API and official Python client documentation:
+  - Added `ingest/grobid.py`, a standard-library REST client for `/api/processFulltextDocument`.
+  - `cultivate ingest --grobid-tei --grobid-url http://localhost:8070` now saves GROBID TEI as `fulltext.xml` when a service is running.
+  - `cultivate extract` now parses existing `fulltext.xml` and passes the resulting `StructuredPaper` into section-routed extraction, falling back to plain text if TEI parsing fails.
+  - `metadata.json` records `has_structured_fulltext` and `structured_extractor`.
+  - Added a local HTTP-server test that simulates GROBID, checks multipart PDF submission, writes TEI, and parses it back into `StructuredPaper`.
+  - Added GROBID service documentation to the method source registry.
+  - This still does not prove P1 corpus coverage because a running GROBID service and accessible PDFs are external/currently unverified.
 
 ## Results
 
@@ -97,7 +105,7 @@ Branch: `session/eval-retrieval-mobo-hardening`
 
 ## Final Verification
 
-- Latest `.venv/bin/python -m pytest -q`: 29 passed, 3 warnings.
+- Latest `.venv/bin/python -m pytest -q`: 30 passed, 3 warnings.
 - Warnings:
   - BoTorch recommends replacing legacy `qNoisyExpectedHypervolumeImprovement` with `qLogNoisyExpectedHypervolumeImprovement`.
   - PyTorch sparse invariant warning from `linear_operator`.
@@ -116,6 +124,6 @@ Branch: `session/eval-retrieval-mobo-hardening`
 
 ## Next 3 Steps
 
-1. Run `scripts/evaluate_medium_corpus.py` against actual provider outputs on full paper text and replace mock agreement with real GPT/Claude/Gemini agreement.
-2. Run a larger MOBO benchmark grid, including noisy objectives and constrained/cost-capped settings, to decide whether qLogNEHVI should become the default optional backend.
+1. Run `cultivate ingest --grobid-tei` against accessible P1 PDFs with a running GROBID service, then inspect how many `fulltext.xml` files were produced.
+2. Build `data/literature/bovine_evidence_table.tsv` from P1 full text and TEI-routed extraction.
 3. Extend the one-shot verifier into an optional repair loop that asks the proposer to revise unsupported changes before final output.

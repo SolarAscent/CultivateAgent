@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from ..schema.paper import IngestStatus, PaperMetadata, PaperPaths, PaperRef
+from .grobid import GrobidError, write_fulltext_tei
 from . import pdf as pdfmod
 
 
@@ -33,6 +34,9 @@ def ingest_paper(
     extract_figures: bool = True,
     extract_tables: bool = True,
     page_image_dpi: int = 150,
+    grobid_tei: bool = False,
+    grobid_url: str = "http://localhost:8070",
+    grobid_timeout: float = 60.0,
     force: bool = False,
 ) -> IngestResult:
     """Create ``papers/<slug>/`` and populate it for a single paper."""
@@ -66,7 +70,22 @@ def ingest_paper(
         status.has_fulltext = True
         status.fulltext_chars = len(paths.read_fulltext())
 
-    # 3) Optional assets (page images, figures, tables).
+    # 3) Optional structured full text via GROBID TEI.
+    if paths.pdf.exists() and grobid_tei and (force or not paths.fulltext_xml.exists()):
+        try:
+            write_fulltext_tei(
+                paths.pdf,
+                paths.fulltext_xml,
+                base_url=grobid_url,
+                timeout=grobid_timeout,
+            )
+        except GrobidError as e:
+            status.warnings.append(f"grobid TEI extraction failed: {e}")
+    if paths.fulltext_xml.exists():
+        status.has_structured_fulltext = True
+        status.structured_extractor = "grobid"
+
+    # 4) Optional assets (page images, figures, tables).
     figures: List[Path] = []
     tables: List[Path] = []
     pages: List[Path] = []
@@ -81,17 +100,18 @@ def ingest_paper(
     status.n_figures = len(list(paths.figures.glob("*"))) or len(figures)
     status.n_tables = len(list(paths.tables.glob("*.csv"))) or len(tables)
 
-    # 4) Assets manifest.
+    # 5) Assets manifest.
     manifest = {
         "paper_id": ref.paper_id,
         "page_images": sorted(p.name for p in paths.page_images.glob("*.png")),
         "figures": sorted(p.name for p in paths.figures.glob("*")),
         "tables": sorted(p.name for p in paths.tables.glob("*.csv")),
         "fulltext": paths.fulltext.name if paths.fulltext.exists() else None,
+        "fulltext_xml": paths.fulltext_xml.name if paths.fulltext_xml.exists() else None,
     }
     paths.write_assets(manifest)
 
-    # 5) Metadata.
+    # 6) Metadata.
     meta = PaperMetadata(ref=ref, status=status, triage_category=(existing.triage_category if existing else None))
     meta.touch()
     paths.save_metadata(meta)
@@ -107,6 +127,9 @@ def ingest_library(
     extract_figures: bool = True,
     extract_tables: bool = True,
     page_image_dpi: int = 150,
+    grobid_tei: bool = False,
+    grobid_url: str = "http://localhost:8070",
+    grobid_timeout: float = 60.0,
     force: bool = False,
     on_progress=None,
 ) -> List[IngestResult]:
@@ -122,6 +145,9 @@ def ingest_library(
             extract_figures=extract_figures,
             extract_tables=extract_tables,
             page_image_dpi=page_image_dpi,
+            grobid_tei=grobid_tei,
+            grobid_url=grobid_url,
+            grobid_timeout=grobid_timeout,
             force=force,
         )
         results.append(res)

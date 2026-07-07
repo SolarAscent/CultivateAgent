@@ -1,7 +1,7 @@
 # AI-for-Science Method Review And CultivateAgent Algorithm Roadmap
 
 Status: active method record  
-Date: 2026-07-07
+Date: 2026-07-08
 
 Source registry:
 
@@ -101,8 +101,10 @@ Project implication:
   - figure caption,
   - source page where available.
 - Use GROBID as an optional backend when available. CultivateAgent now has a
-  no-dependency parser for GROBID-flavored TEI XML that has already been
-  produced externally; it does not yet run the GROBID service or batch client.
+  no-dependency parser for GROBID-flavored TEI XML and an optional standard
+  library REST client for GROBID's `processFulltextDocument` service. It saves
+  returned TEI to `fulltext.xml` and preserves the PyMuPDF/plain-text fallback
+  when no GROBID service is running.
 - Preserve the current PyMuPDF/plain-text fallback.
 
 ### 2.5 LLM document pipelines should be modular and operator-evaluated
@@ -191,6 +193,9 @@ Acceptance criteria:
   **Partially implemented through stable section/paragraph IDs.**
 - Tables and captions can be routed to dose/endpoint extraction.
   **Partially implemented for GROBID TEI figure/table captions.**
+- PDF-to-TEI generation is optional and does not add a hard dependency.
+  **Implemented through `cultivate ingest --grobid-tei`, which calls a running
+  GROBID service and writes `fulltext.xml`.**
 
 ### R2. Section-routed extraction
 
@@ -273,8 +278,9 @@ These are not adopted now:
 
 ## 5. Immediate Implementation Tasks
 
-1. Add optional GROBID service/client invocation on top of the implemented
-   plain-text fallback and TEI XML parser.
+1. Run optional GROBID service/client invocation on the P1 corpus PDFs now that
+   `cultivate ingest --grobid-tei` can produce `fulltext.xml` when a service is
+   available.
 2. Create `bovine_evidence_table.tsv` from P1 full text.
 3. Build section-routed extraction operators for medium components, dose ranges,
    endpoints, and quotes.
@@ -306,6 +312,7 @@ Key sources include:
 - Dagdelen et al. and Shamsabadi et al.: structured scientific IE.
 - GROBID and S2ORC: structured scientific document parsing. GROBID TEI parsing
   is now supported for title, abstract, body sections, table captions, and
-  figure captions.
+  figure captions. GROBID service documentation supports the optional
+  PDF-to-TEI ingestion client.
 - DocETL: modular LLM document processing.
 - TuRBO, SCBO, JES, and DPP-BBO: later optimization roadmap candidates.

@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from pathlib import Path
+import threading
 
 import pytest
 
@@ -239,6 +241,57 @@ def test_structured_paper_from_grobid_tei_xml():
     assert paper.sections[0].paragraphs[0].paragraph_id == "S1.p1"
     assert paper.tables and "Medium component" in (paper.tables[0].caption or "")
     assert paper.figures and "Growth curve" in (paper.figures[0].caption or "")
+
+
+def test_grobid_client_writes_and_parses_tei(tmp_path):
+    from cultivate_agent.ingest import (
+        process_fulltext_document,
+        structured_paper_from_grobid_pdf,
+        write_fulltext_tei,
+    )
+
+    tei = """<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <text><body><div><head>Methods</head><p>Cells used DMEM/F12.</p></div></body></text>
+</TEI>"""
+    seen = {}
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_POST(self):  # noqa: N802
+            seen["path"] = self.path
+            length = int(self.headers["Content-Length"])
+            body = self.rfile.read(length)
+            seen["body"] = body
+            self.send_response(200)
+            self.send_header("Content-Type", "application/xml")
+            self.end_headers()
+            self.wfile.write(tei.encode("utf-8"))
+
+        def log_message(self, *args):  # noqa: D102
+            return
+
+    server = HTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    base_url = f"http://127.0.0.1:{server.server_port}"
+    pdf = tmp_path / "paper.pdf"
+    pdf.write_bytes(b"%PDF-1.4\nfake test pdf")
+
+    try:
+        text = process_fulltext_document(pdf, base_url=base_url, timeout=5)
+        out = write_fulltext_tei(pdf, tmp_path / "fulltext.xml", base_url=base_url, timeout=5)
+        paper = structured_paper_from_grobid_pdf("p-grobid", pdf, base_url=base_url, timeout=5)
+    finally:
+        server.shutdown()
+        server.server_close()
+
+    assert seen["path"] == "/api/processFulltextDocument"
+    assert b'name="input"; filename="paper.pdf"' in seen["body"]
+    assert b'name="consolidateHeader"' in seen["body"]
+    assert "DMEM/F12" in text
+    assert out.read_text(encoding="utf-8") == tei
+    assert paper.source == "grobid_tei"
+    assert paper.sections[0].title == "Methods"
 
 
 # --------------------------------------------------------------------------- #

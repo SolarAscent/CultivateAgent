@@ -1,7 +1,7 @@
 # CultivateAgent Project Manual
 
 Status: active  
-Last updated: 2026-07-07  
+Last updated: 2026-07-08
 Chinese version: [`PROJECT_WORKFLOW_ZH.md`](PROJECT_WORKFLOW_ZH.md)
 
 This is the controlling project manual for CultivateAgent. It is written for
@@ -274,6 +274,8 @@ Checklist:
   paper files.
 - [ ] `[AI]` Prefer structured parsing when available: GROBID TEI, structured
   text sections, or future PDF backends.
+- [ ] `[AI]` When a GROBID service is available, run `cultivate ingest
+  --grobid-tei` so PDFs produce `fulltext.xml` before extraction.
 - [ ] `[AI]` Run triage and extraction on P1/P2 sources.
 - [ ] `[AI]` Export screening, component, evidence, and extraction tables.
 - [ ] `[AI]` Record extraction coverage, non-missing fields, and grounding rate.
@@ -285,6 +287,8 @@ Commands:
 
 ```bash
 cultivate ingest
+# optional, when a GROBID service is running:
+cultivate ingest --grobid-tei --grobid-url http://localhost:8070
 cultivate triage
 cultivate extract --tier A
 cultivate export
@@ -513,7 +517,7 @@ the procedural sections above.
 | S0 | Package installs, tests pass, smoke passes, demo optimization passes | Optional provider credentials and quotas are external | Keep gates green after each change |
 | S1 | Wet-lab target and boundaries recorded | Scope must remain locked unless decision record changes | Preserve bovine expansion-medium focus |
 | S2 | 44-record bovine manifest and 30-task review queue created | P1 human review and full-text acquisition incomplete | Human reviews H001-H016; AI pulls P1 full text |
-| S3 | Structured paper schema, plain-text fallback, section routing, and GROBID TEI parser exist | PDF-to-TEI service/client not implemented; corpus not fully extracted | Add PDF-to-structured backend and run P1 extraction |
+| S3 | Structured paper schema, plain-text fallback, section routing, GROBID TEI parser, and optional GROBID service client exist | P1 corpus has not been batch-converted/extracted; GROBID service availability is external | Run `cultivate ingest --grobid-tei` on accessible P1 PDFs, then extract |
 | S4 | Review queue exists | No adjudicated evidence table yet | Convert human notes into structured adjudication |
 | S5 | Ontology can expose more component classes to search space | Candidate variables not approved | Build only after S3-S4 gates |
 | S6 | MOBO backends and benchmark script exist | Robustness not run on bovine evidence | Run retrieval and optimizer sensitivity after S5 |
@@ -526,7 +530,7 @@ the procedural sections above.
 ### 9.2 Completed Technical Work
 
 - CLI-first Python package exists.
-- Latest validation: `.venv/bin/python -m pytest -q` reports 29 passed with 3
+- Latest validation: `.venv/bin/python -m pytest -q` reports 30 passed with 3
   known warnings.
 - Smoke pipeline passes.
 - Demo optimization loop passes.
@@ -545,6 +549,9 @@ the procedural sections above.
   records routing metadata.
 - GROBID-flavored TEI XML can be parsed into `StructuredPaper` when TEI has
   already been generated externally.
+- `cultivate ingest --grobid-tei` can call a running GROBID service, save
+  `fulltext.xml`, and `cultivate extract` will use that TEI for structured
+  section routing.
 
 ### 9.3 Completed Literature And Planning Work
 
@@ -566,8 +573,8 @@ the procedural sections above.
   available.
 - OpenAI raw-response debugging hit insufficient quota.
 - The current corpus manifest is not yet full-text extracted.
-- Optional GROBID service/client execution is not implemented; current support
-  only parses existing GROBID-flavored TEI XML and plain text.
+- GROBID service availability is external; if no service is running, ingestion
+  keeps the plain-text fallback and records the failure as a warning.
 - Human review queue remains open.
 - Cost, supplier, and food-grade annotations are incomplete.
 - In-silico robustness has not been run on the bovine manifest.
@@ -576,8 +583,8 @@ the procedural sections above.
 
 ### 9.5 Immediate Next Actions
 
-1. `[AI]` Add optional GROBID service/client execution or another structured PDF
-   backend to produce TEI from PDFs.
+1. `[AI]` Run optional GROBID TEI generation on accessible P1 PDFs with
+   `cultivate ingest --grobid-tei`, then inspect coverage.
 2. `[AI]` Pull full text for all P1 core records.
 3. `[AI]` Extract exact formulations, dose ranges, endpoints, and quotes.
 4. `[HUMAN]` Review `H001-H016`.

@@ -1,0 +1,28 @@
+# ---- Core (required) ----
+pydantic>=2.6          # typed extraction schema + validation + JSON schema export
+pyyaml>=6.0            # config + ontology files
+python-dotenv>=1.0     # load API keys from .env
+pandas>=2.1            # tabular export / CSV knowledge base views
+
+# ---- LLM providers (install the one(s) you use) ----
+openai>=1.30           # OpenAI + any OpenAI-compatible endpoint (GPT-5.x, proxies, local)
+# anthropic>=0.40      # optional: Claude Opus / Sonnet
+# google-genai>=0.3    # optional: Gemini
+
+# ---- Ingestion (recommended) ----
+bibtexparser>=1.4      # parse Zotero BibTeX export
+pymupdf>=1.24          # PDF -> text / page images / embedded figures / metadata (import name: fitz)
+
+# ---- Retrieval + optimization (recommended) ----
+rank-bm25>=0.2.2       # lexical retrieval baseline (no external service needed)
+numpy>=1.26            # required by the optimize/ layer (Pareto, GP, acquisition)
+
+# ---- Optimization backends (optional; numpy path works without these) ----
+# scikit-learn>=1.4    # SklearnGP surrogate backend
+# torch>=2.2           # \
+# botorch>=0.11        #  }  production qNEHVI backend (backend="botorch")
+# gpytorch>=1.11       # /
+
+# ---- Optional niceties ----
+# rapidfuzz>=3.0       # fuzzy matching for medium-component canonicalization
+# tiktoken>=0.7        # token counting / context-window budgeting

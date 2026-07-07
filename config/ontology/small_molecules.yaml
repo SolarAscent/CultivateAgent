@@ -1,0 +1,29 @@
+# Small molecules used for signaling / differentiation control / cost reduction.
+- canonical: CHIR99021
+  aliases: ["CHIR-99021", "CHIR", "GSK-3 inhibitor CHIR99021"]
+  category: small_molecule
+  typical_role: Wnt activation / proliferation
+- canonical: Y-27632
+  aliases: ["Y27632", "ROCK inhibitor", "ROCKi"]
+  category: small_molecule
+  typical_role: survival (anoikis protection)
+- canonical: SB431542
+  aliases: ["SB-431542", "TGF-beta receptor inhibitor"]
+  category: small_molecule
+  typical_role: TGF-beta inhibition
+- canonical: Forskolin
+  aliases: ["forskolin"]
+  category: small_molecule
+  typical_role: cAMP elevation
+- canonical: LDN-193189
+  aliases: ["LDN193189", "BMP inhibitor"]
+  category: small_molecule
+  typical_role: BMP inhibition
+- canonical: Ascorbic-acid-2-phosphate
+  aliases: ["ascorbic acid 2-phosphate", "AA2P", "vitamin C phosphate", "L-ascorbic acid 2-phosphate"]
+  category: small_molecule
+  typical_role: ECM/collagen support
+- canonical: Dexamethasone
+  aliases: ["dex"]
+  category: small_molecule
+  typical_role: differentiation modulation

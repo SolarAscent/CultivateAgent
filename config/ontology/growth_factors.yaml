@@ -1,0 +1,39 @@
+# Growth factors / recombinant proteins. These dominate serum-free medium cost
+# (commonly cited as 60-80% of medium cost), so they are first-class actionable
+# variables for the design agent.
+- canonical: FGF2
+  aliases: ["FGF-2", "bFGF", "basic FGF", "fibroblast growth factor 2", "fibroblast growth factor-basic", "FGF-basic"]
+  category: growth_factor
+  typical_role: proliferation
+- canonical: IGF-1
+  aliases: ["IGF1", "insulin-like growth factor 1", "insulin-like growth factor-1", "LR3-IGF-1", "LONG R3 IGF-1"]
+  category: growth_factor
+  typical_role: proliferation/survival
+- canonical: EGF
+  aliases: ["epidermal growth factor"]
+  category: growth_factor
+  typical_role: proliferation
+- canonical: TGF-beta1
+  aliases: ["TGFβ1", "TGF-β1", "transforming growth factor beta 1", "TGFb1"]
+  category: growth_factor
+  typical_role: signaling (often inhibited for expansion)
+- canonical: PDGF-BB
+  aliases: ["PDGF", "platelet-derived growth factor BB"]
+  category: growth_factor
+  typical_role: proliferation
+- canonical: HGF
+  aliases: ["hepatocyte growth factor"]
+  category: growth_factor
+  typical_role: satellite-cell activation
+- canonical: VEGF
+  aliases: ["vascular endothelial growth factor"]
+  category: growth_factor
+  typical_role: vascularization
+- canonical: Insulin
+  aliases: ["recombinant human insulin", "rh-insulin"]
+  category: growth_factor
+  typical_role: survival/metabolism
+- canonical: Transferrin
+  aliases: ["holo-transferrin", "apo-transferrin", "iron carrier"]
+  category: growth_factor
+  typical_role: iron transport

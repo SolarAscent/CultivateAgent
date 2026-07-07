@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cultivate-agent"
+version = "0.1.0"
+description = "Goal-conditioned, medium-centered literature-mining agent for cultivated-meat culture-medium optimization"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "CultivateAgent contributors" }]
+dependencies = [
+    "pydantic>=2.6",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "pandas>=2.1",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.30"]
+anthropic = ["anthropic>=0.40"]
+gemini = ["google-genai>=0.3"]
+ingest = ["bibtexparser>=1.4", "pymupdf>=1.24"]
+retrieve = ["rank-bm25>=0.2.2", "numpy>=1.26"]
+optimize = ["numpy>=1.26"]                       # numpy GP + q-ParEGO (default)
+optimize-sklearn = ["numpy>=1.26", "scikit-learn>=1.4"]
+optimize-botorch = ["numpy>=1.26", "torch>=2.2", "botorch>=0.11", "gpytorch>=1.11"]
+fuzzy = ["rapidfuzz>=3.0"]
+all = [
+    "openai>=1.30", "anthropic>=0.40",
+    "bibtexparser>=1.4", "pymupdf>=1.24",
+    "rank-bm25>=0.2.2", "numpy>=1.26", "rapidfuzz>=3.0", "scikit-learn>=1.4",
+]
+
+[project.scripts]
+cultivate = "cultivate_agent.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["cultivate_agent*"]
+
+[tool.setuptools.package-data]
+cultivate_agent = ["py.typed"]

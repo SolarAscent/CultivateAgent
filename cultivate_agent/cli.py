@@ -1,0 +1,574 @@
+"""CultivateAgent command-line interface.
+
+Subcommands map onto the pipeline stages::
+
+    cultivate init      # create config.yaml / .env from examples
+    cultivate ingest    # BibTeX + PDFs -> per-paper folders
+    cultivate triage    # A/B/C relevance tiering -> KB
+    cultivate extract   # evidence-grounded schema extraction -> KB
+    cultivate export    # screening table / components / evidence / JSONL
+    cultivate stats     # knowledge-base summary
+    cultivate design    # goal-conditioned medium recommendation
+    cultivate schema    # print the field guide or JSON schema
+    cultivate smoke     # offline end-to-end self-test (mock LLM, no API key)
+
+Run ``cultivate <cmd> -h`` for per-command options.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import shutil
+import sys
+from pathlib import Path
+from typing import List, Optional
+
+from .config import Config, load_config
+
+
+# --------------------------------------------------------------------------- #
+# Helpers                                                                     #
+# --------------------------------------------------------------------------- #
+def _kb(cfg: Config, with_normalizer: bool = True):
+    from .kb import KnowledgeBase
+    from .normalize import ComponentNormalizer
+
+    normalizer = ComponentNormalizer(cfg.ontology_dir) if with_normalizer else None
+    return KnowledgeBase(cfg.kb_file, normalizer=normalizer)
+
+
+def _apply_overrides(cfg: Config, args) -> Config:
+    if getattr(args, "provider", None):
+        cfg.llm.provider = args.provider
+    if getattr(args, "model", None):
+        cfg.llm.model = args.model
+    return cfg
+
+
+def _print_json(obj) -> None:
+    print(json.dumps(obj, indent=2, ensure_ascii=False))
+
+
+# --------------------------------------------------------------------------- #
+# Commands                                                                    #
+# --------------------------------------------------------------------------- #
+def cmd_init(args) -> int:
+    root = Path(args.root)
+    pairs = [
+        (root / "config" / "config.example.yaml", root / "config" / "config.yaml"),
+        (root / ".env.example", root / ".env"),
+    ]
+    for src, dst in pairs:
+        if not src.exists():
+            print(f"! missing template {src}")
+            continue
+        if dst.exists():
+            print(f"= exists, skipped {dst}")
+        else:
+            shutil.copy2(src, dst)
+            print(f"+ created {dst}")
+    print("\nNext: edit config/config.yaml and put API keys in .env, then run `cultivate ingest`.")
+    return 0
+
+
+def cmd_ingest(args) -> int:
+    cfg = _apply_overrides(load_config(root=args.root), args)
+    from .ingest import ingest_library, iter_ingested, parse_bibtex
+
+    bibtex = args.bibtex or cfg.ingest.bibtex_path
+    bibtex_path = Path(cfg.root) / bibtex if not Path(bibtex).is_absolute() else Path(bibtex)
+    if not bibtex_path.exists():
+        print(f"BibTeX not found: {bibtex_path}\nExport your Zotero library to BibTeX and set ingest.bibtex_path.")
+        return 1
+
+    refs = parse_bibtex(bibtex_path)
+    if args.limit:
+        refs = refs[: args.limit]
+    print(f"Parsed {len(refs)} references from {bibtex_path.name}")
+
+    def progress(i, total, res):
+        flag = "ok " if res.ok else "no-text"
+        print(f"[{i}/{total}] {flag}  {res.slug}")
+
+    results = ingest_library(
+        refs, cfg.papers_dir,
+        extract_page_images=cfg.ingest.extract_page_images and not args.no_images,
+        extract_figures=cfg.ingest.extract_figures and not args.no_images,
+        extract_tables=cfg.ingest.extract_tables,
+        page_image_dpi=cfg.ingest.page_image_dpi,
+        force=args.force,
+        on_progress=progress,
+    )
+    with_text = sum(1 for r in results if r.status.has_fulltext)
+    print(f"\nIngested {len(results)} papers into {cfg.papers_dir} ({with_text} with full text).")
+
+    kb = _kb(cfg)
+    for _, meta in iter_ingested(cfg.papers_dir):
+        kb.upsert_paper(meta.ref, triage_category=meta.triage_category, ingested_at=meta.status.ingested_at)
+    kb.close()
+    return 0
+
+
+def cmd_triage(args) -> int:
+    cfg = _apply_overrides(load_config(root=args.root), args)
+    from .ingest import iter_ingested
+    from .triage import classify_paper
+
+    client = cfg.make_llm_client(triage=True)
+    kb = _kb(cfg)
+    n = 0
+    for paths, meta in iter_ingested(cfg.papers_dir):
+        if args.limit and n >= args.limit:
+            break
+        text = paths.read_fulltext()
+        res = classify_paper(client, meta.ref, text)
+        kb.upsert_paper(meta.ref, ingested_at=meta.status.ingested_at)
+        kb.upsert_triage(res)
+        meta.triage_category = res.triage_category
+        paths.save_metadata(meta)
+        print(f"[{res.triage_category or '?'}] {meta.ref.paper_id}  — {res.rationale[:80]}")
+        n += 1
+    kb.close()
+    print(f"\nTriaged {n} papers.")
+    return 0
+
+
+def cmd_extract(args) -> int:
+    cfg = _apply_overrides(load_config(root=args.root), args)
+    from .extract import extract_paper
+    from .ingest import iter_ingested
+
+    client = cfg.make_llm_client()
+    kb = _kb(cfg)
+    n = 0
+    for paths, meta in iter_ingested(cfg.papers_dir):
+        if args.tier and (meta.triage_category or "").upper() != args.tier.upper():
+            continue
+        if args.limit and n >= args.limit:
+            break
+        text = paths.read_fulltext()
+        if not text.strip():
+            print(f"- skip (no text): {meta.ref.paper_id}")
+            continue
+        ext = extract_paper(
+            client, meta.ref, text,
+            triage_blocks=cfg.extract.triage_blocks,
+            full_blocks=cfg.extract.full_blocks,
+            full=not args.triage_only,
+            max_context_chars=cfg.extract.max_context_chars,
+            verify_evidence=cfg.extract.require_evidence,
+            triage_category=meta.triage_category,
+        )
+        kb.upsert_paper(meta.ref, triage_category=meta.triage_category)
+        kb.upsert_extraction(ext)
+        g = None
+        for p in (ext.extraction_meta or {}).get("passes", []) or []:
+            if p.get("grounding_rate") is not None:
+                g = p["grounding_rate"]
+                break
+        print(f"+ extracted {meta.ref.paper_id}  (grounding={g})")
+        n += 1
+    kb.close()
+    print(f"\nExtracted {n} papers into {cfg.kb_file}")
+    return 0
+
+
+def cmd_export(args) -> int:
+    cfg = load_config(root=args.root)
+    from .kb import (
+        export_components_csv,
+        export_evidence_csv,
+        export_extractions_jsonl,
+        export_screening_csv,
+    )
+
+    out = Path(args.out or (cfg.data_path / "exports"))
+    out.mkdir(parents=True, exist_ok=True)
+    kb = _kb(cfg)
+    files = [
+        export_screening_csv(kb, out / "screening_table.csv"),
+        export_components_csv(kb, out / "medium_components.csv"),
+        export_evidence_csv(kb, out / "evidence.csv"),
+        export_extractions_jsonl(kb, out / "extractions.jsonl"),
+    ]
+    kb.close()
+    for f in files:
+        print(f"+ {f}")
+    return 0
+
+
+def cmd_stats(args) -> int:
+    cfg = load_config(root=args.root)
+    kb = _kb(cfg)
+    _print_json(kb.stats())
+    print("\nTop growth factors:")
+    for name, count in kb.component_counts(role="growth_factor")[:10]:
+        print(f"  {count:3d}  {name}")
+    kb.close()
+    return 0
+
+
+def _parse_weights(spec: str) -> dict:
+    weights = {}
+    for part in spec.split(","):
+        if "=" in part:
+            k, v = part.split("=", 1)
+            weights[k.strip()] = float(v)
+    return weights
+
+
+def cmd_design(args) -> int:
+    cfg = _apply_overrides(load_config(root=args.root), args)
+    from .design import DesignContext, MediumRecommender, ObjectiveWeights
+    from .retrieve import BM25Retriever, build_corpus_from_kb
+
+    if args.preset:
+        weights = ObjectiveWeights.from_preset(cfg.design.presets, args.preset)
+    elif args.weights:
+        weights = ObjectiveWeights(weights=_parse_weights(args.weights))
+    else:
+        weights = ObjectiveWeights(weights={"proliferation": 0.7, "cost": 0.2, "differentiation_retention": 0.1})
+
+    context = DesignContext(
+        cell_type=args.cell, species=args.species, stage=args.stage,
+        scaffold=args.scaffold, target_product_type=args.product, starting_medium=args.starting_medium,
+    )
+
+    kb = _kb(cfg)
+    retriever = BM25Retriever()
+    retriever.index(build_corpus_from_kb(kb))
+    client = cfg.make_llm_client()
+    rec = MediumRecommender(
+        client, retriever, kb,
+        actionable_variables=cfg.design.actionable_variables or None,
+        top_k=cfg.retrieve.top_k,
+    ).recommend(weights, context, n_candidates=args.n)
+    kb.close()
+
+    if args.json:
+        _print_json(json.loads(rec.model_dump_json()))
+    else:
+        _print_recommendation_md(rec)
+    return 0
+
+
+def _print_recommendation_md(rec) -> None:
+    print(f"# Medium recommendation\n")
+    print(f"**Objectives:** {rec.objectives}")
+    print(f"**Context:** {rec.context}")
+    print(f"**Model:** {rec.model}\n")
+    if not rec.candidates:
+        print("_No candidates produced (empty KB or offline mock). Ingest + extract papers first._\n")
+    for i, c in enumerate(rec.candidates, 1):
+        print(f"## Candidate {i}: {c.name}\n{c.summary}\n")
+        for ch in c.changes:
+            mark = "" if ch.is_actionable else "  ⚠️ non-actionable"
+            cites = f"  [{', '.join(ch.cited_paper_ids)}]" if ch.cited_paper_ids else ""
+            print(f"- **{ch.variable}** → {ch.change}{mark}{cites}\n    {ch.rationale}")
+        if c.cost_vs_performance:
+            print(f"\n_Cost vs performance:_ {c.cost_vs_performance}")
+        if c.risks_and_unknowns:
+            print(f"\n_Risks / unknowns:_ {c.risks_and_unknowns}")
+        if c.doe_suggestion:
+            print(f"\n_DoE:_ {c.doe_suggestion}")
+        print()
+    if rec.evidence:
+        print("## Evidence")
+        for e in rec.evidence:
+            print(f"- [{e.index}] {e.paper_id}: {e.title}")
+    if rec.caveats:
+        print("\n## Caveats")
+        for cav in rec.caveats:
+            print(f"- {cav}")
+
+
+def _optimize_demo(args) -> int:
+    """Offline closed-loop demo on the synthetic benchmark (no KB / API key)."""
+    from .optimize import MultiObjectiveBO, SyntheticMediumObjective, default_medium_space
+
+    space = default_medium_space()
+    obj = SyntheticMediumObjective(noise=0.02)
+    mobo = MultiObjectiveBO(space, obj.objectives, backend=args.backend, seed=0)
+    init = space.sample(5, seed=0)
+    mobo.tell(init, obj.evaluate_many(init))
+
+    print("Closed-loop MOBO on a synthetic proliferation/cost objective")
+    print(f"{'round':>5} {'n_obs':>6} {'hypervolume':>12} {'|Pareto|':>9}")
+    print(f"{0:>5} {mobo.n_observed:>6} {mobo.hypervolume():>12.3f} {len(mobo.pareto()):>9}")
+    for r in range(args.rounds):
+        sugg = mobo.ask(args.batch, preference_weights={"proliferation": 0.6, "cost": 0.4})
+        forms = [s.formulation for s in sugg]
+        mobo.tell(forms, obj.evaluate_many(forms))
+        print(f"{r+1:>5} {mobo.n_observed:>6} {mobo.hypervolume():>12.3f} {len(mobo.pareto()):>9}")
+
+    print("\nFinal Pareto-optimal formulations (proliferation vs cost trade-off):")
+    front = sorted(mobo.pareto(), key=lambda t: t[1]["cost"])
+    for f, v in front[:6]:
+        knobs = {k: f[k] for k in ("basal_medium", "FGF2", "recombinant-albumin", "FBS") if k in f}
+        print(f"  prolif={v['proliferation']:.3f}  cost={v['cost']:.2f}  {knobs}")
+    return 0
+
+
+def cmd_optimize(args) -> int:
+    cfg = _apply_overrides(load_config(root=args.root), args)
+    if args.demo:
+        return _optimize_demo(args)
+
+    from .design import DesignContext, MediumRecommender, ObjectiveWeights
+    from .normalize import ComponentNormalizer
+    from .optimize import (
+        EvidenceGuidedMOBO,
+        MultiObjectiveBO,
+        Objective,
+        default_medium_space,
+        space_from_kb,
+    )
+    from .retrieve import BM25Retriever, build_corpus_from_kb
+
+    kb = _kb(cfg)
+    has_papers = kb.stats()["papers"] > 0
+    space = space_from_kb(kb) if has_papers else default_medium_space()
+    objectives = [
+        Objective("proliferation", "max"), Objective("cost", "min"),
+        Objective("differentiation_retention", "max"), Objective("tissue_readiness", "max"),
+    ]
+
+    if args.preset:
+        weights = ObjectiveWeights.from_preset(cfg.design.presets, args.preset)
+    elif args.weights:
+        weights = ObjectiveWeights(weights=_parse_weights(args.weights))
+    else:
+        weights = ObjectiveWeights(weights={"proliferation": 0.6, "cost": 0.3, "differentiation_retention": 0.1})
+
+    context = DesignContext(cell_type=args.cell, species=args.species, stage=args.stage,
+                            scaffold=args.scaffold, starting_medium=args.starting_medium)
+
+    retriever = BM25Retriever()
+    retriever.index(build_corpus_from_kb(kb))
+    client = cfg.make_llm_client()
+    recommender = MediumRecommender(client, retriever, kb,
+                                    actionable_variables=cfg.design.actionable_variables or None,
+                                    top_k=cfg.retrieve.top_k)
+    mobo = MultiObjectiveBO(space, objectives, backend=args.backend)
+    egm = EvidenceGuidedMOBO(mobo, recommender, normalizer=ComponentNormalizer(cfg.ontology_dir))
+    proposal = egm.propose(weights, context, batch_size=args.batch)
+    kb.close()
+
+    if args.json:
+        _print_json(proposal.to_dict())
+    else:
+        print(f"# Next experiment batch (n_observed={proposal.n_observed}, HV={proposal.hypervolume:.3f})\n")
+        print(f"Objectives: {weights.describe()}   Space: {space.dim}-dim ({len(space.parameters)} params)\n")
+        for i, b in enumerate(proposal.batch, 1):
+            cites = f"  cites={b.cited_paper_ids}" if b.cited_paper_ids else ""
+            print(f"## Experiment {i}  [{b.source}]{cites}")
+            print(f"   {b.formulation}")
+            if b.rationale:
+                print(f"   rationale: {b.rationale}")
+        if proposal.llm_caveats:
+            print("\nCaveats:")
+            for c in proposal.llm_caveats:
+                print(f"- {c}")
+        print("\nThis batch is pre-registerable: commit it before running, then feed results "
+              "back with the ask/tell API to continue the loop.")
+    return 0
+
+
+def cmd_schema(args) -> int:
+    from .schema.extraction import BLOCKS, PaperExtraction, schema_for_prompt
+
+    if args.json:
+        _print_json(PaperExtraction.model_json_schema())
+    else:
+        blocks = list(args.blocks) if args.blocks else list(BLOCKS.keys())
+        print(schema_for_prompt(blocks))
+    return 0
+
+
+def cmd_smoke(args) -> int:
+    """Run the whole pipeline offline with a mock LLM (no API key, no cost)."""
+    from .design import DesignContext, MediumRecommender, ObjectiveWeights
+    from .extract import extract_paper
+    from .kb import KnowledgeBase
+    from .llm import get_client
+    from .normalize import ComponentNormalizer
+    from .retrieve import BM25Retriever, build_corpus_from_kb
+    from .schema.paper import PaperRef
+
+    root = Path(args.root)
+    canned_extract = json.dumps({
+        "blocks": {
+            "E": {
+                "basal_medium": ["DMEM/F12"],
+                "serum_usage": "no",
+                "serum_free_status": "serum-free",
+                "growth_factors": ["bFGF", "recombinant albumin"],
+                "medium_optimization_strategy": "single-component addition of recombinant albumin",
+            },
+            "B": {"main_track": "medium", "target_product_type": "muscle", "is_core_for_modeling": "yes"},
+        },
+        "evidence": {
+            "E.serum_free_status": {"quote": "serum-free B8 medium", "location": "Methods", "confidence": "high"},
+            "E.basal_medium": {"quote": "Basal medium was DMEM/F12", "location": "Methods", "confidence": "high"},
+        },
+    })
+    canned_design = json.dumps({
+        "candidates": [{
+            "name": "Serum-reduced + albumin + FGF2",
+            "summary": "Reduce FBS and compensate with recombinant albumin and FGF2.",
+            "changes": [
+                {"variable": "serum_level", "change": "reduce FBS 10% -> 2%",
+                 "rationale": "cost + lot variability", "cited_paper_ids": ["smoke-001"]},
+                {"variable": "growth_factors", "change": "add FGF2",
+                 "rationale": "proliferation support", "cited_paper_ids": ["smoke-001"]},
+                {"variable": "scaffold", "change": "switch to gelatin",
+                 "rationale": "(should be flagged: not a medium variable)", "cited_paper_ids": []},
+            ],
+            "expected_effects": {"proliferation": "up", "cost": "down"},
+            "cost_vs_performance": "lower cost; watch proliferation & myogenicity",
+            "risks_and_unknowns": "multi-source combination is untested",
+            "doe_suggestion": "2x2 FBS x FGF2 factorial",
+            "cited_paper_ids": ["smoke-001"],
+        }],
+        "caveats": ["illustrative mock output"],
+    })
+    client = get_client("mock", "mock-model", responses=[canned_extract, canned_extract, canned_design])
+
+    ref = PaperRef(
+        paper_id="smoke-001",
+        title="Serum-free B8/Beefy-9 medium for bovine satellite cells",
+        authors=["A. Researcher"], year=2022, journal="Test J",
+    )
+    text = (
+        "We adapted the serum-free B8 medium for bovine satellite cells by adding a single "
+        "component, recombinant albumin, yielding Beefy-9. Basal medium was DMEM/F12. "
+        "bFGF supported proliferation with a doubling time of ~39 h while maintaining myogenicity."
+    )
+
+    normalizer = ComponentNormalizer(root / "config" / "ontology")
+    print(f"Ontology loaded: {normalizer.n_terms} surface terms")
+
+    ext = extract_paper(client, ref, text, full=True, verify_evidence=True)
+    passes = (ext.extraction_meta or {}).get("passes", [])
+    print(f"Extraction OK. serum_free_status={ext.medium_info.serum_free_status!r}  "
+          f"growth_factors={ext.medium_info.growth_factors}  grounding={passes[0].get('grounding_rate') if passes else None}")
+
+    kb = KnowledgeBase(root / "data" / "smoke_kb.sqlite", normalizer=normalizer)
+    kb.upsert_paper(ref)
+    kb.upsert_extraction(ext)
+    print(f"KB stats: {kb.stats()}")
+    print("Normalized components:", [(c, n) for c, n in kb.component_counts()])
+
+    retriever = BM25Retriever()
+    retriever.index(build_corpus_from_kb(kb))
+    hits = retriever.search("serum-free proliferation bovine FGF2", top_k=3)
+    print(f"Retrieval hits: {[(h.doc_id, round(h.score, 2)) for h in hits]}")
+
+    rec = MediumRecommender(client, retriever, kb).recommend(
+        ObjectiveWeights(weights={"proliferation": 0.7, "cost": 0.3}),
+        DesignContext(cell_type="bovine satellite cells", species="bovine"),
+    )
+    print(f"Recommender ran. candidates={len(rec.candidates)}, evidence={len(rec.evidence)}, caveats={len(rec.caveats)}")
+    if rec.candidates:
+        flagged = [c.variable for c in rec.candidates[0].changes if not c.is_actionable]
+        print(f"  whitelist enforcement: non-actionable changes flagged = {flagged}")
+    kb.close()
+    print("\n✅ Smoke test passed: ingest→extract→normalize→KB→retrieve→design all wired up.")
+    return 0
+
+
+# --------------------------------------------------------------------------- #
+# Parser                                                                      #
+# --------------------------------------------------------------------------- #
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="cultivate", description="CultivateAgent CLI")
+    p.add_argument("--root", default=".", help="project root (default: cwd)")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    def add_llm_flags(sp):
+        sp.add_argument("--provider", help="override llm.provider (openai|anthropic|gemini|mock)")
+        sp.add_argument("--model", help="override llm.model")
+
+    sp = sub.add_parser("init", help="create config.yaml / .env from examples")
+    sp.set_defaults(func=cmd_init)
+
+    sp = sub.add_parser("ingest", help="parse BibTeX + build per-paper folders")
+    sp.add_argument("--bibtex", help="path to .bib (default: config)")
+    sp.add_argument("--limit", type=int, help="only first N refs")
+    sp.add_argument("--no-images", action="store_true", help="skip page-image / figure rendering")
+    sp.add_argument("--force", action="store_true", help="re-run even if outputs exist")
+    add_llm_flags(sp)
+    sp.set_defaults(func=cmd_ingest)
+
+    sp = sub.add_parser("triage", help="A/B/C relevance tiering")
+    sp.add_argument("--limit", type=int)
+    add_llm_flags(sp)
+    sp.set_defaults(func=cmd_triage)
+
+    sp = sub.add_parser("extract", help="evidence-grounded schema extraction")
+    sp.add_argument("--tier", help="only papers in this tier (A/B/C)")
+    sp.add_argument("--limit", type=int)
+    sp.add_argument("--triage-only", action="store_true", help="run only fast-triage blocks")
+    add_llm_flags(sp)
+    sp.set_defaults(func=cmd_extract)
+
+    sp = sub.add_parser("export", help="export screening / components / evidence / jsonl")
+    sp.add_argument("--out", help="output directory")
+    sp.set_defaults(func=cmd_export)
+
+    sp = sub.add_parser("stats", help="knowledge-base summary")
+    sp.set_defaults(func=cmd_stats)
+
+    sp = sub.add_parser("design", help="goal-conditioned medium recommendation")
+    sp.add_argument("--preset", help="objective-weight preset from config")
+    sp.add_argument("--weights", help="e.g. 'proliferation=0.7,cost=0.2,differentiation_retention=0.1'")
+    sp.add_argument("--cell", help="cell type context")
+    sp.add_argument("--species", help="species context")
+    sp.add_argument("--stage", help="expansion|differentiation|both")
+    sp.add_argument("--scaffold", help="scaffold context (read-only)")
+    sp.add_argument("--product", help="target product type")
+    sp.add_argument("--starting-medium", help="current formulation to improve on")
+    sp.add_argument("--n", type=int, default=3, help="number of candidates")
+    sp.add_argument("--json", action="store_true", help="emit JSON instead of markdown")
+    add_llm_flags(sp)
+    sp.set_defaults(func=cmd_design)
+
+    sp = sub.add_parser("optimize", help="propose next experiment batch (evidence-grounded MOBO)")
+    sp.add_argument("--demo", action="store_true", help="offline closed-loop demo on a synthetic objective")
+    sp.add_argument("--preset", help="objective-weight preset from config")
+    sp.add_argument("--weights", help="e.g. 'proliferation=0.6,cost=0.3,differentiation_retention=0.1'")
+    sp.add_argument("--cell", help="cell type context")
+    sp.add_argument("--species", help="species context")
+    sp.add_argument("--stage", help="expansion|differentiation|both")
+    sp.add_argument("--scaffold", help="scaffold context (read-only)")
+    sp.add_argument("--starting-medium", help="current formulation to improve on")
+    sp.add_argument("--batch", type=int, default=4, help="experiments per batch")
+    sp.add_argument("--rounds", type=int, default=6, help="rounds (demo mode)")
+    sp.add_argument("--backend", default="gp", help="gp | botorch")
+    sp.add_argument("--json", action="store_true", help="emit JSON")
+    add_llm_flags(sp)
+    sp.set_defaults(func=cmd_optimize)
+
+    sp = sub.add_parser("schema", help="print field guide or JSON schema")
+    sp.add_argument("--blocks", help="block letters, e.g. ABE")
+    sp.add_argument("--json", action="store_true", help="print full JSON schema")
+    sp.set_defaults(func=cmd_schema)
+
+    sp = sub.add_parser("smoke", help="offline end-to-end self-test (mock LLM)")
+    sp.set_defaults(func=cmd_smoke)
+
+    return p
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    args = build_parser().parse_args(argv)
+    try:
+        return args.func(args)
+    except KeyboardInterrupt:
+        print("\ninterrupted", file=sys.stderr)
+        return 130
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

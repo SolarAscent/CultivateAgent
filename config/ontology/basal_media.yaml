@@ -1,0 +1,36 @@
+# Controlled vocabulary of basal media. `canonical` is the stable key stored in
+# the knowledge base; `aliases` are matched case-insensitively (and via fuzzy
+# match when rapidfuzz is installed). Extend freely — this is a seed list.
+- canonical: DMEM
+  aliases: ["Dulbecco's Modified Eagle Medium", "dulbecco modified eagle medium", "D-MEM"]
+  category: basal_medium
+- canonical: DMEM/F12
+  aliases: ["DMEM/F-12", "DMEM:F12", "DMEM F12", "Dulbecco's Modified Eagle Medium/Nutrient Mixture F-12"]
+  category: basal_medium
+- canonical: Ham's F-10
+  aliases: ["Hams F10", "F-10", "F10 nutrient mixture"]
+  category: basal_medium
+- canonical: Ham's F-12
+  aliases: ["Hams F12", "F-12", "F12 nutrient mixture"]
+  category: basal_medium
+- canonical: RPMI-1640
+  aliases: ["RPMI 1640", "RPMI1640", "RPMI"]
+  category: basal_medium
+- canonical: MEM-alpha
+  aliases: ["alpha-MEM", "α-MEM", "MEM alpha", "Minimum Essential Medium Alpha"]
+  category: basal_medium
+- canonical: Neurobasal
+  aliases: ["neurobasal medium"]
+  category: basal_medium
+- canonical: B8
+  aliases: ["B8 medium", "Beefy-9 base", "essential 8 derived", "E8-derived"]
+  category: basal_medium
+  notes: "Serum-free formulation family adapted for bovine satellite cells; Beefy-9 = B8 + recombinant albumin."
+- canonical: Beefy-9
+  aliases: ["Beefy 9", "beefy9"]
+  category: basal_medium
+  notes: "B8 + recombinant albumin; long-term bovine satellite-cell expansion without loss of myogenicity."
+- canonical: chemically-defined-custom
+  aliases: ["custom chemically defined", "in-house defined medium", "proprietary defined base"]
+  category: basal_medium
+  notes: "Use when the paper reports a custom defined base without a standard trade name."

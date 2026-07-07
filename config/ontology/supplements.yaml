@@ -1,0 +1,42 @@
+# Serum substitutes, defined supplements, and food-grade / sustainable
+# alternatives (albumin replacements, ITS, hydrolysates, extracts). These are
+# central to serum-free and cost-reduction routes.
+- canonical: FBS
+  aliases: ["fetal bovine serum", "fetal calf serum", "FCS", "serum"]
+  category: serum
+  notes: "Undefined, lot-variable mixture; serum reduction/removal is a core objective."
+- canonical: recombinant-albumin
+  aliases: ["recombinant albumin", "recombinant human albumin", "rHSA", "rHA", "recombinant serum albumin", "Albumin (recombinant)"]
+  category: albumin_substitute
+  notes: "Single-component addition that adapts B8 into Beefy-9 for bovine satellite cells."
+- canonical: BSA
+  aliases: ["bovine serum albumin"]
+  category: albumin_substitute
+- canonical: ITS
+  aliases: ["insulin-transferrin-selenium", "ITS-G", "ITS premix", "insulin transferrin selenium"]
+  category: defined_supplement
+- canonical: sodium-selenite
+  aliases: ["selenium", "selenite", "Na2SeO3"]
+  category: trace_element
+- canonical: soy-protein-hydrolysate
+  aliases: ["soy hydrolysate", "soy peptone", "hydrolyzed soy protein"]
+  category: hydrolysate
+  notes: "Food-grade proliferation-promoting candidate; strong fit for food-nutrition angle."
+- canonical: pea-protein-hydrolysate
+  aliases: ["pea hydrolysate", "pea peptone"]
+  category: hydrolysate
+- canonical: yeast-extract
+  aliases: ["yeast hydrolysate", "yeast peptone"]
+  category: hydrolysate
+- canonical: rice-protein-hydrolysate
+  aliases: ["rice hydrolysate", "grain-derived hydrolysate"]
+  category: hydrolysate
+- canonical: algae-extract
+  aliases: ["algal extract", "microalgae extract", "Chlorella extract", "spirulina extract"]
+  category: extract
+- canonical: L-glutamine
+  aliases: ["glutamine", "GlutaMAX", "L-alanyl-L-glutamine", "Ala-Gln"]
+  category: amino_acid
+- canonical: glucose
+  aliases: ["D-glucose", "dextrose"]
+  category: carbon_source

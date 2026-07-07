@@ -1,0 +1,28 @@
+# Secrets
+.env
+*.key
+
+# Data (papers, PDFs, extracted artifacts, knowledge base) — keep out of git
+data/**
+!data/.gitkeep
+!data/library.example.bib
+*.sqlite
+*.sqlite3
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Notebooks / OS
+.ipynb_checkpoints/
+.DS_Store

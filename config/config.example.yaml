@@ -1,0 +1,84 @@
+# CultivateAgent configuration. Copy to config/config.yaml and edit.
+# Environment variables (API keys) are read from .env, never put keys here.
+
+project:
+  name: CultivateAgent
+  # Root under which per-paper folders live (see docs/ARCHITECTURE for the layout).
+  data_dir: data
+  # SQLite knowledge base file.
+  kb_path: data/knowledge_base.sqlite
+
+# ---------------------------------------------------------------------------
+# LLM backend. The system is provider-agnostic; switch provider/model here to
+# reproduce the GPT-5.4 vs Claude-Opus vs Gemini comparison mentioned in the
+# project record without touching code.
+# ---------------------------------------------------------------------------
+llm:
+  provider: openai        # openai | anthropic | gemini | mock
+  model: gpt-5.4          # default from the project record; change per experiment
+  temperature: 0.0        # deterministic extraction, as in ReactionSeek
+  max_tokens: 4096
+  request_timeout_s: 120
+  max_retries: 4
+  # Optional: separate, cheaper model for triage vs full extraction.
+  triage_model: null      # null -> use `model`
+
+# ---------------------------------------------------------------------------
+# Ingestion
+# ---------------------------------------------------------------------------
+ingest:
+  bibtex_path: data/library.bib      # Zotero -> Export -> BibTeX
+  extract_page_images: true
+  extract_figures: true
+  extract_tables: true
+  page_image_dpi: 150
+
+# ---------------------------------------------------------------------------
+# Extraction
+# ---------------------------------------------------------------------------
+extract:
+  # Two-pass strategy recommended in the record:
+  #   pass 1 (fast triage): schema blocks A + B + C + J + M
+  #   pass 2 (full):        D + E + F + G + H + I + K + L on core papers only
+  triage_blocks: [A, B, C, J, M]
+  full_blocks: [D, E, F, G, H, I, K, L]
+  # Require a verbatim evidence quote for every non-null extracted value.
+  require_evidence: true
+  # Max characters of full text sent to the model per call (chunked if longer).
+  max_context_chars: 60000
+
+# ---------------------------------------------------------------------------
+# Retrieval (evidence grounding for the design agent)
+# ---------------------------------------------------------------------------
+retrieve:
+  backend: bm25           # bm25 | embedding | hybrid
+  top_k: 12
+  embedding_model: text-embedding-3-small   # used only when backend != bm25
+
+# ---------------------------------------------------------------------------
+# Goal-conditioned design. Objectives are a FIXED set (medium-centered).
+# Users choose weights, not arbitrary new objectives (per the project record).
+# ---------------------------------------------------------------------------
+design:
+  objectives: [proliferation, cost, differentiation_retention, tissue_readiness]
+  # A few named presets; users may also pass custom weights on the CLI.
+  presets:
+    proliferation_first:      { proliferation: 0.7, cost: 0.2, differentiation_retention: 0.1, tissue_readiness: 0.0 }
+    cost_first:               { proliferation: 0.3, cost: 0.5, differentiation_retention: 0.2, tissue_readiness: 0.0 }
+    tissue_readiness_first:   { proliferation: 0.2, cost: 0.1, differentiation_retention: 0.4, tissue_readiness: 0.3 }
+  # Actionable variables the agent is allowed to propose changes to.
+  # Everything else (scaffold, cell type, perfusion...) is read-only context.
+  actionable_variables:
+    - basal_medium
+    - serum_level
+    - growth_factors
+    - small_molecules
+    - amino_acids
+    - glucose
+    - lipids
+    - vitamins
+    - trace_elements
+    - albumin_substitute
+    - ITS
+    - hydrolysates_or_extracts
+    - medium_change_or_feed_strategy

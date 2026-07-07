@@ -145,6 +145,25 @@ def test_retriever_returns_relevant_doc():
     assert hits and hits[0].doc_id == "a"
 
 
+def test_embedding_retriever_handles_semantic_mismatch():
+    from cultivate_agent.retrieve import BM25Retriever, Document, EmbeddingRetriever
+
+    docs = [
+        Document("a", "serum-free FGF2 bovine satellite cell proliferation medium", "A"),
+        Document("b", "alginate scaffold texture printing mechanics", "B"),
+    ]
+    query = "animal-component-free cattle myoblast expansion with mitogens"
+
+    bm25 = BM25Retriever()
+    bm25.index(docs)
+    emb = EmbeddingRetriever(backend="local")
+    emb.index(docs)
+
+    assert bm25.search(query, top_k=2) == []
+    hits = emb.search(query, top_k=2)
+    assert hits and hits[0].doc_id == "a"
+
+
 # --------------------------------------------------------------------------- #
 # Design                                                                      #
 # --------------------------------------------------------------------------- #

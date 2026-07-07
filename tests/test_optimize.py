@@ -164,3 +164,20 @@ def test_evidence_guided_mobo_end_to_end():
     assert proposal.n_observed == 6
     assert len(proposal.evidence) >= 1          # retrieval surfaced the paper
     assert any(c for c in proposal.llm_caveats)  # guardrail caveat present
+
+
+def test_botorch_backend_demo_path_if_available():
+    pytest.importorskip("torch")
+    pytest.importorskip("botorch")
+    pytest.importorskip("gpytorch")
+
+    from cultivate_agent.optimize import MultiObjectiveBO, SyntheticMediumObjective, default_medium_space
+
+    space = default_medium_space()
+    obj = SyntheticMediumObjective(noise=0.0)
+    mobo = MultiObjectiveBO(space, obj.objectives, backend="botorch", seed=0)
+    init = space.sample(6, seed=0)
+    mobo.tell(init, obj.evaluate_many(init))
+    sugg = mobo.ask(2, pool_size=32, preference_weights={"proliferation": 0.6, "cost": 0.4})
+    assert len(sugg) == 2
+    assert all(s.note == "qNEHVI" for s in sugg)

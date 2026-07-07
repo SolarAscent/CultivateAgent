@@ -2,6 +2,9 @@
 .env
 *.key
 
+# User/run-specific config (config.example.yaml is the committed template)
+config/config.yaml
+
 # Data (papers, PDFs, extracted artifacts, knowledge base) — keep out of git
 data/**
 !data/.gitkeep

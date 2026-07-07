@@ -234,3 +234,23 @@ The next live run should compare `--mode operators` vs `--mode blocks` on real p
 SchemaRAG (2607.00008), schema-aware IE (2505.14992), DerSimonian-Laird 1986, Higgins-
 Thompson I² 2002, Röver 2020 heterogeneity priors, Cai et al. 2023 (elsc.202300005, prior
 art), πBO Hvarfner et al. ICLR 2022 (2204.11051). All DOIs/arXiv IDs verified.
+
+## Session 2 (cont.) — first LIVE run on real papers (DeepSeek)
+
+Owner provided a DeepSeek key + two real PDFs (Lee et al. 2024 Nat Commun research;
+Gu et al. 2025 Compr Rev Food Sci review). Wired DeepSeek with **zero code change**
+(OpenAI-compatible; `.env` `OPENAI_BASE_URL`). Full report: `docs/LIVE_RUN_DEEPSEEK.md`.
+
+- **Validated Phase B on real data**: `extract --mode blocks` FAILS (pass-2 JSON truncated
+  at max_tokens → whole D–L block lost — the exact GPT-5.4 failure); `--mode operators`
+  completes all 5 operators. Triage: both → A (correct).
+- **Grounding verification proved essential**: DeepSeek's *values* are often right but its
+  *quotes* are paraphrased → grounding flags them. Also over-extracts loose causal
+  associations (needs human gate).
+- **Two bugs found by scrutinizing live output + fixed**: (748bf5d) verify quotes against
+  original text not round-tripped sections; (f986e2a) section-route the effect operator
+  instead of truncating to the intro → **0 → 16 grounded proliferation effects** (Beefy-9,
+  SFB +76% nuclei, Grifola frondosa extract, copper 5µM, ...).
+- **Honest limits**: 2 papers → all components k=1 → Beta-Binomial p=0.67 (no fake
+  confidence); ontology lacks the real components (Beefy-9/SFB/etc.) so no cross-paper
+  pooling yet. 47 tests still pass.

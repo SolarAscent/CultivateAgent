@@ -14,6 +14,9 @@ project:
 # project record without touching code.
 # ---------------------------------------------------------------------------
 llm:
+  # DeepSeek / other OpenAI-compatible providers need NO code change: set
+  # provider: openai, model: deepseek-chat, and OPENAI_BASE_URL=https://api.deepseek.com
+  # in .env. (Verified live — see docs/LIVE_RUN_DEEPSEEK.md.)
   provider: openai        # openai | anthropic | gemini | mock
   model: gpt-5.4          # default from the project record; change per experiment
   temperature: 0.0        # deterministic extraction, as in ReactionSeek

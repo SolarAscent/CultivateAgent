@@ -114,6 +114,8 @@ cultivate triage
 
 # 3. Extract the A–M schema (grounded). Start with core papers:
 cultivate extract --tier A
+# Real LLMs are more reliable with the decomposed operator extractor:
+cultivate extract --tier A --mode operators
 
 # 4. Look at what you have:
 cultivate stats

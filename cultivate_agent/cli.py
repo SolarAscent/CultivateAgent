@@ -143,11 +143,13 @@ def cmd_triage(args) -> int:
 
 def cmd_extract(args) -> int:
     cfg = _apply_overrides(load_config(root=args.root), args)
-    from .extract import extract_paper
+    from .extract import OperatorExtractor, extract_paper
     from .ingest import iter_ingested
     from .schema import structured_paper_from_grobid_tei_path
 
     client = cfg.make_llm_client()
+    mode = getattr(args, "mode", "blocks")
+    operator_extractor = OperatorExtractor(client, verify_evidence=cfg.extract.require_evidence) if mode == "operators" else None
     kb = _kb(cfg)
     n = 0
     for paths, meta in iter_ingested(cfg.papers_dir):
@@ -171,24 +173,29 @@ def cmd_extract(args) -> int:
         if not text.strip():
             print(f"- skip (no text): {meta.ref.paper_id}")
             continue
-        ext = extract_paper(
-            client, meta.ref, text,
-            triage_blocks=cfg.extract.triage_blocks,
-            full_blocks=cfg.extract.full_blocks,
-            full=not args.triage_only,
-            max_context_chars=cfg.extract.max_context_chars,
-            verify_evidence=cfg.extract.require_evidence,
-            triage_category=meta.triage_category,
-            structured_paper=structured_paper,
-        )
+        if operator_extractor is not None:
+            ext = operator_extractor.extract(meta.ref, structured_paper or text)
+            ext.triage_category = meta.triage_category
+        else:
+            ext = extract_paper(
+                client, meta.ref, text,
+                triage_blocks=cfg.extract.triage_blocks,
+                full_blocks=cfg.extract.full_blocks,
+                full=not args.triage_only,
+                max_context_chars=cfg.extract.max_context_chars,
+                verify_evidence=cfg.extract.require_evidence,
+                triage_category=meta.triage_category,
+                structured_paper=structured_paper,
+            )
         kb.upsert_paper(meta.ref, triage_category=meta.triage_category)
         kb.upsert_extraction(ext)
-        g = None
-        for p in (ext.extraction_meta or {}).get("passes", []) or []:
-            if p.get("grounding_rate") is not None:
-                g = p["grounding_rate"]
-                break
-        print(f"+ extracted {meta.ref.paper_id}  (grounding={g})")
+        g = (ext.extraction_meta or {}).get("grounding_rate")
+        if g is None:
+            for p in (ext.extraction_meta or {}).get("passes", []) or []:
+                if p.get("grounding_rate") is not None:
+                    g = p["grounding_rate"]
+                    break
+        print(f"+ extracted {meta.ref.paper_id}  (mode={mode}, grounding={g})")
         n += 1
     kb.close()
     print(f"\nExtracted {n} papers into {cfg.kb_file}")
@@ -536,6 +543,9 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--tier", help="only papers in this tier (A/B/C)")
     sp.add_argument("--limit", type=int)
     sp.add_argument("--triage-only", action="store_true", help="run only fast-triage blocks")
+    sp.add_argument("--mode", choices=["blocks", "operators"], default="blocks",
+                    help="extraction strategy: 'blocks' (2 large passes) or 'operators' "
+                         "(several small, section-routed operators; more reliable with real LLMs)")
     add_llm_flags(sp)
     sp.set_defaults(func=cmd_extract)
 

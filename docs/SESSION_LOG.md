@@ -127,3 +127,47 @@ Branch: `session/eval-retrieval-mobo-hardening`
 1. Run `cultivate ingest --grobid-tei` against accessible P1 PDFs with a running GROBID service, then inspect how many `fulltext.xml` files were produced.
 2. Build `data/literature/bovine_evidence_table.tsv` from P1 full text and TEI-routed extraction.
 3. Extend the one-shot verifier into an optional repair loop that asks the proposer to revise unsupported changes before final output.
+
+---
+
+# Session 2 (Claude) — operator extraction + evidence synthesis
+
+Date: 2026-07-08
+Branch: `session/operator-extraction-evidence-synthesis` (from `main` after merging Session 1)
+
+## Review of Session 1 (Codex)
+
+- Verified 8 sampled corpus DOIs against Crossref: all real; no fabricated citations.
+- Confirmed the honest reporting (live extraction F1~0.25, `nonmissing_fraction=0.0`).
+- Merged `session/eval-retrieval-mobo-hardening` into `main` (30 tests green).
+- Recorded the key prior art Codex found — Cai et al. 2023, "Multi-objective Bayesian
+  algorithm automatically discovers low-cost high-growth serum-free media" (Eng. Life
+  Sci., DOI 10.1002/elsc.202300005) — as `M024` in the method registry; must be cited
+  and differentiated.
+
+## Changes Made
+
+- **Phase B — operator-decomposition extraction** (`extract/operators.py`):
+  - 5 operators (`context`, `medium`, `dose`, `endpoints`, `findings`) owning DISJOINT
+    field sets, each with a tiny focused prompt and section routing.
+  - `OperatorExtractor.extract(ref, text|StructuredPaper)` merges operator outputs into a
+    `PaperExtraction`, verifies each evidence quote, and records per-operator status
+    (`ok|empty|call_error|parse_error`), coverage, and grounding — so live failures are
+    diagnosable instead of one opaque score.
+  - CLI: `cultivate extract --mode operators` (default remains `blocks`).
+  - Grounded in schema-reduction / modular-document IE work (SchemaRAG arXiv:2607.00008,
+    schema-aware IE arXiv:2505.14992, DocETL) recorded as `M019`/`M020`.
+  - Tests: 4 added (disjoint fields, merge+grounding, failure-diagnosability, unverified
+    quote flagging).
+
+## Results
+
+- `pytest -q`: 34 passed (was 30).
+- Offline operator extraction over a synthetic bovine serum-free excerpt populated
+  blocks B/D/E/I/J/K/M and recorded per-operator coverage/grounding.
+
+## Rationale
+
+Session 1 correctly diagnosed that the monolithic all-A-M prompt is the cause of the
+live-extraction failure but did not yet implement the fix. Phase B implements it.
+The next live run should compare `--mode operators` vs `--mode blocks` on real papers.

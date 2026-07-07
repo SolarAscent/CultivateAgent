@@ -38,6 +38,9 @@ Branch: `session/eval-retrieval-mobo-hardening`
 - Fixed ontology-to-search-space coverage:
   - `hydrolysate`, `extract`, `defined_supplement`, `albumin_substitute`, amino acid, carbon source, and trace element categories can enter `space_from_kb`.
   - KB component role queries now match either `role` or `category`, preserving compatibility with older flattened rows.
+- Hardened extractor parsing for live model JSON variants:
+  - Accepts `blocks` keys such as `medium_info` / `fast_triage`, not only `E` / `B`.
+  - Normalizes evidence keys such as `medium_info.serum_free_status` to `E.serum_free_status`.
 
 ## Results
 
@@ -50,6 +53,7 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - Both providers completed, but scored A-M fields were nearly all missing beyond bibliographic prefill.
   - Agreement kappa is therefore not meaningful despite being 1.0 on selected categorical fields; `MODEL_AGREEMENT.md` now reports `nonmissing_fraction=0.0` to expose this.
   - `openai:gpt-5.4` fixture F1 was 0.254 with no verified evidence quotes.
+  - Re-running after parser hardening did not improve live coverage; an attempted raw OpenAI response inspection then failed with insufficient quota.
 - MOBO synthetic comparison, 3 seeds:
   - q-ParEGO mean normalized final HV: 0.924.
   - qNEHVI mean normalized final HV: 0.963.
@@ -58,10 +62,11 @@ Branch: `session/eval-retrieval-mobo-hardening`
 
 ## Final Verification
 
-- Latest `pytest -q`: 25 passed, 2 warnings.
+- Latest `.venv/bin/python -m pytest -q`: 26 passed, 3 warnings.
 - Warnings:
   - BoTorch recommends replacing legacy `qNoisyExpectedHypervolumeImprovement` with `qLogNoisyExpectedHypervolumeImprovement`.
   - PyTorch sparse invariant warning from `linear_operator`.
+  - qLogNEHVI fell back to pure Python because `ninja` is not installed.
 - `smoke`: still passed after changes.
 - `optimize --demo --rounds 6`: still passed after changes.
 - `scripts/evaluate_medium_corpus.py`: default offline mode passed.

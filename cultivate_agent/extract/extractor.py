@@ -20,7 +20,7 @@ from typing import Dict, List, Optional, Tuple
 
 from ..llm.base import LLMClient, LLMError
 from ..schema.evidence import Confidence, Evidence
-from ..schema.extraction import PaperExtraction, block_model
+from ..schema.extraction import PaperExtraction, _BLOCK_ATTR, block_model
 from ..schema.paper import PaperRef
 from .prompts import SYSTEM_EXTRACTION, build_extraction_prompt
 
@@ -71,16 +71,42 @@ def _select_context(text: str, max_chars: int) -> str:
     return text[:head_budget] + "\n\n[... middle omitted for length ...]\n\n" + text[-tail:]
 
 
+_ATTR_TO_BLOCK = {attr: letter for letter, attr in _BLOCK_ATTR.items()}
+
+
+def _block_key(key: object) -> Optional[str]:
+    k = str(key).strip()
+    if len(k) == 1 and k.upper() in _BLOCK_ATTR:
+        return k.upper()
+    return _ATTR_TO_BLOCK.get(k)
+
+
+def _normalize_evidence_key(key: object) -> str:
+    text = str(key).strip()
+    if "." not in text:
+        return text
+    prefix, field = text.split(".", 1)
+    letter = _block_key(prefix)
+    return f"{letter}.{field}" if letter else text
+
+
 def _coerce_blocks_payload(payload: dict) -> Tuple[dict, dict]:
     """Return ``(blocks, evidence)`` from a possibly-messy JSON payload."""
     if not isinstance(payload, dict):
         return {}, {}
     blocks = payload.get("blocks")
     evidence = payload.get("evidence", {})
-    if blocks is None:
-        # Model returned block letters at the top level.
-        blocks = {k: v for k, v in payload.items() if k.upper() in list("ABCDEFGHIJKLM")}
-    return blocks or {}, evidence or {}
+    source = blocks if isinstance(blocks, dict) else payload
+    coerced_blocks = {}
+    for k, v in (source or {}).items():
+        letter = _block_key(k)
+        if letter and isinstance(v, dict):
+            coerced_blocks[letter] = v
+    coerced_evidence = {
+        _normalize_evidence_key(k): v
+        for k, v in (evidence or {}).items()
+    } if isinstance(evidence, dict) else {}
+    return coerced_blocks, coerced_evidence
 
 
 def extract_blocks(

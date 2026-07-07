@@ -45,6 +45,7 @@ Evaluated provider profile: `openai:gpt-5.4`
 ## Error Analysis
 
 - Live provider run note: `openai:gpt-5.4` and `anthropic:claude-opus-4-6` completed on the four fixture texts, but the scored A-M fields were almost entirely missing beyond bibliographic prefill. The resulting F1 is low and grounding rate is `None`, so this run diagnoses prompt/provider non-compliance or insufficient fixture context rather than successful production extraction.
+- Parser hardening note: the extractor now accepts provider JSON that uses schema attribute names such as `medium_info` instead of A-M block letters such as `E`. Re-running live OpenAI/Anthropic after that change did not improve coverage, so the current live failure is likely sparse/null provider output or prompt non-compliance rather than only a parser-key mismatch.
 - The A-M schema is broad enough that sparse abstracts under-score fields that require methods/tables; this fixture should be treated as a lower-bound protocol check.
 - Medium fields are the most stable when the source explicitly names serum-free status or a component. Growth-factor and extract names still need synonym canonicalization before scoring.
 - Quantitative fields are brittle: `partial` versus `yes` often depends on whether the paper has machine-readable tables, not only whether the abstract mentions numbers.

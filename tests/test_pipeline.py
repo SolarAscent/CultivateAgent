@@ -113,6 +113,30 @@ def test_extraction_flags_unverified_quote():
     assert "UNVERIFIED" in (ev.location or "")
 
 
+def test_extraction_accepts_schema_attribute_block_names():
+    from cultivate_agent.extract import extract_paper
+    from cultivate_agent.llm import get_client
+    from cultivate_agent.schema.paper import PaperRef
+
+    payload = json.dumps({
+        "blocks": {
+            "medium_info": {"serum_free_status": "serum-free"},
+            "fast_triage": {"main_track": "medium"},
+        },
+        "evidence": {
+            "medium_info.serum_free_status": {"quote": "serum-free expansion", "confidence": "high"},
+            "fast_triage.main_track": {"quote": "culture medium optimization", "confidence": "high"},
+        },
+    })
+    client = get_client("mock", "m", responses=[payload])
+    text = "The paper reports culture medium optimization for serum-free expansion."
+    ext = extract_paper(client, PaperRef(paper_id="p3"), text, triage_blocks=["B", "E"], full=False)
+    assert ext.fast_triage.main_track == "medium"
+    assert ext.medium_info.serum_free_status == "serum-free"
+    assert "E.serum_free_status" in ext.evidence
+    assert "B.main_track" in ext.evidence
+
+
 # --------------------------------------------------------------------------- #
 # Knowledge base + retrieval                                                  #
 # --------------------------------------------------------------------------- #

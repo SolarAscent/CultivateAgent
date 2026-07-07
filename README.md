@@ -27,6 +27,9 @@ batch of next experiments** on the cost/performance Pareto front using
 multi-objective Bayesian optimization warm-started by the literature and an LLM
 proposer. See [`docs/OPTIMIZATION.md`](docs/OPTIMIZATION.md).
 
+For the first wet-lab-facing target and entry criteria, see
+[`docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md`](docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md).
+
 ---
 
 ## Why this design

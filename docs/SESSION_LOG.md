@@ -41,6 +41,11 @@ Branch: `session/eval-retrieval-mobo-hardening`
 - Hardened extractor parsing for live model JSON variants:
   - Accepts `blocks` keys such as `medium_info` / `fast_triage`, not only `E` / `B`.
   - Normalizes evidence keys such as `medium_info.serum_free_status` to `E.serum_free_status`.
+- Added `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md` after reviewing recent cultivated-meat medium/cell-biology reviews and key primary papers:
+  - First wet-lab-facing target is bovine satellite cells / bovine myoblasts in the expansion phase.
+  - First scope is serum-free, preferably animal-component-free, cost-aware medium optimization with myogenic-identity preservation.
+  - Chicken continuous manufacturing, differentiation media, scaffolds, bioreactors, perfusion, and genetic engineering are recorded as later-stage or out-of-scope for the first wet-lab round.
+  - Pre-wet-lab entry gates now cover corpus size, extraction reliability, biological plausibility, cost/supply sanity, in-silico robustness, and pre-registration readiness.
 
 ## Results
 

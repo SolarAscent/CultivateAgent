@@ -50,3 +50,50 @@ class SyntheticMediumObjective:
 
     def evaluate_many(self, formulations: List[Dict[str, object]]) -> List[Dict[str, float]]:
         return [self.evaluate(f) for f in formulations]
+
+
+class SparseProliferationBenchmark:
+    """A *sparse* benchmark where only a few components matter among many decoys.
+
+    This is the regime where a literature prior earns its keep: knowing *which*
+    components matter (a directional prior) accelerates the search, while random
+    exploration must first discover the relevant knobs. Proliferation depends only
+    on ``n_true`` beneficial components (saturating); cost grows with total dose,
+    so decoys are pure cost. Used by ``scripts/benchmark_evidence_prior.py``.
+    """
+
+    def __init__(self, *, n_true: int = 3, n_decoy: int = 9, seed: int = 0):
+        from .space import Parameter
+
+        self.components = [f"C{i}" for i in range(n_true + n_decoy)]
+        rng = np.random.default_rng(seed)
+        self.beneficial = sorted(rng.choice(self.components, size=n_true, replace=False).tolist())
+        self.decoys = [c for c in self.components if c not in self.beneficial]
+        params = [Parameter("basal_medium", "categorical", choices=["DMEM", "DMEM/F12"])]
+        params += [Parameter(c, "continuous", 0.0, 100.0, unit="ng/mL", component_class="growth_factor")
+                   for c in self.components]
+        self.space = MediumDesignSpace(params)
+
+    @property
+    def objectives(self) -> List[Objective]:
+        return [Objective("proliferation", "max"), Objective("cost", "min")]
+
+    def evaluate(self, f: Dict[str, object]) -> Dict[str, float]:
+        prolif = sum(_sat(float(f.get(c, 0) or 0), 30.0) for c in self.beneficial) / len(self.beneficial)
+        cost = 0.02 * sum(float(f.get(c, 0) or 0) for c in self.components) + 1.0
+        return {"proliferation": round(prolif, 4), "cost": round(cost, 4)}
+
+    def evaluate_many(self, formulations: List[Dict[str, object]]) -> List[Dict[str, float]]:
+        return [self.evaluate(f) for f in formulations]
+
+    def make_prior(self, kind: str, *, beta: float = 6.0):
+        """kind: 'correct' (points to true), 'wrong' (points to decoys), or 'none'."""
+        if kind == "none":
+            return None
+        from ..evidence.meta_analysis import EvidenceSummary
+        from .priors import EvidencePrior
+
+        targets = self.beneficial if kind == "correct" else self.decoys[: len(self.beneficial)]
+        summaries = [EvidenceSummary(c, "proliferation", "*", k=3, method="random_effects_DL",
+                                     p_beneficial=0.97, i_squared=0.1) for c in targets]
+        return EvidencePrior.from_summaries(self.space, summaries, beta=beta)

@@ -69,3 +69,39 @@ def test_prior_steers_optimizer_toward_evidence():
 
     # A strong beneficial prior on FGF2 should raise the FGF2 levels the batch explores.
     assert mean_fgf(True) > mean_fgf(False)
+
+
+def test_correct_prior_beats_wrong_prior_on_sparse_benchmark():
+    """On a sparse problem a correct prior should outperform a wrong one, and be
+    no worse than no prior at a modest experiment budget (sample efficiency)."""
+    from cultivate_agent.optimize import (
+        MultiObjectiveBO, SparseProliferationBenchmark, hypervolume,
+    )
+
+    bench = SparseProliferationBenchmark(n_true=3, n_decoy=9, seed=0)
+    seeds, rounds, batch, init = 5, 3, 4, 5
+
+    def run(kind, seed):
+        m = MultiObjectiveBO(bench.space, bench.objectives, seed=seed)
+        f = bench.space.sample(init, seed=seed)
+        m.tell(f, bench.evaluate_many(f))
+        prior = bench.make_prior(kind)
+        for _ in range(rounds):
+            b = m.ask(batch, pool_size=800,
+                      preference_weights={"proliferation": 0.7, "cost": 0.3}, evidence_prior=prior)
+            forms = [s.formulation for s in b]
+            m.tell(forms, bench.evaluate_many(forms))
+        return np.array(m._Y)
+
+    runs = {k: [run(k, s) for s in range(seeds)] for k in ("none", "correct", "wrong")}
+    allY = np.vstack([runs[k][s] for k in runs for s in range(seeds)])
+    lo, hi = allY.min(0), allY.max(0)
+    span = np.where(hi > lo, hi - lo, 1)
+
+    def nhv(Y):
+        Yn = (Y - lo) / span
+        return hypervolume(Yn * np.array([-1, 1]) + np.array([1, 0]), np.array([1.05, 1.05]))
+
+    mean = {k: float(np.mean([nhv(runs[k][s]) for s in range(seeds)])) for k in runs}
+    assert mean["correct"] > mean["wrong"]              # knowing the right knobs beats the wrong ones
+    assert mean["correct"] >= mean["none"] - 0.02       # correct prior is not worse than no prior

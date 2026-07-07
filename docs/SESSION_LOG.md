@@ -208,3 +208,29 @@ The next live run should compare `--mode operators` vs `--mode blocks` on real p
    outcome, synthesize summaries, and export an evidence table with quotes + I².
 3. Wire `EvidencePrior.from_summaries(kb-derived)` into `cultivate optimize` so the
    proposed batch is literature-prior-guided end to end.
+
+## Session 2 (cont.) — Phases F & G
+
+- **Phase F — evidence pipeline integration**: `kb` `evidence_summaries` table +
+  upsert/read; `cultivate evidence --outcome <o>` (extract_effects → synthesize →
+  store + export); `EvidencePrior.from_kb`; `cultivate optimize --evidence-prior`.
+  Pipeline is now ingest→triage→extract→normalize→KB→**evidence**→retrieve→design→optimize.
+- **Phase G — honest benchmark of the evidence prior** (`scripts/benchmark_evidence_prior.py`,
+  `docs/EVIDENCE_PRIOR_BENCHMARK.md`):
+  - Found and FIXED a real design flaw: the linear "beneficial → prefer maximum dose"
+    prior **overshot** interior optima (saturating benefit + linear cost) and hurt even
+    when it named the right components. Replaced with a saturating inclusion reward
+    (Michaelis-Menten-like), which is also more biologically faithful.
+  - Honest result: on easy/saturating objectives the prior is ~neutral; on **sparse**
+    problems (few of many components matter) a **correct prior accelerates early search
+    (+0.03–0.05 normalized-HV at 13–17 experiments)**, a **wrong prior costs experiments**
+    (recovering via the πBO decay), and the advantage fades late (BO catches up). This
+    validates using directional evidence for inclusion/direction decisions, not dose
+    tuning — and justifies the flat prior + "test directly" flag on high-I² components.
+  - Tests: 46 pass (was 30 at session start).
+
+## Session 2 — Verified literature (Crossref/arXiv), recorded in method registry M019–M025
+
+SchemaRAG (2607.00008), schema-aware IE (2505.14992), DerSimonian-Laird 1986, Higgins-
+Thompson I² 2002, Röver 2020 heterogeneity priors, Cai et al. 2023 (elsc.202300005, prior
+art), πBO Hvarfner et al. ICLR 2022 (2204.11051). All DOIs/arXiv IDs verified.

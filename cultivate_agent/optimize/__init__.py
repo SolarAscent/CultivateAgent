@@ -1,6 +1,6 @@
 """Multi-objective Bayesian optimization for medium design."""
 
-from .benchmark import SyntheticMediumObjective
+from .benchmark import SparseProliferationBenchmark, SyntheticMediumObjective
 from .llm_mobo import BatchItem, EvidenceGuidedMOBO, OptimizationProposal
 from .mobo import MultiObjectiveBO, Objective, Suggestion
 from .pareto import hypervolume, non_dominated_mask, pareto_front

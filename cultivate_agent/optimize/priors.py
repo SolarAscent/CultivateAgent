@@ -49,17 +49,32 @@ class EvidencePrior:
             if p.kind in ("continuous", "binary"):
                 self._offset[p.name] = off
 
+    # Saturation constant for the inclusion reward (in encoded [0,1] units). Small
+    # => the reward saturates quickly, so the prior says "include this component"
+    # without pushing the dose to the maximum.
+    _SAT_K = 0.15
+
     def log_prior(self, X: np.ndarray) -> np.ndarray:
-        """Unnormalized log π(x) for each encoded row (higher = more preferred)."""
+        """Unnormalized log π(x) for each encoded row (higher = more preferred).
+
+        Directional evidence is about INCLUSION / direction-of-change, not optimal
+        dose. Biological benefits saturate, so we reward a beneficial component
+        being *present* with diminishing returns (a Michaelis-Menten-like curve)
+        rather than rewarding the maximum dose — which would overshoot interior
+        optima. Detrimental components are symmetrically pushed toward exclusion.
+        """
         X = np.atleast_2d(np.asarray(X, float))
         lp = np.zeros(len(X))
         for b in self.beliefs:
             off = self._offset.get(b.parameter)
             if off is None:
                 continue
-            # x_off in [0,1]; centered to [-1,1]. Beneficial -> reward high values.
-            centered = 2.0 * X[:, off] - 1.0
-            lp += b.strength * b.direction * centered
+            x = np.clip(X[:, off], 0.0, 1.0)
+            if b.direction > 0:                       # beneficial -> reward inclusion (saturating)
+                reward = 2.0 * (x / (x + self._SAT_K)) - 1.0
+            else:                                     # detrimental -> reward exclusion (saturating)
+                reward = 2.0 * ((1.0 - x) / ((1.0 - x) + self._SAT_K)) - 1.0
+            lp += b.strength * reward
         return lp
 
     def decayed_weight(self, n_observed: int) -> float:

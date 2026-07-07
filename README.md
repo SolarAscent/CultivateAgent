@@ -116,6 +116,8 @@ cultivate optimize --weights "proliferation=0.6,cost=0.4" \
   --cell "bovine satellite cells" --species bovine --batch 4
 # ...or watch the closed loop converge offline (no KB / API key):
 cultivate optimize --demo --rounds 6
+# optional BoTorch log-qNEHVI backend:
+cultivate optimize --demo --rounds 6 --backend botorch-log
 ```
 
 ### Reproduce the model comparison
@@ -185,10 +187,10 @@ Run the tests: `pip install pytest && pytest -q` (14 tests, all offline).
 
 ## Status & scope
 
-Runnable and tested offline (35 tests): ingestion, the schema, grounded
+Runnable and tested offline: ingestion, the schema, grounded
 extraction, normalization, the knowledge base, retrieval, the goal-conditioned
 recommender, **and the evidence-grounded multi-objective Bayesian optimizer**
-(GP surrogate + q-ParEGO, with an optional BoTorch/qNEHVI backend). The
+(GP surrogate + q-ParEGO, with optional BoTorch qNEHVI/qLogNEHVI backends). The
 optimizer is the "closed-loop, experimentally-testable" route the record's
 abstract promised, made pre-registerable.
 

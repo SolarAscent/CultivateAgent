@@ -9,6 +9,8 @@ Backends:
 * ``"gp"``      — numpy GP + q-ParEGO (default, always available),
 * ``"botorch"`` — BoTorch qNEHVI (optional; the production-grade path from
   Daulton et al., NeurIPS 2020/2021).
+* ``"botorch-log"`` — BoTorch qLogNEHVI, a numerically improved qNEHVI variant
+  when available in the installed BoTorch version.
 
 Objectives carry a direction; maximization objectives are negated internally so
 everything downstream is minimization (matching ``pareto.py``).
@@ -106,7 +108,7 @@ class MultiObjectiveBO:
             return [Suggestion(formulation=f, source="space-filling",
                                note="cold start: space-filling design") for f in samples]
 
-        if self.backend == "botorch":
+        if self.backend in {"botorch", "botorch-log"}:
             return self._ask_botorch(batch_size, pool_size, preference_weights, extra_candidates)
 
         return self._ask_gp(batch_size, pool_size, preference_weights, extra_candidates)
@@ -150,17 +152,20 @@ class MultiObjectiveBO:
             import torch  # type: ignore
             from botorch.models import SingleTaskGP  # type: ignore
             from botorch.fit import fit_gpytorch_mll  # type: ignore
-            from botorch.utils.multi_objective.box_decompositions.non_dominated import (  # type: ignore
-                FastNondominatedPartitioning,
-            )
-            from botorch.acquisition.multi_objective.monte_carlo import (  # type: ignore
-                qNoisyExpectedHypervolumeImprovement,
-            )
+            if self.backend == "botorch-log":
+                from botorch.acquisition.multi_objective import (  # type: ignore
+                    qLogNoisyExpectedHypervolumeImprovement as Acquisition,
+                )
+            else:
+                from botorch.acquisition.multi_objective.monte_carlo import (  # type: ignore
+                    qNoisyExpectedHypervolumeImprovement as Acquisition,
+                )
             from gpytorch.mlls import ExactMarginalLogLikelihood  # type: ignore
         except ImportError as e:
             raise ImportError(
-                "botorch backend requires torch + botorch + gpytorch. "
-                "Install them, or use backend='gp'."
+                f"{self.backend!r} backend requires torch + botorch + gpytorch"
+                " with the requested acquisition available. Install/update them,"
+                " or use backend='gp'."
             ) from e
 
         X = torch.tensor(np.array(self._X), dtype=torch.double)
@@ -173,17 +178,20 @@ class MultiObjectiveBO:
         fit_gpytorch_mll(mll)
 
         ref = torch.tensor(-pareto.infer_reference_point(Ymin), dtype=torch.double)
-        acqf = qNoisyExpectedHypervolumeImprovement(
+        acqf = Acquisition(
             model=model, ref_point=ref.tolist(), X_baseline=X,
             prune_baseline=True,
         )
-        pool = torch.tensor(self._candidate_pool(pool_size, extra)[0], dtype=torch.double).unsqueeze(1)
+        X_pool, sources = self._candidate_pool(pool_size, extra)
+        pool = torch.tensor(X_pool, dtype=torch.double).unsqueeze(1)
         with torch.no_grad():
             vals = acqf(pool)
         top = torch.topk(vals, batch_size).indices.tolist()
         pool_np = pool.squeeze(1).numpy()
-        return [Suggestion(formulation=self.space.decode(pool_np[i]), source="bo",
-                           acq_score=float(vals[i]), note="qNEHVI") for i in top]
+        note = "qLogNEHVI" if self.backend == "botorch-log" else "qNEHVI"
+        return [Suggestion(formulation=self.space.decode(pool_np[i]),
+                           source="llm" if sources[i] == "llm" else "bo",
+                           acq_score=float(vals[i]), note=note) for i in top]
 
     # ------------------------------------------------------------------ #
     # Reporting                                                          #

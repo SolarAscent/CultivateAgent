@@ -548,7 +548,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--starting-medium", help="current formulation to improve on")
     sp.add_argument("--batch", type=int, default=4, help="experiments per batch")
     sp.add_argument("--rounds", type=int, default=6, help="rounds (demo mode)")
-    sp.add_argument("--backend", default="gp", help="gp | botorch")
+    sp.add_argument("--backend", default="gp", help="gp | botorch | botorch-log")
     sp.add_argument("--verify-citations", action="store_true", help="run a second LLM verifier over LLM-seeded candidate citations")
     sp.add_argument("--json", action="store_true", help="emit JSON")
     add_llm_flags(sp)

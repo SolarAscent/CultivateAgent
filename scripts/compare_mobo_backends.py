@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare q-ParEGO and BoTorch qNEHVI on the synthetic medium benchmark."""
+"""Compare q-ParEGO, BoTorch qNEHVI, and qLogNEHVI on the synthetic benchmark."""
 
 from __future__ import annotations
 
@@ -55,12 +55,18 @@ def main() -> int:
         seed_rows = [
             run_backend("gp", seed=seed, rounds=args.rounds, batch=args.batch, pool_size=args.pool_size),
             run_backend("botorch", seed=seed, rounds=args.rounds, batch=args.batch, pool_size=args.pool_size),
+            run_backend("botorch-log", seed=seed, rounds=args.rounds, batch=args.batch, pool_size=args.pool_size),
         ]
         max_final = max(r["final_hv"] for r in seed_rows) or 1.0
         for r in seed_rows:
+            label = {
+                "gp": "q-ParEGO",
+                "botorch": "qNEHVI",
+                "botorch-log": "qLogNEHVI",
+            }[str(r["backend"])]
             rows.append({
                 "seed": seed,
-                "backend": "q-ParEGO" if r["backend"] == "gp" else "qNEHVI",
+                "backend": label,
                 "start_hv": round(r["start_hv"], 3),
                 "final_hv": round(r["final_hv"], 3),
                 "delta_hv": round(r["delta_hv"], 3),
@@ -85,9 +91,9 @@ def main() -> int:
         "# MOBO Backend Benchmark\n\n"
         "Synthetic benchmark only; real objective values must come from wet-lab `tell()` calls. "
         f"Settings: seeds={args.seeds}, rounds={args.rounds}, batch={args.batch}, pool_size={args.pool_size}.\n\n"
-        "BoTorch 0.18.1 warns that legacy `qNoisyExpectedHypervolumeImprovement` has numerical issues "
-        "and recommends `qLogNoisyExpectedHypervolumeImprovement`; this project still labels the path "
-        "qNEHVI because that is the implemented acquisition today.\n\n"
+        "The `botorch` backend is legacy qNEHVI. The `botorch-log` backend uses "
+        "`qLogNoisyExpectedHypervolumeImprovement`, the numerically improved variant "
+        "recommended by BoTorch when available.\n\n"
         "## Per-Seed Results\n\n"
         + markdown_table(rows, ["seed", "backend", "start_hv", "final_hv", "delta_hv", "normalized_final_hv"])
         + "\n\n## Summary\n\n"

@@ -26,6 +26,7 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - Writes `docs/EVAL_RESULTS.md` and `docs/MODEL_AGREEMENT.md`.
 - Installed `torch`, `botorch`, and `gpytorch` into `.venv`.
 - Added a BoTorch qNEHVI test guarded by `pytest.importorskip`; it now runs in this venv because the optional deps are installed.
+- Added `backend="botorch-log"` for BoTorch `qLogNoisyExpectedHypervolumeImprovement`, plus a guarded test.
 - Added `scripts/compare_mobo_backends.py`.
 - Generated `docs/OPTIMIZATION_BENCHMARK.md`.
 - Added this session log and `docs/REVIEW_BY_NEXT_ENGINEER.md`.
@@ -44,13 +45,14 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - Least reliable fields: `J.has_extractable_quant_data`, `B.main_track`.
   - `E.serum_free_status` is also risky because providers can overclaim "chemically defined".
 - MOBO synthetic comparison, 3 seeds:
-  - q-ParEGO mean normalized final HV: 0.891.
-  - qNEHVI mean normalized final HV: 0.999.
+  - q-ParEGO mean normalized final HV: 0.924.
+  - qNEHVI mean normalized final HV: 0.963.
+  - qLogNEHVI mean normalized final HV: 0.963.
 - BoTorch demo with `--backend botorch --demo --rounds 6`: passed; hypervolume rose from 7.050 to 19.005.
 
 ## Final Verification
 
-- Latest `pytest -q`: 24 passed, 2 warnings.
+- Latest `pytest -q`: 25 passed, 2 warnings.
 - Warnings:
   - BoTorch recommends replacing legacy `qNoisyExpectedHypervolumeImprovement` with `qLogNoisyExpectedHypervolumeImprovement`.
   - PyTorch sparse invariant warning from `linear_operator`.
@@ -67,5 +69,5 @@ Branch: `session/eval-retrieval-mobo-hardening`
 ## Next 3 Steps
 
 1. Run `scripts/evaluate_medium_corpus.py` against actual provider outputs on full paper text and replace mock agreement with real GPT/Claude/Gemini agreement.
-2. Replace or add a `qLogNoisyExpectedHypervolumeImprovement` backend option and compare it against current qNEHVI/q-ParEGO on the synthetic benchmark.
+2. Run a larger MOBO benchmark grid, including noisy objectives and constrained/cost-capped settings, to decide whether qLogNEHVI should become the default optional backend.
 3. Extend the one-shot verifier into an optional repair loop that asks the proposer to revise unsupported changes before final output.

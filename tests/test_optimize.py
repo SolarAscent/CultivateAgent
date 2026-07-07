@@ -195,3 +195,24 @@ def test_botorch_backend_demo_path_if_available():
     sugg = mobo.ask(2, pool_size=32, preference_weights={"proliferation": 0.6, "cost": 0.4})
     assert len(sugg) == 2
     assert all(s.note == "qNEHVI" for s in sugg)
+
+
+def test_botorch_log_backend_demo_path_if_available():
+    pytest.importorskip("torch")
+    pytest.importorskip("botorch")
+    pytest.importorskip("gpytorch")
+
+    from cultivate_agent.optimize import MultiObjectiveBO, SyntheticMediumObjective, default_medium_space
+
+    mo_acq = pytest.importorskip("botorch.acquisition.multi_objective")
+    if not hasattr(mo_acq, "qLogNoisyExpectedHypervolumeImprovement"):
+        pytest.skip("installed BoTorch does not expose qLogNEHVI")
+    space = default_medium_space()
+    obj = SyntheticMediumObjective(noise=0.0)
+    mobo = MultiObjectiveBO(space, obj.objectives, backend="botorch-log", seed=0)
+    init = space.sample(6, seed=0)
+    mobo.tell(init, obj.evaluate_many(init))
+    extra = [{"basal_medium": "DMEM/F12", "FGF2": 20.0, "FBS": 2.0}]
+    sugg = mobo.ask(2, pool_size=32, preference_weights={"proliferation": 0.6, "cost": 0.4}, extra_candidates=extra)
+    assert len(sugg) == 2
+    assert all(s.note == "qLogNEHVI" for s in sugg)

@@ -16,11 +16,12 @@ untested, keep the design medium-centered.
 
 from __future__ import annotations
 
+import json
 from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from ..llm.base import LLMClient, LLMError, extract_json
+from ..llm.base import LLMClient, LLMError
 from ..retrieve.retriever import Hit, Retriever
 from .objectives import (
     DEFAULT_ACTIONABLE_VARIABLES,
@@ -39,6 +40,10 @@ class VariableChange(BaseModel):
     rationale: str = ""
     cited_paper_ids: List[str] = Field(default_factory=list)
     is_actionable: bool = True   # set False by the validator if out of whitelist
+    evidence_support: str = Field(
+        "unchecked",
+        description="Verifier judgment: unchecked | supported | partial | unsupported.",
+    )
 
 
 class MediumCandidate(BaseModel):
@@ -69,6 +74,18 @@ class Recommendation(BaseModel):
     model: Optional[str] = None
 
 
+class CitationCheck(BaseModel):
+    candidate_index: int = Field(..., description="1-based candidate index.")
+    change_index: int = Field(..., description="1-based change index within the candidate.")
+    support: str = Field(..., description="supported | partial | unsupported")
+    reason: str = ""
+
+
+class VerificationReport(BaseModel):
+    checks: List[CitationCheck] = Field(default_factory=list)
+    caveats: List[str] = Field(default_factory=list)
+
+
 # --------------------------------------------------------------------------- #
 # Prompts                                                                     #
 # --------------------------------------------------------------------------- #
@@ -88,6 +105,24 @@ medium-formulation changes grounded in the provided evidence pack. Hard rules:
 - COST IS A TRADE-OFF: never report a cost reduction as a standalone win.
   Always state cost jointly with the performance it may sacrifice
   (a Pareto statement).
+- Output STRICT JSON only.
+""".strip()
+
+
+_VERIFIER_SYSTEM = """
+You are a skeptical verifier for cultivated-meat culture-medium recommendations.
+Your only job is to check whether each proposed medium change is supported by
+the provided evidence pack. Do not use outside memory.
+
+Judgment rules:
+- supported: the cited paper evidence directly supports the same medium variable
+  and direction/component.
+- partial: the evidence supports the component or biological rationale, but not
+  the exact dose, combination, cell context, or direction.
+- unsupported: the cited papers are missing, the evidence pack does not mention
+  the variable/component, or the claim goes beyond the evidence.
+- Keep the medium-only scope: scaffold/cell/process changes are not supported
+  medium changes even if they appear in a paper.
 - Output STRICT JSON only.
 """.strip()
 
@@ -145,6 +180,51 @@ objectives. Return STRICT JSON in exactly this shape:
 """
 
 
+def _build_verifier_prompt(rec: Recommendation) -> str:
+    ev_block = "\n".join(
+        f"[{e.index}] paper_id={e.paper_id} | {e.title}\n    {e.snippet}" for e in rec.evidence
+    ) or "(no evidence retrieved)"
+    candidates = []
+    for i, cand in enumerate(rec.candidates, 1):
+        candidates.append({
+            "candidate_index": i,
+            "name": cand.name,
+            "changes": [
+                {
+                    "change_index": j,
+                    "variable": ch.variable,
+                    "change": ch.change,
+                    "rationale": ch.rationale,
+                    "cited_paper_ids": ch.cited_paper_ids,
+                    "is_actionable": ch.is_actionable,
+                }
+                for j, ch in enumerate(cand.changes, 1)
+            ],
+        })
+
+    schema = """
+{
+  "checks": [
+    {"candidate_index": 1, "change_index": 1, "support": "supported|partial|unsupported", "reason": "short reason"}
+  ],
+  "caveats": ["..."]
+}
+""".strip()
+
+    return f"""EVIDENCE PACK:
+{ev_block}
+
+CANDIDATE CHANGES TO VERIFY:
+{json.dumps(candidates, indent=2)}
+
+For every candidate change, judge whether its cited paper_ids and evidence-pack
+snippets support the proposed medium change. Return STRICT JSON in exactly this
+shape:
+
+{schema}
+"""
+
+
 # --------------------------------------------------------------------------- #
 # Recommender                                                                 #
 # --------------------------------------------------------------------------- #
@@ -157,12 +237,14 @@ class MediumRecommender:
         *,
         actionable_variables: Optional[List[str]] = None,
         top_k: int = 12,
+        verify_citations: bool = False,
     ):
         self.client = client
         self.retriever = retriever
         self.kb = kb
         self.actionable = actionable_variables or list(DEFAULT_ACTIONABLE_VARIABLES)
         self.top_k = top_k
+        self.verify_citations = verify_citations
 
     def _query(self, weights: ObjectiveWeights, context: DesignContext) -> str:
         top_obj = sorted(weights.normalized.items(), key=lambda t: -t[1])
@@ -206,6 +288,9 @@ class MediumRecommender:
                 rec.candidates.append(cand)
             rec.caveats.extend(str(x) for x in (data.get("caveats", []) or []))
 
+        if self.verify_citations and rec.candidates:
+            self._verify_citations(rec)
+
         rec.caveats.append(
             "Recommendations are literature-grounded hypotheses, not validated formulations. "
             "Any multi-source combination is untested; confirm in a pre-registered head-to-head "
@@ -219,3 +304,38 @@ class MediumRecommender:
             ch.is_actionable = ch.variable in allowed
             if not ch.is_actionable:
                 ch.rationale = (ch.rationale + " [FLAGGED: not an actionable medium variable; ignored]").strip()
+                ch.evidence_support = "unsupported"
+
+    def _verify_citations(self, rec: Recommendation) -> None:
+        try:
+            data = self.client.complete_json(_VERIFIER_SYSTEM, _build_verifier_prompt(rec))
+            report = VerificationReport.model_validate(data)
+        except Exception as e:  # noqa: BLE001 - verifier failure should not erase useful proposals
+            rec.caveats.append(f"Verifier failed; citation support unchecked: {e}")
+            return
+
+        for check in report.checks:
+            ci = check.candidate_index - 1
+            if ci < 0 or ci >= len(rec.candidates):
+                continue
+            cand = rec.candidates[ci]
+            chi = check.change_index - 1
+            if chi < 0 or chi >= len(cand.changes):
+                continue
+            change = cand.changes[chi]
+            support = check.support.strip().lower()
+            if support not in {"supported", "partial", "unsupported"}:
+                support = "partial"
+            change.evidence_support = support
+            if support != "supported":
+                suffix = f"[VERIFIER: {support} evidence support"
+                if check.reason:
+                    suffix += f" - {check.reason}"
+                suffix += "]"
+                if suffix not in change.rationale:
+                    change.rationale = (change.rationale + " " + suffix).strip()
+                rec.caveats.append(
+                    f"Verifier downgraded candidate {check.candidate_index} change "
+                    f"{check.change_index} ({change.variable}) to {support}: {check.reason}"
+                )
+        rec.caveats.extend(report.caveats)

@@ -243,6 +243,7 @@ def cmd_design(args) -> int:
         client, retriever, kb,
         actionable_variables=cfg.design.actionable_variables or None,
         top_k=cfg.retrieve.top_k,
+        verify_citations=args.verify_citations,
     ).recommend(weights, context, n_candidates=args.n)
     kb.close()
 
@@ -349,7 +350,8 @@ def cmd_optimize(args) -> int:
     client = cfg.make_llm_client()
     recommender = MediumRecommender(client, retriever, kb,
                                     actionable_variables=cfg.design.actionable_variables or None,
-                                    top_k=cfg.retrieve.top_k)
+                                    top_k=cfg.retrieve.top_k,
+                                    verify_citations=args.verify_citations)
     mobo = MultiObjectiveBO(space, objectives, backend=args.backend)
     egm = EvidenceGuidedMOBO(mobo, recommender, normalizer=ComponentNormalizer(cfg.ontology_dir))
     proposal = egm.propose(weights, context, batch_size=args.batch)
@@ -530,6 +532,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--product", help="target product type")
     sp.add_argument("--starting-medium", help="current formulation to improve on")
     sp.add_argument("--n", type=int, default=3, help="number of candidates")
+    sp.add_argument("--verify-citations", action="store_true", help="run a second LLM verifier over candidate citations")
     sp.add_argument("--json", action="store_true", help="emit JSON instead of markdown")
     add_llm_flags(sp)
     sp.set_defaults(func=cmd_design)
@@ -546,6 +549,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--batch", type=int, default=4, help="experiments per batch")
     sp.add_argument("--rounds", type=int, default=6, help="rounds (demo mode)")
     sp.add_argument("--backend", default="gp", help="gp | botorch")
+    sp.add_argument("--verify-citations", action="store_true", help="run a second LLM verifier over LLM-seeded candidate citations")
     sp.add_argument("--json", action="store_true", help="emit JSON")
     add_llm_flags(sp)
     sp.set_defaults(func=cmd_optimize)

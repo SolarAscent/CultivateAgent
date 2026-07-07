@@ -105,6 +105,12 @@ cultivate design \
   --cell "bovine satellite cells" --species bovine --stage expansion \
   --scaffold "gelatin-alginate hydrogel"
 
+# Optional: ask a second LLM pass to verify that candidate citations support
+# the proposed medium changes, downgrading unsupported claims in the output.
+cultivate design --verify-citations \
+  --weights "proliferation=0.6,cost=0.3,differentiation_retention=0.1" \
+  --cell "bovine satellite cells" --species bovine
+
 # 6. Optimize: propose the next PRE-REGISTERABLE batch of experiments:
 cultivate optimize --weights "proliferation=0.6,cost=0.4" \
   --cell "bovine satellite cells" --species bovine --batch 4

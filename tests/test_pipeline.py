@@ -197,6 +197,40 @@ def test_recommender_enforces_actionable_whitelist():
     assert changes["serum_level"] is True and changes["scaffold"] is False
 
 
+def test_recommender_verifier_downgrades_unsupported_citation():
+    from cultivate_agent.design import DesignContext, MediumRecommender, ObjectiveWeights
+    from cultivate_agent.llm import get_client
+    from cultivate_agent.retrieve import BM25Retriever, Document
+
+    design = json.dumps({"candidates": [{
+        "name": "c", "changes": [
+            {"variable": "growth_factors", "change": "add FGF2 at 20 ng/mL",
+             "rationale": "FGF2 supports expansion", "cited_paper_ids": ["p1"]},
+            {"variable": "small_molecules", "change": "add CHIR99021",
+             "rationale": "Wnt activation", "cited_paper_ids": ["p1"]},
+        ],
+    }]})
+    verification = json.dumps({
+        "checks": [
+            {"candidate_index": 1, "change_index": 1, "support": "supported", "reason": "FGF2 appears in evidence"},
+            {"candidate_index": 1, "change_index": 2, "support": "unsupported", "reason": "CHIR99021 is absent from evidence"},
+        ],
+        "caveats": ["one unsupported claim"],
+    })
+    client = get_client("mock", "m", responses=[design, verification])
+    r = BM25Retriever()
+    r.index([Document("p1", "serum-free medium with FGF2 supports bovine proliferation", "A")])
+    rec = MediumRecommender(client, r, verify_citations=True).recommend(
+        ObjectiveWeights(weights={"proliferation": 1.0}), DesignContext(), n_candidates=1
+    )
+
+    changes = rec.candidates[0].changes
+    assert changes[0].evidence_support == "supported"
+    assert changes[1].evidence_support == "unsupported"
+    assert "VERIFIER: unsupported" in changes[1].rationale
+    assert any("downgraded" in c for c in rec.caveats)
+
+
 # --------------------------------------------------------------------------- #
 # Evaluation                                                                  #
 # --------------------------------------------------------------------------- #

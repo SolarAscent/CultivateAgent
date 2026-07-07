@@ -29,6 +29,10 @@ Branch: `session/eval-retrieval-mobo-hardening`
 - Added `scripts/compare_mobo_backends.py`.
 - Generated `docs/OPTIMIZATION_BENCHMARK.md`.
 - Added this session log and `docs/REVIEW_BY_NEXT_ENGINEER.md`.
+- Added an optional verifier/critique loop in `design/recommender.py`:
+  - `MediumRecommender(..., verify_citations=True)` runs a second LLM pass.
+  - `cultivate design --verify-citations` and `cultivate optimize --verify-citations` expose it.
+  - Unsupported/partial citation support is written to `VariableChange.evidence_support` and caveats.
 
 ## Results
 
@@ -43,7 +47,7 @@ Branch: `session/eval-retrieval-mobo-hardening`
 
 ## Final Verification
 
-- Latest `pytest -q`: 23 passed, 2 warnings.
+- Latest `pytest -q`: 24 passed, 2 warnings.
 - Warnings:
   - BoTorch recommends replacing legacy `qNoisyExpectedHypervolumeImprovement` with `qLogNoisyExpectedHypervolumeImprovement`.
   - PyTorch sparse invariant warning from `linear_operator`.
@@ -54,9 +58,8 @@ Branch: `session/eval-retrieval-mobo-hardening`
 
 - I did not run real GPT/Claude/Gemini extraction because no provider API credentials were used in this session.
 - I did not claim the fixture metrics are production extraction accuracy; they are protocol checks over short source excerpts.
-- I did not implement the verifier/critique loop in `design/recommender.py`.
 - I did not change the locked medium-only action scope.
-- I did not push the branch or open a PR from this environment.
+- I pushed the branch to `origin/session/eval-retrieval-mobo-hardening`; I did not open a PR.
 
 ## Next 3 Steps
 

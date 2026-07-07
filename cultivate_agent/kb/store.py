@@ -174,10 +174,11 @@ class KnowledgeBase:
                     canonical, category, via = match.canonical, match.category, match.matched_via
                 else:
                     canonical, category, via = raw, None, "none"
+                component_role = category or role
                 self.conn.execute(
                     """INSERT INTO medium_components(paper_id, role, raw_name, canonical, category, matched_via)
                        VALUES(?,?,?,?,?,?)""",
-                    (pid, role, raw, canonical, category, via),
+                    (pid, component_role, raw, canonical, category, via),
                 )
 
     # ------------------------------------------------------------------ #
@@ -198,16 +199,16 @@ class KnowledgeBase:
         sql = "SELECT DISTINCT paper_id FROM medium_components WHERE canonical=?"
         args: Tuple = (canonical,)
         if role:
-            sql += " AND role=?"
-            args = (canonical, role)
+            sql += " AND (role=? OR category=?)"
+            args = (canonical, role, role)
         return [r["paper_id"] for r in self.conn.execute(sql, args)]
 
     def component_counts(self, *, role: Optional[str] = None) -> List[Tuple[str, int]]:
         sql = "SELECT canonical, COUNT(DISTINCT paper_id) n FROM medium_components"
         args: Tuple = ()
         if role:
-            sql += " WHERE role=?"
-            args = (role,)
+            sql += " WHERE role=? OR category=?"
+            args = (role, role)
         sql += " GROUP BY canonical ORDER BY n DESC"
         return [(r["canonical"], r["n"]) for r in self.conn.execute(sql, args)]
 

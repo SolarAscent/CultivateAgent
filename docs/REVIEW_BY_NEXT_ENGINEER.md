@@ -40,8 +40,8 @@ This is likely more publishable than another wrapper around qEHVI because it att
 - `CLASS_RANGES["growth_factor"] = 0-100 ng/mL` covers common FGF2-style ranges used around B8/Beefy-9 and is reasonable as a broad search bound.
 - `CLASS_RANGES["albumin_substitute"] = 0-5 mg/mL` is broad enough for recombinant albumin search around Beefy-9-like formulations.
 - `CLASS_RANGES["serum"] = 0-20%` excludes some legacy high-serum expansion protocols; that is acceptable for a serum-reduction optimizer but should be documented as an intervention range, not a literature-universal range.
-- Potential bug: ontology categories `hydrolysate` and `extract` are not selected by `space_from_kb`, which loops only over `growth_factor`, `small_molecule`, and `supplement`. This can drop cost-reduction components such as algae extract or plant hydrolysates from the warm-started search space.
-- Potential modeling issue: `supplement` range is reused as `g/L` for soy-protein-hydrolysate in the default space, while the class label says `x/%`. Add class-specific ranges for `hydrolysate` and `extract`.
+- Fixed in this branch: ontology categories such as `hydrolysate` and `extract` now enter `space_from_kb`, so cost-reduction components such as algae extract or plant hydrolysates are not silently dropped from the warm-started search space.
+- Fixed in this branch: class-specific ranges for `defined_supplement`, `hydrolysate`, and `extract` were added. Existing KB rows that stored a broad role but a precise category are still found because component role queries now match either `role` or `category`.
 
 ## Verified Sources Used
 

@@ -33,6 +33,9 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - `MediumRecommender(..., verify_citations=True)` runs a second LLM pass.
   - `cultivate design --verify-citations` and `cultivate optimize --verify-citations` expose it.
   - Unsupported/partial citation support is written to `VariableChange.evidence_support` and caveats.
+- Fixed ontology-to-search-space coverage:
+  - `hydrolysate`, `extract`, `defined_supplement`, `albumin_substitute`, amino acid, carbon source, and trace element categories can enter `space_from_kb`.
+  - KB component role queries now match either `role` or `category`, preserving compatibility with older flattened rows.
 
 ## Results
 
@@ -65,4 +68,4 @@ Branch: `session/eval-retrieval-mobo-hardening`
 
 1. Run `scripts/evaluate_medium_corpus.py` against actual provider outputs on full paper text and replace mock agreement with real GPT/Claude/Gemini agreement.
 2. Replace or add a `qLogNoisyExpectedHypervolumeImprovement` backend option and compare it against current qNEHVI/q-ParEGO on the synthetic benchmark.
-3. Fix ontology-to-space category handling so `hydrolysate` and `extract` components can enter `space_from_kb`.
+3. Extend the one-shot verifier into an optional repair loop that asks the proposer to revise unsupported changes before final output.

@@ -129,6 +129,7 @@ def test_kb_roundtrip_and_flatten(tmp_path):
     kb.upsert_extraction(ext)
     assert kb.stats()["medium_components"] == 2
     assert "p1" in kb.papers_with_component("FGF2")   # canonicalized in the flatten step
+    assert "p1" in kb.papers_with_component("FGF2", role="growth_factor")
     assert kb.get_extraction("p1").medium_info.serum_free_status == "serum-free"
     kb.close()
 

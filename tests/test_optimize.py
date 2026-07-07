@@ -51,13 +51,27 @@ def test_space_from_kb(tmp_path):
     ROOT = __import__("pathlib").Path(__file__).resolve().parents[1]
     kb = KnowledgeBase(tmp_path / "kb.sqlite", normalizer=ComponentNormalizer(ROOT / "config" / "ontology"))
     ext = PaperExtraction(paper_id="p1")
-    ext.medium_info = MediumInfo(growth_factors=["bFGF"], basal_medium=["DMEM/F12"])
+    ext.medium_info = MediumInfo(
+        growth_factors=["bFGF"],
+        basal_medium=["DMEM/F12"],
+        hydrolysates_or_extracts=["soy hydrolysate", "microalgae extract"],
+    )
     kb.upsert_paper(PaperRef(paper_id="p1", title="t"))
     kb.upsert_extraction(ext)
     space = space_from_kb(kb)
     names = [p.name for p in space.parameters]
     assert "FGF2" in names          # canonicalized from bFGF, promoted into the space
+    assert "soy-protein-hydrolysate" in names
+    assert "algae-extract" in names
     assert "basal_medium" in names
+    ranges = {p.name: (p.low, p.high, p.unit, p.component_class) for p in space.parameters}
+    assert ranges["soy-protein-hydrolysate"] == (0.0, 20.0, "g/L", "hydrolysate")
+    assert ranges["algae-extract"] == (0.0, 20.0, "g/L", "extract")
+    kb.conn.execute(
+        "UPDATE medium_components SET role='supplement' WHERE canonical='soy-protein-hydrolysate'"
+    )
+    kb.conn.commit()
+    assert kb.component_counts(role="hydrolysate") == [("soy-protein-hydrolysate", 1)]
     kb.close()
 
 

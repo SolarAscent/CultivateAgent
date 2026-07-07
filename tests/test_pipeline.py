@@ -137,6 +137,65 @@ def test_extraction_accepts_schema_attribute_block_names():
     assert "B.main_track" in ext.evidence
 
 
+def test_structured_paper_from_text_sections():
+    from cultivate_agent.schema import structured_paper_from_text
+
+    text = """Title line
+
+Abstract
+We optimize bovine myoblast expansion medium.
+
+Materials and Methods
+Cells were cultured in DMEM/F12 with FGF2.
+
+Results
+The serum-free condition supported proliferation."""
+    paper = structured_paper_from_text("p-structured", text, title="Title line")
+    assert paper.abstract and "bovine myoblast" in paper.abstract
+    titles = [s.title.lower() for s in paper.sections]
+    assert any("materials and methods" in t for t in titles)
+    assert any("results" in t for t in titles)
+    assert paper.all_text().count("DMEM/F12") == 1
+
+
+def test_extraction_uses_structured_section_routing():
+    from cultivate_agent.extract import extract_paper
+    from cultivate_agent.llm import get_client
+    from cultivate_agent.schema import structured_paper_from_text
+    from cultivate_agent.schema.paper import PaperRef
+
+    payload = json.dumps({
+        "blocks": {"E": {"basal_medium": ["DMEM/F12"], "serum_free_status": "serum-free"}},
+        "evidence": {
+            "E.basal_medium": {"quote": "DMEM/F12 with FGF2", "confidence": "high"},
+            "E.serum_free_status": {"quote": "serum-free medium", "confidence": "high"},
+        },
+    })
+    text = """Abstract
+This work studies bovine cells.
+
+Methods
+The cells were cultured in serum-free medium based on DMEM/F12 with FGF2.
+
+Discussion
+The method supports future medium optimization."""
+    paper = structured_paper_from_text("p4", text)
+    client = get_client("mock", "m", responses=[payload])
+    ext = extract_paper(
+        client,
+        PaperRef(paper_id="p4"),
+        text,
+        triage_blocks=["E"],
+        full=False,
+        structured_paper=paper,
+    )
+    meta = ext.extraction_meta["passes"][0]
+    assert ext.medium_info.basal_medium == ["DMEM/F12"]
+    assert meta["used_section_routing"] is True
+    assert meta["routed_section_ids"]
+    assert meta["structured_source"] == "plain_text"
+
+
 # --------------------------------------------------------------------------- #
 # Knowledge base + retrieval                                                  #
 # --------------------------------------------------------------------------- #

@@ -17,6 +17,14 @@ from .paper import (
     PaperRef,
     slugify,
 )
+from .structured_paper import (
+    PaperFigure,
+    PaperParagraph,
+    PaperSection,
+    PaperTable,
+    StructuredPaper,
+    structured_paper_from_text,
+)
 
 __all__ = [
     # evidence
@@ -26,4 +34,7 @@ __all__ = [
     "block_model", "normalize_controlled", "schema_for_prompt",
     # paper
     "PaperRef", "PaperMetadata", "PaperPaths", "IngestStatus", "slugify",
+    # structured paper
+    "PaperParagraph", "PaperSection", "PaperTable", "PaperFigure",
+    "StructuredPaper", "structured_paper_from_text",
 ]

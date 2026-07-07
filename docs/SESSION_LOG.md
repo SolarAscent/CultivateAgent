@@ -65,6 +65,12 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - Added `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`.
   - Decision: prioritize S3 full-text extraction reliability through structured paper objects, section-routed extraction, operator-level coverage/grounding metrics, and human-review integration before generating new wet-lab design packets.
   - Human/external blockers recorded rather than guessed: paywalled PDFs/supplements, Gemini credentials, OpenAI quota, lab constraints, and final human evidence approval.
+- Implemented the first S3 structured-paper foundation:
+  - Added `schema/structured_paper.py` with `StructuredPaper`, section, paragraph, table, and figure models.
+  - Added `structured_paper_from_text` as a no-dependency plain-text fallback with stable section/paragraph IDs.
+  - `extract_paper` / `extract_blocks` now accept an optional `structured_paper` and route context using block-specific section hints.
+  - Extraction metadata now records structured source, routed section IDs, section hints, and whether section routing was used.
+  - Added tests for structured fallback parsing and structured section-routed extraction.
 
 ## Results
 
@@ -86,7 +92,7 @@ Branch: `session/eval-retrieval-mobo-hardening`
 
 ## Final Verification
 
-- Latest `.venv/bin/python -m pytest -q`: 26 passed, 3 warnings.
+- Latest `.venv/bin/python -m pytest -q`: 28 passed, 3 warnings.
 - Warnings:
   - BoTorch recommends replacing legacy `qNoisyExpectedHypervolumeImprovement` with `qLogNoisyExpectedHypervolumeImprovement`.
   - PyTorch sparse invariant warning from `linear_operator`.

@@ -183,9 +183,12 @@ paper_structure.json
 
 Acceptance criteria:
 
-- Existing ingestion still works without GROBID.
+- Existing ingestion still works without GROBID. **Implemented for plain-text
+  fallback.**
 - Structured extraction can address passages by `paper_id:section_id:paragraph_id`.
+  **Partially implemented through stable section/paragraph IDs.**
 - Tables and captions can be routed to dose/endpoint extraction.
+  **Not yet implemented beyond schema placeholders.**
 
 ### R2. Section-routed extraction
 
@@ -201,7 +204,8 @@ Use field-to-section routing:
 
 Acceptance criteria:
 
-- Extractor reports which sections were searched.
+- Extractor reports which sections were searched. **Implemented for structured
+  paper section routing metadata.**
 - Missing fields are recorded as missing, not inferred.
 - Every populated decision-critical field has at least one quote.
 
@@ -267,7 +271,8 @@ These are not adopted now:
 
 ## 5. Immediate Implementation Tasks
 
-1. Add a structured-paper schema and optional GROBID import path.
+1. Add optional GROBID import path on top of the implemented plain-text
+   structured-paper fallback.
 2. Create `bovine_evidence_table.tsv` from P1 full text.
 3. Build section-routed extraction operators for medium components, dose ranges,
    endpoints, and quotes.

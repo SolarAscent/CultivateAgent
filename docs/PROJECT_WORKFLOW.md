@@ -70,6 +70,7 @@ CultivateAgent/
     triage/                         paper screening and A/B/C tiering
     extract/                        LLM prompts, JSON parsing, grounding checks
     schema/                         A-M extraction schema and evidence models
+                                     plus structured paper objects
     normalize/                      component and unit normalization
     kb/                             SQLite knowledge base and exports
     retrieve/                       BM25 and optional embedding retrievers
@@ -505,6 +506,9 @@ Update this section after major sessions.
   elements.
 - Live provider mode exists for extraction evaluation.
 - Parser accepts both A-M block letters and schema attribute block names.
+- Structured-paper schema and plain-text fallback exist; extractor can route
+  block-specific context through structured sections and records routing
+  metadata.
 - First wet-lab-facing target is documented.
 - Bovine manifest v0 contains 44 records.
 - Human review queue v0 contains 30 open tasks.
@@ -520,6 +524,8 @@ Update this section after major sessions.
   available.
 - OpenAI raw-response debugging hit insufficient quota.
 - The current corpus manifest is not yet full-text extracted.
+- Optional GROBID/TEI import is not implemented; current structured-paper support
+  is the plain-text fallback plus schema placeholders for tables and figures.
 - The human review queue is still open.
 - Cost, supplier, and food-grade annotations are incomplete.
 - In-silico robustness has not been run on the bovine manifest.
@@ -528,12 +534,13 @@ Update this section after major sessions.
 
 ### 9.3 Immediate Next Actions
 
-1. `[AI]` Pull full text for all P1 core records.
-2. `[AI]` Extract exact formulations, dose ranges, endpoints, and quotes.
-3. `[HUMAN]` Review H001-H016.
-4. `[AI]` Build the adjudicated bovine evidence table.
-5. `[REVIEW]` Decide which variables can enter the first search space.
-6. `[AI]` Draft the first design packet only after earlier gates pass.
+1. `[AI]` Add optional GROBID/TEI import or another structured PDF backend.
+2. `[AI]` Pull full text for all P1 core records.
+3. `[AI]` Extract exact formulations, dose ranges, endpoints, and quotes.
+4. `[HUMAN]` Review H001-H016.
+5. `[AI]` Build the adjudicated bovine evidence table.
+6. `[REVIEW]` Decide which variables can enter the first search space.
+7. `[AI]` Draft the first design packet only after earlier gates pass.
 
 Current algorithm roadmap:
 

@@ -64,6 +64,7 @@ CultivateAgent/
     triage/                         论文初筛和 A/B/C 分层
     extract/                        LLM prompt、JSON 解析、grounding check
     schema/                         A-M 抽取 schema 和 evidence model
+                                     以及 structured paper objects
     normalize/                      成分名和单位标准化
     kb/                             SQLite 知识库和导出
     retrieve/                       BM25 和可选 embedding retriever
@@ -473,6 +474,8 @@ AI 线：
   albumin substitutes、amino acids、carbon sources、trace elements。
 - Extraction evaluation 已支持 live provider mode。
 - Parser 支持 A-M block letters 和 schema attribute block names。
+- Structured-paper schema 和 plain-text fallback 已存在；extractor 可以根据
+  structured sections 路由不同 block 的上下文，并记录 routing metadata。
 - 第一阶段 wet-lab-facing target 已记录。
 - Bovine manifest v0 有 44 条记录。
 - Human review queue v0 有 30 个 open tasks。
@@ -485,6 +488,8 @@ AI 线：
 - Gemini live comparison 未完成，因为没有 Gemini/Google key。
 - OpenAI raw-response debugging 遇到 insufficient quota。
 - 当前 corpus manifest 尚未全文抽取。
+- Optional GROBID/TEI import 尚未实现；当前 structured-paper 支持是 plain-text
+  fallback，以及 tables/figures 的 schema 占位。
 - Human review queue 仍未完成。
 - Cost、supplier、food-grade annotations 不完整。
 - In-silico robustness 尚未在 bovine manifest 上运行。
@@ -493,12 +498,13 @@ AI 线：
 
 ### 9.3 近期下一步
 
-1. `[AI]` 拉取所有 P1 core records 的全文。
-2. `[AI]` 抽取 exact formulations、dose ranges、endpoints、quotes。
-3. `[人工]` 复核 H001-H016。
-4. `[AI]` 建立 adjudicated bovine evidence table。
-5. `[复核]` 决定哪些变量可进入第一轮 search space。
-6. `[AI]` 只有在前置 gate 通过后，才起草第一版 design packet。
+1. `[AI]` 增加 optional GROBID/TEI import 或其他 structured PDF backend。
+2. `[AI]` 拉取所有 P1 core records 的全文。
+3. `[AI]` 抽取 exact formulations、dose ranges、endpoints、quotes。
+4. `[人工]` 复核 H001-H016。
+5. `[AI]` 建立 adjudicated bovine evidence table。
+6. `[复核]` 决定哪些变量可进入第一轮 search space。
+7. `[AI]` 只有在前置 gate 通过后，才起草第一版 design packet。
 
 当前算法路线：
 

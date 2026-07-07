@@ -7,6 +7,9 @@ CultivateAgent turns a pile of cultivated-meat / tissue-engineering papers into 
 structured, **evidence-grounded** knowledge base, and then uses that knowledge
 base to propose *medium-formulation* changes conditioned on user objectives
 (proliferation, cost, differentiation retention, 3D tissue-readiness).
+The extractor now has a first structured-paper layer: plain text can be converted
+into section/paragraph objects, and extraction can route medium fields toward
+Methods/media/cell-culture sections before prompting.
 
 It is modeled on an LLM + domain-tool hybrid that mines reaction data from the organic-synthesis
 literature — and adapts that recipe to cell-culture media. See

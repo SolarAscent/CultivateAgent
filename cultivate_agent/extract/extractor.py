@@ -16,12 +16,13 @@ per paper.
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from ..llm.base import LLMClient, LLMError
 from ..schema.evidence import Confidence, Evidence
 from ..schema.extraction import PaperExtraction, _BLOCK_ATTR, block_model
 from ..schema.paper import PaperRef
+from ..schema.structured_paper import StructuredPaper
 from .prompts import SYSTEM_EXTRACTION, build_extraction_prompt
 
 
@@ -71,6 +72,70 @@ def _select_context(text: str, max_chars: int) -> str:
     return text[:head_budget] + "\n\n[... middle omitted for length ...]\n\n" + text[-tail:]
 
 
+_BLOCK_SECTION_HINTS = {
+    "A": ["abstract", "preamble"],
+    "B": ["abstract", "introduction", "results"],
+    "C": ["abstract", "introduction", "discussion"],
+    "D": ["methods", "materials and methods", "cell culture"],
+    "E": ["methods", "materials and methods", "media formulation", "cell culture", "experimental"],
+    "F": ["methods", "materials and methods", "results"],
+    "G": ["methods", "materials and methods", "experimental"],
+    "H": ["methods", "materials and methods", "results"],
+    "I": ["results", "methods", "materials and methods"],
+    "J": ["results", "methods", "materials and methods", "supplementary"],
+    "K": ["discussion", "results", "conclusion"],
+    "L": ["abstract", "discussion", "conclusion"],
+    "M": ["abstract", "discussion", "conclusion"],
+}
+
+
+def _section_hints(blocks: Iterable[str]) -> List[str]:
+    hints: List[str] = []
+    for block in blocks:
+        for hint in _BLOCK_SECTION_HINTS.get(block.upper(), []):
+            if hint not in hints:
+                hints.append(hint)
+    return hints
+
+
+def _select_structured_context(
+    structured_paper: StructuredPaper,
+    blocks: List[str],
+    max_chars: int,
+) -> Tuple[str, Dict[str, object]]:
+    full_text = structured_paper.all_text()
+    if not full_text.strip():
+        return "", {"structured_source": structured_paper.source, "routed_section_ids": []}
+
+    head = []
+    if structured_paper.title:
+        head.append(structured_paper.title)
+    if structured_paper.abstract:
+        head.append("Abstract\n" + structured_paper.abstract)
+
+    hints = _section_hints(blocks)
+    passages = structured_paper.section_passages(hints)
+    routed_ids = [sid for sid, _ in passages]
+    routed_text = "\n\n[... routed section ...]\n\n".join(text for _, text in passages)
+    if routed_text.strip():
+        candidate = "\n\n".join(head + [routed_text])
+        ctx = _select_context(candidate, max_chars)
+        used_routing = True
+    else:
+        ctx = _select_context(full_text, max_chars)
+        used_routing = False
+
+    return ctx, {
+        "structured_source": structured_paper.source,
+        "routed_section_ids": routed_ids,
+        "section_hints": hints,
+        "used_section_routing": used_routing,
+        "structured_sections": len(structured_paper.sections),
+        "structured_tables": len(structured_paper.tables),
+        "structured_figures": len(structured_paper.figures),
+    }
+
+
 _ATTR_TO_BLOCK = {attr: letter for letter, attr in _BLOCK_ATTR.items()}
 
 
@@ -117,13 +182,20 @@ def extract_blocks(
     *,
     max_context_chars: int = 60000,
     verify_evidence: bool = True,
+    structured_paper: Optional[StructuredPaper] = None,
 ) -> Tuple[Dict[str, object], Dict[str, Evidence], Dict[str, object]]:
     """Extract the requested schema ``blocks`` from ``text``.
 
     Returns ``(block_letter -> block_model_instance, "L.field" -> Evidence,
     meta)``.
     """
-    ctx = _select_context(text, max_context_chars)
+    route_meta: Dict[str, object] = {}
+    if structured_paper is not None:
+        ctx, route_meta = _select_structured_context(structured_paper, blocks, max_context_chars)
+        verify_text = structured_paper.all_text() or text
+    else:
+        ctx = _select_context(text, max_context_chars)
+        verify_text = text
     prompt = build_extraction_prompt(ref, ctx, blocks)
     payload = client.complete_json(SYSTEM_EXTRACTION, prompt)
     raw_blocks, raw_evidence = _coerce_blocks_payload(payload)
@@ -154,7 +226,7 @@ def extract_blocks(
             continue
         total += 1
         if verify_evidence:
-            if evobj.verify_against(text):
+            if evobj.verify_against(verify_text):
                 verified += 1
             else:
                 # Not found verbatim -> keep the claim but flag it as ungrounded.
@@ -172,6 +244,7 @@ def extract_blocks(
         "truncated": len(text) > max_context_chars,
         "parse_errors": parse_errors,
         "extracted_at": datetime.now(timezone.utc).isoformat(),
+        **route_meta,
     }
     return parsed, evidence, meta
 
@@ -187,6 +260,7 @@ def extract_paper(
     max_context_chars: int = 60000,
     verify_evidence: bool = True,
     triage_category: Optional[str] = None,
+    structured_paper: Optional[StructuredPaper] = None,
 ) -> PaperExtraction:
     """Extract a full :class:`PaperExtraction` for one paper.
 
@@ -225,6 +299,7 @@ def extract_paper(
             parsed, evidence, meta = extract_blocks(
                 client, ref, text, group,
                 max_context_chars=max_context_chars, verify_evidence=verify_evidence,
+                structured_paper=structured_paper,
             )
         except LLMError as e:
             all_meta.append({"group": group, "error": str(e)})

@@ -19,7 +19,15 @@ from typing import List, Optional
 from ..llm.base import LLMClient, LLMError, extract_json
 from ..schema.evidence import Evidence
 from ..schema.paper import PaperRef
+from ..schema.structured_paper import structured_paper_from_text
 from .meta_analysis import EvidenceItem
+
+# Sections where component->outcome effects are reported. A naive text[:N] prefix
+# misses these in long reviews (found during the live DeepSeek run), so we route.
+_EFFECT_SECTION_HINTS = [
+    "results", "discussion", "methods", "materials and methods",
+    "media", "medium", "cell culture", "growth", "proliferation", "expansion",
+]
 
 _SYSTEM = (
     "You extract DIRECTIONAL EVIDENCE about how culture-medium components affect a "
@@ -28,6 +36,29 @@ _SYSTEM = (
     "the mere presence of a component. If the paper does not state a direction, use 0 "
     "(neutral/unclear). Output STRICT JSON only."
 )
+
+
+def _route_effect_context(text: str, paper_id: str, title: Optional[str], max_chars: int) -> str:
+    """Concatenate effect-bearing sections (results/methods/media...) up to a budget.
+
+    Falls back to the leading text if no sections match, so short inputs still work.
+    """
+    if len(text) <= max_chars:
+        return text
+    paper = structured_paper_from_text(paper_id, text, title=title)
+    passages = paper.section_passages(_EFFECT_SECTION_HINTS)
+    if not passages:
+        return text[:max_chars]
+    out, used = [], 0
+    if paper.abstract:
+        chunk = "Abstract\n" + paper.abstract
+        out.append(chunk[: max_chars // 4]); used += len(out[-1])
+    for _sid, passage in passages:
+        if used >= max_chars:
+            break
+        chunk = passage[: max_chars - used]
+        out.append(chunk); used += len(chunk)
+    return "\n\n".join(out)
 
 
 def _prompt(ref: PaperRef, outcome: str, text: str) -> str:
@@ -50,7 +81,7 @@ Return STRICT JSON:
 }}
 
 TEXT:
-'''{text[:16000]}'''
+'''{text}'''
 
 REMINDER: only text-supported directional claims; verbatim quotes; strict JSON.
 """
@@ -64,12 +95,14 @@ def extract_effects(
     *,
     normalizer=None,
     verify_evidence: bool = True,
+    max_context_chars: int = 28000,
 ) -> List[EvidenceItem]:
     """Extract directional :class:`EvidenceItem`s for ``outcome`` from one paper."""
     if not text or not text.strip():
         return []
+    routed = _route_effect_context(text, ref.paper_id, ref.title, max_context_chars)
     try:
-        raw = client.chat(_SYSTEM, _prompt(ref, outcome, text))
+        raw = client.chat(_SYSTEM, _prompt(ref, outcome, routed))
         payload = extract_json(raw)
     except LLMError:
         return []

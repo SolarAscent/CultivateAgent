@@ -227,9 +227,17 @@ class OperatorExtractor:
         self.verify_evidence = verify_evidence
 
     def extract(self, ref: PaperRef, source: Union[str, StructuredPaper]) -> PaperExtraction:
-        paper = source if isinstance(source, StructuredPaper) else structured_paper_from_text(
-            ref.paper_id, source or "", title=ref.title)
-        full_text = paper.all_text()
+        if isinstance(source, StructuredPaper):
+            paper = source
+            # No separate original available; all_text() is the best source we have.
+            full_text = source.all_text()
+        else:
+            original = source or ""
+            paper = structured_paper_from_text(ref.paper_id, original, title=ref.title)
+            # Verify quotes against the ORIGINAL text, not the round-tripped
+            # section reconstruction (which can drop/alter spans and falsely flag
+            # real quotes as ungrounded).
+            full_text = original
 
         ext = PaperExtraction(paper_id=ref.paper_id)
         # Reliable bibliographic prefill (block A).

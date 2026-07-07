@@ -103,6 +103,12 @@ class EvidencePrior:
         prior.raw_beliefs = beliefs
         return prior
 
+    @classmethod
+    def from_kb(cls, kb, space: MediumDesignSpace, outcome: str, *, beta: float = 3.0
+               ) -> "EvidencePrior":
+        """Build a prior from evidence summaries stored in the knowledge base."""
+        return cls.from_summaries(space, kb.get_evidence_summaries(outcome=outcome), beta=beta)
+
     def describe(self) -> str:
         if not self.raw_beliefs:
             return "(no evidence-derived beliefs)"

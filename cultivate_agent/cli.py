@@ -237,6 +237,53 @@ def cmd_stats(args) -> int:
     return 0
 
 
+def cmd_evidence(args) -> int:
+    """Extract quoted directional effects over the corpus, synthesize, store + export."""
+    cfg = _apply_overrides(load_config(root=args.root), args)
+    from .evidence import extract_effects, synthesize
+    from .ingest import iter_ingested
+    from .normalize import ComponentNormalizer
+
+    client = cfg.make_llm_client()
+    normalizer = ComponentNormalizer(cfg.ontology_dir)
+    kb = _kb(cfg)
+    items = []
+    n = 0
+    for paths, meta in iter_ingested(cfg.papers_dir):
+        if args.limit and n >= args.limit:
+            break
+        text = paths.read_fulltext()
+        if not text.strip():
+            continue
+        found = extract_effects(client, meta.ref, text, args.outcome, normalizer=normalizer,
+                                verify_evidence=cfg.extract.require_evidence)
+        items.extend(found)
+        n += 1
+        print(f"  {meta.ref.paper_id}: {len(found)} directional effect(s)")
+
+    summaries = synthesize(items)
+    kb.upsert_evidence_summaries(summaries)
+
+    out = Path(args.out or (cfg.data_path / "exports")) / f"evidence_{args.outcome}.csv"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    import csv as _csv
+    with out.open("w", newline="", encoding="utf-8") as f:
+        w = _csv.writer(f)
+        w.writerow(["component", "outcome", "context", "k", "method", "p_beneficial",
+                    "ci_low", "ci_high", "i_squared", "context_dependent", "paper_ids", "note"])
+        for s in summaries:
+            w.writerow([s.component, s.outcome, s.context_key, s.k, s.method, s.p_beneficial,
+                        s.ci_low, s.ci_high, s.i_squared, s.context_dependent,
+                        ";".join(s.paper_ids), s.note])
+    kb.close()
+    print(f"\nSynthesized {len(summaries)} (component,outcome,context) summaries from {len(items)} "
+          f"effects over {n} papers -> {out}")
+    for s in summaries[:12]:
+        flag = "  [context-dependent: TEST DIRECTLY]" if s.context_dependent else ""
+        print(f"  {s.component:24s} p_beneficial={s.p_beneficial:.2f} (k={s.k}, {s.method}){flag}")
+    return 0
+
+
 def _parse_weights(spec: str) -> dict:
     weights = {}
     for part in spec.split(","):
@@ -382,7 +429,17 @@ def cmd_optimize(args) -> int:
                                     verify_citations=args.verify_citations)
     mobo = MultiObjectiveBO(space, objectives, backend=args.backend)
     egm = EvidenceGuidedMOBO(mobo, recommender, normalizer=ComponentNormalizer(cfg.ontology_dir))
-    proposal = egm.propose(weights, context, batch_size=args.batch)
+
+    evidence_prior = None
+    if args.evidence_prior:
+        from .optimize import EvidencePrior
+        # Highest-weighted objective drives the prior's evidence direction.
+        primary = max(weights.normalized, key=weights.normalized.get)
+        evidence_prior = EvidencePrior.from_kb(kb, space, primary)
+        if evidence_prior.raw_beliefs:
+            print(f"Evidence prior ({primary}):\n{evidence_prior.describe()}\n")
+
+    proposal = egm.propose(weights, context, batch_size=args.batch, evidence_prior=evidence_prior)
     kb.close()
 
     if args.json:
@@ -556,6 +613,14 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("stats", help="knowledge-base summary")
     sp.set_defaults(func=cmd_stats)
 
+    sp = sub.add_parser("evidence", help="synthesize literature evidence into priors (P(component beneficial))")
+    sp.add_argument("--outcome", default="proliferation",
+                    help="outcome to synthesize evidence for (e.g. proliferation)")
+    sp.add_argument("--limit", type=int, help="only first N papers")
+    sp.add_argument("--out", help="output directory")
+    add_llm_flags(sp)
+    sp.set_defaults(func=cmd_evidence)
+
     sp = sub.add_parser("design", help="goal-conditioned medium recommendation")
     sp.add_argument("--preset", help="objective-weight preset from config")
     sp.add_argument("--weights", help="e.g. 'proliferation=0.7,cost=0.2,differentiation_retention=0.1'")
@@ -584,6 +649,8 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--rounds", type=int, default=6, help="rounds (demo mode)")
     sp.add_argument("--backend", default="gp", help="gp | botorch | botorch-log")
     sp.add_argument("--verify-citations", action="store_true", help="run a second LLM verifier over LLM-seeded candidate citations")
+    sp.add_argument("--evidence-prior", action="store_true",
+                    help="bias the batch with literature evidence priors (run `cultivate evidence` first)")
     sp.add_argument("--json", action="store_true", help="emit JSON")
     add_llm_flags(sp)
     sp.set_defaults(func=cmd_optimize)

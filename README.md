@@ -22,12 +22,22 @@ literature — and adapts that recipe to cell-culture media. See
 mapping to ReactionSeek.
 
 ```
- ingest ─▶ triage ─▶ extract ─▶ normalize ─▶ knowledge base ─▶ retrieve ─▶ design ─▶ optimize
- (BibTeX   (A/B/C    (schema A–M  (ontology +   (SQLite:         (BM25 /    (goal-     (evidence-
-  +PDFs)    tiers)    evidence-    unit-aware)    papers,          embed-     cond.      grounded
-                      grounded)                   components,      ding)      medium     LLM-warm-
-                                                  evidence)                   cands)     started MOBO)
+ ingest ─▶ triage ─▶ extract ─▶ normalize ─▶ knowledge base ─▶ evidence ─▶ retrieve ─▶ design ─▶ optimize
+ (BibTeX   (A/B/C    (blocks OR   (ontology +   (SQLite:         (random-    (BM25/    (goal-    (evidence-prior
+  +PDFs)    tiers)    operators;   unit-aware)    papers,          effects     embed)    cond.      guided MOBO;
+                      evidence-                   components,      meta-                  medium     qNEHVI/qLogNEHVI)
+                      grounded)                   evidence)        analysis)              cands)
 ```
+
+**Two additions beyond a plain "LLM extracts, BO suggests" pipeline:**
+
+* **Operator extraction** (`--mode operators`): the A–M schema is split into small,
+  section-routed operators — far more reliable with real LLMs than one giant prompt.
+* **Evidence synthesis** (`cultivate evidence`): heterogeneous cross-paper results are
+  pooled by **random-effects meta-analysis** into honest "is component X beneficial?"
+  posteriors *with uncertainty*, which bias the optimizer as **priors** (πBO), never as
+  labels. High-heterogeneity components are flagged "test directly". See
+  [`docs/EVIDENCE_SYNTHESIS.md`](docs/EVIDENCE_SYNTHESIS.md).
 
 The last stage — `optimize` — closes the loop: it proposes a **pre-registerable
 batch of next experiments** on the cost/performance Pareto front using
@@ -121,6 +131,9 @@ cultivate extract --tier A --mode operators
 cultivate stats
 cultivate export                     # screening_table.csv, medium_components.csv, evidence.csv, extractions.jsonl
 
+# 4b. Synthesize heterogeneous literature evidence into priors for one outcome:
+cultivate evidence --outcome proliferation   # -> P(component beneficial) + I², stored in the KB
+
 # 5. Ask for a medium design, conditioned on objectives + context:
 cultivate design \
   --weights "proliferation=0.6,cost=0.3,differentiation_retention=0.1" \
@@ -136,6 +149,8 @@ cultivate design --verify-citations \
 # 6. Optimize: propose the next PRE-REGISTERABLE batch of experiments:
 cultivate optimize --weights "proliferation=0.6,cost=0.4" \
   --cell "bovine satellite cells" --species bovine --batch 4
+# ...guided by the literature evidence priors from step 4b:
+cultivate optimize --weights "proliferation=0.6,cost=0.4" --evidence-prior
 # ...or watch the closed loop converge offline (no KB / API key):
 cultivate optimize --demo --rounds 6
 # optional BoTorch log-qNEHVI backend:
@@ -206,9 +221,10 @@ cultivate_agent/
   extract/      domain prompts + evidence-grounded schema extractor
   normalize/    ontology component canonicalization + provenance-preserving units
   kb/           SQLite knowledge base + CSV/JSONL exports
-  retrieve/     BM25 (+ fallback) retriever over the KB
-  design/       fixed objectives/weights + goal-conditioned medium recommender
-  optimize/     evidence-grounded, LLM-warm-started multi-objective Bayesian optimization
+  evidence/     random-effects meta-analysis (DerSimonian-Laird + I²) over quoted effects
+  retrieve/     BM25 + embedding (+ fallback) retriever over the KB
+  design/       fixed objectives/weights + goal-conditioned medium recommender (+ verifier)
+  optimize/     LLM-warm-started multi-objective BO (q-ParEGO / qNEHVI) + evidence πBO priors
   evaluate/     extraction P/R/F1 + grounding-rate benchmarking
   cli.py        `cultivate` command-line entrypoint
 config/

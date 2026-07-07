@@ -70,6 +70,27 @@ def test_synthesize_groups_and_ranks():
     assert out[0].component == "FGF2"
 
 
+def test_kb_evidence_roundtrip_and_prior(tmp_path):
+    from cultivate_agent.evidence import EvidenceItem, synthesize
+    from cultivate_agent.kb import KnowledgeBase
+    from cultivate_agent.optimize import EvidencePrior, default_medium_space
+
+    items = [EvidenceItem("FGF2", "proliferation", f"p{i}", effect=e, variance=0.05)
+             for i, e in enumerate([0.8, 0.9])]
+    items += [EvidenceItem("FBS", "proliferation", "p1", direction=-1),
+              EvidenceItem("FBS", "proliferation", "p2", direction=-1)]
+    kb = KnowledgeBase(tmp_path / "kb.sqlite")
+    kb.upsert_evidence_summaries(synthesize(items))
+    back = {s.component: s for s in kb.get_evidence_summaries(outcome="proliferation")}
+    assert back["FGF2"].p_beneficial == pytest.approx(1.0, abs=0.05)
+    assert back["FBS"].p_beneficial < 0.5
+
+    prior = EvidencePrior.from_kb(kb, default_medium_space(), "proliferation")
+    by = {b.parameter: b for b in prior.raw_beliefs}
+    assert by["FGF2"].direction == 1 and by["FBS"].direction == -1
+    kb.close()
+
+
 def test_extract_effects_drops_ungrounded(monkeypatch):
     from cultivate_agent.evidence import extract_effects
     from cultivate_agent.llm import get_client

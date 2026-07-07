@@ -4,6 +4,14 @@
 最后更新：2026-07-08
 English version: [`PROJECT_WORKFLOW.md`](PROJECT_WORKFLOW.md)
 
+> **第二轮新增（详见 `SESSION_LOG.md`）。** 在“抽取”与“优化”之间新增两个阶段：
+> (1) **算子式抽取**——`cultivate extract --mode operators` 把 A–M schema 拆成若干
+> 小的、按章节路由的算子（对真实大模型更可靠）；(2) **证据综合**——`cultivate
+> evidence --outcome <指标>` 用随机效应 meta 分析把跨文献的异质结果汇聚为
+> `P(成分有益)`+I² 后验，存入知识库，并作为 πBO 先验注入 `cultivate optimize
+> --evidence-prior`（只作先验、绝不作标签；高异质 I² 的成分标记为“需直接实验验证”）。
+> 详见 [`EVIDENCE_SYNTHESIS.md`](EVIDENCE_SYNTHESIS.md)、[`OPTIMIZATION.md`](OPTIMIZATION.md)。
+
 这是 CultivateAgent 的控制性项目手册，给开发者、文献复核者、湿实验合作者、
 项目负责人，以及需要接管同一项目的 Codex、Claude 或其他 AI 使用。它不是日记，
 而是让多人和多 AI 不冲突地推进同一个论文项目的操作地图。

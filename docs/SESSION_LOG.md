@@ -23,6 +23,7 @@ Branch: `session/eval-retrieval-mobo-hardening`
 - Added `scripts/evaluate_medium_corpus.py`:
   - Four hand-annotated real medium-paper fixtures.
   - Offline provider profiles for repeatable T1/T2 protocol checks.
+  - Optional `--live-provider provider:model` mode to run the same fixture texts through real provider clients when API keys are present.
   - Writes `docs/EVAL_RESULTS.md` and `docs/MODEL_AGREEMENT.md`.
 - Installed `torch`, `botorch`, and `gpytorch` into `.venv`.
 - Added a BoTorch qNEHVI test guarded by `pytest.importorskip`; it now runs in this venv because the optional deps are installed.
@@ -58,10 +59,12 @@ Branch: `session/eval-retrieval-mobo-hardening`
   - PyTorch sparse invariant warning from `linear_operator`.
 - `smoke`: still passed after changes.
 - `optimize --demo --rounds 6`: still passed after changes.
+- `scripts/evaluate_medium_corpus.py`: default offline mode passed.
+- `scripts/evaluate_medium_corpus.py --out-dir /tmp/cultivate_eval_live_check --live-provider openai:gpt-test --live-limit 1`: live-mode plumbing completed and wrote reports in the temp directory.
 
 ## What I Did Not Do
 
-- I did not run real GPT/Claude/Gemini extraction because no provider API credentials were used in this session.
+- I did not complete the requested real GPT/Claude/Gemini extraction comparison across three providers; the script now supports live provider runs, but the committed reports remain the deterministic offline fixture reports.
 - I did not claim the fixture metrics are production extraction accuracy; they are protocol checks over short source excerpts.
 - I did not change the locked medium-only action scope.
 - I pushed the branch to `origin/session/eval-retrieval-mobo-hardening`; I did not open a PR.

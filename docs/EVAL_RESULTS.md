@@ -1,6 +1,6 @@
 # Extraction Evaluation Results
 
-Status: offline hand-annotated fixture over four real medium papers. This is a smoke benchmark for `evaluate.evaluate_corpus`, not a claim of full-paper production accuracy.
+Status: offline hand-annotated fixture over four real medium papers. This is a smoke benchmark for `evaluate.evaluate_corpus`, not a claim of full-paper production accuracy. When `--live-provider provider:model` is supplied, the same fixture texts are extracted through the real provider client and scored here.
 
 Evaluated provider profile: `mock_gpt`
 

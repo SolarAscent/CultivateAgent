@@ -131,6 +131,20 @@ cultivate extract --tier A --provider anthropic --model claude-opus-4-6
 cultivate extract --tier A --provider gemini    --model gemini-3.1-pro
 ```
 
+The offline evaluation fixture can also be re-run with live provider calls when
+API keys are present:
+
+```bash
+python scripts/evaluate_medium_corpus.py \
+  --live-provider openai:gpt-5.4 \
+  --live-provider anthropic:claude-opus-4-6 \
+  --live-provider gemini:gemini-3.1-pro \
+  --provider openai:gpt-5.4
+```
+
+If a provider is unavailable, the agreement report records the failure instead
+of fabricating a comparison.
+
 ---
 
 ## The extraction schema (A–M)

@@ -1,6 +1,8 @@
 # Provider Agreement Report
 
-Status: offline cross-provider simulation (`mock_gpt`, `mock_claude`, `mock_gemini`). The script is wired so real provider outputs can replace these fixtures, but no API-backed GPT/Claude/Gemini run was performed in this environment.
+Status: offline cross-provider simulation (`mock_gpt`, `mock_claude`, `mock_gemini`).
+
+Compared providers: `mock_claude`, `mock_gemini`, `mock_gpt`
 
 ## Agreement By Categorical Field
 

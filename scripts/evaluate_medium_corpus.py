@@ -13,12 +13,16 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Sequence, Tuple
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 from cultivate_agent.evaluate import evaluate_corpus
 from cultivate_agent.evaluate.extraction_eval import normalize_value
+from cultivate_agent.extract import extract_paper
+from cultivate_agent.llm import get_client
+from cultivate_agent.llm.base import LLMError
 from cultivate_agent.schema.evidence import Confidence, Evidence
 from cultivate_agent.schema.extraction import PaperExtraction, _BLOCK_ATTR
+from cultivate_agent.schema.paper import PaperRef
 
 
 @dataclass(frozen=True)
@@ -32,6 +36,17 @@ class PaperFixture:
     evidence_quotes: Dict[str, str]
     provider_fields: Dict[str, Dict[str, object]]
     provider_evidence: Dict[str, Dict[str, str]]
+
+
+@dataclass(frozen=True)
+class ProviderSpec:
+    provider: str
+    model: str
+
+    @property
+    def label(self) -> str:
+        safe_model = self.model.replace("/", "_").replace(":", "_")
+        return f"{self.provider}:{safe_model}"
 
 
 def _set_field(ext: PaperExtraction, path: str, value: object) -> None:
@@ -334,6 +349,55 @@ def _fixtures() -> List[PaperFixture]:
     ]
 
 
+def parse_provider_spec(spec: str) -> ProviderSpec:
+    if ":" not in spec:
+        raise ValueError("live provider specs must look like provider:model")
+    provider, model = spec.split(":", 1)
+    provider, model = provider.strip(), model.strip()
+    if not provider or not model:
+        raise ValueError("live provider specs must include both provider and model")
+    return ProviderSpec(provider=provider, model=model)
+
+
+def _paper_ref(paper: PaperFixture) -> PaperRef:
+    year = None
+    for token in paper.reference.replace("(", " ").replace(")", " ").split():
+        if token.isdigit() and len(token) == 4:
+            year = int(token)
+            break
+    journal = paper.reference.split(",", 1)[1].split("(", 1)[0].strip() if "," in paper.reference else ""
+    return PaperRef(paper_id=paper.paper_id, title=paper.title, year=year, journal=journal, url=paper.sources[0])
+
+
+def run_live_provider(
+    papers: Sequence[PaperFixture],
+    spec: ProviderSpec,
+    *,
+    limit: Optional[int] = None,
+) -> Tuple[Optional[List[PaperExtraction]], Optional[str]]:
+    try:
+        client = get_client(spec.provider, spec.model, temperature=0.0, max_tokens=4096, timeout_s=120)
+    except LLMError as e:
+        return None, f"{spec.label}: client setup failed: {e}"
+
+    out: List[PaperExtraction] = []
+    for paper in list(papers)[: limit or None]:
+        try:
+            out.append(
+                extract_paper(
+                    client,
+                    _paper_ref(paper),
+                    paper.source_text,
+                    full=True,
+                    verify_evidence=True,
+                    max_context_chars=12000,
+                )
+            )
+        except Exception as e:  # noqa: BLE001 - keep the other providers/papers reportable
+            return None, f"{spec.label}: extraction failed on {paper.paper_id}: {e}"
+    return out, None
+
+
 def _values_for_provider(papers: Sequence[PaperFixture], provider: str) -> List[PaperExtraction]:
     return [
         _make_extraction(p, p.provider_fields[provider], p.provider_evidence.get(provider, {}), model=provider)
@@ -402,11 +466,30 @@ def markdown_table(rows: Iterable[Dict[str, object]], columns: Sequence[str]) ->
     return "\n".join(lines)
 
 
-def write_reports(out_dir: Path, provider: str = "mock_gpt") -> Tuple[Path, Path]:
+def write_reports(
+    out_dir: Path,
+    provider: str = "mock_gpt",
+    *,
+    live_specs: Optional[Sequence[ProviderSpec]] = None,
+    live_limit: Optional[int] = None,
+) -> Tuple[Path, Path]:
     papers = _fixtures()
+    if live_limit:
+        papers = papers[:live_limit]
     golds = _gold_values(papers)
     provider_names = sorted(papers[0].provider_fields)
     predictions = {name: _values_for_provider(papers, name) for name in provider_names}
+    live_failures: List[str] = []
+    for spec in live_specs or []:
+        exts, err = run_live_provider(papers, spec, limit=live_limit)
+        if err:
+            live_failures.append(err)
+        elif exts:
+            predictions[spec.label] = exts
+
+    if provider not in predictions:
+        available = ", ".join(sorted(predictions))
+        raise ValueError(f"provider {provider!r} not available; choose one of: {available}")
 
     report = evaluate_corpus(predictions[provider], golds)
     rows = report.to_rows()
@@ -421,7 +504,8 @@ def write_reports(out_dir: Path, provider: str = "mock_gpt") -> Tuple[Path, Path
     eval_path.write_text(
         "# Extraction Evaluation Results\n\n"
         "Status: offline hand-annotated fixture over four real medium papers. "
-        "This is a smoke benchmark for `evaluate.evaluate_corpus`, not a claim of full-paper production accuracy.\n\n"
+        "This is a smoke benchmark for `evaluate.evaluate_corpus`, not a claim of full-paper production accuracy. "
+        "When `--live-provider provider:model` is supplied, the same fixture texts are extracted through the real provider client and scored here.\n\n"
         f"Evaluated provider profile: `{provider}`\n\n"
         f"- Papers: {report.n_papers}\n"
         f"- Mean grounding rate: {report.mean_grounding()}\n"
@@ -441,10 +525,19 @@ def write_reports(out_dir: Path, provider: str = "mock_gpt") -> Tuple[Path, Path
         encoding="utf-8",
     )
 
+    status = "offline cross-provider simulation (`mock_gpt`, `mock_claude`, `mock_gemini`)."
+    if live_specs:
+        live_labels = ", ".join(s.label for s in live_specs)
+        status += f" Requested live providers: {live_labels}."
+        if live_failures:
+            status += " Some live providers failed or were skipped; see below."
     agreement_path.write_text(
         "# Provider Agreement Report\n\n"
-        "Status: offline cross-provider simulation (`mock_gpt`, `mock_claude`, `mock_gemini`). "
-        "The script is wired so real provider outputs can replace these fixtures, but no API-backed GPT/Claude/Gemini run was performed in this environment.\n\n"
+        f"Status: {status}\n\n"
+        + ("## Live Provider Failures\n\n" + "\n".join(f"- {x}" for x in live_failures) + "\n\n" if live_failures else "")
+        + "Compared providers: "
+        + ", ".join(f"`{p}`" for p in sorted(predictions))
+        + "\n\n"
         "## Agreement By Categorical Field\n\n"
         + markdown_table(agreement_rows, ["field", "mean_kappa", "mean_exact"])
         + "\n\n## Least Reliable Fields\n\n"
@@ -462,9 +555,23 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", default="docs", help="directory for markdown reports")
     parser.add_argument("--provider", default="mock_gpt", help="fixture provider profile to score")
+    parser.add_argument(
+        "--live-provider",
+        action="append",
+        default=[],
+        metavar="PROVIDER:MODEL",
+        help="run a real provider/model on the fixture texts; may be repeated",
+    )
+    parser.add_argument("--live-limit", type=int, help="limit fixture papers for live provider runs")
     args = parser.parse_args()
 
-    eval_path, agreement_path = write_reports(Path(args.out_dir), provider=args.provider)
+    live_specs = [parse_provider_spec(s) for s in args.live_provider]
+    eval_path, agreement_path = write_reports(
+        Path(args.out_dir),
+        provider=args.provider,
+        live_specs=live_specs,
+        live_limit=args.live_limit,
+    )
     print(f"+ wrote {eval_path}")
     print(f"+ wrote {agreement_path}")
     return 0

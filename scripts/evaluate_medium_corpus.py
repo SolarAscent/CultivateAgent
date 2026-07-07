@@ -445,16 +445,31 @@ def pairwise_agreement(
     for field in fields:
         kappas = []
         exacts = []
+        all_values = []
         for i, a in enumerate(providers):
             for b in providers[i + 1:]:
                 avals = [_value(ext, field) for ext in predictions[a]]
                 bvals = [_value(ext, field) for ext in predictions[b]]
                 kappas.append(cohen_kappa(avals, bvals))
                 exacts.append(sum(x == y for x, y in zip(avals, bvals)) / len(avals))
+            all_values.extend(_value(ext, field) for ext in predictions[a])
+        nonmissing_fraction = (
+            sum(v != "<missing>" for v in all_values) / len(all_values)
+            if all_values else 0.0
+        )
+        if not kappas:
+            rows.append({
+                "field": field,
+                "mean_kappa": "NA",
+                "mean_exact": "NA",
+                "nonmissing_fraction": round(nonmissing_fraction, 4),
+            })
+            continue
         rows.append({
             "field": field,
             "mean_kappa": round(sum(kappas) / len(kappas), 4),
             "mean_exact": round(sum(exacts) / len(exacts), 4),
+            "nonmissing_fraction": round(nonmissing_fraction, 4),
         })
     return rows
 
@@ -472,6 +487,7 @@ def write_reports(
     *,
     live_specs: Optional[Sequence[ProviderSpec]] = None,
     live_limit: Optional[int] = None,
+    agreement_scope: str = "all",
 ) -> Tuple[Path, Path]:
     papers = _fixtures()
     if live_limit:
@@ -494,8 +510,16 @@ def write_reports(
     report = evaluate_corpus(predictions[provider], golds)
     rows = report.to_rows()
     agreement_fields = ["B.main_track", "E.serum_free_status", "J.has_extractable_quant_data", "M.recommended_action"]
-    agreement_rows = pairwise_agreement(predictions, agreement_fields)
-    least_reliable = sorted(agreement_rows, key=lambda r: (r["mean_kappa"], r["mean_exact"]))[:2]
+    live_labels = {s.label for s in live_specs or []}
+    if agreement_scope == "live":
+        agreement_predictions = {k: v for k, v in predictions.items() if k in live_labels}
+    elif agreement_scope == "mock":
+        agreement_predictions = {k: v for k, v in predictions.items() if k.startswith("mock_")}
+    else:
+        agreement_predictions = predictions
+    agreement_rows = pairwise_agreement(agreement_predictions, agreement_fields)
+    numeric_agreement_rows = [r for r in agreement_rows if isinstance(r["mean_kappa"], (int, float))]
+    least_reliable = sorted(numeric_agreement_rows, key=lambda r: (r["nonmissing_fraction"], r["mean_kappa"], r["mean_exact"]))[:2]
 
     out_dir.mkdir(parents=True, exist_ok=True)
     eval_path = out_dir / "EVAL_RESULTS.md"
@@ -535,17 +559,24 @@ def write_reports(
         "# Provider Agreement Report\n\n"
         f"Status: {status}\n\n"
         + ("## Live Provider Failures\n\n" + "\n".join(f"- {x}" for x in live_failures) + "\n\n" if live_failures else "")
+        + f"Agreement scope: `{agreement_scope}`\n\n"
         + "Compared providers: "
-        + ", ".join(f"`{p}`" for p in sorted(predictions))
+        + ", ".join(f"`{p}`" for p in sorted(agreement_predictions))
         + "\n\n"
         "## Agreement By Categorical Field\n\n"
-        + markdown_table(agreement_rows, ["field", "mean_kappa", "mean_exact"])
+        + markdown_table(agreement_rows, ["field", "mean_kappa", "mean_exact", "nonmissing_fraction"])
         + "\n\n## Least Reliable Fields\n\n"
-        + "\n".join(f"- `{r['field']}`: mean kappa {r['mean_kappa']}, exact agreement {r['mean_exact']}" for r in least_reliable)
+        + ("\n".join(
+            f"- `{r['field']}`: mean kappa {r['mean_kappa']}, exact agreement {r['mean_exact']}, "
+            f"non-missing fraction {r['nonmissing_fraction']}"
+            for r in least_reliable
+        )
+           if least_reliable else "- Not enough providers in selected agreement scope.")
         + "\n\n## Interpretation\n\n"
-        "- `E.serum_free_status` is vulnerable to overclaiming chemically defined status from a serum-free claim.\n"
-        "- `J.has_extractable_quant_data` mixes article-level data availability with abstract-level visibility; it needs a stricter rubric.\n"
-        "- `B.main_track` splits when papers are both medium and structured-tissue demonstrations; medium-centered downstream code should keep acting only on medium variables.\n",
+        + "- `E.serum_free_status` is vulnerable to overclaiming chemically defined status from a serum-free claim.\n"
+        + "- `J.has_extractable_quant_data` mixes article-level data availability with abstract-level visibility; it needs a stricter rubric.\n"
+        + "- `B.main_track` splits when papers are both medium and structured-tissue demonstrations; medium-centered downstream code should keep acting only on medium variables.\n"
+        + "- High agreement with low non-missing fraction is not meaningful agreement; it means providers failed to extract the field.\n",
         encoding="utf-8",
     )
     return eval_path, agreement_path
@@ -563,6 +594,12 @@ def main() -> int:
         help="run a real provider/model on the fixture texts; may be repeated",
     )
     parser.add_argument("--live-limit", type=int, help="limit fixture papers for live provider runs")
+    parser.add_argument(
+        "--agreement-scope",
+        choices=["all", "mock", "live"],
+        default="all",
+        help="which provider set to use for agreement metrics",
+    )
     args = parser.parse_args()
 
     live_specs = [parse_provider_spec(s) for s in args.live_provider]
@@ -571,6 +608,7 @@ def main() -> int:
         provider=args.provider,
         live_specs=live_specs,
         live_limit=args.live_limit,
+        agreement_scope=args.agreement_scope,
     )
     print(f"+ wrote {eval_path}")
     print(f"+ wrote {agreement_path}")

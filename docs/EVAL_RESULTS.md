@@ -2,36 +2,38 @@
 
 Status: offline hand-annotated fixture over four real medium papers. This is a smoke benchmark for `evaluate.evaluate_corpus`, not a claim of full-paper production accuracy. When `--live-provider provider:model` is supplied, the same fixture texts are extracted through the real provider client and scored here.
 
-Evaluated provider profile: `mock_gpt`
+Evaluated provider profile: `openai:gpt-5.4`
 
 - Papers: 4
-- Mean grounding rate: 1.0
-- Overall: {'tp': 39, 'fp': 0, 'fn': 8, 'precision': 1.0, 'recall': 0.8298, 'f1': 0.907}
+- Mean grounding rate: None
+- Overall: {'tp': 8, 'fp': 8, 'fn': 39, 'precision': 0.5, 'recall': 0.1702, 'f1': 0.254}
 
 ## Per-Field Scores
 
 | field | tp | fp | fn | precision | recall | f1 |
 | --- | --- | --- | --- | --- | --- | --- |
+| A.journal | 0 | 4 | 0 | 0.0 | 0.0 | 0.0 |
 | A.paper_id | 4 | 0 | 0 | 1.0 | 1.0 | 1.0 |
 | A.title | 4 | 0 | 0 | 1.0 | 1.0 | 1.0 |
-| B.main_track | 4 | 0 | 0 | 1.0 | 1.0 | 1.0 |
-| B.species | 5 | 0 | 1 | 1.0 | 0.8333 | 0.9091 |
+| A.year | 0 | 4 | 0 | 0.0 | 0.0 | 0.0 |
+| B.main_track | 0 | 0 | 4 | 0.0 | 0.0 | 0.0 |
+| B.species | 0 | 0 | 6 | 0.0 | 0.0 | 0.0 |
 | B.target_product_type | 0 | 0 | 2 | 0.0 | 0.0 | 0.0 |
-| D.cell_type | 3 | 0 | 0 | 1.0 | 1.0 | 1.0 |
-| E.conditioned_medium_or_recycling | 1 | 0 | 0 | 1.0 | 1.0 | 1.0 |
-| E.growth_factors | 1 | 0 | 0 | 1.0 | 1.0 | 1.0 |
-| E.hydrolysates_or_extracts | 1 | 0 | 0 | 1.0 | 1.0 | 1.0 |
-| E.medium_optimization_strategy | 1 | 0 | 2 | 1.0 | 0.3333 | 0.5 |
-| E.serum_free_status | 4 | 0 | 0 | 1.0 | 1.0 | 1.0 |
+| D.cell_type | 0 | 0 | 3 | 0.0 | 0.0 | 0.0 |
+| E.conditioned_medium_or_recycling | 0 | 0 | 1 | 0.0 | 0.0 | 0.0 |
+| E.growth_factors | 0 | 0 | 1 | 0.0 | 0.0 | 0.0 |
+| E.hydrolysates_or_extracts | 0 | 0 | 1 | 0.0 | 0.0 | 0.0 |
+| E.medium_optimization_strategy | 0 | 0 | 3 | 0.0 | 0.0 | 0.0 |
+| E.serum_free_status | 0 | 0 | 4 | 0.0 | 0.0 | 0.0 |
 | H.structured_product_goal | 0 | 0 | 1 | 0.0 | 0.0 | 0.0 |
-| I.differentiation_metrics | 1 | 0 | 0 | 1.0 | 1.0 | 1.0 |
+| I.differentiation_metrics | 0 | 0 | 1 | 0.0 | 0.0 | 0.0 |
 | I.proliferation_metrics | 0 | 0 | 1 | 0.0 | 0.0 | 0.0 |
-| J.extractable_variables | 1 | 0 | 0 | 1.0 | 1.0 | 1.0 |
-| J.has_extractable_quant_data | 4 | 0 | 0 | 1.0 | 1.0 | 1.0 |
-| J.key_numeric_results | 1 | 0 | 0 | 1.0 | 1.0 | 1.0 |
+| J.extractable_variables | 0 | 0 | 1 | 0.0 | 0.0 | 0.0 |
+| J.has_extractable_quant_data | 0 | 0 | 4 | 0.0 | 0.0 | 0.0 |
+| J.key_numeric_results | 0 | 0 | 1 | 0.0 | 0.0 | 0.0 |
 | K.core_findings | 0 | 0 | 1 | 0.0 | 0.0 | 0.0 |
-| M.recommended_action | 4 | 0 | 0 | 1.0 | 1.0 | 1.0 |
-| OVERALL | 39 | 0 | 8 | 1.0 | 0.8298 | 0.907 |
+| M.recommended_action | 0 | 0 | 4 | 0.0 | 0.0 | 0.0 |
+| OVERALL | 8 | 8 | 39 | 0.5 | 0.1702 | 0.254 |
 
 ## Corpus
 
@@ -42,6 +44,7 @@ Evaluated provider profile: `mock_gpt`
 
 ## Error Analysis
 
+- Live provider run note: `openai:gpt-5.4` and `anthropic:claude-opus-4-6` completed on the four fixture texts, but the scored A-M fields were almost entirely missing beyond bibliographic prefill. The resulting F1 is low and grounding rate is `None`, so this run diagnoses prompt/provider non-compliance or insufficient fixture context rather than successful production extraction.
 - The A-M schema is broad enough that sparse abstracts under-score fields that require methods/tables; this fixture should be treated as a lower-bound protocol check.
 - Medium fields are the most stable when the source explicitly names serum-free status or a component. Growth-factor and extract names still need synonym canonicalization before scoring.
 - Quantitative fields are brittle: `partial` versus `yes` often depends on whether the paper has machine-readable tables, not only whether the abstract mentions numbers.

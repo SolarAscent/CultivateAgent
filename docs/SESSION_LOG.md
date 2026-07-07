@@ -45,6 +45,11 @@ Branch: `session/eval-retrieval-mobo-hardening`
 - Provider agreement fixture:
   - Least reliable fields: `J.has_extractable_quant_data`, `B.main_track`.
   - `E.serum_free_status` is also risky because providers can overclaim "chemically defined".
+- Live OpenAI/Anthropic agreement run:
+  - Ran `scripts/evaluate_medium_corpus.py --live-provider openai:gpt-5.4 --live-provider anthropic:claude-opus-4-6 --agreement-scope live --provider openai:gpt-5.4`.
+  - Both providers completed, but scored A-M fields were nearly all missing beyond bibliographic prefill.
+  - Agreement kappa is therefore not meaningful despite being 1.0 on selected categorical fields; `MODEL_AGREEMENT.md` now reports `nonmissing_fraction=0.0` to expose this.
+  - `openai:gpt-5.4` fixture F1 was 0.254 with no verified evidence quotes.
 - MOBO synthetic comparison, 3 seeds:
   - q-ParEGO mean normalized final HV: 0.924.
   - qNEHVI mean normalized final HV: 0.963.
@@ -64,7 +69,7 @@ Branch: `session/eval-retrieval-mobo-hardening`
 
 ## What I Did Not Do
 
-- I did not complete the requested real GPT/Claude/Gemini extraction comparison across three providers; the script now supports live provider runs, but the committed reports remain the deterministic offline fixture reports.
+- I did not complete the requested real GPT/Claude/Gemini extraction comparison across three providers. OpenAI and Anthropic were run live, but Gemini was unavailable because no Gemini/Google key was present; the live OpenAI/Anthropic outputs were too sparse to count as a successful model-comparison result.
 - I did not claim the fixture metrics are production extraction accuracy; they are protocol checks over short source excerpts.
 - I did not change the locked medium-only action scope.
 - I pushed the branch to `origin/session/eval-retrieval-mobo-hardening`; I did not open a PR.

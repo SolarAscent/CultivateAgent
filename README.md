@@ -285,10 +285,11 @@ Useful scripts:
   Its report paths are repo-relative so the committed audit is portable across
   Codex/Claude worktrees.
 - `cultivate review-packet`: creates human-review passage locators without AI
-  adjudication.
+  adjudication; local full-text paths are repo-relative for portable handoff.
 - `cultivate adjudication-template` / `cultivate adjudication-validate`: creates
-  and checks a human-fillable evidence-adjudication worksheet; a blank PASS only
-  means the worksheet format is valid, not that evidence has been approved.
+  and checks a human-fillable evidence-adjudication worksheet with the same
+  portable paths; a blank PASS only means the worksheet format is valid, not
+  that evidence has been approved.
 - `cultivate adjudication-export`: converts valid human-supported or partial
   decisions into `data/literature/bovine_evidence_table.tsv` without inventing
   evidence; the current blank worksheet exports zero rows.

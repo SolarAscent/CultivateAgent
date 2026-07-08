@@ -196,10 +196,14 @@ def test_review_packet_builds_locators_without_adjudicating(tmp_path):
         papers_dir=papers,
         review_ids=["H001"],
         top_k=2,
+        path_base=tmp_path,
     )
     assert packet[0].status == "ready_for_human_review"
+    assert packet[0].fulltext_path.startswith("papers/")
+    assert not packet[0].fulltext_path.startswith("/")
     assert packet[0].hits
     assert packet[0].hits[0].start < packet[0].hits[0].end
+    assert packet[0].hits[0].fulltext_path == packet[0].fulltext_path
 
     out = write_review_packet_markdown(packet, tmp_path / "packet.md")
     rendered = out.read_text(encoding="utf-8")
@@ -250,10 +254,12 @@ def test_adjudication_template_and_validation(tmp_path):
         papers_dir=papers,
         review_ids=["H001"],
         out_path=tmp_path / "worksheet.tsv",
+        path_base=tmp_path,
     )
     text = worksheet.read_text(encoding="utf-8")
     assert "\tdecision\t" in text
     assert "\tsupported\t" not in text
+    assert "\tpapers/paper-one/fulltext.txt\t" in text
 
     # Blank decisions are allowed while the worksheet is still awaiting human review.
     assert validate_adjudication_worksheet(worksheet).ok

@@ -550,10 +550,11 @@ Gate：论文 claims 可追溯到证据和结果。
   14 个 direct-ready、0 个 full-text fallback-ready、2 个 R024 missing。生成报告
   现在记录 repo-relative 的 `data/papers/...` 路径，因此在 Codex/Claude worktree
   之间保持稳定。
-- `cultivate review-packet` 能为人工复核生成本地 full-text 字符范围 locators，
-  但不做 evidence adjudication。
+- `cultivate review-packet` 能为人工复核生成 repo-relative 本地 full-text 字符范围
+  locators，但不做 evidence adjudication。
 - `cultivate adjudication-template` 和 `cultivate adjudication-validate` 能创建和
-  检查 H001-H014 人工填写工作表，但不判断证据是否 supported。
+  检查带有可移植 `data/papers/...` 路径的 H001-H014 人工填写工作表，但不判断证据
+  是否 supported。
 - `cultivate adjudication-export` 会把有效的人工 `supported` 或 `partial`
   行导出到 `data/literature/bovine_evidence_table.tsv`；当前提交的证据表只有表头，
   因为还没有人工 decision。

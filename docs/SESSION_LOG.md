@@ -1413,3 +1413,72 @@ Claude, or a human reruns the command from different worktrees.
    configured locally without committing secrets.
 3. Ask Claude to rebase/rebaseline on updated `main` before continuing the v4
    quality run.
+
+---
+
+# Session 19 (Codex) — portable human-review packet paths
+
+Date: 2026-07-09
+Branch: `codex/review-packet-portable-paths`
+
+## Coordination Decision
+
+After making extraction-readiness paths portable, the same problem remained in
+the S4 human-review packet and blank adjudication worksheet. Both artifacts are
+meant to be shared among Codex, Claude, and human reviewers, but they recorded
+machine-specific absolute `fulltext.txt` paths.
+
+The decision was to make review-packet and adjudication-template outputs use
+repo-relative `data/papers/...` paths too. This keeps the human review handoff
+stable across isolated worktrees and avoids noisy path-only diffs.
+
+## Changes Made
+
+- Added a `path_base` option to `build_review_packet`.
+- Added the same option to `write_adjudication_template`.
+- `cultivate review-packet` and `cultivate adjudication-template` now pass the
+  configured project root, producing portable `data/papers/.../fulltext.txt`
+  paths.
+- `write_adjudication_template` now writes LF line endings explicitly so TSV
+  regeneration does not introduce diff-check whitespace noise.
+- Regenerated `docs/HUMAN_REVIEW_PACKET_H001_H016.md` and
+  `data/literature/bovine_adjudication_H001_H014.tsv`.
+- Added regression assertions that review packet hits and worksheet rows use
+  relative paths when a path base is provided.
+- Updated README and both workflow manuals.
+
+## What This Does Not Claim
+
+- No human review decision was entered.
+- No evidence field was approved.
+- No live extraction was run.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `.venv/bin/python -m pytest tests/test_evidence.py::test_review_packet_builds_locators_without_adjudicating tests/test_evidence.py::test_adjudication_template_and_validation -q`:
+  passed.
+- `.venv/bin/python -m pytest -q`: 62 passed, 2 skipped.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv`:
+  passed; regenerated the blank 14-row human worksheet with relative paths.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed after LF-regenerating the worksheet; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Merge this short-lived branch into `main`, push, and delete it.
+2. Keep the next scientific step focused on H014 live pilot or human
+   adjudication after Claude rebases on current `main`.
+3. Do not regenerate or overwrite the human worksheet after a reviewer starts
+   filling decisions; validate/export it instead.

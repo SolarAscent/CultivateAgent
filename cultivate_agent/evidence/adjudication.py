@@ -83,6 +83,7 @@ def write_adjudication_template(
     out_path: str | Path,
     top_k: int = 3,
     include_missing: bool = False,
+    path_base: str | Path | None = None,
 ) -> Path:
     """Write a TSV worksheet prefilled with review task metadata and locators."""
     items = build_review_packet(
@@ -91,6 +92,7 @@ def write_adjudication_template(
         papers_dir=papers_dir,
         review_ids=review_ids,
         top_k=top_k,
+        path_base=path_base,
     )
     rows = []
     for item in items:
@@ -123,7 +125,12 @@ def write_adjudication_template(
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=WORKSHEET_COLUMNS, delimiter="\t")
+        writer = csv.DictWriter(
+            f,
+            fieldnames=WORKSHEET_COLUMNS,
+            delimiter="\t",
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(rows)
     return out

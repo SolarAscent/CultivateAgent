@@ -398,6 +398,7 @@ def cmd_review_packet(args) -> int:
         papers_dir=cfg.papers_dir,
         review_ids=ids,
         top_k=args.top_k,
+        path_base=cfg.root,
     )
     out = write_review_packet_markdown(items, args.out)
     ready = sum(1 for i in items if i.status == "ready_for_human_review")
@@ -420,6 +421,7 @@ def cmd_adjudication_template(args) -> int:
         out_path=args.out,
         top_k=args.top_k,
         include_missing=args.include_missing,
+        path_base=cfg.root,
     )
     print(f"+ wrote {out}")
     return 0

@@ -132,11 +132,13 @@ def build_review_packet(
     papers_dir: str | Path,
     review_ids: Iterable[str],
     top_k: int = 5,
+    path_base: str | Path | None = None,
 ) -> List[ReviewPacketItem]:
     ids = set(review_ids)
     tasks = load_review_tasks(review_queue_path, ids=ids)
     manifest = load_manifest(manifest_path)
     ingested = list(iter_ingested(papers_dir))
+    display_base = Path(path_base).resolve() if path_base is not None else Path.cwd().resolve()
     out: List[ReviewPacketItem] = []
     for task in tasks:
         rec = manifest.get(task.source_record_id)
@@ -150,13 +152,13 @@ def build_review_packet(
         paths, meta = match
         item.paper_id = meta.ref.paper_id
         item.title = meta.ref.title
-        item.fulltext_path = str(paths.fulltext)
+        item.fulltext_path = _display_path(paths.fulltext, display_base)
         text = paths.read_fulltext()
         if not text.strip():
             item.status = "missing_fulltext"
         else:
             item.status = "ready_for_human_review"
-            item.hits = rank_passages(text, terms, meta, paths, top_k=top_k)
+            item.hits = rank_passages(text, terms, meta, paths, top_k=top_k, path_base=display_base)
         out.append(item)
     return out
 
@@ -168,9 +170,11 @@ def rank_passages(
     paths: PaperPaths,
     *,
     top_k: int = 5,
+    path_base: str | Path | None = None,
 ) -> List[PassageHit]:
     passages = _paragraph_spans(text)
     term_set = {t.lower() for t in terms}
+    display_base = Path(path_base).resolve() if path_base is not None else Path.cwd().resolve()
     hits: List[PassageHit] = []
     for start, end, passage in passages:
         words = {w.lower() for w in _WORD_RE.findall(passage)}
@@ -183,7 +187,7 @@ def rank_passages(
         hits.append(PassageHit(
             paper_id=meta.ref.paper_id,
             title=meta.ref.title,
-            fulltext_path=str(paths.fulltext),
+            fulltext_path=_display_path(paths.fulltext, display_base),
             start=start,
             end=end,
             score=round(score, 3),
@@ -192,6 +196,14 @@ def rank_passages(
         ))
     hits.sort(key=lambda h: (-h.score, h.start))
     return hits[:top_k]
+
+
+def _display_path(path: Path, base: Path) -> str:
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(base).as_posix()
+    except ValueError:
+        return str(resolved)
 
 
 def write_review_packet_markdown(items: List[ReviewPacketItem], path: str | Path) -> Path:

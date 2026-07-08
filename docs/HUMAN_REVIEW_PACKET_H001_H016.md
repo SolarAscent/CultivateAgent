@@ -25,7 +25,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: Does the full paper support using Beefy-9/B8 plus recombinant albumin as the positive serum-free bovine expansion anchor, and what exact doubling-time/passaging claims should be recorded?
 - Suggested action: Extract exact formulation, dose levels, passage counts, doubling times, and myogenic marker results.
 - Local paper: `simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
+- Full text: `data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
 - Query terms: beefy-9, expansion, benchmark, proliferation_endpoint, doubling_time, passages, full, support, beefy-9/b8, plus, recombinant, albumin, positive, serum-free, bovine, anchor, exact, doubling-time/passaging, claims, recorded, extract, formulation, dose, levels
 
 | Rank | Score | Character Range | Matched Terms |
@@ -44,7 +44,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: What FGF2 concentrations were tested, which concentrations preserved short-term and long-term growth, and where did morphology suffer?
 - Suggested action: Record exact tested FGF2 range and classify safe/reduced/removal levels.
 - Local paper: `simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
+- Full text: `data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
 - Query terms: fgf2, reduction, beefy-9, fgf2_dose_range, growth_effect, morphology, concentrations, were, tested, preserved, short-term, long-term, growth, suffer, exact, range, classify, safe/reduced/removal, levels., simple, effective, serum-free, medium, sustained
 
 | Rank | Score | Character Range | Matched Terms |
@@ -63,7 +63,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: Which recombinant albumin concentration and source were used in Beefy-9/Beefy-9+, and how did cost/performance change?
 - Suggested action: Extract albumin source, g/L or mg/mL, and cost-performance notes.
 - Local paper: `simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
+- Full text: `data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
 - Query terms: albumin, dose, cost, tradeoff, albumin_concentration, albumin_type, recombinant, concentration, source, were, beefy-9/beefy-9+, cost/performance, change, extract, g/l, mg/ml, cost-performance, notes., simple, effective, serum-free, medium, sustained, expansion
 
 | Rank | Score | Character Range | Matched Terms |
@@ -82,7 +82,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: Which components and concentrations made the Kolkmann chemically defined medium animal-free and effective for primary bovine satellite cell expansion?
 - Suggested action: Extract full component table, supplements, attachment conditions, and endpoint values.
 - Local paper: `development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt`
+- Full text: `data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt`
 - Query terms: chemically, defined, bovine, medium, formulation, component_list, dose_range, animal_free_status, components, concentrations, made, kolkmann, animal-free, effective, primary, satellite, cell, expansion, extract, full, component, table, supplements, attachment
 
 | Rank | Score | Character Range | Matched Terms |
@@ -101,7 +101,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: Did cells expanded in the chemically defined medium retain differentiation capacity, and what marker/assay proves it?
 - Suggested action: Record markers, assay timing, and comparison condition.
 - Local paper: `development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt`
+- Full text: `data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt`
 - Query terms: differentiation, capacity, expansion, myogenic_identity, differentiation_capacity, cells, expanded, chemically, defined, medium, retain, marker/assay, proves, markers, assay, timing, comparison, condition., development, vitro, primary, bovine, satellite, serum-free
 
 | Rank | Score | Character Range | Matched Terms |
@@ -120,7 +120,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: Which commercial chemically defined serum-free media supported primary bovine myoblast growth, and how did they compare with serum-containing medium?
 - Suggested action: Record media names, 6-day proliferation data, morphology notes, and limitations.
 - Local paper: `serum-free-media-for-the-growth-of-primary-bovine-myoblasts`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/fulltext.txt`
+- Full text: `data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/fulltext.txt`
 - Query terms: commercial, sfm, benchmark, negative_evidence, serum_free_status, chemically, defined, serum-free, media, supported, primary, bovine, myoblast, growth, they, compare, serum-containing, medium, names, 6-day, proliferation, data, morphology, notes
 
 | Rank | Score | Character Range | Matched Terms |
@@ -139,7 +139,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: Which ligands/receptors enabled serum-free myogenic differentiation, and are any of these also plausible expansion-stage risks or constraints?
 - Suggested action: Extract IGF1R/TFRC/LPAR1-related ligands, markers, and whether expansion formulation should avoid differentiation induction.
 - Local paper: `a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/fulltext.txt`
+- Full text: `data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/fulltext.txt`
 - Query terms: serum-free, differentiation, guardrail, differentiation_endpoint, ligand_list, ligands/receptors, enabled, myogenic, plausible, expansion-stage, risks, constraints, extract, igf1r/tfrc/lpar1-related, ligands, markers, whether, expansion, formulation, avoid, induction., media, cultured, meat
 
 | Rank | Score | Character Range | Matched Terms |
@@ -158,7 +158,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: Which consumed nutrients/metabolites differed by species/cell type, and which findings justify avoiding cross-species transfer?
 - Suggested action: Extract bovine-relevant spent-media findings and any reusable assay recommendations.
 - Local paper: `spent-media-analysis-suggests-cultivated-meat-media-will-require-species-and-cel`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/spent-media-analysis-suggests-cultivated-meat-media-will-require-species-and-cel/fulltext.txt`
+- Full text: `data/papers/spent-media-analysis-suggests-cultivated-meat-media-will-require-species-and-cel/fulltext.txt`
 - Query terms: species, cell-type, dependence, cell_type_specificity, spent_media_features, consumed, nutrients/metabolites, differed, species/cell, type, findings, justify, avoiding, cross-species, transfer, extract, bovine-relevant, spent-media, reusable, assay, recommendations., spent, media, analysis
 
 | Rank | Score | Character Range | Matched Terms |
@@ -177,7 +177,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: Can the microalga-derived nutrient and conditioned-medium system be decomposed into controllable, reproducible variables for first-round testing?
 - Suggested action: Extract CVE dose, conditioned medium fraction, growth effect, and reproducibility caveats.
 - Local paper: `development-of-serum-free-and-grain-derived-nutrient-free-medium-using-microalga`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/development-of-serum-free-and-grain-derived-nutrient-free-medium-using-microalga/fulltext.txt`
+- Full text: `data/papers/development-of-serum-free-and-grain-derived-nutrient-free-medium-using-microalga/fulltext.txt`
 - Query terms: microalga/conditioned, medium, variable, composition_disclosure, algae_extract_dose, conditioned_medium, microalga-derived, nutrient, conditioned-medium, system, decomposed, controllable, reproducible, variables, first-round, testing, extract, cve, dose, conditioned, fraction, growth, effect, reproducibility
 
 | Rank | Score | Character Range | Matched Terms |
@@ -196,7 +196,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: What factors and levels were screened by DOE/RSM, and which optimized formulation should seed the search space?
 - Suggested action: Extract factor list, low/high levels, optimal recipe, response metrics, and validation data.
 - Local paper: `a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
+- Full text: `data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
 - Query terms: doe/rsm, bovine, sfm, formulation, doe_factors, optimized_levels, endpoint, factors, levels, were, screened, optimized, seed, search, space, extract, factor, list, low/high, optimal, recipe, response, metrics, validation
 
 | Rank | Score | Character Range | Matched Terms |
@@ -215,7 +215,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: Did the DOE/RSM formulation preserve proliferative attributes and myogenic identity over longer culture?
 - Suggested action: Record long-term assay length, live assays, transcriptomics summary, and warnings.
 - Local paper: `a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
+- Full text: `data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
 - Query terms: long-term, transcriptomic, validation, long_term_performance, identity_markers, doe/rsm, formulation, preserve, proliferative, attributes, myogenic, identity, longer, culture, assay, length, live, assays, transcriptomics, summary, warnings., simple, robust, serum-free
 
 | Rank | Score | Character Range | Matched Terms |
@@ -234,7 +234,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: Which low-cost food-grade alternatives to serum albumin worked in B8/B9 for bovine muscle stem cells, and at what concentration?
 - Suggested action: Extract substitute identity, dose, performance relative to albumin, and food-grade status.
 - Local paper: `low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med/fulltext.txt`
+- Full text: `data/papers/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med/fulltext.txt`
 - Query terms: albumin, replacement, candidates, albumin_substitute, food_grade, dose_range, low-cost, food-grade, alternatives, serum, worked, b8/b9, bovine, muscle, stem, cells, concentration, extract, substitute, identity, dose, performance, relative, status.
 
 | Rank | Score | Character Range | Matched Terms |
@@ -253,7 +253,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: Is the albumin substitute acting as carrier/stabilizer, nutrient, or undefined bioactive mixture?
 - Suggested action: Assign mechanism class and note unknown composition risk.
 - Local paper: `low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med/fulltext.txt`
+- Full text: `data/papers/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med/fulltext.txt`
 - Query terms: stabilizer, mechanism, mechanism_class, safety, reproducibility, albumin, substitute, acting, carrier/stabilizer, nutrient, undefined, bioactive, mixture, assign, class, note, unknown, composition, risk., low-cost, food-grade, alternatives, serum, albumins
 
 | Rank | Score | Character Range | Matched Terms |
@@ -272,7 +272,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Human question: What media components interacted with bFGF in bovine satellite proliferation, and what were the tested levels?
 - Suggested action: Extract DOE design, factor levels, interaction terms, and effect direction.
 - Local paper: `influence-of-media-composition-on-the-level-of-bovine-satellite-cell-proliferati`
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/influence-of-media-composition-on-the-level-of-bovine-satellite-cell-proliferati/fulltext.txt`
+- Full text: `data/papers/influence-of-media-composition-on-the-level-of-bovine-satellite-cell-proliferati/fulltext.txt`
 - Query terms: bfgf/media, composition, interactions, bfgf_dose, interaction_effects, doe_model, media, components, interacted, bfgf, bovine, satellite, proliferation, were, tested, levels, extract, doe, design, factor, interaction, terms, effect, direction.
 
 | Rank | Score | Character Range | Matched Terms |

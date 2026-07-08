@@ -582,11 +582,12 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   evidence. Current H001-H016 result: 14 direct-ready, 0 full-text fallback-ready,
   2 missing R024 tasks. The generated report now records repo-relative
   `data/papers/...` paths so it stays stable across Codex/Claude worktrees.
-- `cultivate review-packet` generates local full-text character-range locators
-  for human review without making adjudication decisions.
+- `cultivate review-packet` generates repo-relative local full-text
+  character-range locators for human review without making adjudication
+  decisions.
 - `cultivate adjudication-template` and `cultivate adjudication-validate`
-  create and check the human-fillable H001-H014 worksheet without deciding
-  evidence support.
+  create and check the human-fillable H001-H014 worksheet with portable
+  `data/papers/...` paths, without deciding evidence support.
 - `cultivate adjudication-export` exports valid human-supported or partial rows
   into `data/literature/bovine_evidence_table.tsv`; the committed table is
   currently header-only because no human decisions have been entered.

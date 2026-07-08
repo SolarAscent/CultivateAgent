@@ -97,12 +97,24 @@ class EvidencePrior:
         beta: float = 3.0,
         min_strength: float = 0.1,
     ) -> "EvidencePrior":
-        """Build a prior from evidence summaries, mapping components to parameters."""
+        """Build a prior from evidence summaries, mapping components to parameters.
+
+        Dedupes by component: the KB can hold multiple summaries for one component
+        (e.g. stale context-keyed rows from earlier runs), which would otherwise
+        double-count that component in the prior. The best-supported summary wins
+        (highest study count k, then most confident).
+        """
         param_names = {p.name for p in space.parameters}
-        beliefs: List[ComponentBelief] = []
+        best: Dict[str, object] = {}
         for s in summaries:
             if s.component not in param_names:
                 continue
+            cur = best.get(s.component)
+            if cur is None or (s.k, abs(s.p_beneficial - 0.5)) > (cur.k, abs(cur.p_beneficial - 0.5)):
+                best[s.component] = s
+
+        beliefs: List[ComponentBelief] = []
+        for s in best.values():
             strength = round(2.0 * abs(s.p_beneficial - 0.5), 4)   # 0 at p=0.5, 1 at p in {0,1}
             direction = 1 if s.p_beneficial > 0.5 else (-1 if s.p_beneficial < 0.5 else 0)
             if s.context_dependent:

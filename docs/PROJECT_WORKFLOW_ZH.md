@@ -111,6 +111,8 @@ CultivateAgent/
     evaluate/                       抽取评分和模型一致性
     llm/                            OpenAI、Anthropic、Gemini、mock clients
   scripts/
+    ingest_pdfs.py                   无 BibTeX 时从 PDF folder/list 导入
+    run_evidence_parallel.py         对已导入论文并行抽取 effect items
     evaluate_medium_corpus.py       抽取和模型一致性 benchmark
     compare_mobo_backends.py        优化后端对比
   data/
@@ -275,6 +277,8 @@ Checklist：
   让 PDF 生成 `fulltext.xml` 后再进入抽取。
 - [ ] `[AI]` 对 P1/P2 文献运行 triage 和 extraction。
 - [ ] `[AI]` 导出 screening、component、evidence、extraction tables。
+- [ ] `[AI]` 在提出湿实验变量前，对 extracted effect items 运行
+  `cultivate evidence-audit`。
 - [ ] `[AI]` 记录 extraction coverage、non-missing fields 和 grounding rate。
 - [ ] `[复核]` 标记稀疏或不可靠抽取。
 - [ ] `[AI]` 只有在证据显示是技术问题时，才修 parser 或 prompt；如果原文缺失，
@@ -289,6 +293,7 @@ cultivate ingest --grobid-tei --grobid-url http://localhost:8070
 cultivate triage
 cultivate extract --tier A
 cultivate export
+cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md
 ```
 
 Gate：
@@ -296,6 +301,7 @@ Gate：
 - Top-ranked records 的 evidence quote grounding rate >= 0.95。
 - Species、cell type、stage、medium type、serum-free status、component
   identity、dose/range、endpoint 的 non-missing fraction >= 0.75。
+- 目标 outcome 的 evidence audit 不能是 `NO-GO`。
 - 每个进入设计空间的成分都能追溯到 source quote 和 normalized component。
 
 ### S4. 人工证据复核
@@ -323,7 +329,8 @@ Checklist：
 6. Albumin substitutes、protein isolates、hydrolysates。
 7. Safety and cost annotations。
 
-Gate：进入第一轮设计的所有非 exploratory 变量都有人工复核支持。
+Gate：进入第一轮设计的所有非 exploratory 变量都有人工复核支持，并且
+`docs/EVIDENCE_AUDIT_PROLIFERATION.md` 没有开放的 wet-lab entry blocker。
 
 ### S5. Search-Space 设计
 
@@ -511,7 +518,7 @@ AI 线：
 ### 9.2 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- 最新验证：`.venv/bin/python -m pytest -q` 为 47 passed，3 个已知 warnings。
+- 最新验证：`.venv/bin/python -m pytest -q` 为 51 passed，3 个已知 warnings。
 - Smoke pipeline 通过。
 - Demo optimization loop 通过。
 - Extraction evaluator 已有。
@@ -535,6 +542,13 @@ AI 线：
 - 已能把外部 GROBID 生成的 TEI XML 解析为 `StructuredPaper`。
 - `cultivate ingest --grobid-tei` 可以调用运行中的 GROBID service，保存
   `fulltext.xml`；`cultivate extract` 会用该 TEI 做 structured section routing。
+- `scripts/ingest_pdfs.py` 可以在没有 BibTeX 时从 PDF folder/list 导入文献。
+- `scripts/run_evidence_parallel.py` 可以在已导入 corpus 上并行生成 effect-item
+  exports，供后续 synthesis 和 audit 使用。
+- `cultivate evidence` 现在会把 raw `effect_items_<outcome>.json` 写在 synthesized
+  evidence CSV 旁边，便于不重新调用 LLM 就复跑 audit。
+- `cultivate evidence-audit` 可以检查已抽取的 `EvidenceItem` JSON，并输出保守的
+  wet-lab entry gate report。
 
 ### 9.3 已完成的文献和计划工作
 
@@ -544,7 +558,8 @@ AI 线：
 - AI-for-science 方法综述已存在。
 - 方法文献登记表已覆盖 autonomous labs、scientific RAG、information extraction、
   document parsing、ETL 和 Bayesian optimization。
-- 当前方法决策：在生成新的湿实验设计前，优先提高 S3 全文抽取可靠性。
+- 当前方法决策：在生成新的湿实验设计前，优先提高 S3 全文抽取可靠性，并完成
+  S4 evidence audit / 人工复核。
 
 ### 9.4 已知 blocker 和风险
 
@@ -555,6 +570,8 @@ AI 线：
 - GROBID service 是否可用属于外部条件；如果没有运行中的 service，ingestion
   会保留 plain-text fallback，并把失败记录为 warning。
 - Human review queue 仍未完成。
+- 当前 proliferation evidence audit 是 `NO-GO`：本地 extracted evidence 已有
+  AI-review candidates，但全部是 direction-only，且 16/16 个关键人工复核任务仍 open。
 - Cost、supplier、food-grade annotations 不完整。
 - Live run 新增 ontology 词条仍需人工证据裁决，才能成为非 exploratory 湿实验变量。
 - In-silico robustness 尚未在 bovine manifest 上运行。
@@ -568,11 +585,13 @@ AI 线：
 2. `[AI]` 拉取所有 P1 core records 的全文。
 3. `[AI]` 在 ontology 更新后，对 live/P1 sources 重新跑 evidence
    extraction/normalization，检查哪些 component 已能正确 pooling。
-4. `[AI]` 抽取 exact formulations、dose ranges、endpoints、quotes。
-5. `[人工]` 复核 `H001-H016`。
-6. `[AI]` 建立 adjudicated bovine evidence table。
-7. `[复核]` 决定哪些变量可进入第一轮 search space。
-8. `[AI]` 只有在前置 gate 通过后，才起草第一版 design packet。
+4. `[AI]` 在更新 extraction outputs 后，重新运行 `cultivate evidence-audit`。
+5. `[AI]` 为 audit candidates 抽取 exact formulations、dose ranges、endpoints、
+   quotes。
+6. `[人工]` 复核 `H001-H016`。
+7. `[AI]` 建立 adjudicated bovine evidence table。
+8. `[复核]` 决定哪些变量可进入第一轮 search space。
+9. `[AI]` 只有在前置 gate 通过后，才起草第一版 design packet。
 
 ## 10. AI 接管协议
 

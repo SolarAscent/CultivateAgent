@@ -139,8 +139,10 @@ cultivate extract --tier A --mode operators
 cultivate stats
 cultivate export                     # screening_table.csv, medium_components.csv, evidence.csv, extractions.jsonl
 
-# 4b. Synthesize heterogeneous literature evidence into priors for one outcome:
-cultivate evidence --outcome proliferation   # -> P(component beneficial) + I², stored in the KB
+# 4b. Extract/synthesize heterogeneous evidence for one outcome:
+cultivate evidence --outcome proliferation   # -> effect_items JSON + P(component beneficial) + I²
+# Audit extracted effect items before any wet-lab design packet:
+cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md
 
 # 5. Ask for a medium design, conditioned on objectives + context:
 cultivate design \
@@ -229,7 +231,7 @@ cultivate_agent/
   extract/      domain prompts + evidence-grounded schema extractor
   normalize/    ontology component canonicalization + provenance-preserving units
   kb/           SQLite knowledge base + CSV/JSONL exports
-  evidence/     random-effects meta-analysis (DerSimonian-Laird + I²) over quoted effects
+  evidence/     random-effects meta-analysis + deterministic wet-lab-entry audit over quoted effects
   retrieve/     BM25 + embedding (+ fallback) retriever over the KB
   design/       fixed objectives/weights + goal-conditioned medium recommender (+ verifier)
   optimize/     LLM-warm-started multi-objective BO (q-ParEGO / qNEHVI) + evidence πBO priors
@@ -241,7 +243,14 @@ config/
 tests/          offline pytest suite (no API key needed)
 ```
 
-Run the tests: `pip install pytest && pytest -q` (14 tests, all offline).
+Useful scripts:
+
+- `scripts/ingest_pdfs.py`: ingest loose PDF folders/lists when BibTeX is not
+  available.
+- `scripts/run_evidence_parallel.py`: generate corpus-wide effect-item exports
+  for synthesis and `cultivate evidence-audit`.
+
+Run the tests: `pip install pytest && pytest -q` (offline suite).
 
 ---
 

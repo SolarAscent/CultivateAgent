@@ -108,3 +108,44 @@ def test_extract_effects_drops_ungrounded(monkeypatch):
     comps = [it.component for it in items]
     assert comps == ["FGF2"]                 # ungrounded IGF-1 claim dropped
     assert items[0].context.get("species") == "bovine"
+
+
+def test_evidence_audit_blocks_until_human_review_and_filters_process_items(tmp_path):
+    from cultivate_agent.evidence import EvidenceItem, audit_effect_items, write_evidence_audit_markdown
+
+    items = [
+        EvidenceItem(
+            "FGF2 20 ng/mL", "proliferation", "p1", direction=1,
+            context={"species": "bovine", "cell_type": "satellite cells", "stage": "expansion"},
+            quote="FGF2 at 20 ng/mL increased bovine satellite cell proliferation.",
+        ),
+        EvidenceItem(
+            "Matrigel 0.5 mg/mL", "proliferation", "p2", direction=1,
+            context={"species": "bovine", "cell_type": "myoblasts", "stage": "proliferation"},
+            quote="0.5 mg/mL Matrigel improved engraftment.",
+        ),
+        EvidenceItem(
+            "soy hydrolysate", "proliferation", "p3", direction=1,
+            context={"species": "mouse", "cell_type": "C2C12", "stage": "growth"},
+            quote="soy hydrolysate increased C2C12 growth.",
+        ),
+    ]
+    review = tmp_path / "review.tsv"
+    review.write_text(
+        "review_id\tpriority\tstatus\n"
+        "H001\tP1\topen\n"
+        "H017\tP2\topen\n",
+        encoding="utf-8",
+    )
+    audit = audit_effect_items(items, human_review_path=review, min_candidates=1)
+    assert audit.decision == "NO-GO"
+    assert audit.human_open_critical == 1
+    assert [c.component for c in audit.ai_review_candidates] == ["FGF2 20 ng/mL"]
+    by_component = {c.component: c for c in audit.components}
+    assert "not_medium_only" in by_component["Matrigel 0.5 mg/mL"].flags
+    assert "indirect_species_or_cell" in by_component["soy hydrolysate"].flags
+
+    out = write_evidence_audit_markdown(audit, tmp_path / "audit.md")
+    text = out.read_text(encoding="utf-8")
+    assert "Wet-lab entry gate: NO-GO" in text
+    assert "FGF2 20 ng/mL" in text

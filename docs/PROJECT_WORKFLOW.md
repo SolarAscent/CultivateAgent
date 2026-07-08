@@ -122,6 +122,8 @@ CultivateAgent/
     evaluate/                       extraction scoring and model agreement
     llm/                            OpenAI, Anthropic, Gemini, and mock clients
   scripts/
+    ingest_pdfs.py                   ingest loose PDF folders/lists without BibTeX
+    run_evidence_parallel.py         parallel effect extraction over ingested papers
     evaluate_medium_corpus.py       extraction and agreement benchmark
     compare_mobo_backends.py        optimizer backend comparison
   data/
@@ -290,6 +292,8 @@ Checklist:
   --grobid-tei` so PDFs produce `fulltext.xml` before extraction.
 - [ ] `[AI]` Run triage and extraction on P1/P2 sources.
 - [ ] `[AI]` Export screening, component, evidence, and extraction tables.
+- [ ] `[AI]` Run `cultivate evidence-audit` on extracted effect items before
+  proposing wet-lab variables.
 - [ ] `[AI]` Record extraction coverage, non-missing fields, and grounding rate.
 - [ ] `[REVIEW]` Flag sparse or unreliable extraction runs.
 - [ ] `[AI]` Repair parser or prompt issues only when evidence shows a technical
@@ -304,6 +308,7 @@ cultivate ingest --grobid-tei --grobid-url http://localhost:8070
 cultivate triage
 cultivate extract --tier A
 cultivate export
+cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md
 ```
 
 Gate:
@@ -311,6 +316,7 @@ Gate:
 - Evidence quote grounding rate is at least 0.95 for top-ranked records.
 - Non-missing fraction is at least 0.75 for species, cell type, stage, medium
   type, serum-free status, component identity, dose/range, and endpoint.
+- Evidence audit is not `NO-GO` for the target outcome.
 - Every component entering the design space links to a source quote and a
   normalized component record.
 
@@ -341,7 +347,8 @@ Recommended review order:
 7. Safety and cost annotations.
 
 Gate: every non-exploratory variable entering the first design batch has
-human-reviewed support.
+human-reviewed support, and `docs/EVIDENCE_AUDIT_PROLIFERATION.md` has no
+open wet-lab entry blockers.
 
 ### S5. Search-Space Design
 
@@ -542,7 +549,7 @@ the procedural sections above.
 ### 9.2 Completed Technical Work
 
 - CLI-first Python package exists.
-- Latest validation: `.venv/bin/python -m pytest -q` reports 47 passed with 3
+- Latest validation: `.venv/bin/python -m pytest -q` reports 51 passed with 3
   known warnings.
 - Smoke pipeline passes.
 - Demo optimization loop passes.
@@ -571,6 +578,14 @@ the procedural sections above.
 - `cultivate ingest --grobid-tei` can call a running GROBID service, save
   `fulltext.xml`, and `cultivate extract` will use that TEI for structured
   section routing.
+- `scripts/ingest_pdfs.py` can ingest loose PDF folders/lists when BibTeX is not
+  available.
+- `scripts/run_evidence_parallel.py` can generate effect-item exports across the
+  ingested corpus for later synthesis and audit.
+- `cultivate evidence` now writes raw `effect_items_<outcome>.json` next to the
+  synthesized evidence CSV so audits can be rerun without another LLM call.
+- `cultivate evidence-audit` can inspect extracted `EvidenceItem` JSON and
+  produce a conservative wet-lab entry gate report.
 
 ### 9.3 Completed Literature And Planning Work
 
@@ -581,8 +596,8 @@ the procedural sections above.
 - Method-source registry contains reviewed sources across autonomous labs,
   scientific RAG, information extraction, document parsing, ETL, and Bayesian
   optimization.
-- Current method decision: prioritize S3 full-text extraction reliability before
-  new wet-lab design generation.
+- Current method decision: prioritize S3 full-text extraction reliability and
+  S4 evidence audit/human review before new wet-lab design generation.
 
 ### 9.4 Known Blockers And Risks
 
@@ -595,6 +610,9 @@ the procedural sections above.
 - GROBID service availability is external; if no service is running, ingestion
   keeps the plain-text fallback and records the failure as a warning.
 - Human review queue remains open.
+- Current proliferation evidence audit is `NO-GO`: local extracted evidence has
+  AI-review candidates, but all are direction-only and 16/16 critical human
+  review tasks remain open.
 - Cost, supplier, and food-grade annotations are incomplete.
 - Newly added ontology entries from the live run still need human evidence
   adjudication before they can become non-exploratory wet-lab variables.
@@ -609,11 +627,13 @@ the procedural sections above.
 2. `[AI]` Pull full text for all P1 core records.
 3. `[AI]` Re-run evidence extraction/normalization on live/P1 sources after the
    ontology update and inspect which components now pool correctly.
-4. `[AI]` Extract exact formulations, dose ranges, endpoints, and quotes.
-5. `[HUMAN]` Review `H001-H016`.
-6. `[AI]` Build the adjudicated bovine evidence table.
-7. `[REVIEW]` Decide which variables can enter the first search space.
-8. `[AI]` Draft the first design packet only after earlier gates pass.
+4. `[AI]` Re-run `cultivate evidence-audit` after updated extraction outputs.
+5. `[AI]` Extract exact formulations, dose ranges, endpoints, and quotes for
+   the audit candidates.
+6. `[HUMAN]` Review `H001-H016`.
+7. `[AI]` Build the adjudicated bovine evidence table.
+8. `[REVIEW]` Decide which variables can enter the first search space.
+9. `[AI]` Draft the first design packet only after earlier gates pass.
 
 ## 10. AI Handoff Protocol
 

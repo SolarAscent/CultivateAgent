@@ -98,6 +98,12 @@ Why this is still not a pass:
 Gate 2, extraction reliability: **not passed**.
 
 - The current live model extraction run remained too sparse.
+- `docs/EVIDENCE_AUDIT_PROLIFERATION.md` audits the current local
+  proliferation effect-item export: 145 items across 40 papers and 103
+  components/interventions, but only 4 AI-review candidates pass the direct
+  bovine/medium-actionable/dose/grounding filter.
+- The audit is still **NO-GO** because 16/16 critical human-review tasks remain
+  open and all AI-review candidates are direction-only rather than quantitative.
 - Next step is full-text extraction plus human adjudication for the top 20-30
   review tasks.
 
@@ -124,7 +130,9 @@ Gate 6, pre-registration readiness: **not passed**.
 ## Immediate Next Steps
 
 1. Pull full text/PDFs for all P1 core records.
-2. Extract exact component tables, dose ranges, endpoints, and evidence quotes.
-3. Fill the 30 human review tasks.
-4. Promote only reviewed and grounded variables into a bounded search space.
-5. Generate a first wet-lab design packet only after Gates 1-6 pass.
+2. Re-run `cultivate evidence-audit` after updated extraction outputs.
+3. Extract exact component tables, dose ranges, endpoints, and evidence quotes
+   for audit candidates.
+4. Fill the 30 human review tasks, starting with `H001-H016`.
+5. Promote only reviewed and grounded variables into a bounded search space.
+6. Generate a first wet-lab design packet only after Gates 1-6 pass.

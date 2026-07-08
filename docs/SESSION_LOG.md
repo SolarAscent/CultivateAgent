@@ -395,3 +395,100 @@ the untracked local scripts.
 2. Human reviewer completes `H001-H016` in the bovine review queue.
 3. Reviewer decides which adjudicated variables can enter the first bounded
    search space.
+
+---
+
+# Session 5 (Codex) — deterministic evidence audit before wet-lab entry
+
+Date: 2026-07-08
+Branch: `main`
+
+## Coordination Decision
+
+After the collaboration protocol was added, the next highest-value
+non-conflicting task was to turn existing extracted effect items into a
+deterministic wet-lab-entry audit. Local ignored data already contained a
+proliferation effect-item export, but it mixed direct bovine medium evidence
+with scaffold, microcarrier, process, cross-species, and direction-only claims.
+Generating a wet-lab design packet from that state would be premature.
+
+This session therefore added a no-LLM audit gate that can say `NO-GO` before
+experimental design. During this session Claude's related commits landed on
+`main`: `d33c3dd` pools evidence across context and strips verbose component
+qualifiers; `f159f9f` adds the loose-PDF ingester and parallel evidence runner.
+The audit layer is compatible with those outputs and does not overwrite them.
+
+## Literature And Method Sources Checked
+
+- GRADE / CDC ACIP GRADE criteria: used for the idea that indirectness,
+  imprecision, and inconsistency should block action even when some evidence
+  exists.
+- PRISMA 2020: used for separating source identification, screening, synthesis,
+  and reporting artifacts.
+- NIST AI RMF 1.0: used for the requirement that AI-assisted scientific actions
+  should have mapped context, measured validity, transparent records, and managed
+  risk.
+- DocETL remains the document-processing reference for modular extraction and
+  validation, but the new audit itself is deterministic and does not call an LLM.
+
+## Changes Made
+
+- Added `cultivate_agent/evidence/audit.py`.
+- Added CLI command:
+  `cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md`.
+- Updated `cultivate evidence` to write `effect_items_<outcome>.json` beside the
+  synthesized evidence CSV, so the audit has an official no-rerun input path.
+- Added an offline test for the audit gate: direct bovine medium evidence can
+  become an AI-review candidate, while scaffold/process/cross-species items are
+  filtered or flagged; open human review keeps the gate `NO-GO`.
+- Generated `docs/EVIDENCE_AUDIT_PROLIFERATION.md` from the current local
+  ignored effect-item export.
+- Updated README, both workflow manuals, `BOVINE_CORPUS_MANIFEST.md`,
+  `AI_FOR_SCIENCE_METHOD_REVIEW.md`, and the method-source registry.
+
+## Current Audit Result
+
+- Input: `data/exports/effect_items_proliferation.json` from local ignored data.
+- Items audited: 145.
+- Papers represented: 40.
+- Components/interventions represented: 103.
+- AI-review candidates: 4.
+- Critical human-review status: 16/16 open.
+- Decision: `NO-GO`.
+
+Main blockers:
+
+- All AI-review candidates are direction-only; none has quantitative effect
+  evidence in the extracted record.
+- Critical human review `H001-H016` is still open.
+
+## What This Does Not Claim
+
+- The audit does not approve any wet-lab variable.
+- The audit report is not a substitute for the adjudicated bovine evidence table.
+- The local ignored effect-item JSON is not committed; the committed report is a
+  transparent snapshot of the current local audit state.
+
+## Coordination With Claude Work
+
+- `d33c3dd` and `f159f9f` were already on `main` before this session's commit.
+- This session did not modify those files further.
+- `cultivate evidence-audit` can consume `effect_items_<outcome>.json` generated
+  by the parallel evidence runner or by any future official evidence export.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 51 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+
+## Next 3 Steps
+
+1. Complete human review `H001-H016`.
+2. Extract exact formulations, doses, endpoints, passages, and grounded quotes
+   for the 4 audit candidates and any newly recovered direct bovine candidates.
+3. Re-run `cultivate evidence-audit` after the next extraction/evidence export;
+   only then decide whether S5 search-space design can start.

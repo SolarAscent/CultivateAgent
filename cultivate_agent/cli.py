@@ -8,6 +8,7 @@ Subcommands map onto the pipeline stages::
     cultivate extract   # evidence-grounded schema extraction -> KB
     cultivate export    # screening table / components / evidence / JSONL
     cultivate stats     # knowledge-base summary
+    cultivate evidence-audit
     cultivate design    # goal-conditioned medium recommendation
     cultivate schema    # print the field guide or JSON schema
     cultivate smoke     # offline end-to-end self-test (mock LLM, no API key)
@@ -261,11 +262,15 @@ def cmd_evidence(args) -> int:
         n += 1
         print(f"  {meta.ref.paper_id}: {len(found)} directional effect(s)")
 
+    out_dir = Path(args.out or (cfg.data_path / "exports"))
+    out_dir.mkdir(parents=True, exist_ok=True)
+    items_out = out_dir / f"effect_items_{args.outcome}.json"
+    items_out.write_text(json.dumps([it.__dict__ for it in items], ensure_ascii=False, indent=1), encoding="utf-8")
+
     summaries = synthesize(items)
     kb.upsert_evidence_summaries(summaries)
 
-    out = Path(args.out or (cfg.data_path / "exports")) / f"evidence_{args.outcome}.csv"
-    out.parent.mkdir(parents=True, exist_ok=True)
+    out = out_dir / f"evidence_{args.outcome}.csv"
     import csv as _csv
     with out.open("w", newline="", encoding="utf-8") as f:
         w = _csv.writer(f)
@@ -278,10 +283,41 @@ def cmd_evidence(args) -> int:
     kb.close()
     print(f"\nSynthesized {len(summaries)} (component,outcome,context) summaries from {len(items)} "
           f"effects over {n} papers -> {out}")
+    print(f"Raw effect items -> {items_out}")
     for s in summaries[:12]:
         flag = "  [context-dependent: TEST DIRECTLY]" if s.context_dependent else ""
         print(f"  {s.component:24s} p_beneficial={s.p_beneficial:.2f} (k={s.k}, {s.method}){flag}")
     return 0
+
+
+def cmd_evidence_audit(args) -> int:
+    """Audit extracted evidence items against wet-lab entry gates."""
+    cfg = load_config(root=args.root)
+    from .evidence import audit_effect_items, load_effect_items_json, write_evidence_audit_markdown
+
+    items_path = Path(args.items or (cfg.data_path / "exports" / f"effect_items_{args.outcome}.json"))
+    human_review = Path(args.human_review or (cfg.data_path / "literature" / "bovine_human_review_queue.tsv"))
+    if not items_path.exists():
+        print(f"! missing effect-item export: {items_path}", file=sys.stderr)
+        print("  Run `cultivate evidence` or another extraction script that writes EvidenceItem JSON first.", file=sys.stderr)
+        return 2
+    items = load_effect_items_json(items_path)
+    audit = audit_effect_items(
+        items,
+        outcome=args.outcome,
+        human_review_path=human_review,
+        min_candidates=args.min_candidates,
+    )
+    if args.out:
+        out = write_evidence_audit_markdown(audit, args.out)
+        print(f"+ wrote {out}")
+    print(f"Evidence audit: {audit.decision}")
+    print(f"  items={audit.total_items} papers={audit.total_papers} components={audit.component_count}")
+    print(f"  AI-review candidates={len(audit.ai_review_candidates)}")
+    print(f"  critical human-review open={audit.human_open_critical}/{audit.human_total_critical}")
+    for blocker in audit.blockers:
+        print(f"  BLOCKER: {blocker}")
+    return 1 if args.fail_on_no_go and audit.decision != "GO" else 0
 
 
 def _parse_weights(spec: str) -> dict:
@@ -620,6 +656,18 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--out", help="output directory")
     add_llm_flags(sp)
     sp.set_defaults(func=cmd_evidence)
+
+    sp = sub.add_parser("evidence-audit", help="audit extracted evidence items before wet-lab design")
+    sp.add_argument("--outcome", default="proliferation",
+                    help="outcome to audit (default: proliferation)")
+    sp.add_argument("--items", help="EvidenceItem JSON export (default: data/exports/effect_items_<outcome>.json)")
+    sp.add_argument("--human-review", help="human review queue TSV (default: data/literature/bovine_human_review_queue.tsv)")
+    sp.add_argument("--out", help="write Markdown audit report")
+    sp.add_argument("--min-candidates", type=int, default=3,
+                    help="minimum AI-review candidates required before the gate can pass")
+    sp.add_argument("--fail-on-no-go", action="store_true",
+                    help="exit nonzero when the audit decision is NO-GO")
+    sp.set_defaults(func=cmd_evidence_audit)
 
     sp = sub.add_parser("design", help="goal-conditioned medium recommendation")
     sp.add_argument("--preset", help="objective-weight preset from config")

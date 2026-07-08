@@ -255,13 +255,25 @@ Before candidate formulation generation:
 
 - Run extraction evaluation on P1 full-text records.
 - Require coverage and grounding gates.
+- Run deterministic evidence audit on extracted `EvidenceItem` records.
 - Run a small human-adjudicated benchmark.
 
 Acceptance criteria:
 
 - S3 extraction reliability passes.
+- `cultivate evidence-audit` is not `NO-GO` for the target outcome.
 - S4 human review passes for all non-exploratory first-round variables.
 - No wet-lab design packet is generated before S3/S4 pass.
+
+Implementation now available:
+
+- `cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md`.
+- The audit adapts GRADE-style certainty concerns (indirectness, imprecision,
+  inconsistency), PRISMA-style traceability, and NIST AI RMF-style measurement
+  and risk documentation into a conservative wet-lab entry guardrail.
+- The current proliferation audit is `NO-GO`: 145 local extracted effect items
+  across 40 papers produced 4 AI-review candidates, but all are direction-only
+  and 16/16 critical human-review tasks remain open.
 
 ## 4. Explicit Non-Adoptions
 
@@ -281,11 +293,12 @@ These are not adopted now:
 1. Run optional GROBID service/client invocation on the P1 corpus PDFs now that
    `cultivate ingest --grobid-tei` can produce `fulltext.xml` when a service is
    available.
-2. Create `bovine_evidence_table.tsv` from P1 full text.
-3. Build section-routed extraction operators for medium components, dose ranges,
+2. Re-run `cultivate evidence-audit` after each updated extraction/effect export.
+3. Create `bovine_evidence_table.tsv` from P1 full text.
+4. Build section-routed extraction operators for medium components, dose ranges,
    endpoints, and quotes.
-4. Update the evaluation script to report operator-level coverage and grounding.
-5. Connect operator outputs to `bovine_human_review_queue.tsv`.
+5. Update the evaluation script to report operator-level coverage and grounding.
+6. Connect operator outputs to `bovine_human_review_queue.tsv`.
 
 ## 6. Human-Only Or Blocked Items
 
@@ -315,4 +328,6 @@ Key sources include:
   figure captions. GROBID service documentation supports the optional
   PDF-to-TEI ingestion client.
 - DocETL: modular LLM document processing.
+- GRADE, PRISMA, and NIST AI RMF: evidence-to-action gates, traceable review
+  records, and AI risk documentation before wet-lab decisions.
 - TuRBO, SCBO, JES, and DPP-BBO: later optimization roadmap candidates.

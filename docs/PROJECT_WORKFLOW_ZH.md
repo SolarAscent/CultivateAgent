@@ -165,6 +165,8 @@ CultivateAgent/
 | 抽取评估 | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | Evaluation run 后 |
 | 证据审计 | `docs/EVIDENCE_AUDIT_PROLIFERATION.md` | `[AI]` + `[REVIEW]` | Evidence export 或 gate 更新 |
 | 复核定位包 | `docs/HUMAN_REVIEW_PACKET_H001_H016.md` | `[AI]` + `[HUMAN]` | source 可用性或 review queue 更新 |
+| 人工裁决工作表 | `data/literature/bovine_adjudication_H001_H014.tsv` | `[HUMAN]` + `[AI]` | 人工证据复核前后 |
+| 工作表校验报告 | `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` | `[AI]` + `[REVIEW]` | 工作表创建或编辑后 |
 | 候选变量 | `docs/CANDIDATE_VARIABLES.md` | `[AI]` + `[HUMAN]` | 人工证据复核完成后 |
 | 湿实验设计包 | `docs/wetlab/ROUND_<n>_DESIGN_PACKET.md` | `[AI]` + `[LAB]` + `[REVIEW]` | 每轮湿实验前 |
 | 湿实验结果 | `docs/wetlab/ROUND_<n>_RESULTS.md` | `[AI]` + `[LAB]` | 每轮湿实验后 |
@@ -306,6 +308,7 @@ Gate：
 Checklist：
 
 - [ ] `[AI]` 用 `cultivate review-packet` 生成 passage locators。
+- [ ] `[AI]` 用 `cultivate adjudication-template` 生成可人工填写的裁决工作表。
 - [ ] `[HUMAN]` 优先复核 `H001-H016`。
 - [ ] `[HUMAN]` 将每项标为 `supported`、`partial`、`unsupported`、
   `uncertain` 或 `defer`。
@@ -318,6 +321,9 @@ Checklist：
 
 ```bash
 cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
+cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
+cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
+  --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md
 ```
 
 建议复核顺序：
@@ -470,8 +476,8 @@ Gate：论文 claims 可追溯到证据和结果。
 
 | 工作线 | 现在可以做 | 现在不能做 |
 |---|---|---|
-| `[HUMAN]` 证据复核 | 用 locator packet 复核 H001-H014，并在 review queue 写 notes | 在 S3-S4 gate 未完成时批准湿实验变量 |
-| `[AI]` corpus/extraction | 等人工/机构访问可用后获取 R024 主文全文；把人工 notes 转成 adjudication records；提高抽取 coverage | 假装证据 gate 已过并生成 wet-lab design packet |
+| `[HUMAN]` 证据复核 | 用 locator packet 和 `bovine_adjudication_H001_H014.tsv` 复核 H001-H014 | 在 S3-S4 gate 未完成时批准湿实验变量 |
+| `[AI]` corpus/extraction | 维护 H001-H014 裁决工作表；等人工/机构访问可用后获取 R024 主文全文；把人工 notes 转成 evidence records | 假装证据 gate 已过并生成 wet-lab design packet |
 | `[LAB]` 可行性 | 确认 cell source、passage limits、baseline medium、plate format、assay duration、最大条件数和 reagent constraints | 开始实验或修改候选配方 |
 | `[REVIEW]` gatekeeping | 检查 extracted claims 是否和 source text 一致，变量是否有证据支撑 | 把 direction-only evidence 当成定量证明 |
 
@@ -513,6 +519,8 @@ Gate：论文 claims 可追溯到证据和结果。
 - `cultivate evidence-audit` 能生成保守的 wet-lab-entry report。
 - `cultivate review-packet` 能为人工复核生成本地 full-text 字符范围 locators，
   但不做 evidence adjudication。
+- `cultivate adjudication-template` 和 `cultivate adjudication-validate` 能创建和
+  检查 H001-H014 人工填写工作表，但不判断证据是否 supported。
 
 ### 8.2 已完成的文献和计划工作
 
@@ -531,7 +539,7 @@ Gate：论文 claims 可追溯到证据和结果。
 |---|---|---|
 | Corpus manifest | Partial | 已有可用 bovine set，但 P1 人工复核和全文覆盖不完整 |
 | Proliferation evidence audit | `NO-GO` | 当前 extracted evidence 不能支持湿实验入口 |
-| Critical human review | 16/16 open | 尚无 adjudicated evidence table |
+| Critical human review | 16/16 open | H001-H014 工作表已存在，但尚无人工 decision |
 | Review-packet 覆盖 | 14/16 有本地 locators | H001-H014 可进入高效人工复核 |
 | 缺失 review-packet source | 2/16 | H015-H016 对应 R024，需要机构访问或人工提供主文全文 |
 | Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
@@ -550,7 +558,8 @@ Gate：论文 claims 可追溯到证据和结果。
 
 ### 8.5 近期下一步
 
-1. `[HUMAN]` 用当前 locator packet 复核 H001-H014。
+1. `[HUMAN]` 用当前 locator packet 和 `data/literature/bovine_adjudication_H001_H014.tsv`
+   复核 H001-H014。
 2. `[HUMAN]` 提供 R024 主文全文，或确认 R024 暂时 defer。
 3. `[AI]` R024 可用后重新生成 `docs/HUMAN_REVIEW_PACKET_H001_H016.md`。
 4. `[AI]` 把人工 notes 转成结构化 adjudication records。

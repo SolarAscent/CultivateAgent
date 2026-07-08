@@ -275,6 +275,9 @@ Implementation now available:
 - The review packet follows ASReview/SWIFT-Review/RobotReviewer principles:
   prioritize and surface traceable source locations while leaving adjudication
   to human reviewers.
+- The adjudication worksheet follows the same human-in-control rule: AI may
+  prefill task metadata and locators, but the `decision`, `selected_range`, and
+  evidence interpretation fields remain human-entered and validator-checked.
 - The current proliferation audit is `NO-GO`: 145 local extracted effect items
   across 40 papers produced 4 AI-review candidates, but all are direction-only
   and 16/16 critical human-review tasks remain open.
@@ -301,12 +304,14 @@ These are not adopted now:
    `cultivate ingest --grobid-tei` can produce `fulltext.xml` when a service is
    available.
 2. Re-run `cultivate review-packet` after each full-text acquisition pass.
-3. Re-run `cultivate evidence-audit` after each updated extraction/effect export.
-4. Create `bovine_evidence_table.tsv` from P1 full text.
-5. Build section-routed extraction operators for medium components, dose ranges,
+3. Fill `data/literature/bovine_adjudication_H001_H014.tsv` with human
+   adjudication and validate it with `cultivate adjudication-validate`.
+4. Re-run `cultivate evidence-audit` after each updated extraction/effect export.
+5. Create `bovine_evidence_table.tsv` from reviewed P1 full text.
+6. Build section-routed extraction operators for medium components, dose ranges,
    endpoints, and quotes.
-6. Update the evaluation script to report operator-level coverage and grounding.
-7. Connect operator outputs to `bovine_human_review_queue.tsv`.
+7. Update the evaluation script to report operator-level coverage and grounding.
+8. Connect operator outputs to `bovine_human_review_queue.tsv`.
 
 ## 6. Human-Only Or Blocked Items
 

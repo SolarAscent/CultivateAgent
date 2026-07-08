@@ -111,6 +111,10 @@ Gate 2, extraction reliability: **not passed**.
   or human-provided main full text before efficient review.
 - Next step is full-text extraction plus human adjudication for the top 20-30
   review tasks.
+- `data/literature/bovine_adjudication_H001_H014.tsv` now provides the
+  human-fillable worksheet for H001-H014, and
+  `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` confirms the blank template
+  is structurally valid. This is not evidence approval.
 
 Gate 3, biological plausibility: **not passed**.
 
@@ -134,7 +138,8 @@ Gate 6, pre-registration readiness: **not passed**.
 
 ## Immediate Next Steps
 
-1. Use `docs/HUMAN_REVIEW_PACKET_H001_H016.md` to review H001-H014.
+1. Use `docs/HUMAN_REVIEW_PACKET_H001_H016.md` and
+   `data/literature/bovine_adjudication_H001_H014.tsv` to review H001-H014.
 2. Obtain R024 main full text through institutional access or a human-provided
    PDF; ACS and ACS Figshare automated downloads were access-challenged in this
    session.

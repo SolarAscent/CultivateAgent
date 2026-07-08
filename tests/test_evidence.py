@@ -205,3 +205,70 @@ def test_review_packet_builds_locators_without_adjudicating(tmp_path):
     rendered = out.read_text(encoding="utf-8")
     assert "candidate passage locators" in rendered
     assert "decision: supported" not in rendered.lower()  # no AI adjudication label
+
+
+def test_adjudication_template_and_validation(tmp_path):
+    from cultivate_agent.evidence import (
+        validate_adjudication_worksheet,
+        write_adjudication_template,
+    )
+    from cultivate_agent.schema.paper import IngestStatus, PaperMetadata, PaperPaths, PaperRef
+
+    papers = tmp_path / "papers"
+    paths = PaperPaths(papers, "p1", slug="paper-one").ensure()
+    text = (
+        "Defined bovine medium benchmark.\n\n"
+        "The tested medium used FGF2 at 10 ng/mL and supported bovine satellite "
+        "cell proliferation over six days."
+    )
+    paths.fulltext.write_text(text, encoding="utf-8")
+    paths.save_metadata(PaperMetadata(
+        ref=PaperRef(paper_id="p1", title="Defined bovine medium benchmark"),
+        status=IngestStatus(has_fulltext=True, fulltext_chars=len(text)),
+    ))
+
+    manifest = tmp_path / "manifest.tsv"
+    manifest.write_text(
+        "record_id\ttitle\tmedium_focus\tendpoints\n"
+        "R001\tDefined bovine medium benchmark\tFGF2; serum-free\tproliferation\n",
+        encoding="utf-8",
+    )
+    queue = tmp_path / "queue.tsv"
+    queue.write_text(
+        "review_id\tpriority\tsource_record_id\tevidence_topic\tfield_to_verify\t"
+        "human_question\tdecision_impact\tsuggested_action\tstatus\n"
+        "H001\tP1\tR001\tFGF2 dose check\tbFGF_dose\t"
+        "What dose was tested?\tsearch-space\tExtract dose and endpoint.\topen\n",
+        encoding="utf-8",
+    )
+
+    worksheet = write_adjudication_template(
+        review_queue_path=queue,
+        manifest_path=manifest,
+        papers_dir=papers,
+        review_ids=["H001"],
+        out_path=tmp_path / "worksheet.tsv",
+    )
+    text = worksheet.read_text(encoding="utf-8")
+    assert "\tdecision\t" in text
+    assert "\tsupported\t" not in text
+
+    # Blank decisions are allowed while the worksheet is still awaiting human review.
+    assert validate_adjudication_worksheet(worksheet).ok
+
+    lines = text.splitlines()
+    header = lines[0].split("\t")
+    row = lines[1].split("\t")
+    row[header.index("decision")] = "supported"
+    row[header.index("key_finding")] = "FGF2 dose supported proliferation"
+    row[header.index("wetlab_use")] = "range_seed"
+    worksheet.write_text("\n".join([lines[0], "\t".join(row)]) + "\n", encoding="utf-8")
+    result = validate_adjudication_worksheet(worksheet)
+    assert not result.ok
+    assert any(i.field == "selected_range" for i in result.issues)
+
+    row[header.index("decision")] = "maybe"
+    worksheet.write_text("\n".join([lines[0], "\t".join(row)]) + "\n", encoding="utf-8")
+    result = validate_adjudication_worksheet(worksheet)
+    assert not result.ok
+    assert any(i.field == "decision" for i in result.issues)

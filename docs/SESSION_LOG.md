@@ -724,3 +724,69 @@ decision.
    explicitly defers H015-H016.
 3. After human notes exist, AI converts them into structured adjudication and
    re-runs `cultivate evidence-audit`.
+
+---
+
+# Session 9 (Codex) — human adjudication worksheet and validator
+
+Date: 2026-07-08
+Branch: `main`
+
+## Coordination Decision
+
+R024 remains a human/institutional-access blocker, but S4 can still advance for
+the 14 review tasks that already have local passage locators. The next
+non-blocked step was to turn the locator packet into a human-fillable,
+machine-checkable worksheet so reviewers do not write decisions in scattered
+Markdown notes.
+
+This session added a worksheet generator and validator. The validator checks
+format, allowed decisions, and selected character ranges. It does not determine
+whether evidence is supported.
+
+## Changes Made
+
+- Added `cultivate_agent/evidence/adjudication.py`.
+- Added CLI commands:
+  `cultivate adjudication-template` and `cultivate adjudication-validate`.
+- Generated `data/literature/bovine_adjudication_H001_H014.tsv` with one blank
+  row per ready review task.
+- Generated `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md`.
+- Added tests for template generation and validation failure cases.
+- Updated README, both workflow manuals, `BOVINE_CORPUS_MANIFEST.md`, and
+  `AI_FOR_SCIENCE_METHOD_REVIEW.md`.
+
+## Current Worksheet Result
+
+- Rows: 14 (`H001-H014`).
+- Decisions entered: 0.
+- Validation result for the blank template: `PASS`.
+- Meaning of blank-template `PASS`: required columns and locator ranges are
+  structurally valid. It is not evidence approval.
+
+## What This Does Not Claim
+
+- No human evidence decision was made.
+- No reviewed evidence table exists yet.
+- No wet-lab variable was approved.
+- R024 / H015-H016 remain blocked on main full text.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 55 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv`:
+  passed.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+
+## Next 3 Steps
+
+1. Human reviewer fills `data/literature/bovine_adjudication_H001_H014.tsv`.
+2. AI runs `cultivate adjudication-validate` after human edits.
+3. AI converts valid human decisions into the adjudicated bovine evidence table
+   and then re-runs `cultivate evidence-audit`.

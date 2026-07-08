@@ -10,6 +10,8 @@ Subcommands map onto the pipeline stages::
     cultivate stats     # knowledge-base summary
     cultivate evidence-audit
     cultivate review-packet
+    cultivate adjudication-template
+    cultivate adjudication-validate
     cultivate design    # goal-conditioned medium recommendation
     cultivate schema    # print the field guide or JSON schema
     cultivate smoke     # offline end-to-end self-test (mock LLM, no API key)
@@ -339,6 +341,39 @@ def cmd_review_packet(args) -> int:
     print(f"+ wrote {out}")
     print(f"Review packet: {ready}/{len(items)} tasks have local full-text locators")
     return 0
+
+
+def cmd_adjudication_template(args) -> int:
+    """Create a TSV worksheet for human evidence adjudication."""
+    cfg = load_config(root=args.root)
+    from .evidence import write_adjudication_template
+
+    ids = _expand_review_ids(args.ids)
+    out = write_adjudication_template(
+        review_queue_path=args.review_queue or (cfg.data_path / "literature" / "bovine_human_review_queue.tsv"),
+        manifest_path=args.manifest or (cfg.data_path / "literature" / "bovine_corpus_manifest.tsv"),
+        papers_dir=cfg.papers_dir,
+        review_ids=ids,
+        out_path=args.out,
+        top_k=args.top_k,
+        include_missing=args.include_missing,
+    )
+    print(f"+ wrote {out}")
+    return 0
+
+
+def cmd_adjudication_validate(args) -> int:
+    """Validate a filled human-adjudication TSV worksheet."""
+    from .evidence import validate_adjudication_worksheet, write_validation_markdown
+
+    result = validate_adjudication_worksheet(args.worksheet)
+    if args.out:
+        out = write_validation_markdown(result, args.out)
+        print(f"+ wrote {out}")
+    print(f"Adjudication worksheet: {'PASS' if result.ok else 'FAIL'} ({len(result.issues)} issues, {result.rows} rows)")
+    for issue in result.issues[:20]:
+        print(f"  row {issue.row_number} {issue.review_id} {issue.field}: {issue.message}")
+    return 1 if args.fail_on_issues and not result.ok else 0
 
 
 def _expand_review_ids(spec: str) -> List[str]:
@@ -716,6 +751,23 @@ def build_parser() -> argparse.ArgumentParser:
                     help="Markdown output path")
     sp.add_argument("--top-k", type=int, default=5, help="candidate passages per review task")
     sp.set_defaults(func=cmd_review_packet)
+
+    sp = sub.add_parser("adjudication-template", help="create a TSV worksheet for human evidence adjudication")
+    sp.add_argument("--ids", default="H001-H014", help="review IDs, e.g. H001-H014 or H001,H004")
+    sp.add_argument("--review-queue", help="review queue TSV")
+    sp.add_argument("--manifest", help="bovine corpus manifest TSV")
+    sp.add_argument("--out", default="data/literature/bovine_adjudication_H001_H014.tsv",
+                    help="TSV output path")
+    sp.add_argument("--top-k", type=int, default=3, help="candidate ranges per review task")
+    sp.add_argument("--include-missing", action="store_true", help="include rows without local full text")
+    sp.set_defaults(func=cmd_adjudication_template)
+
+    sp = sub.add_parser("adjudication-validate", help="validate a filled human evidence-adjudication worksheet")
+    sp.add_argument("--worksheet", default="data/literature/bovine_adjudication_H001_H014.tsv",
+                    help="human-adjudication TSV worksheet")
+    sp.add_argument("--out", help="optional Markdown validation report")
+    sp.add_argument("--fail-on-issues", action="store_true", help="exit nonzero if validation finds issues")
+    sp.set_defaults(func=cmd_adjudication_validate)
 
     sp = sub.add_parser("design", help="goal-conditioned medium recommendation")
     sp.add_argument("--preset", help="objective-weight preset from config")

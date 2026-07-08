@@ -173,6 +173,8 @@ Artifact registry:
 | Extraction reports | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | Evaluation run |
 | Evidence audit | `docs/EVIDENCE_AUDIT_PROLIFERATION.md` | `[AI]` + `[REVIEW]` | Evidence export or gate update |
 | Review packet | `docs/HUMAN_REVIEW_PACKET_H001_H016.md` | `[AI]` + `[HUMAN]` | Source availability or review queue update |
+| Human adjudication worksheet | `data/literature/bovine_adjudication_H001_H014.tsv` | `[HUMAN]` + `[AI]` | Before and after human evidence review |
+| Worksheet validation report | `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` | `[AI]` + `[REVIEW]` | After worksheet creation or edits |
 | Candidate variables | `docs/CANDIDATE_VARIABLES.md` | `[AI]` + `[HUMAN]` | Human evidence review completion |
 | Wet-lab design packet | `docs/wetlab/ROUND_<n>_DESIGN_PACKET.md` | `[AI]` + `[LAB]` + `[REVIEW]` | Before each wet-lab round |
 | Wet-lab results | `docs/wetlab/ROUND_<n>_RESULTS.md` | `[AI]` + `[LAB]` | After each wet-lab round |
@@ -320,6 +322,8 @@ Goal: turn extracted evidence into scientifically usable evidence.
 Checklist:
 
 - [ ] `[AI]` Generate passage locators with `cultivate review-packet`.
+- [ ] `[AI]` Generate a human-fillable adjudication worksheet with
+  `cultivate adjudication-template`.
 - [ ] `[HUMAN]` Review `H001-H016` first.
 - [ ] `[HUMAN]` Mark each item as `supported`, `partial`, `unsupported`,
   `uncertain`, or `defer`.
@@ -333,6 +337,9 @@ Command:
 
 ```bash
 cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
+cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
+cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
+  --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md
 ```
 
 Recommended review order:
@@ -498,8 +505,8 @@ Work that can happen now:
 
 | Stream | Can start now | Must not do yet |
 |---|---|---|
-| `[HUMAN]` evidence review | Adjudicate H001-H014 using the locator packet; record notes in the review queue | Approve wet-lab variables without completed S3-S4 gates |
-| `[AI]` corpus/extraction | Acquire R024 main full text when human/institutional access is available; convert human notes into adjudication records; improve extraction coverage | Generate a wet-lab design packet as if the evidence gate passed |
+| `[HUMAN]` evidence review | Adjudicate H001-H014 using the locator packet and worksheet | Approve wet-lab variables without completed S3-S4 gates |
+| `[AI]` corpus/extraction | Maintain the H001-H014 adjudication worksheet; acquire R024 main full text when human/institutional access is available; convert human notes into evidence records | Generate a wet-lab design packet as if the evidence gate passed |
 | `[LAB]` feasibility | Confirm cell source, passage limits, baseline medium, plate format, assay duration, maximum conditions, and reagent constraints | Start experiments or change formulation candidates |
 | `[REVIEW]` gatekeeping | Check whether extracted claims match source text and whether variables are supported | Treat direction-only evidence as quantitative proof |
 
@@ -544,6 +551,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - `cultivate evidence-audit` produces a conservative wet-lab-entry report.
 - `cultivate review-packet` generates local full-text character-range locators
   for human review without making adjudication decisions.
+- `cultivate adjudication-template` and `cultivate adjudication-validate`
+  create and check the human-fillable H001-H014 worksheet without deciding
+  evidence support.
 
 ### 8.2 Completed Literature And Planning Work
 
@@ -563,7 +573,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 |---|---|---|
 | Corpus manifest | Partial | Useful bovine set exists, but P1 human review and full-text coverage are incomplete |
 | Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
-| Critical human review | 16/16 open | No adjudicated evidence table yet |
+| Critical human review | 16/16 open | H001-H014 worksheet exists, but no human decisions have been entered |
 | Review-packet coverage | 14/16 with local locators | H001-H014 are ready for efficient human review |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
@@ -586,7 +596,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 ### 8.5 Immediate Next Actions
 
 1. `[HUMAN]` Adjudicate H001-H014 using the current
-   locator packet.
+   locator packet and `data/literature/bovine_adjudication_H001_H014.tsv`.
 2. `[HUMAN]` Provide R024 main full text, or confirm it should remain deferred.
 3. `[AI]` Regenerate `docs/HUMAN_REVIEW_PACKET_H001_H016.md` after R024 is
    available.

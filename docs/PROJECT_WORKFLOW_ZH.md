@@ -122,6 +122,7 @@ CultivateAgent/
   docs/
     PROJECT_WORKFLOW.md             英文手册
     PROJECT_WORKFLOW_ZH.md          本手册
+    AI_COLLABORATION_PROTOCOL.md    Codex/Claude 并行协作协议
     SESSION_LOG.md                  时间顺序工作记录
     ARCHITECTURE.md                 技术架构
     OPTIMIZATION.md                 优化层设计
@@ -158,6 +159,7 @@ CultivateAgent/
 | 产物 | 路径 | 负责人 | 何时更新 |
 |---|---|---|---|
 | 项目手册 | `docs/PROJECT_WORKFLOW.md`, `docs/PROJECT_WORKFLOW_ZH.md` | `[记录]` | 流程变化或重要状态更新 |
+| AI 协作协议 | `docs/AI_COLLABORATION_PROTOCOL.md` | `[AI]` + `[记录]` | 多 agent 协作规则或高冲突流程变化 |
 | 时间顺序日志 | `docs/SESSION_LOG.md` | `[AI]` | 每次重要工作后 |
 | 湿实验目标决策 | `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md` | `[人工]` + `[AI]` | 目标或 scope 变化 |
 | 文献 manifest | `data/literature/bovine_corpus_manifest.tsv` | `[AI]` + `[复核]` | 文献状态变化 |
@@ -577,18 +579,21 @@ AI 线：
 任何 AI 接手时：
 
 1. 读 `README.md`。
-2. 读本手册或 `docs/PROJECT_WORKFLOW.md`。
-3. 读 `docs/SESSION_LOG.md`。
-4. 读 `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md`。
-5. 读 `docs/BOVINE_CORPUS_MANIFEST.md`。
-6. 运行 `git status --short --branch`。
-7. 从第 9.1 节的下一个未通过 gate 继续。
+2. 读 `docs/AI_COLLABORATION_PROTOCOL.md`。
+3. 读本手册或 `docs/PROJECT_WORKFLOW.md`。
+4. 读 `docs/SESSION_LOG.md`。
+5. 读 `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md`。
+6. 读 `docs/BOVINE_CORPUS_MANIFEST.md`。
+7. 运行 `git fetch --all --prune` 和 `git status --short --branch`。
+8. 从第 9.1 节的下一个未通过 gate 继续，并且不要触碰其他 agent 的
+   untracked files。
 
 推荐接管 prompt：
 
 ```text
-请继续 CultivateAgent，使用 docs/PROJECT_WORKFLOW_ZH.md 作为控制手册。
-除非新增 scope-change decision record，否则保持当前 bovine satellite-cell/myoblast
-扩增培养基优化目标。先检查 git status，再推进下一个未通过 gate。不要覆盖人工复核
-notes，也不要编造缺失证据。
+请继续 CultivateAgent，使用 docs/PROJECT_WORKFLOW_ZH.md 作为控制手册，并使用
+docs/AI_COLLABORATION_PROTOCOL.md 作为多 agent 协作协议。除非新增 scope-change
+decision record，否则保持当前 bovine satellite-cell/myoblast 扩增培养基优化目标。
+先 fetch、检查 git status、识别 untracked files，再推进下一个未通过 gate。不要覆盖
+人工复核 notes、其他 agent 的文件，也不要编造缺失证据。
 ```

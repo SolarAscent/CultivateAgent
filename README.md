@@ -57,6 +57,9 @@ For the end-to-end project operating manual, including developer orientation,
 human/AI/lab checklists, gates, handoff rules, and current status, see
 [`docs/PROJECT_WORKFLOW.md`](docs/PROJECT_WORKFLOW.md) or the Chinese version
 [`docs/PROJECT_WORKFLOW_ZH.md`](docs/PROJECT_WORKFLOW_ZH.md).
+For concurrent Codex/Claude work, start with
+[`docs/AI_COLLABORATION_PROTOCOL.md`](docs/AI_COLLABORATION_PROTOCOL.md) before
+editing.
 For the current AI-for-science method review and algorithm roadmap, see
 [`docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`](docs/AI_FOR_SCIENCE_METHOD_REVIEW.md).
 

@@ -133,6 +133,7 @@ CultivateAgent/
   docs/
     PROJECT_WORKFLOW.md             this manual
     PROJECT_WORKFLOW_ZH.md          Chinese version
+    AI_COLLABORATION_PROTOCOL.md    Codex/Claude concurrent-work protocol
     SESSION_LOG.md                  chronological work log
     ARCHITECTURE.md                 technical architecture
     OPTIMIZATION.md                 optimization design
@@ -169,6 +170,7 @@ Rules:
 | Artifact | Path | Owner | Update trigger |
 |---|---|---|---|
 | Operating manual | `docs/PROJECT_WORKFLOW.md`, `docs/PROJECT_WORKFLOW_ZH.md` | `[DOC]` | Process changes or major status update |
+| AI collaboration protocol | `docs/AI_COLLABORATION_PROTOCOL.md` | `[AI]` + `[DOC]` | Concurrent-agent coordination rules or conflict-prone workflow changes |
 | Chronological log | `docs/SESSION_LOG.md` | `[AI]` | Each substantial work session |
 | Wet-lab target decision | `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md` | `[HUMAN]` + `[AI]` | Target or scope change |
 | Corpus manifest | `data/literature/bovine_corpus_manifest.tsv` | `[AI]` + `[REVIEW]` | Source status change |
@@ -618,19 +620,23 @@ the procedural sections above.
 When another AI agent resumes the project:
 
 1. Read `README.md`.
-2. Read this manual or `docs/PROJECT_WORKFLOW_ZH.md`.
-3. Read `docs/SESSION_LOG.md`.
-4. Read `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md`.
-5. Read `docs/BOVINE_CORPUS_MANIFEST.md`.
-6. Run `git status --short --branch`.
-7. Continue from the next failed gate in Section 9.1.
+2. Read `docs/AI_COLLABORATION_PROTOCOL.md`.
+3. Read this manual or `docs/PROJECT_WORKFLOW_ZH.md`.
+4. Read `docs/SESSION_LOG.md`.
+5. Read `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md`.
+6. Read `docs/BOVINE_CORPUS_MANIFEST.md`.
+7. Run `git fetch --all --prune` and `git status --short --branch`.
+8. Continue from the next failed gate in Section 9.1 without touching
+   untracked files owned by another agent.
 
 Suggested handoff prompt:
 
 ```text
 Continue CultivateAgent using docs/PROJECT_WORKFLOW.md as the controlling
-manual. Preserve the bovine satellite-cell/myoblast expansion-medium scope
-unless you create a documented scope-change decision record. Start by checking
-git status, then advance the next failed gate. Do not overwrite human review
-notes or invent missing evidence.
+manual and docs/AI_COLLABORATION_PROTOCOL.md as the concurrent-agent protocol.
+Preserve the bovine satellite-cell/myoblast expansion-medium scope unless you
+create a documented scope-change decision record. Start by fetching, checking
+git status, and identifying untracked files, then advance the next failed gate.
+Do not overwrite human review notes, another agent's files, or invent missing
+evidence.
 ```

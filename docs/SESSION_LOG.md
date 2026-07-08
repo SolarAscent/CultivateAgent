@@ -313,3 +313,85 @@ component names can be canonicalized before evidence pooling and human review.
   surface terms.
 - `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
   hypervolume rose from 7.050 to 16.464.
+
+---
+
+# Session 4 (Codex) — documentation structure and AI coordination protocol
+
+Date: 2026-07-08
+Branch: `main`
+
+## Coordination Decision
+
+The previous project workflow manuals were useful but too ledger-like for
+long-term maintenance. The owner asked for the Chinese and English versions to
+be rewritten with a clearer professional documentation logic, while preserving
+the existing project record and avoiding conflicts with concurrent Claude work.
+
+This session treated documentation architecture as the most valuable immediate
+task. It did not edit extraction, evidence synthesis, optimization, ontology, or
+the untracked local scripts.
+
+## Documentation References Checked
+
+- Diataxis: used to separate orientation, how-to checklists, reference tables,
+  and current project ledger.
+- Google developer documentation style guide: used for task-oriented, concise,
+  stable wording.
+- Microsoft Learn contributor guide: used for maintainable ownership and update
+  flow.
+- GitLab documentation style guide: used for topic-based, scannable structure.
+- GitHub pull request documentation and Conventional Commits: used to define a
+  lightweight concurrent-agent protocol and commit-message handoff style.
+
+## Changes Made
+
+- Reorganized `docs/PROJECT_WORKFLOW.md` and
+  `docs/PROJECT_WORKFLOW_ZH.md` into a stable manual:
+  - how to use the manual,
+  - project definition,
+  - deliverable model,
+  - repository map,
+  - roles and decision rights,
+  - artifact registry,
+  - lifecycle overview,
+  - stage checklists,
+  - parallel-work rules,
+  - current project ledger,
+  - AI handoff protocol.
+- Added `docs/AI_COLLABORATION_PROTOCOL.md` for Codex, Claude Code, humans, and
+  any later AI agent working concurrently.
+- Updated `README.md` so new contributors start with the operating manual and
+  the collaboration protocol before editing.
+- Added explicit rules that untracked files should be treated as another
+  contributor's work unless ownership is proven.
+
+## What This Does Not Claim
+
+- The workflow manuals are process control documents, not evidence that wet-lab
+  entry gates have passed.
+- No human review task has been completed in this session.
+- No full-text extraction, evidence adjudication, candidate variable approval,
+  design packet, or wet-lab protocol was generated in this session.
+
+## Known Concurrent Work Left Untouched
+
+- `scripts/ingest_pdfs.py` is untracked and was not committed.
+- `scripts/run_evidence_parallel.py` is untracked and was not committed.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 47 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+
+## Next 3 Steps
+
+1. Resume S3/S4 technical work: batch full-text ingestion, extraction,
+   normalization inspection, and human evidence review.
+2. Human reviewer completes `H001-H016` in the bovine review queue.
+3. Reviewer decides which adjudicated variables can enter the first bounded
+   search space.

@@ -12,6 +12,13 @@ Auxenochlorella pyrenoidosa protein extract, and copper ions so evidence can be
 canonicalized for review and pooling. This does not approve any of those entries
 for wet-lab use; it only prevents known aliases from remaining unnormalized.
 
+2026-07-09 extraction-readiness follow-up: R023/H014 was previously marked
+full-text-fallback-ready because its `fulltext.xml` was treated like GROBID TEI.
+The file is JATS/Open Access article XML from Europe PMC, so CultivateAgent now
+auto-detects JATS sections and `table-wrap` tables. H014 is now direct
+section-routed-ready for operator extraction. This still does not approve the
+evidence for wet-lab use.
+
 Data files:
 
 - `data/literature/bovine_corpus_manifest.tsv`
@@ -120,9 +127,8 @@ Gate 2, extraction reliability: **not passed**.
   header-only because no human decisions have been entered yet.
 - `docs/EXTRACTION_READINESS_H001_H016.md` and
   `data/literature/bovine_extraction_readiness_H001_H016.tsv` now report
-  offline operator-readiness before live extraction: H001-H013 are direct-ready,
-  H014 is ready only through full-text fallback, and H015-H016 remain missing
-  because R024 is not ingested locally.
+  offline operator-readiness before live extraction: H001-H014 are direct-ready,
+  and H015-H016 remain missing because R024 is not ingested locally.
 
 Gate 3, biological plausibility: **not passed**.
 
@@ -154,8 +160,7 @@ Gate 6, pre-registration readiness: **not passed**.
 3. After human edits, run `cultivate adjudication-validate`, then
    `cultivate adjudication-export` to refresh
    `data/literature/bovine_evidence_table.tsv`.
-4. Run operator extraction first on the direct-ready H001-H013 sources; treat
-   H014 as fallback-context until TEI section routing improves.
+4. Run operator extraction first on the direct-ready H001-H014 sources.
 5. Re-run `cultivate review-packet` and `cultivate evidence-audit` after updated
    extraction outputs.
 6. Extract exact component tables, dose ranges, endpoints, and evidence quotes

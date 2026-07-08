@@ -922,3 +922,79 @@ evidence claims.
 2. Improve TEI/plain-text section recovery for R023/H014, or accept it as
    fallback-context for the next extraction run.
 3. Obtain R024 main full text before H015-H016 can enter the same preflight.
+
+---
+
+# Session 12 (Codex) — JATS full-text parser hardening
+
+Date: 2026-07-09
+Branch: `main`
+
+## Coordination Decision
+
+The next non-blocked task was to remove the H014 extraction-readiness fallback
+without spending live LLM calls. Inspection showed that R023's `fulltext.xml` is
+JATS/Open Access article XML, not GROBID TEI. The parser should therefore
+auto-detect JATS and expose sections/tables before operator extraction.
+
+The user provided test provider keys in chat. No key was written to the repo,
+docs, commit message, or generated reports. DeepSeek was reviewed only as an
+OpenAI-compatible provider option; this parser fix did not require live LLM
+spend.
+
+## Literature And Method Basis
+
+- DeepSeek official API docs confirm OpenAI/Anthropic-compatible API formats and
+  `https://api.deepseek.com` as the OpenAI-compatible base URL.
+- Europe PMC RESTful API documentation confirms `fullTextXML` for Open Access
+  full text XML retrieval.
+- JATS tag-library documentation records article-level metadata and `table-wrap`
+  table containers, supporting parser-level section/table handling.
+
+## Changes Made
+
+- Extended `structured_paper_from_grobid_tei_xml` to parse both GROBID TEI and
+  JATS article XML.
+- Added JATS title, nested `body/sec/title/p` section recovery, `table-wrap`
+  table caption/text recovery, and XML-source labeling as `jats_xml`.
+- Added a regression test that verifies nested JATS methods/results sections and
+  table content are available for routing.
+- Regenerated `docs/EXTRACTION_READINESS_H001_H016.md` and
+  `data/literature/bovine_extraction_readiness_H001_H016.tsv`.
+- Updated README, workflow manuals, corpus manifest, method review, method-source
+  registry, and `.env.example` to document JATS parsing and DeepSeek local
+  configuration without secrets.
+
+## Current Readiness Result
+
+- H001-H014: ready for section-routed operator extraction.
+- H015-H016: missing ingested paper/full text because both map to R024.
+- Summary: 14 direct-ready, 0 fallback-ready, 0 partial, 2 missing.
+
+## What This Does Not Claim
+
+- No evidence field was extracted or approved.
+- No human adjudication decision was made.
+- No wet-lab variable was approved.
+- The proliferation audit remains `NO-GO`.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 58 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Run operator extraction on the direct-ready H001-H014 sources.
+2. Human reviewer fills `data/literature/bovine_adjudication_H001_H014.tsv`.
+3. Obtain R024 main full text before H015-H016 can enter the same preflight.

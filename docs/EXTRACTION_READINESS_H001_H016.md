@@ -7,8 +7,8 @@ Status: offline section-routing preflight; not an extraction result and not evid
 | Metric | Value |
 |---|---:|
 | Review tasks checked | 16 |
-| Ready for operator extraction | 13 |
-| Ready with full-text fallback | 1 |
+| Ready for operator extraction | 14 |
+| Ready with full-text fallback | 0 |
 | Partial operator-ready | 0 |
 | Not ready / missing | 2 |
 
@@ -17,8 +17,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 | Status | Count |
 |---|---:|
 | `missing_ingested_paper` | 2 |
-| `ready_for_operator_extraction` | 13 |
-| `ready_with_fulltext_fallback` | 1 |
+| `ready_for_operator_extraction` | 14 |
 
 ## Task Detail
 
@@ -37,7 +36,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 | `H011` | `R021` | `ready_for_operator_extraction` | 3/3 | plain_text | 99610 | 13 | 0 |
 | `H012` | `R022` | `ready_for_operator_extraction` | 3/3 | plain_text | 71934 | 5 | 0 |
 | `H013` | `R022` | `ready_for_operator_extraction` | 3/3 | plain_text | 71934 | 5 | 0 |
-| `H014` | `R023` | `ready_with_fulltext_fallback` | 3/3 | grobid_tei | 44630 | 1 | 0 |
+| `H014` | `R023` | `ready_for_operator_extraction` | 3/3 | jats_xml | 44630 | 20 | 13 |
 | `H015` | `R024` | `missing_ingested_paper` | 0/3 | - | 0 | 0 | 0 |
 | `H016` | `R024` | `missing_ingested_paper` | 0/3 | - | 0 | 0 | 0 |
 
@@ -219,11 +218,11 @@ Status: offline section-routing preflight; not an extraction result and not evid
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
-| `context` | `fallback_ready` | 51925 | - | bovine, cell, cells, muscle, myoblast, satellite | 39 |
-| `medium` | `fallback_ready` | 51925 | - | albumin, basal, dmem, media, medium, serum, serum-free, supplement | 39 |
-| `dose` | `fallback_ready` | 51925 | - | concentration, dose, ng/ml, passage, proliferation | 39 |
-| `endpoints` | `fallback_ready` | 51925 | - | differentiation, myod, myog, myogenic, pax7, proliferation | 39 |
-| `findings` | `fallback_ready` | 51925 | - | alternative, conclusion, cost, increased, serum-free, significant | 39 |
+| `context` | `ready` | 14678 | S1, S2.1, S2.2, S2.3, S2.4, S2.5, S2.6 | bovine, cell, cells, muscle, myoblast, satellite | 8 |
+| `medium` | `ready` | 15859 | S2.1, S2.2, S2.3, S2.4, S2.5, S2.6, S3.1, S3.2, S3.3 | dmem, media, medium, serum, supplement | 15 |
+| `dose` | `ready` | 15859 | S2.1, S2.2, S2.3, S2.4, S2.5, S2.6, S3.1, S3.2, S3.3 | concentration, dose, ng/ml, passage, proliferation | 15 |
+| `endpoints` | `ready` | 15859 | S2.1, S2.2, S2.3, S2.4, S2.5, S2.6, S3.1, S3.2, S3.3 | differentiation, myod, myog, pax7, proliferation | 15 |
+| `findings` | `ready` | 18967 | S1, S3.1, S3.2, S3.3, S4, S5 | alternative, conclusion, cost, increased, serum-free, significant | 15 |
 
 ### H015: R024
 

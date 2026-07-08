@@ -1,7 +1,7 @@
 # CultivateAgent Project Workflow
 
 Status: active
-Last updated: 2026-07-08
+Last updated: 2026-07-09
 Chinese version: [`PROJECT_WORKFLOW_ZH.md`](PROJECT_WORKFLOW_ZH.md)
 
 This is the controlling workflow manual for CultivateAgent. It is for software
@@ -99,7 +99,7 @@ CultivateAgent/
     ontology/                       component ontology seeds and normalization hooks
   cultivate_agent/
     cli.py                          command-line entrypoint
-    ingest/                         BibTeX, PDF, text, GROBID TEI ingestion
+    ingest/                         BibTeX, PDF, text, GROBID TEI/JATS XML ingestion
     triage/                         paper screening and A/B/C tiering
     extract/                        prompts, operator extraction, grounding checks
     schema/                         A-M schema, evidence models, paper objects
@@ -540,14 +540,15 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 ### 8.1 Completed Technical Work
 
 - CLI-first Python package exists.
-- Latest committed validation before this documentation rewrite: 54 tests
-  passed with 3 known warnings.
+- Latest local validation after JATS parser hardening: 58 tests passed with 3
+  known warnings.
 - Smoke pipeline passes.
 - Demo optimization loop passes.
 - Extraction evaluator and offline four-paper fixture exist.
 - Provider-agnostic LLM layer exists, including mock mode for offline runs.
 - Operator extraction exists for smaller section-routed prompts.
-- Structured-paper schema, plain-text fallback, and GROBID TEI parsing exist.
+- Structured-paper schema, plain-text fallback, GROBID TEI parsing, and
+  JATS/Open Access XML parsing exist.
 - `cultivate ingest --grobid-tei` can call a running GROBID service and save
   `fulltext.xml`.
 - Embedding retriever exists.
@@ -564,7 +565,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - `cultivate evidence-audit` produces a conservative wet-lab-entry report.
 - `cultivate extraction-readiness` checks local full-text and section-routing
   readiness for the operator extractor without calling an LLM or adjudicating
-  evidence. Current H001-H016 result: 13 direct-ready, 1 full-text fallback-ready,
+  evidence. Current H001-H016 result: 14 direct-ready, 0 full-text fallback-ready,
   2 missing R024 tasks.
 - `cultivate review-packet` generates local full-text character-range locators
   for human review without making adjudication decisions.
@@ -593,7 +594,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 |---|---|---|
 | Corpus manifest | Partial | Useful bovine set exists, but P1 human review and full-text coverage are incomplete |
 | Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
-| Extraction readiness | 13 direct-ready, 1 fallback-ready, 2 missing | H001-H013 are ready for section-routed operators; H014 can use full-text fallback; H015-H016 need R024 |
+| Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 are ready for section-routed operators; H015-H016 need R024 |
 | Critical human review | 16/16 open | H001-H014 worksheet and evidence-table export path exist, but no human decisions have been entered |
 | Adjudicated evidence table | 0 rows | Header-only export from the blank worksheet; not evidence approval |
 | Review-packet coverage | 14/16 with local locators | H001-H014 are ready for efficient human review |
@@ -608,7 +609,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   available.
 - OpenAI raw-response debugging hit insufficient quota.
 - Current corpus manifest is not yet fully extracted.
-- GROBID service availability is external.
+- GROBID service availability is external; legally obtained JATS/Open Access XML
+  can also be parsed when available.
 - Cost, supplier, and food-grade annotations are incomplete.
 - Current audit candidates are direction-only; they are not quantitative wet-lab
   proof.
@@ -624,8 +626,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    available.
 4. `[AI]` Validate the filled worksheet and run `cultivate adjudication-export`
    to refresh `data/literature/bovine_evidence_table.tsv`.
-5. `[AI]` Run operator extraction first on H001-H013 sources, treat H014 as
-   fallback-context, and re-run `cultivate evidence-audit`.
+5. `[AI]` Run operator extraction first on H001-H014 section-routed sources and
+   re-run `cultivate evidence-audit`.
 6. `[REVIEW]` Decide which variables can enter S5 search-space design.
 7. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 

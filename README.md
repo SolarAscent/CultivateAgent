@@ -7,13 +7,12 @@ CultivateAgent turns a pile of cultivated-meat / tissue-engineering papers into 
 structured, **evidence-grounded** knowledge base, and then uses that knowledge
 base to propose *medium-formulation* changes conditioned on user objectives
 (proliferation, cost, differentiation retention, 3D tissue-readiness).
-The extractor now has a first structured-paper layer: plain text can be converted
-into section/paragraph objects, and extraction can route medium fields toward
-Methods/media/cell-culture sections before prompting. It can also parse
-GROBID-flavored TEI XML that has already been produced by an external GROBID
-run into the same structured-paper object. When a GROBID service is running,
-`cultivate ingest --grobid-tei` can also submit PDFs to
-`processFulltextDocument`, save the returned TEI as `fulltext.xml`, and let
+The extractor now has a structured-paper layer: plain text can be converted into
+section/paragraph objects, and extraction can route medium fields toward
+Methods/media/cell-culture sections before prompting. It can also parse GROBID
+TEI XML and JATS/Open Access article XML into the same structured-paper object.
+When a GROBID service is running, `cultivate ingest --grobid-tei` can submit PDFs
+to `processFulltextDocument`, save the returned TEI as `fulltext.xml`, and let
 `cultivate extract` use that structured file automatically.
 
 It is modeled on an LLM + domain-tool hybrid that mines reaction data from the organic-synthesis
@@ -129,6 +128,8 @@ cultivate smoke         # runs ingest→extract→normalize→KB→retrieve→de
 cultivate ingest                     # build data/papers/<slug>/ folders + full text
 # Optional structured full text: start GROBID separately, then:
 cultivate ingest --grobid-tei --grobid-url http://localhost:8070
+# If legally obtained JATS/Open Access XML already exists as fulltext.xml,
+# cultivate extract and extraction-readiness will auto-detect it.
 
 # 2. Tier papers A/B/C (evidence-backed, reproducible):
 cultivate triage
@@ -139,6 +140,7 @@ cultivate extract --tier A
 cultivate extract --tier A --mode operators
 # Before spending LLM calls, audit whether local full text supports operator routing:
 cultivate extraction-readiness --ids H001-H016
+# Current H001-H016 preflight: 14 direct-ready, 0 fallback-ready, 2 missing R024 tasks.
 
 # 4. Look at what you have:
 cultivate stats
@@ -240,7 +242,7 @@ cultivate schema --json          # full JSON Schema
 cultivate_agent/
   schema/       evidence primitives, the A–M schema, paper records + folder layout
   llm/          provider-agnostic client (openai / anthropic / gemini / mock)
-  ingest/       BibTeX parsing, PDF→text/figures/tables, optional GROBID TEI, per-paper folder builder
+  ingest/       BibTeX parsing, PDF→text/figures/tables, optional GROBID TEI/JATS XML, per-paper folder builder
   triage/       A/B/C relevance classifier (evidence-backed)
   extract/      domain prompts + evidence-grounded schema extractor
   normalize/    ontology component canonicalization + provenance-preserving units

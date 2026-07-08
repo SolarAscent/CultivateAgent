@@ -249,6 +249,45 @@ def test_structured_paper_from_grobid_tei_xml():
     assert paper.figures and "Growth curve" in (paper.figures[0].caption or "")
 
 
+def test_structured_paper_from_jats_xml_routes_nested_sections():
+    from cultivate_agent.schema import structured_paper_from_grobid_tei_xml
+
+    xml = """<?xml version="1.0" encoding="UTF-8"?>
+<article>
+  <front>
+    <article-meta>
+      <title-group><article-title>JATS bovine medium paper</article-title></title-group>
+      <abstract><p>We optimized bovine satellite cell proliferation media.</p></abstract>
+    </article-meta>
+  </front>
+  <body>
+    <sec id="intro"><title>1. Introduction</title><p>Medium composition matters.</p></sec>
+    <sec id="methods"><title>2. Materials and Methods</title>
+      <sec id="media"><title>2.2. Selection of the Components of the Tested Media</title>
+        <p>Cells were cultured in DMEM with bFGF at 10 ng/mL and bovine serum.</p>
+      </sec>
+    </sec>
+    <sec id="results"><title>3. Results</title>
+      <p>Proliferation increased under bFGF conditions.</p>
+    </sec>
+    <table-wrap id="t1"><label>Table 1</label>
+      <caption><p>Media compositions for bovine satellite cells.</p></caption>
+      <table><tbody><tr><td>DMEM and 10 ng/mL bFGF</td></tr></tbody></table>
+    </table-wrap>
+    <fig id="f1"><label>Figure 1</label><caption><p>Growth curve.</p></caption></fig>
+  </body>
+</article>"""
+    paper = structured_paper_from_grobid_tei_xml("jats-1", xml)
+    assert paper.source == "jats_xml"
+    assert paper.title == "JATS bovine medium paper"
+    assert paper.abstract and "proliferation media" in paper.abstract
+    assert any("Materials and Methods" in s.title for s in paper.sections)
+    assert any("Selection of the Components" in s.title for s in paper.sections)
+    assert paper.section_passages(["materials and methods", "results"])
+    assert paper.tables and "10 ng/mL bFGF" in (paper.tables[0].caption or "")
+    assert paper.figures and "Growth curve" in (paper.figures[0].caption or "")
+
+
 def test_grobid_client_writes_and_parses_tei(tmp_path):
     from cultivate_agent.ingest import (
         process_fulltext_document,

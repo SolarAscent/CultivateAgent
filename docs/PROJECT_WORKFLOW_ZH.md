@@ -1,7 +1,7 @@
 # CultivateAgent 项目流程手册
 
 状态：使用中
-最后更新：2026-07-08
+最后更新：2026-07-09
 English version: [`PROJECT_WORKFLOW.md`](PROJECT_WORKFLOW.md)
 
 这是 CultivateAgent 的控制性流程手册，给开发者、文献复核者、湿实验合作者、
@@ -91,7 +91,7 @@ CultivateAgent/
     ontology/                       成分 ontology seed 和 normalization hooks
   cultivate_agent/
     cli.py                          CLI 入口
-    ingest/                         BibTeX、PDF、全文、GROBID TEI 导入
+    ingest/                         BibTeX、PDF、全文、GROBID TEI/JATS XML 导入
     triage/                         论文初筛和 A/B/C 分层
     extract/                        prompt、operator extraction、grounding checks
     schema/                         A-M schema、evidence model、paper objects
@@ -508,13 +508,15 @@ Gate：论文 claims 可追溯到证据和结果。
 ### 8.1 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- 本次文档重写前的最新 committed validation：54 tests passed，3 个已知 warnings。
+- JATS parser hardening 后的最新本地 validation：58 tests passed，3 个已知
+  warnings。
 - Smoke pipeline 通过。
 - Demo optimization loop 通过。
 - Extraction evaluator 和四篇文献 offline fixture 已有。
 - Provider-agnostic LLM layer 已有，并支持 offline mock mode。
 - Operator extraction 已有，可把大 schema 拆成更小的 section-routed prompts。
-- Structured-paper schema、plain-text fallback 和 GROBID TEI parsing 已有。
+- Structured-paper schema、plain-text fallback、GROBID TEI parsing 和
+  JATS/Open Access XML parsing 已有。
 - `cultivate ingest --grobid-tei` 可调用运行中的 GROBID service 并保存
   `fulltext.xml`。
 - Embedding retriever 已有。
@@ -531,7 +533,7 @@ Gate：论文 claims 可追溯到证据和结果。
 - `cultivate evidence-audit` 能生成保守的 wet-lab-entry report。
 - `cultivate extraction-readiness` 会在调用 LLM 前检查本地全文和 section routing
   是否足够支持 operator extractor，但不抽取、不裁决证据。当前 H001-H016 结果：
-  13 个 direct-ready、1 个 full-text fallback-ready、2 个 R024 missing。
+  14 个 direct-ready、0 个 full-text fallback-ready、2 个 R024 missing。
 - `cultivate review-packet` 能为人工复核生成本地 full-text 字符范围 locators，
   但不做 evidence adjudication。
 - `cultivate adjudication-template` 和 `cultivate adjudication-validate` 能创建和
@@ -557,7 +559,7 @@ Gate：论文 claims 可追溯到证据和结果。
 |---|---|---|
 | Corpus manifest | Partial | 已有可用 bovine set，但 P1 人工复核和全文覆盖不完整 |
 | Proliferation evidence audit | `NO-GO` | 当前 extracted evidence 不能支持湿实验入口 |
-| Extraction readiness | 13 direct-ready, 1 fallback-ready, 2 missing | H001-H013 可跑 section-routed operators；H014 可用全文 fallback；H015-H016 需要 R024 |
+| Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 可跑 section-routed operators；H015-H016 需要 R024 |
 | Critical human review | 16/16 open | H001-H014 工作表和证据表导出路径已存在，但尚无人工 decision |
 | 已裁决证据表 | 0 行 | 来自空白工作表的仅表头导出；不是证据批准 |
 | Review-packet 覆盖 | 14/16 有本地 locators | H001-H014 可进入高效人工复核 |
@@ -570,7 +572,8 @@ Gate：论文 claims 可追溯到证据和结果。
 - Gemini live comparison 未完成，因为没有 Gemini/Google key。
 - OpenAI raw-response debugging 遇到 insufficient quota。
 - 当前 corpus manifest 尚未完整全文抽取。
-- GROBID service 是否可用属于外部条件。
+- GROBID service 是否可用属于外部条件；已有合法来源的 JATS/Open Access XML
+  也可以直接解析。
 - Cost、supplier、food-grade annotations 不完整。
 - 当前 audit candidates 是 direction-only，不能作为定量湿实验证明。
 - In-silico robustness 尚未在 reviewed bovine evidence 上运行。
@@ -584,8 +587,8 @@ Gate：论文 claims 可追溯到证据和结果。
 3. `[AI]` R024 可用后重新生成 `docs/HUMAN_REVIEW_PACKET_H001_H016.md`。
 4. `[AI]` 校验已填写工作表，并运行 `cultivate adjudication-export` 更新
    `data/literature/bovine_evidence_table.tsv`。
-5. `[AI]` 优先对 H001-H013 来源运行 operator extraction，把 H014 标为
-   fallback-context，再重新运行 `cultivate evidence-audit`。
+5. `[AI]` 优先对 H001-H014 已能 section-route 的来源运行 operator extraction，
+   再重新运行 `cultivate evidence-audit`。
 6. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 7. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 

@@ -138,6 +138,13 @@ def _children_named(elem: ET.Element, name: str) -> List[ET.Element]:
     return [child for child in list(elem) if _local_name(child.tag) == name]
 
 
+def _first_child(elem: ET.Element, name: str) -> Optional[ET.Element]:
+    for child in list(elem):
+        if _local_name(child.tag) == name:
+            return child
+    return None
+
+
 def _descendants_named(elem: ET.Element, name: str) -> List[ET.Element]:
     return [child for child in elem.iter() if _local_name(child.tag) == name]
 
@@ -156,6 +163,10 @@ def _text_content(elem: Optional[ET.Element]) -> str:
 
 
 def _grobid_title(root: ET.Element) -> Optional[str]:
+    for article_title in _descendants_named(root, "article-title"):
+        text = _text_content(article_title)
+        if text:
+            return text
     for title in _descendants_named(root, "title"):
         if title.get("level") in {None, "a"}:
             text = _text_content(title)
@@ -173,7 +184,7 @@ def _grobid_abstract(root: ET.Element) -> Optional[str]:
 
 
 def _section_from_div(section_id: str, div: ET.Element) -> PaperSection:
-    head = _text_content(_first_descendant(div, "head")) or f"Section {section_id}"
+    head = _text_content(_first_child(div, "head")) or f"Section {section_id}"
     paragraphs: List[PaperParagraph] = []
     for idx, p in enumerate(_children_named(div, "p"), start=1):
         text = _text_content(p)
@@ -193,11 +204,41 @@ def _section_from_div(section_id: str, div: ET.Element) -> PaperSection:
     return PaperSection(section_id=section_id, title=head, paragraphs=paragraphs)
 
 
+def _jats_sec_title(sec: ET.Element, section_id: str, prefix: tuple[str, ...]) -> str:
+    title = _text_content(_first_child(sec, "title")) or f"Section {section_id}"
+    return " / ".join([*prefix, title]) if prefix else title
+
+
+def _section_from_sec(section_id: str, sec: ET.Element, prefix: tuple[str, ...] = ()) -> PaperSection:
+    title = _jats_sec_title(sec, section_id, prefix)
+    paragraphs: List[PaperParagraph] = []
+    for idx, p in enumerate(_children_named(sec, "p"), start=1):
+        text = _text_content(p)
+        if text:
+            paragraphs.append(PaperParagraph(paragraph_id=f"{section_id}.p{idx}", text=text))
+    return PaperSection(section_id=section_id, title=title, paragraphs=paragraphs)
+
+
+def _collect_jats_sections(sec: ET.Element, section_id: str, prefix: tuple[str, ...] = ()) -> List[PaperSection]:
+    section = _section_from_sec(section_id, sec, prefix)
+    sections = [section] if section.paragraphs else []
+    title = _text_content(_first_child(sec, "title")) or f"Section {section_id}"
+    for idx, child in enumerate(_children_named(sec, "sec"), start=1):
+        sections.extend(_collect_jats_sections(child, f"{section_id}.{idx}", (*prefix, title)))
+    return sections
+
+
 def _collect_body_sections(root: ET.Element) -> List[PaperSection]:
     body = _first_descendant(root, "body")
     if body is None:
         return []
     divs = _children_named(body, "div")
+    secs = _children_named(body, "sec")
+    if secs:
+        sections: List[PaperSection] = []
+        for idx, sec in enumerate(secs, start=1):
+            sections.extend(_collect_jats_sections(sec, f"S{idx}"))
+        return sections
     if not divs:
         text = _text_content(body)
         return [PaperSection(section_id="S1", title="Body", paragraphs=_paragraphs("S1", text))] if text else []
@@ -211,7 +252,7 @@ def _collect_body_sections(root: ET.Element) -> List[PaperSection]:
 
 def _figure_caption(fig: ET.Element) -> str:
     parts = []
-    for name in ("label", "head", "figDesc"):
+    for name in ("label", "head", "figDesc", "caption"):
         text = _text_content(_first_descendant(fig, name))
         if text:
             parts.append(text)
@@ -230,7 +271,31 @@ def _collect_figures_and_tables(root: ET.Element) -> tuple[List[PaperFigure], Li
             tables.append(PaperTable(table_id=f"T{len(tables) + 1}", caption=caption))
         else:
             figures.append(PaperFigure(figure_id=f"F{len(figures) + 1}", caption=caption))
+    for fig in _descendants_named(root, "fig"):
+        caption = _figure_caption(fig) or None
+        figures.append(PaperFigure(figure_id=f"F{len(figures) + 1}", caption=caption))
+    for table_wrap in _descendants_named(root, "table-wrap"):
+        caption = _jats_table_caption(table_wrap) or None
+        tables.append(PaperTable(table_id=f"T{len(tables) + 1}", caption=caption))
     return figures, tables
+
+
+def _jats_table_caption(table_wrap: ET.Element) -> str:
+    parts = []
+    for name in ("label", "caption"):
+        text = _text_content(_first_child(table_wrap, name))
+        if text:
+            parts.append(text)
+    table_text = _text_content(_first_child(table_wrap, "table"))
+    if table_text:
+        parts.append(table_text)
+    return " ".join(dict.fromkeys(p for p in parts if p))
+
+
+def _xml_source(root: ET.Element) -> str:
+    if _local_name(root.tag) == "article":
+        return "jats_xml"
+    return "grobid_tei"
 
 
 def structured_paper_from_grobid_tei_xml(
@@ -239,12 +304,12 @@ def structured_paper_from_grobid_tei_xml(
     *,
     title: Optional[str] = None,
 ) -> StructuredPaper:
-    """Build :class:`StructuredPaper` from GROBID-flavored TEI XML.
+    """Build :class:`StructuredPaper` from GROBID TEI or JATS article XML.
 
     The parser intentionally targets the stable subset CultivateAgent needs:
-    title, abstract, body ``div/head/p`` sections, figure captions, and GROBID's
-    common ``figure type="table"`` table representation. It is a no-dependency
-    bridge for TEI already produced by GROBID, not a GROBID server/client.
+    title, abstract, body sections, table captions, and figure captions. It is a
+    no-dependency bridge for structured XML already produced by GROBID, Europe
+    PMC, or another legal full-text source, not a PDF-to-XML service.
     """
     root = ET.fromstring(xml_text)
     parsed_title = title or _grobid_title(root)
@@ -258,7 +323,7 @@ def structured_paper_from_grobid_tei_xml(
         sections=sections,
         tables=tables,
         figures=figures,
-        source="grobid_tei",
+        source=_xml_source(root),
     )
 
 

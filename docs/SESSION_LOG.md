@@ -1351,3 +1351,65 @@ the integrated state, and delete stale feature branches after pushing.
    configured locally without committing secrets.
 3. Keep future Codex changes in `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`
    and merge/delete short-lived branches promptly.
+
+---
+
+# Session 18 (Codex) — portable extraction-readiness paths
+
+Date: 2026-07-09
+Branch: `codex/readiness-portable-paths`
+
+## Coordination Decision
+
+After Codex moved into its own worktree, rerunning
+`cultivate extraction-readiness` produced the same scientific readiness counts
+but changed every `fulltext_path` from the old checkout path to the Codex
+worktree path. That is noisy for a multi-agent project because path-only churn
+looks like a data change.
+
+The decision was to make readiness reports repo-portable before continuing live
+LLM extraction work. This keeps H001-H016 audit artifacts stable when Codex,
+Claude, or a human reruns the command from different worktrees.
+
+## Changes Made
+
+- Added a `path_base` option to `build_extraction_readiness`.
+- `cultivate extraction-readiness` now passes the configured project root, so
+  generated Markdown and TSV reports use `data/papers/.../fulltext.txt` instead
+  of machine-specific absolute paths.
+- Added a regression assertion that readiness paths are relative when a base is
+  provided.
+- Regenerated `docs/EXTRACTION_READINESS_H001_H016.md` and
+  `data/literature/bovine_extraction_readiness_H001_H016.tsv`; readiness counts
+  are unchanged.
+- Updated README and both workflow manuals.
+
+## What This Does Not Claim
+
+- No live extraction was run.
+- No evidence field was approved.
+- No human adjudication decision was entered.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `.venv/bin/python -m pytest tests/test_operators.py::test_extraction_readiness_reports_operator_context -q`:
+  passed.
+- `.venv/bin/python -m pytest -q`: 62 passed, 2 skipped.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Merge this short-lived branch into `main`, push, and delete it.
+2. Continue toward the H014 live pilot only after provider credentials are
+   configured locally without committing secrets.
+3. Ask Claude to rebase/rebaseline on updated `main` before continuing the v4
+   quality run.

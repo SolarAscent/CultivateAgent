@@ -370,6 +370,7 @@ def cmd_extraction_readiness(args) -> int:
         manifest_path=args.manifest or (cfg.data_path / "literature" / "bovine_corpus_manifest.tsv"),
         papers_dir=cfg.papers_dir,
         review_ids=ids,
+        path_base=cfg.root,
     )
     md = write_extraction_readiness_markdown(rows, args.out)
     tsv = write_extraction_readiness_tsv(rows, args.tsv)

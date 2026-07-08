@@ -160,10 +160,13 @@ def test_extraction_readiness_reports_operator_context(tmp_path):
         manifest_path=manifest,
         papers_dir=papers,
         review_ids=["H001"],
+        path_base=tmp_path,
     )
     assert len(rows) == 1
     assert rows[0].status == "ready_for_operator_extraction"
     assert rows[0].critical_ready == 3
+    assert rows[0].fulltext_path.startswith("papers/")
+    assert not rows[0].fulltext_path.startswith("/")
     assert {op.operator for op in rows[0].operators if op.ready} >= {"medium", "dose", "endpoints"}
 
     md = write_extraction_readiness_markdown(rows, tmp_path / "readiness.md")

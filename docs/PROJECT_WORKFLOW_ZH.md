@@ -547,7 +547,9 @@ Gate：论文 claims 可追溯到证据和结果。
 - `cultivate evidence-audit` 能生成保守的 wet-lab-entry report。
 - `cultivate extraction-readiness` 会在调用 LLM 前检查本地全文和 section routing
   是否足够支持 operator extractor，但不抽取、不裁决证据。当前 H001-H016 结果：
-  14 个 direct-ready、0 个 full-text fallback-ready、2 个 R024 missing。
+  14 个 direct-ready、0 个 full-text fallback-ready、2 个 R024 missing。生成报告
+  现在记录 repo-relative 的 `data/papers/...` 路径，因此在 Codex/Claude worktree
+  之间保持稳定。
 - `cultivate review-packet` 能为人工复核生成本地 full-text 字符范围 locators，
   但不做 evidence adjudication。
 - `cultivate adjudication-template` 和 `cultivate adjudication-validate` 能创建和
@@ -583,8 +585,7 @@ Gate：论文 claims 可追溯到证据和结果。
 ### 8.4 已知 Blocker 和风险
 
 - 新 worktree 不会自动带有 ignored 的本地 paper assets（`data/papers/`）。
-  运行 extraction-readiness 前需要本地复制或重新生成这些材料；不要提交仅由
-  worktree 路径变化导致的报告噪音。
+  运行 extraction-readiness 前需要本地复制或重新生成这些材料。
 - Live OpenAI/Anthropic extraction 太稀疏，不能算成功 model agreement。
 - Gemini live comparison 未完成，因为没有 Gemini/Google key。
 - OpenAI raw-response debugging 遇到 insufficient quota。

@@ -45,7 +45,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H001: R015
 
 - Title: Simple and effective serum-free medium for sustained expansion of bovine satellite cells for cell cultured meat
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
+- Full text: `data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -58,7 +58,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H002: R015
 
 - Title: Simple and effective serum-free medium for sustained expansion of bovine satellite cells for cell cultured meat
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
+- Full text: `data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -71,7 +71,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H003: R015
 
 - Title: Simple and effective serum-free medium for sustained expansion of bovine satellite cells for cell cultured meat
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
+- Full text: `data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -84,7 +84,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H004: R016
 
 - Title: Development of a Chemically Defined Medium for in vitro Expansion of Primary Bovine Satellite Cells
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt`
+- Full text: `data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -97,7 +97,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H005: R016
 
 - Title: Development of a Chemically Defined Medium for in vitro Expansion of Primary Bovine Satellite Cells
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt`
+- Full text: `data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -110,7 +110,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H006: R017
 
 - Title: Serum-free media for the growth of primary bovine myoblasts
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/fulltext.txt`
+- Full text: `data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -123,7 +123,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H007: R018
 
 - Title: A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/fulltext.txt`
+- Full text: `data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -136,7 +136,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H008: R019
 
 - Title: Spent media analysis suggests cultivated meat media will require species and cell type optimization
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/spent-media-analysis-suggests-cultivated-meat-media-will-require-species-and-cel/fulltext.txt`
+- Full text: `data/papers/spent-media-analysis-suggests-cultivated-meat-media-will-require-species-and-cel/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -149,7 +149,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H009: R020
 
 - Title: Development of serum-free and grain-derived-nutrient-free medium using microalga-derived nutrients and mammalian cell-secreted growth factors for sustainable cultured meat production
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/development-of-serum-free-and-grain-derived-nutrient-free-medium-using-microalga/fulltext.txt`
+- Full text: `data/papers/development-of-serum-free-and-grain-derived-nutrient-free-medium-using-microalga/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -162,7 +162,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H010: R021
 
 - Title: A simple and robust serum-free media for the proliferation of muscle cells
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
+- Full text: `data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -175,7 +175,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H011: R021
 
 - Title: A simple and robust serum-free media for the proliferation of muscle cells
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
+- Full text: `data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -188,7 +188,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H012: R022
 
 - Title: Low-cost food-grade alternatives for serum albumins in FBS-free cell culture media
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med/fulltext.txt`
+- Full text: `data/papers/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -201,7 +201,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H013: R022
 
 - Title: Low-cost food-grade alternatives for serum albumins in FBS-free cell culture media
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med/fulltext.txt`
+- Full text: `data/papers/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|
@@ -214,7 +214,7 @@ Status: offline section-routing preflight; not an extraction result and not evid
 ### H014: R023
 
 - Title: Influence of Media Composition on the Level of Bovine Satellite Cell Proliferation
-- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/influence-of-media-composition-on-the-level-of-bovine-satellite-cell-proliferati/fulltext.txt`
+- Full text: `data/papers/influence-of-media-composition-on-the-level-of-bovine-satellite-cell-proliferati/fulltext.txt`
 
 | Operator | Status | Context chars | Routed sections | Signal terms | Numeric hits |
 |---|---|---:|---|---|---:|

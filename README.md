@@ -282,6 +282,8 @@ Useful scripts:
 - `cultivate extraction-readiness`: checks whether local full text can support
   section-routed `context`, `medium`, `dose`, `endpoints`, and `findings`
   operators before spending LLM calls; it does not extract or approve evidence.
+  Its report paths are repo-relative so the committed audit is portable across
+  Codex/Claude worktrees.
 - `cultivate review-packet`: creates human-review passage locators without AI
   adjudication.
 - `cultivate adjudication-template` / `cultivate adjudication-validate`: creates

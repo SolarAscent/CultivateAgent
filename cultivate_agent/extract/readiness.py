@@ -95,12 +95,14 @@ def build_extraction_readiness(
     manifest_path: str | Path,
     papers_dir: str | Path,
     review_ids: Iterable[str],
+    path_base: str | Path | None = None,
 ) -> List[PaperReadiness]:
     """Build operator-readiness rows for selected human review tasks."""
     ids = set(review_ids)
     tasks = load_review_tasks(review_queue_path, ids=ids)
     manifest = load_manifest(manifest_path)
     ingested = list(iter_ingested(papers_dir))
+    display_base = Path(path_base).resolve() if path_base is not None else Path.cwd().resolve()
     rows: List[PaperReadiness] = []
 
     for task in tasks:
@@ -120,7 +122,7 @@ def build_extraction_readiness(
         paths, meta = match
         text = paths.read_fulltext()
         row.paper_id = meta.ref.paper_id
-        row.fulltext_path = str(paths.fulltext)
+        row.fulltext_path = _display_path(paths.fulltext, display_base)
         row.text_chars = len(text)
         if not text.strip():
             row.status = "missing_fulltext"
@@ -137,6 +139,14 @@ def build_extraction_readiness(
         rows.append(row)
 
     return rows
+
+
+def _display_path(path: Path, base: Path) -> str:
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(base).as_posix()
+    except ValueError:
+        return str(resolved)
 
 
 def assess_operator_readiness(paper: StructuredPaper, op: ExtractionOperator) -> OperatorReadiness:

@@ -580,7 +580,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - `cultivate extraction-readiness` checks local full-text and section-routing
   readiness for the operator extractor without calling an LLM or adjudicating
   evidence. Current H001-H016 result: 14 direct-ready, 0 full-text fallback-ready,
-  2 missing R024 tasks.
+  2 missing R024 tasks. The generated report now records repo-relative
+  `data/papers/...` paths so it stays stable across Codex/Claude worktrees.
 - `cultivate review-packet` generates local full-text character-range locators
   for human review without making adjudication decisions.
 - `cultivate adjudication-template` and `cultivate adjudication-validate`
@@ -619,8 +620,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 - Fresh worktrees do not automatically contain ignored local paper assets
   (`data/papers/`). Extraction-readiness verification needs those assets copied
-  or regenerated locally; do not commit path-only report churn caused by moving
-  between worktrees.
+  or regenerated locally.
 - Live OpenAI/Anthropic extraction was too sparse to count as successful model
   agreement.
 - Gemini live comparison is incomplete because no Gemini/Google key was

@@ -101,10 +101,12 @@ Project implication:
   - figure caption,
   - source page where available.
 - Use GROBID as an optional backend when available. CultivateAgent now has a
-  no-dependency parser for GROBID-flavored TEI XML and an optional standard
-  library REST client for GROBID's `processFulltextDocument` service. It saves
-  returned TEI to `fulltext.xml` and preserves the PyMuPDF/plain-text fallback
-  when no GROBID service is running.
+  no-dependency parser for GROBID TEI XML, JATS/Open Access article XML, and an
+  optional standard library REST client for GROBID's `processFulltextDocument`
+  service. It saves returned TEI to `fulltext.xml`, auto-detects JATS when
+  legally obtained `fulltext.xml` files come from Europe PMC or similar sources,
+  and preserves the PyMuPDF/plain-text fallback when no structured XML is
+  available.
 - Preserve the current PyMuPDF/plain-text fallback.
 
 ### 2.5 LLM document pipelines should be modular and operator-evaluated
@@ -291,6 +293,18 @@ Implementation now available:
 - The current H001-H016 packet has local full-text locators for 14/16 critical
   tasks; the missing 2 tasks map to R024 and need institutional or
   human-provided main full text.
+- The current H001-H016 extraction-readiness preflight has 14 direct
+  section-routed tasks and 0 fallback-ready tasks after adding JATS section and
+  `table-wrap` parsing for R023/H014.
+- DeepSeek can be used through the OpenAI-compatible client for low-cost
+  supervised extraction trials. New runs should use current DeepSeek model names
+  (`deepseek-v4-flash` or `deepseek-v4-pro`) rather than the legacy
+  `deepseek-chat` compatibility name, and any outputs still require quote
+  grounding plus human review.
+- The latest H014 DeepSeek-compatible pilot failed at provider authentication
+  with the current environment key, so it produced no extraction evidence. The
+  CLI now treats total operator `call_error` as a failed extraction and avoids
+  writing empty records.
 
 ## 4. Explicit Non-Adoptions
 
@@ -307,10 +321,12 @@ These are not adopted now:
 
 ## 5. Immediate Implementation Tasks
 
-1. Run optional GROBID service/client invocation on the P1 corpus PDFs now that
-   `cultivate ingest --grobid-tei` can produce `fulltext.xml` when a service is
-   available.
-2. Use `cultivate extraction-readiness` before live operator extraction.
+1. Run optional GROBID service/client invocation on remaining P1 corpus PDFs
+   when a service is available, or add legally obtained JATS/Open Access XML as
+   `fulltext.xml` when that source is available.
+2. Use `cultivate extraction-readiness` before live operator extraction, then
+   use `cultivate extract --ids ... --mode operators` for a small targeted pilot
+   before scaling to the full H001-H014 ready set.
 3. Re-run `cultivate review-packet` after each full-text acquisition pass.
 4. Fill `data/literature/bovine_adjudication_H001_H014.tsv` with human
    adjudication and validate it with `cultivate adjudication-validate`.
@@ -344,10 +360,10 @@ Key sources include:
 - Coscientist and ChemCrow: tool-augmented scientific agents.
 - PaperQA2 and OpenScholar: full-text, citation-backed scientific RAG.
 - Dagdelen et al. and Shamsabadi et al.: structured scientific IE.
-- GROBID and S2ORC: structured scientific document parsing. GROBID TEI parsing
-  is now supported for title, abstract, body sections, table captions, and
-  figure captions. GROBID service documentation supports the optional
-  PDF-to-TEI ingestion client.
+- GROBID, JATS/Europe PMC, and S2ORC: structured scientific document parsing.
+  GROBID TEI and JATS XML parsing are now supported for title, abstract, body
+  sections, table captions, and figure captions. GROBID service documentation
+  supports the optional PDF-to-TEI ingestion client.
 - DocETL: modular LLM document processing.
 - GRADE, PRISMA, and NIST AI RMF: evidence-to-action gates, traceable review
   records, and AI risk documentation before wet-lab decisions.

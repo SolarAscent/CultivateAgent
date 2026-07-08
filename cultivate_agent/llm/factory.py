@@ -17,6 +17,7 @@ def get_client(
     timeout_s: int = 120,
     api_key: Optional[str] = None,
     base_url: Optional[str] = None,
+    extra_body: Optional[dict[str, Any]] = None,
     **extra: Any,
 ) -> LLMClient:
     """Return a ready-to-use client for ``provider``.
@@ -34,13 +35,13 @@ def get_client(
 
     if provider in ("openai", "openai-compatible", "compatible"):
         from .openai_client import OpenAIClient
-        return OpenAIClient(model, api_key=api_key, base_url=base_url, **common)
+        return OpenAIClient(model, api_key=api_key, base_url=base_url, extra_body=extra_body, **common)
     if provider in ("anthropic", "claude"):
         from .anthropic_client import AnthropicClient
         return AnthropicClient(model, api_key=api_key, **common)
     if provider in ("gemini", "google"):
         from .openai_client import GeminiClient
-        return GeminiClient(model, api_key=api_key, base_url=base_url, **common)
+        return GeminiClient(model, api_key=api_key, base_url=base_url, extra_body=extra_body, **common)
     if provider == "mock":
         from .mock_client import MockClient
         return MockClient(model, **common, **extra)

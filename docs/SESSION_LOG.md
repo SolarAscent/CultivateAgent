@@ -922,3 +922,290 @@ evidence claims.
 2. Improve TEI/plain-text section recovery for R023/H014, or accept it as
    fallback-context for the next extraction run.
 3. Obtain R024 main full text before H015-H016 can enter the same preflight.
+
+---
+
+# Session 12 (Codex) — JATS full-text parser hardening
+
+Date: 2026-07-09
+Branch: `codex/jats-fulltext-readiness`
+
+## Coordination Decision
+
+The next non-blocked task was to remove the H014 extraction-readiness fallback
+without spending live LLM calls. Inspection showed that R023's `fulltext.xml` is
+JATS/Open Access article XML, not GROBID TEI. The parser should therefore
+auto-detect JATS and expose sections/tables before operator extraction.
+
+The user provided test provider keys in chat. No key was written to the repo,
+docs, commit message, or generated reports. DeepSeek was reviewed only as an
+OpenAI-compatible provider option; this parser fix did not require live LLM
+spend.
+
+## Literature And Method Basis
+
+- DeepSeek official API docs confirm OpenAI/Anthropic-compatible API formats and
+  `https://api.deepseek.com` as the OpenAI-compatible base URL.
+- Europe PMC RESTful API documentation confirms `fullTextXML` for Open Access
+  full text XML retrieval.
+- JATS tag-library documentation records article-level metadata and `table-wrap`
+  table containers, supporting parser-level section/table handling.
+
+## Changes Made
+
+- Extended `structured_paper_from_grobid_tei_xml` to parse both GROBID TEI and
+  JATS article XML.
+- Added JATS title, nested `body/sec/title/p` section recovery, `table-wrap`
+  table caption/text recovery, and XML-source labeling as `jats_xml`.
+- Added a regression test that verifies nested JATS methods/results sections and
+  table content are available for routing.
+- Regenerated `docs/EXTRACTION_READINESS_H001_H016.md` and
+  `data/literature/bovine_extraction_readiness_H001_H016.tsv`.
+- Updated README, workflow manuals, corpus manifest, method review, method-source
+  registry, and `.env.example` to document JATS parsing and DeepSeek local
+  configuration without secrets.
+
+## Current Readiness Result
+
+- H001-H014: ready for section-routed operator extraction.
+- H015-H016: missing ingested paper/full text because both map to R024.
+- Summary: 14 direct-ready, 0 fallback-ready, 0 partial, 2 missing.
+
+## What This Does Not Claim
+
+- No evidence field was extracted or approved.
+- No human adjudication decision was made.
+- No wet-lab variable was approved.
+- The proliferation audit remains `NO-GO`.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 58 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Run operator extraction on the direct-ready H001-H014 sources.
+2. Human reviewer fills `data/literature/bovine_adjudication_H001_H014.tsv`.
+3. Obtain R024 main full text before H015-H016 can enter the same preflight.
+
+---
+
+# Session 13 (Codex) — DeepSeek/OpenAI-compatible config hardening
+
+Date: 2026-07-09
+Branch: `codex/jats-fulltext-readiness`
+
+## Coordination Decision
+
+The next non-blocked task was to prepare for H001-H014 live operator extraction
+without creating a provider/configuration trap for Codex, Claude, or the project
+owner. Local ignored config still pointed at the legacy `deepseek-chat` model,
+and the versioned template also recommended that name. DeepSeek's current docs
+now list `deepseek-v4-flash` and `deepseek-v4-pro` as current model names and
+mark `deepseek-chat` / `deepseek-reasoner` as compatibility names deprecated
+after 2026-07-24 15:59 UTC.
+
+No API key was written to the repository, command history in committed files,
+or generated reports. The local ignored `config/config.yaml` was inspected only
+for non-secret provider/model settings and was not edited.
+
+## Literature And Method Basis
+
+- DeepSeek official quick-start/API docs confirm OpenAI-compatible access at
+  `https://api.deepseek.com`.
+- DeepSeek official Models & Pricing docs identify `deepseek-v4-flash` and
+  `deepseek-v4-pro` as current models and document the deprecation date for
+  `deepseek-chat` / `deepseek-reasoner`.
+- DeepSeek Create Chat Completion docs document the `thinking` request object,
+  so CultivateAgent now exposes an `llm.extra_body` passthrough for
+  provider-specific OpenAI-compatible request options.
+
+## Changes Made
+
+- Added `llm.extra_body` to typed configuration.
+- Passed `extra_body` through `Config.make_llm_client`, the LLM factory, and the
+  OpenAI-compatible/Gemini clients.
+- Added an offline test that proves an OpenAI-compatible client sends
+  `extra_body={"thinking": {"type": "disabled"}}` to the SDK call.
+- Updated `config/config.example.yaml`, `.env.example`, README, method review,
+  DeepSeek live-run note, workflow manuals, and method-source registry.
+
+## What This Does Not Claim
+
+- No live DeepSeek extraction was run in this session.
+- No evidence field was extracted or approved.
+- No human adjudication decision was made.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 59 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Update the ignored local `config/config.yaml` manually before any live run:
+   use `model: deepseek-v4-flash` or `deepseek-v4-pro`, set
+   `OPENAI_BASE_URL=https://api.deepseek.com`, and optionally set
+   `extra_body: { thinking: { type: disabled } }` for low-cost extraction.
+2. Run a small supervised H001-H014 operator-extraction pilot before scaling to
+   all 14 ready tasks.
+3. Keep the human adjudication worksheet as the wet-lab evidence gate.
+
+---
+
+# Session 14 (Codex) — target live extraction by review/source IDs
+
+Date: 2026-07-09
+Branch: `codex/jats-fulltext-readiness`
+
+## Coordination Decision
+
+The next non-blocked task was to make the planned H001-H014 live operator
+extraction controllable. Before this session, `cultivate extract` could filter
+by tier and limit, but not by H review IDs or R source record IDs. That made a
+small DeepSeek/GPT/Claude pilot too easy to aim at the wrong papers or scale
+accidentally.
+
+The decision was to add target selection before spending live LLM calls:
+`cultivate extract --ids H014 --mode operators` now resolves H review IDs
+through the bovine review queue and manifest to the matching ingested paper.
+Direct paper IDs and R source record IDs also work. Duplicate review tasks that
+map to the same source paper are extracted once.
+
+## Changes Made
+
+- Added `--ids`, `--review-queue`, and `--manifest` to `cultivate extract`.
+- Added review/source/paper ID resolution for extraction targets.
+- Hardened ID range parsing so only patterns like `H001-H014` are expanded;
+  hyphenated paper IDs/slugs are no longer misread as ranges.
+- Added an offline unit test for H review ID, R source ID, and direct paper ID
+  resolution.
+- Ran a mock-provider smoke check:
+  `cultivate extract --ids H014 --mode operators --provider mock --model mock --limit 1`.
+  This verified target selection only; it is not a scientific extraction result.
+- Updated README, both workflow manuals, bovine manifest, method review, and
+  this session log.
+
+## What This Does Not Claim
+
+- No live DeepSeek/GPT/Claude extraction was run in this session.
+- The mock smoke run does not approve any evidence field.
+- No human adjudication decision was made.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 60 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli extract --ids H014 --mode operators --provider mock --model mock --limit 1`:
+  passed; extracted exactly 1 paper, R023/H014. This was a target-selection
+  smoke test only.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Configure the live provider locally without committing secrets.
+2. Run a small supervised live pilot, for example
+   `cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash`.
+3. Inspect extraction metadata and grounding before scaling to
+   `cultivate extract --ids H001-H014 --mode operators`.
+
+---
+
+# Session 15 (Codex) — provider-failure handling for live extraction
+
+Date: 2026-07-09
+Branch: `codex/jats-fulltext-readiness`
+
+## Coordination Decision
+
+The next non-blocked task was to run the planned H014 live operator-extraction
+pilot through the new `--ids` targeting path. The command reached the
+DeepSeek-compatible provider endpoint, but every operator failed at the provider
+call layer because the currently available environment key did not authenticate.
+
+This exposed a real pipeline bug: `cultivate extract` printed a successful
+extraction message and wrote an empty extraction record even when all operators
+had `call_error`. That is unsafe for a thesis workflow because downstream export
+or review could mistake a provider failure for a sparse extraction.
+
+## Changes Made
+
+- Cleaned the local ignored SQLite failed extraction row created by the failed
+  pilot.
+- Added `_is_total_operator_call_failure` to detect operator-mode extractions
+  where all operators failed at the provider-call layer.
+- Updated `cultivate extract` so total provider-call failure is not written to
+  the knowledge base and returns a nonzero exit code.
+- Added an offline regression test for total operator-call failure detection.
+- Re-ran the same H014 live pilot; it now exits nonzero, reports 0 extracted
+  papers, and leaves the local extraction table empty.
+- Updated README, workflow manuals, method review, and this session log.
+
+## What This Does Not Claim
+
+- No successful live DeepSeek extraction occurred.
+- No evidence field was extracted or approved.
+- No human adjudication decision was made.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `OPENAI_BASE_URL=https://api.deepseek.com .venv/bin/python -m cultivate_agent.cli extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash --limit 1`:
+  reached the provider but failed authentication; after the fix it exited
+  nonzero, reported 0 extracted papers, and did not write an extraction record.
+- Local cleanup check: removed the failed ignored SQLite row; after final mock
+  smoke cleanup, `remaining_extractions=0`.
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 61 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli extract --ids H014 --mode operators --provider mock --model mock --limit 1`:
+  passed as a target-selection smoke test only; the local mock extraction row was
+  removed afterward.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Provide or configure a valid provider key locally without committing secrets.
+2. Re-run `cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash`.
+3. Proceed to H001-H014 only after H014 has nonzero filled fields and acceptable
+   grounding metadata.

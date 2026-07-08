@@ -8,7 +8,7 @@ this wrapper retries with adapted params instead of failing.
 from __future__ import annotations
 
 import os
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from .base import LLMClient, LLMError, LLMResponse, Message
 
@@ -20,6 +20,7 @@ class OpenAIClient(LLMClient):
         *,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
+        extra_body: Optional[Dict[str, Any]] = None,
         **kwargs,
     ):
         super().__init__(model, **kwargs)
@@ -33,6 +34,7 @@ class OpenAIClient(LLMClient):
         if not api_key:
             raise LLMError("OPENAI_API_KEY not set (put it in .env)")
         self._client = OpenAI(api_key=api_key, base_url=base_url, timeout=self.timeout_s)
+        self.extra_body = extra_body or {}
 
     def _raw_complete(self, messages: List[Message], **kwargs) -> LLMResponse:
         payload = [{"role": m.role, "content": m.content} for m in messages]
@@ -43,6 +45,8 @@ class OpenAIClient(LLMClient):
             return self._client.chat.completions.create(model=self.model, messages=payload, **params)
 
         params = {"temperature": temperature, "max_tokens": max_tokens}
+        if self.extra_body:
+            params["extra_body"] = self.extra_body
         try:
             resp = _call(params)
         except Exception as e:  # adapt to newer-model param constraints
@@ -78,7 +82,15 @@ class GeminiClient(LLMClient):
 
     _DEFAULT_BASE = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
-    def __init__(self, model: str, *, api_key: Optional[str] = None, base_url: Optional[str] = None, **kwargs):
+    def __init__(
+        self,
+        model: str,
+        *,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        extra_body: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
         super().__init__(model, **kwargs)
         try:
             from openai import OpenAI  # type: ignore
@@ -88,14 +100,16 @@ class GeminiClient(LLMClient):
         if not api_key:
             raise LLMError("GEMINI_API_KEY not set (put it in .env)")
         self._client = OpenAI(api_key=api_key, base_url=base_url or self._DEFAULT_BASE, timeout=self.timeout_s)
+        self.extra_body = extra_body or {}
 
     def _raw_complete(self, messages: List[Message], **kwargs) -> LLMResponse:
         payload = [{"role": m.role, "content": m.content} for m in messages]
-        resp = self._client.chat.completions.create(
-            model=self.model,
-            messages=payload,
-            temperature=kwargs.get("temperature", self.temperature),
-            max_tokens=kwargs.get("max_tokens", self.max_tokens),
-        )
+        params = {
+            "temperature": kwargs.get("temperature", self.temperature),
+            "max_tokens": kwargs.get("max_tokens", self.max_tokens),
+        }
+        if self.extra_body:
+            params["extra_body"] = self.extra_body
+        resp = self._client.chat.completions.create(model=self.model, messages=payload, **params)
         text = resp.choices[0].message.content or ""
         return LLMResponse(text=text, model=self.model, raw=resp)

@@ -5,7 +5,9 @@ from __future__ import annotations
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from pathlib import Path
+import sys
 import threading
+import types
 
 import pytest
 
@@ -81,6 +83,110 @@ def test_extract_json_robustness():
 
     assert extract_json('```json\n{"a": 1}\n```') == {"a": 1}
     assert extract_json('prefix {"a": [1,2]} suffix') == {"a": [1, 2]}
+
+
+def test_openai_compatible_client_passes_extra_body(monkeypatch):
+    from cultivate_agent.llm import get_client
+
+    class FakeOpenAI:
+        last_instance = None
+
+        def __init__(self, **kwargs):
+            self.init_kwargs = kwargs
+            self.calls = []
+            self.chat = types.SimpleNamespace(completions=types.SimpleNamespace(create=self.create))
+            FakeOpenAI.last_instance = self
+
+        def create(self, **kwargs):
+            self.calls.append(kwargs)
+            message = types.SimpleNamespace(content='{"ok": true}')
+            choice = types.SimpleNamespace(message=message)
+            usage = types.SimpleNamespace(prompt_tokens=1, completion_tokens=1, total_tokens=2)
+            return types.SimpleNamespace(choices=[choice], usage=usage)
+
+    monkeypatch.setitem(sys.modules, "openai", types.SimpleNamespace(OpenAI=FakeOpenAI))
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    client = get_client(
+        "openai",
+        "deepseek-v4-flash",
+        base_url="https://api.deepseek.com",
+        extra_body={"thinking": {"type": "disabled"}},
+    )
+    assert client.chat("system", "user") == '{"ok": true}'
+    call = FakeOpenAI.last_instance.calls[0]
+    assert call["model"] == "deepseek-v4-flash"
+    assert call["extra_body"] == {"thinking": {"type": "disabled"}}
+
+
+def test_extract_id_resolution_maps_review_and_source_ids(tmp_path):
+    from cultivate_agent.cli import _expand_review_ids, _resolve_extract_paper_ids
+    from cultivate_agent.config import Config
+    from cultivate_agent.ingest import iter_ingested
+    from cultivate_agent.schema.paper import PaperMetadata, PaperPaths, PaperRef
+
+    papers = tmp_path / "papers"
+    ref = PaperRef(
+        paper_id="paper-alpha",
+        title="Defined bovine satellite cell medium",
+        doi="10.123/example",
+    )
+    paths = PaperPaths(papers, ref.paper_id, slug=ref.slug).ensure()
+    paths.fulltext.write_text("Bovine cells in serum-free medium.", encoding="utf-8")
+    paths.save_metadata(PaperMetadata(ref=ref, triage_category="A"))
+
+    manifest = tmp_path / "manifest.tsv"
+    manifest.write_text(
+        "record_id\ttitle\tdoi\tyear\tspecies\tcell_type\tstage\tmedium_focus\tendpoints\n"
+        "R001\tDefined bovine satellite cell medium\t10.123/example\t2026\tbovine"
+        "\tsatellite cells\texpansion\tserum-free medium\tproliferation\n",
+        encoding="utf-8",
+    )
+    queue = tmp_path / "queue.tsv"
+    queue.write_text(
+        "review_id\tpriority\tsource_record_id\tevidence_topic\tfield_to_verify\thuman_question"
+        "\tdecision_impact\tsuggested_action\tstatus\n"
+        "H001\tP1\tR001\tMedium dose\tmedium; dose\tDoes the paper report medium dose?"
+        "\tSearch-space seed\tCheck methods/results\topen\n",
+        encoding="utf-8",
+    )
+
+    cfg = Config()
+    cfg.root = str(tmp_path)
+    ingested = list(iter_ingested(papers))
+    assert _expand_review_ids("H001-H003,my-paper-slug") == ["H001", "H002", "H003", "my-paper-slug"]
+    assert _resolve_extract_paper_ids("H001", cfg, ingested, review_queue=str(queue), manifest=str(manifest)) == {
+        "paper-alpha"
+    }
+    assert _resolve_extract_paper_ids("R001", cfg, ingested, review_queue=str(queue), manifest=str(manifest)) == {
+        "paper-alpha"
+    }
+    assert _resolve_extract_paper_ids("paper-alpha", cfg, ingested, review_queue=str(queue), manifest=str(manifest)) == {
+        "paper-alpha"
+    }
+
+
+def test_total_operator_call_failure_is_not_success():
+    from cultivate_agent.cli import _is_total_operator_call_failure
+
+    failed = types.SimpleNamespace(extraction_meta={
+        "mode": "operators",
+        "operators": [
+            {"operator": "context", "status": "call_error"},
+            {"operator": "medium", "status": "call_error"},
+        ],
+    })
+    partial = types.SimpleNamespace(extraction_meta={
+        "mode": "operators",
+        "operators": [
+            {"operator": "context", "status": "ok"},
+            {"operator": "medium", "status": "call_error"},
+        ],
+    })
+    blocks = types.SimpleNamespace(extraction_meta={"mode": "blocks"})
+
+    assert _is_total_operator_call_failure(failed) is True
+    assert _is_total_operator_call_failure(partial) is False
+    assert _is_total_operator_call_failure(blocks) is False
 
 
 def test_extraction_with_mock_and_grounding():
@@ -246,6 +352,45 @@ def test_structured_paper_from_grobid_tei_xml():
     assert [s.title for s in paper.sections] == ["Materials and Methods", "Results"]
     assert paper.sections[0].paragraphs[0].paragraph_id == "S1.p1"
     assert paper.tables and "Medium component" in (paper.tables[0].caption or "")
+    assert paper.figures and "Growth curve" in (paper.figures[0].caption or "")
+
+
+def test_structured_paper_from_jats_xml_routes_nested_sections():
+    from cultivate_agent.schema import structured_paper_from_grobid_tei_xml
+
+    xml = """<?xml version="1.0" encoding="UTF-8"?>
+<article>
+  <front>
+    <article-meta>
+      <title-group><article-title>JATS bovine medium paper</article-title></title-group>
+      <abstract><p>We optimized bovine satellite cell proliferation media.</p></abstract>
+    </article-meta>
+  </front>
+  <body>
+    <sec id="intro"><title>1. Introduction</title><p>Medium composition matters.</p></sec>
+    <sec id="methods"><title>2. Materials and Methods</title>
+      <sec id="media"><title>2.2. Selection of the Components of the Tested Media</title>
+        <p>Cells were cultured in DMEM with bFGF at 10 ng/mL and bovine serum.</p>
+      </sec>
+    </sec>
+    <sec id="results"><title>3. Results</title>
+      <p>Proliferation increased under bFGF conditions.</p>
+    </sec>
+    <table-wrap id="t1"><label>Table 1</label>
+      <caption><p>Media compositions for bovine satellite cells.</p></caption>
+      <table><tbody><tr><td>DMEM and 10 ng/mL bFGF</td></tr></tbody></table>
+    </table-wrap>
+    <fig id="f1"><label>Figure 1</label><caption><p>Growth curve.</p></caption></fig>
+  </body>
+</article>"""
+    paper = structured_paper_from_grobid_tei_xml("jats-1", xml)
+    assert paper.source == "jats_xml"
+    assert paper.title == "JATS bovine medium paper"
+    assert paper.abstract and "proliferation media" in paper.abstract
+    assert any("Materials and Methods" in s.title for s in paper.sections)
+    assert any("Selection of the Components" in s.title for s in paper.sections)
+    assert paper.section_passages(["materials and methods", "results"])
+    assert paper.tables and "10 ng/mL bFGF" in (paper.tables[0].caption or "")
     assert paper.figures and "Growth curve" in (paper.figures[0].caption or "")
 
 

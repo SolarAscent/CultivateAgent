@@ -9,6 +9,11 @@ is measured, not asserted; DeepSeek's failures are reported alongside its wins.
 
 - Model: `deepseek-chat` (DeepSeek-V3), OpenAI-compatible endpoint, `temperature=0`.
   Wired with zero code change — just `.env` (`OPENAI_BASE_URL=https://api.deepseek.com`).
+- 2026-07-09 provider-config update: DeepSeek's current API docs list
+  `deepseek-v4-flash` and `deepseek-v4-pro` as the current model names and mark
+  `deepseek-chat`/`deepseek-reasoner` as compatibility names deprecated after
+  2026-07-24 15:59 UTC. This report remains a historical live run; new runs
+  should use a current v4 model name.
 - Papers (ingested via PyMuPDF; metadata from Crossref):
   - **research** — Lee et al., *Nat. Commun.* 2024, "Cultured meat with enriched
     organoleptic properties by regulating cell differentiation" (13 pp, 76 K chars).

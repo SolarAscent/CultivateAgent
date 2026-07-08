@@ -540,12 +540,13 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 ### 8.1 Completed Technical Work
 
 - CLI-first Python package exists.
-- Latest local validation after JATS parser hardening: 58 tests passed with 3
-  known warnings.
+- Latest local validation after DeepSeek/OpenAI-compatible config hardening:
+  59 tests passed with 3 known warnings.
 - Smoke pipeline passes.
 - Demo optimization loop passes.
 - Extraction evaluator and offline four-paper fixture exist.
-- Provider-agnostic LLM layer exists, including mock mode for offline runs.
+- Provider-agnostic LLM layer exists, including mock mode for offline runs and
+  `llm.extra_body` passthrough for OpenAI-compatible provider options.
 - Operator extraction exists for smaller section-routed prompts.
 - Structured-paper schema, plain-text fallback, GROBID TEI parsing, and
   JATS/Open Access XML parsing exist.

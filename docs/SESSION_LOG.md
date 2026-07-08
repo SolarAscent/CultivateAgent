@@ -928,7 +928,7 @@ evidence claims.
 # Session 12 (Codex) — JATS full-text parser hardening
 
 Date: 2026-07-09
-Branch: `main`
+Branch: `codex/jats-fulltext-readiness`
 
 ## Coordination Decision
 
@@ -998,3 +998,77 @@ spend.
 1. Run operator extraction on the direct-ready H001-H014 sources.
 2. Human reviewer fills `data/literature/bovine_adjudication_H001_H014.tsv`.
 3. Obtain R024 main full text before H015-H016 can enter the same preflight.
+
+---
+
+# Session 13 (Codex) — DeepSeek/OpenAI-compatible config hardening
+
+Date: 2026-07-09
+Branch: `codex/jats-fulltext-readiness`
+
+## Coordination Decision
+
+The next non-blocked task was to prepare for H001-H014 live operator extraction
+without creating a provider/configuration trap for Codex, Claude, or the project
+owner. Local ignored config still pointed at the legacy `deepseek-chat` model,
+and the versioned template also recommended that name. DeepSeek's current docs
+now list `deepseek-v4-flash` and `deepseek-v4-pro` as current model names and
+mark `deepseek-chat` / `deepseek-reasoner` as compatibility names deprecated
+after 2026-07-24 15:59 UTC.
+
+No API key was written to the repository, command history in committed files,
+or generated reports. The local ignored `config/config.yaml` was inspected only
+for non-secret provider/model settings and was not edited.
+
+## Literature And Method Basis
+
+- DeepSeek official quick-start/API docs confirm OpenAI-compatible access at
+  `https://api.deepseek.com`.
+- DeepSeek official Models & Pricing docs identify `deepseek-v4-flash` and
+  `deepseek-v4-pro` as current models and document the deprecation date for
+  `deepseek-chat` / `deepseek-reasoner`.
+- DeepSeek Create Chat Completion docs document the `thinking` request object,
+  so CultivateAgent now exposes an `llm.extra_body` passthrough for
+  provider-specific OpenAI-compatible request options.
+
+## Changes Made
+
+- Added `llm.extra_body` to typed configuration.
+- Passed `extra_body` through `Config.make_llm_client`, the LLM factory, and the
+  OpenAI-compatible/Gemini clients.
+- Added an offline test that proves an OpenAI-compatible client sends
+  `extra_body={"thinking": {"type": "disabled"}}` to the SDK call.
+- Updated `config/config.example.yaml`, `.env.example`, README, method review,
+  DeepSeek live-run note, workflow manuals, and method-source registry.
+
+## What This Does Not Claim
+
+- No live DeepSeek extraction was run in this session.
+- No evidence field was extracted or approved.
+- No human adjudication decision was made.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 59 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Update the ignored local `config/config.yaml` manually before any live run:
+   use `model: deepseek-v4-flash` or `deepseek-v4-pro`, set
+   `OPENAI_BASE_URL=https://api.deepseek.com`, and optionally set
+   `extra_body: { thinking: { type: disabled } }` for low-cost extraction.
+2. Run a small supervised H001-H014 operator-extraction pilot before scaling to
+   all 14 ready tasks.
+3. Keep the human adjudication worksheet as the wet-lab evidence gate.

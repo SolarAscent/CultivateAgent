@@ -194,6 +194,12 @@ cultivate extract --tier A --provider anthropic --model claude-opus-4-6
 cultivate extract --tier A --provider gemini    --model gemini-3.1-pro
 ```
 
+OpenAI-compatible providers can use the same `openai` provider path. For
+DeepSeek, set `OPENAI_BASE_URL=https://api.deepseek.com` locally and use current
+model names such as `deepseek-v4-flash` or `deepseek-v4-pro`; the config also
+supports `llm.extra_body` for provider-specific request options such as
+disabling DeepSeek thinking mode during extraction.
+
 The offline evaluation fixture can also be re-run with live provider calls when
 API keys are present:
 

@@ -296,6 +296,11 @@ Implementation now available:
 - The current H001-H016 extraction-readiness preflight has 14 direct
   section-routed tasks and 0 fallback-ready tasks after adding JATS section and
   `table-wrap` parsing for R023/H014.
+- DeepSeek can be used through the OpenAI-compatible client for low-cost
+  supervised extraction trials. New runs should use current DeepSeek model names
+  (`deepseek-v4-flash` or `deepseek-v4-pro`) rather than the legacy
+  `deepseek-chat` compatibility name, and any outputs still require quote
+  grounding plus human review.
 
 ## 4. Explicit Non-Adoptions
 

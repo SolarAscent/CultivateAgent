@@ -15,14 +15,21 @@ project:
 # ---------------------------------------------------------------------------
 llm:
   # DeepSeek / other OpenAI-compatible providers need NO code change: set
-  # provider: openai, model: deepseek-chat, and OPENAI_BASE_URL=https://api.deepseek.com
-  # in .env. (Verified live — see docs/LIVE_RUN_DEEPSEEK.md.)
+  # provider: openai, model: deepseek-v4-flash or deepseek-v4-pro, and
+  # OPENAI_BASE_URL=https://api.deepseek.com in .env. DeepSeek's docs list
+  # deepseek-chat/deepseek-reasoner as compatibility names deprecated after
+  # 2026-07-24 15:59 UTC; use the v4 names for new runs.
+  # For extraction runs that should match the old non-thinking deepseek-chat
+  # behavior and reduce reasoning cost, set:
+  # extra_body: { thinking: { type: disabled } }
+  # (Verified live historically; see docs/LIVE_RUN_DEEPSEEK.md.)
   provider: openai        # openai | anthropic | gemini | mock
   model: gpt-5.4          # default from the project record; change per experiment
   temperature: 0.0        # deterministic extraction, as in ReactionSeek
   max_tokens: 4096
   request_timeout_s: 120
   max_retries: 4
+  extra_body: {}
   # Optional: separate, cheaper model for triage vs full extraction.
   triage_model: null      # null -> use `model`
 

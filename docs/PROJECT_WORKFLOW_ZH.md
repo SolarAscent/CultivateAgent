@@ -508,12 +508,13 @@ Gate：论文 claims 可追溯到证据和结果。
 ### 8.1 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- JATS parser hardening 后的最新本地 validation：58 tests passed，3 个已知
-  warnings。
+- DeepSeek/OpenAI-compatible config hardening 后的最新本地 validation：
+  59 tests passed，3 个已知 warnings。
 - Smoke pipeline 通过。
 - Demo optimization loop 通过。
 - Extraction evaluator 和四篇文献 offline fixture 已有。
-- Provider-agnostic LLM layer 已有，并支持 offline mock mode。
+- Provider-agnostic LLM layer 已有，支持 offline mock mode，并支持
+  `llm.extra_body` 透传 OpenAI-compatible provider 的专用参数。
 - Operator extraction 已有，可把大 schema 拆成更小的 section-routed prompts。
 - Structured-paper schema、plain-text fallback、GROBID TEI parsing 和
   JATS/Open Access XML parsing 已有。

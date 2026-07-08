@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import yaml
 from pydantic import BaseModel, Field
@@ -35,6 +35,7 @@ class LLMCfg(BaseModel):
     request_timeout_s: int = 120
     max_retries: int = 4
     triage_model: Optional[str] = None
+    extra_body: Dict[str, Any] = Field(default_factory=dict)
 
 
 class IngestCfg(BaseModel):
@@ -106,6 +107,7 @@ class Config(BaseModel):
             max_tokens=self.llm.max_tokens,
             max_retries=self.llm.max_retries,
             timeout_s=self.llm.request_timeout_s,
+            extra_body=self.llm.extra_body,
         )
 
 

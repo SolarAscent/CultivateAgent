@@ -5,7 +5,9 @@ from __future__ import annotations
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from pathlib import Path
+import sys
 import threading
+import types
 
 import pytest
 
@@ -81,6 +83,39 @@ def test_extract_json_robustness():
 
     assert extract_json('```json\n{"a": 1}\n```') == {"a": 1}
     assert extract_json('prefix {"a": [1,2]} suffix') == {"a": [1, 2]}
+
+
+def test_openai_compatible_client_passes_extra_body(monkeypatch):
+    from cultivate_agent.llm import get_client
+
+    class FakeOpenAI:
+        last_instance = None
+
+        def __init__(self, **kwargs):
+            self.init_kwargs = kwargs
+            self.calls = []
+            self.chat = types.SimpleNamespace(completions=types.SimpleNamespace(create=self.create))
+            FakeOpenAI.last_instance = self
+
+        def create(self, **kwargs):
+            self.calls.append(kwargs)
+            message = types.SimpleNamespace(content='{"ok": true}')
+            choice = types.SimpleNamespace(message=message)
+            usage = types.SimpleNamespace(prompt_tokens=1, completion_tokens=1, total_tokens=2)
+            return types.SimpleNamespace(choices=[choice], usage=usage)
+
+    monkeypatch.setitem(sys.modules, "openai", types.SimpleNamespace(OpenAI=FakeOpenAI))
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    client = get_client(
+        "openai",
+        "deepseek-v4-flash",
+        base_url="https://api.deepseek.com",
+        extra_body={"thinking": {"type": "disabled"}},
+    )
+    assert client.chat("system", "user") == '{"ok": true}'
+    call = FakeOpenAI.last_instance.calls[0]
+    assert call["model"] == "deepseek-v4-flash"
+    assert call["extra_body"] == {"thinking": {"type": "disabled"}}
 
 
 def test_extraction_with_mock_and_grounding():

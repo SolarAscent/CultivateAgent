@@ -1314,6 +1314,8 @@ the integrated state, and delete stale feature branches after pushing.
   worktree's interpreter.
 - Copied ignored local `data/papers/` assets into the Codex worktree for
   readiness verification only; these assets remain untracked.
+- Pushed the merged `main` and deleted the merged Codex feature branches both
+  remotely and locally.
 - Updated the collaboration protocol, README, English workflow, Chinese
   workflow, and this session log.
 
@@ -1343,8 +1345,9 @@ the integrated state, and delete stale feature branches after pushing.
 
 ## Next 3 Steps
 
-1. Push merged `main` and delete the merged Codex remote branches.
-2. Ask Claude to rebase/rebaseline on the updated `main` before the v4 quality
+1. Ask Claude to rebase/rebaseline on the updated `main` before the v4 quality
    re-run.
-3. Continue with H014 live pilot only after valid provider credentials are
+2. Continue with H014 live pilot only after valid provider credentials are
    configured locally without committing secrets.
+3. Keep future Codex changes in `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`
+   and merge/delete short-lived branches promptly.

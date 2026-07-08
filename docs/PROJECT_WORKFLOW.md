@@ -1,73 +1,60 @@
-# CultivateAgent Project Manual
+# CultivateAgent Project Workflow
 
-Status: active  
+Status: active
 Last updated: 2026-07-08
 Chinese version: [`PROJECT_WORKFLOW_ZH.md`](PROJECT_WORKFLOW_ZH.md)
 
-> **Session 2 additions (see `SESSION_LOG.md`).** Two new stages sit between
-> extraction and optimization: (1) **operator extraction** — `cultivate extract
-> --mode operators` splits the A–M schema into small section-routed operators
-> (more reliable with real LLMs); (2) **evidence synthesis** — `cultivate evidence
-> --outcome <o>` pools heterogeneous cross-paper effects via random-effects
-> meta-analysis into `P(component beneficial)`+I² posteriors, stored in the KB and
-> injected into `cultivate optimize --evidence-prior` as πBO priors (never labels;
-> high-I² components are flagged "test directly"). Details:
-> [`EVIDENCE_SYNTHESIS.md`](EVIDENCE_SYNTHESIS.md), [`OPTIMIZATION.md`](OPTIMIZATION.md).
-
-This is the controlling project manual for CultivateAgent. It is written for
+This is the controlling workflow manual for CultivateAgent. It is for software
 developers, literature reviewers, wet-lab collaborators, project owners, and AI
-agents that need to continue the same project without creating conflicting
-records.
+agents that need to continue the same thesis project without conflicting
+changes.
 
-## 0. How To Use This Manual
+## 0. Documentation Contract
 
-Use this document as a map, not as a daily notebook.
+This manual is organized so that stable process and changing status do not
+overwrite each other.
 
-| Need | Go to |
-|---|---|
-| Understand the project | Sections 1-3 |
-| Know who should do what | Section 4 |
-| Find the right artifact to edit | Section 5 |
-| See the whole thesis workflow | Section 6 |
-| Execute a specific stage | Section 7 |
-| Work in parallel with AI, human reviewers, and lab collaborators | Section 8 |
-| Check current progress, blockers, and next actions | Section 9 |
-| Hand the project to another AI or teammate | Section 10 |
+| Section | Purpose | Update frequency |
+|---|---|---|
+| 0-4 | Orientation, project boundaries, repository map, ownership rules | Rarely; only when the project structure or decision rights change |
+| 5-6 | End-to-end workflow and stage gates | When a gate, required artifact, or review rule changes |
+| 7 | Parallel human/AI/lab work plan | When team responsibilities change |
+| 8 | Current project ledger | After material work sessions |
+| 9 | Handoff protocol | When another AI or teammate needs a different entry path |
 
-Documentation rule:
+Detailed daily history belongs in [`SESSION_LOG.md`](SESSION_LOG.md). New
+scientific or methodological decisions belong in a separate decision record under
+`docs/`. Human review notes must not be overwritten by AI-generated text.
 
-- Sections 1-8 define the stable operating process.
-- Section 9 is the current project ledger and should be updated after material
-  work sessions.
-- New scientific decisions belong in separate decision records under `docs/`.
-- `docs/SESSION_LOG.md` remains the chronological log.
-- Human review notes must not be overwritten by AI-generated text.
+Documentation standards used for this revision:
 
-This structure follows these documentation references:
+- [Google developer documentation style guide](https://developers.google.com/style):
+  clear and consistent technical documentation, with project-specific style
+  taking priority.
+- [Microsoft Writing Style Guide](https://learn.microsoft.com/en-us/style-guide/welcome/):
+  concise technical writing for mixed technical audiences.
+- [Microsoft reference documentation guidance](https://learn.microsoft.com/en-us/style-guide/developer-content/reference-documentation):
+  predictable headings and consistent structure so developers can find facts
+  quickly.
+- [Diataxis](https://diataxis.fr/start-here/): separation of explanation,
+  how-to guidance, reference, and learning material.
+- [GOV.UK user-needs guidance](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/plan-manage-content/identify-user-needs/):
+  write around real user tasks and acceptance criteria.
 
-- [Diataxis](https://diataxis.fr/) for separating explanation, how-to,
-  tutorial-like onboarding, and reference material.
-- [Google developer documentation style guide](https://developers.google.com/style)
-  for clear, task-oriented writing.
-- [Microsoft Learn contributor guide](https://learn.microsoft.com/en-us/contribute/)
-  for maintainable documentation ownership and update flow.
-- [GitLab documentation style guide](https://docs.gitlab.com/development/documentation/styleguide/)
-  for topic-based, scannable documentation.
-
-## 1. Project Definition
+## 1. Project At A Glance
 
 CultivateAgent is a CLI-first literature-mining and optimization system for
-cultivated-meat culture-medium design. It adapts the ReactionSeek pattern to a
-wet-lab-ready cultivated-meat workflow:
+cultivated-meat culture-medium design. It adapts a ReactionSeek-like scientific
+mining pattern to a medium-centered wet-lab workflow:
 
-1. collect and triage literature;
-2. extract structured facts with LLMs and deterministic grounding checks;
-3. normalize components, doses, units, species, cell type, and endpoints;
-4. store evidence in a queryable knowledge base;
-5. retrieve evidence for a locked biological target;
-6. generate cited medium-formulation hypotheses;
-7. select bounded wet-lab batches with multi-objective Bayesian optimization;
-8. compare wet-lab results and close the loop.
+```text
+ingest -> triage -> extract -> normalize -> knowledge base -> retrieve -> design -> optimize
+```
+
+The system does not treat cross-paper outcome numbers as directly comparable
+training labels. Literature evidence defines search regions, priors, caveats,
+and candidate rationales. Objective values for optimization must come from the
+project's own wet-lab measurements through the closed-loop `tell()` path.
 
 Locked first wet-lab-facing target:
 
@@ -75,79 +62,82 @@ Locked first wet-lab-facing target:
 > serum-free, preferably animal-component-free, cost-aware medium variables while
 > preserving myogenic identity.
 
-First-round scope:
+Round-1 scope:
 
-| In scope | Out of scope for round 1 |
+| In scope | Out of scope unless a new decision record approves it |
 |---|---|
-| Medium variables for bovine muscle-cell expansion | Scaffold, microcarrier, perfusion, bioreactor |
-| Serum-free and animal-component-free evidence | Genetic engineering and stable cell-line engineering |
-| Cost and supply plausibility | Whole-cut texture and sensory testing |
-| Myogenic identity retention endpoints | Primary differentiation-medium optimization |
+| Culture-medium variables for bovine muscle-cell expansion | Scaffold, microcarrier, perfusion, and bioreactor optimization |
+| Serum-free and animal-component-free medium evidence | Genetic engineering and stable cell-line engineering |
+| Dose/range, endpoint, cost, and supply plausibility | Whole-cut texture, sensory testing, and product formulation |
+| Myogenic identity retention endpoints | Primary optimization of differentiation medium |
 
 Scope changes require a new decision record before downstream files are edited.
 
-## 2. Deliverable Model
+## 2. Delivery Surface
 
-Current delivery surface:
+Current expected delivery is local, file-based, and CLI-first.
 
-- CLI commands: `cultivate ingest`, `cultivate extract`, `cultivate export`,
-  `cultivate design`, `cultivate optimize`.
-- Primary artifacts: Markdown, TSV, CSV, JSONL, SQLite, and evaluation reports.
-- No production web UI exists. A dashboard can be added later, but it is not the
-  current expected output.
+| Surface | Current status |
+|---|---|
+| CLI | `cultivate ingest`, `triage`, `extract`, `evidence`, `evidence-audit`, `review-packet`, `export`, `design`, `optimize` |
+| Artifacts | Markdown reports, TSV/CSV tables, JSON/JSONL records, SQLite knowledge base |
+| Web UI | Not implemented and not required for the current thesis workflow |
+| Wet-lab entry | Blocked until evidence, human-review, search-space, robustness, and pre-registration gates pass |
 
-Wet-lab entry is not allowed until the evidence and design gates in Sections 7
-and 9 pass.
+The README is the quickstart. This document is the operating manual. The session
+log is the chronological record.
 
 ## 3. Repository Map
 
 ```text
 CultivateAgent/
-  README.md                         project overview and CLI quickstart
+  README.md                         overview and CLI quickstart
   pyproject.toml                    package metadata and optional dependencies
   requirements.txt                  default runtime dependencies
   config/
     config.example.yaml             runtime configuration template
+    ontology/                       component ontology seeds and normalization hooks
   cultivate_agent/
-    cli.py                          CLI entrypoint
-    ingest/                         BibTeX, PDF, text, and structured-paper ingestion
+    cli.py                          command-line entrypoint
+    ingest/                         BibTeX, PDF, text, GROBID TEI ingestion
     triage/                         paper screening and A/B/C tiering
-    extract/                        LLM prompts, JSON parsing, grounding checks
-    schema/                         A-M schema, evidence models, structured paper objects
-    normalize/                      component and unit normalization
-    kb/                             SQLite knowledge base and exports
+    extract/                        prompts, operator extraction, grounding checks
+    schema/                         A-M schema, evidence models, paper objects
+    normalize/                      component names and units
+    kb/                             SQLite store and export helpers
+    evidence/                       effect extraction, synthesis, audit, review packet
     retrieve/                       BM25 and optional embedding retrieval
     design/                         evidence-grounded medium recommender
     optimize/                       search space, surrogate model, MOBO loop
     evaluate/                       extraction scoring and model agreement
-    llm/                            OpenAI, Anthropic, Gemini, and mock clients
+    llm/                            provider-agnostic LLM clients and mock client
   scripts/
-    ingest_pdfs.py                   ingest loose PDF folders/lists without BibTeX
-    run_evidence_parallel.py         parallel effect extraction over ingested papers
-    evaluate_medium_corpus.py       extraction and agreement benchmark
+    ingest_pdfs.py                  ingest loose PDF folders/lists
+    run_evidence_parallel.py        parallel evidence extraction helper
+    evaluate_medium_corpus.py       extraction and provider-agreement benchmark
     compare_mobo_backends.py        optimizer backend comparison
-  data/
-    library.example.bib             example BibTeX file
-    literature/
-      bovine_corpus_manifest.tsv    curated bovine literature metadata
-      bovine_human_review_queue.tsv human adjudication queue
-      ai_for_science_method_sources.tsv method-source registry
+  data/literature/
+    bovine_corpus_manifest.tsv      curated bovine literature metadata
+    bovine_human_review_queue.tsv   human adjudication queue
+    ai_for_science_method_sources.tsv method-source registry
   docs/
     PROJECT_WORKFLOW.md             this manual
-    PROJECT_WORKFLOW_ZH.md          Chinese version
+    PROJECT_WORKFLOW_ZH.md          Chinese manual
     AI_COLLABORATION_PROTOCOL.md    Codex/Claude concurrent-work protocol
     SESSION_LOG.md                  chronological work log
     ARCHITECTURE.md                 technical architecture
     OPTIMIZATION.md                 optimization design
-    AI_FOR_SCIENCE_METHOD_REVIEW.md AI-for-science method review
-    LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md
-    BOVINE_CORPUS_MANIFEST.md
-    REVIEW_BY_NEXT_ENGINEER.md
+    EVIDENCE_SYNTHESIS.md           random-effects evidence synthesis design
+    BOVINE_CORPUS_MANIFEST.md       corpus status and gates
+    EVIDENCE_AUDIT_PROLIFERATION.md current conservative wet-lab-entry audit
+    HUMAN_REVIEW_PACKET_H001_H016.md first human review locator packet
+    LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md first target decision
+    AI_FOR_SCIENCE_METHOD_REVIEW.md method review and algorithm roadmap
 ```
 
-## 4. Roles And Decision Rights
+## 4. Roles, Rights, And Artifacts
 
-Use these labels in tasks, review notes, commits, and handoffs.
+Use these labels in issues, notes, tables, commits, and handoffs.
 
 | Label | Actor | Decision rights |
 |---|---|---|
@@ -157,61 +147,68 @@ Use these labels in tasks, review notes, commits, and handoffs.
 | `[REVIEW]` | Assigned reviewer | Gate checks, conflict resolution, claim audit |
 | `[DOC]` | Any contributor | Traceable documentation update |
 
-Rules:
+Non-negotiable rules:
 
 - AI may prepare evidence; humans approve scientific use.
 - AI must record uncertainty instead of inventing missing data.
-- AI must not overwrite human notes.
+- AI must not overwrite human notes or another contributor's untracked work.
 - Wet-lab design packets must be committed before results are known.
 - Results must not be used to retroactively edit pre-registration.
-- Large PDFs, raw images, SQLite databases, and raw instrument files stay out of
-  git unless a separate storage policy approves them.
+- Large PDFs, raw images, SQLite databases, and instrument files stay out of git
+  unless a separate storage policy approves them.
 
-## 5. Artifact Registry
+Artifact registry:
 
-| Artifact | Path | Owner | Update trigger |
+| Artifact | Path | Primary owner | Update trigger |
 |---|---|---|---|
-| Operating manual | `docs/PROJECT_WORKFLOW.md`, `docs/PROJECT_WORKFLOW_ZH.md` | `[DOC]` | Process changes or major status update |
-| AI collaboration protocol | `docs/AI_COLLABORATION_PROTOCOL.md` | `[AI]` + `[DOC]` | Concurrent-agent coordination rules or conflict-prone workflow changes |
+| Operating manual | `docs/PROJECT_WORKFLOW.md`, `docs/PROJECT_WORKFLOW_ZH.md` | `[DOC]` | Process or major status change |
+| Collaboration protocol | `docs/AI_COLLABORATION_PROTOCOL.md` | `[AI]` + `[DOC]` | Concurrent-agent rule change |
 | Chronological log | `docs/SESSION_LOG.md` | `[AI]` | Each substantial work session |
-| Wet-lab target decision | `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md` | `[HUMAN]` + `[AI]` | Target or scope change |
+| Target decision | `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md` | `[HUMAN]` + `[AI]` | Target or scope change |
 | Corpus manifest | `data/literature/bovine_corpus_manifest.tsv` | `[AI]` + `[REVIEW]` | Source status change |
-| Human review queue | `data/literature/bovine_human_review_queue.tsv` | `[HUMAN]` + `[AI]` | Evidence adjudication |
+| Human review queue | `data/literature/bovine_human_review_queue.tsv` | `[HUMAN]` + `[AI]` | Evidence adjudication update |
 | Corpus summary | `docs/BOVINE_CORPUS_MANIFEST.md` | `[AI]` | Manifest or gate change |
 | Method-source registry | `data/literature/ai_for_science_method_sources.tsv` | `[AI]` + `[REVIEW]` | Algorithm or pipeline decision |
 | Method review | `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md` | `[AI]` + `[REVIEW]` | Method decision |
 | Extraction reports | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | Evaluation run |
-| Optimization report | `docs/OPTIMIZATION_BENCHMARK.md` | `[AI]` | Optimizer benchmark |
-| Evidence table | `data/literature/bovine_evidence_table.tsv` | `[AI]` + `[REVIEW]` | Full-text extraction and review |
-| Candidate variables | `docs/CANDIDATE_VARIABLES.md` | `[AI]` + `[HUMAN]` | Evidence review completion |
+| Evidence audit | `docs/EVIDENCE_AUDIT_PROLIFERATION.md` | `[AI]` + `[REVIEW]` | Evidence export or gate update |
+| Review packet | `docs/HUMAN_REVIEW_PACKET_H001_H016.md` | `[AI]` + `[HUMAN]` | Source availability or review queue update |
+| Candidate variables | `docs/CANDIDATE_VARIABLES.md` | `[AI]` + `[HUMAN]` | Human evidence review completion |
 | Wet-lab design packet | `docs/wetlab/ROUND_<n>_DESIGN_PACKET.md` | `[AI]` + `[LAB]` + `[REVIEW]` | Before each wet-lab round |
 | Wet-lab results | `docs/wetlab/ROUND_<n>_RESULTS.md` | `[AI]` + `[LAB]` | After each wet-lab round |
 
-## 6. Lifecycle Overview
+## 5. Thesis Lifecycle
 
-| Stage | Name | Main output | Current status |
-|---|---|---|---|
-| S0 | Environment setup | runnable repository | pass |
-| S1 | Scope lock | wet-lab target decision | pass |
-| S2 | Corpus construction | bovine manifest and review queue | partial |
-| S3 | Full-text extraction | grounded evidence tables | fail |
-| S4 | Human evidence review | adjudicated evidence | fail |
-| S5 | Search-space design | bounded candidate variables | fail |
-| S6 | In-silico robustness | stable design rationale | fail |
-| S7 | Wet-lab pre-registration | committed design packet | fail |
-| S8 | Wet-lab execution | raw results and deviations | not started |
-| S9 | Result comparison | processed results and Pareto analysis | not started |
-| S10 | Closed-loop update | next-round design or stop decision | not started |
-| S11 | Manuscript audit | paper-ready claims and artifacts | not started |
+The lifecycle is sequential at the gate level. Work inside a stage can be
+parallelized, but wet-lab execution cannot start until S7 passes.
 
-Only advance a stage when its gate is satisfied or the blocker is explicitly
-recorded.
+| Stage | Name | Primary output | Current status | Gate owner |
+|---|---|---|---|---|
+| S0 | Environment setup | Runnable repository | Pass | `[AI]` |
+| S1 | Scope lock | Wet-lab target decision | Pass | `[HUMAN]` + `[REVIEW]` |
+| S2 | Corpus construction | Bovine manifest and review queue | Partial | `[AI]` + `[REVIEW]` |
+| S3 | Full-text extraction | Grounded evidence tables | Fail / incomplete | `[AI]` + `[REVIEW]` |
+| S4 | Human evidence review | Adjudicated evidence table | Fail / open | `[HUMAN]` |
+| S5 | Search-space design | Bounded candidate variables | Not started | `[HUMAN]` + `[REVIEW]` |
+| S6 | In-silico robustness | Sensitivity and optimizer checks | Not started | `[AI]` + `[REVIEW]` |
+| S7 | Wet-lab pre-registration | Frozen design packet | Not started | `[HUMAN]` + `[LAB]` + `[REVIEW]` |
+| S8 | Wet-lab execution | Raw results and deviations | Not started | `[LAB]` |
+| S9 | Result comparison | Processed results and Pareto analysis | Not started | `[AI]` + `[HUMAN]` |
+| S10 | Closed-loop update | Next-round or stop decision | Not started | `[HUMAN]` + `[REVIEW]` |
+| S11 | Manuscript audit | Paper-ready claims and artifacts | Not started | `[REVIEW]` |
 
-## 7. Stage Checklists
+Status terms:
+
+- `Pass`: gate criteria are satisfied or the artifact exists.
+- `Partial`: useful work exists, but required gate evidence is incomplete.
+- `Fail / incomplete`: current evidence explicitly blocks advancement.
+- `Not started`: downstream stage must wait for earlier gates.
+
+## 6. Stage Checklists
 
 ### S0. Environment Setup
 
-Purpose: make the repository reproducible.
+Goal: make the repository reproducible.
 
 Checklist:
 
@@ -240,21 +237,21 @@ repair plan.
 
 ### S1. Scope Lock
 
-Purpose: prevent the first wet-lab round from becoming too broad to interpret.
+Goal: keep the first wet-lab round interpretable.
 
 Checklist:
 
 - [x] `[AI]` Review recent cultivated-meat medium and cell-biology literature.
-- [x] `[AI]` Propose the first wet-lab-facing target.
+- [x] `[AI]` Propose the first wet-lab-facing biological target.
 - [x] `[REVIEW]` Separate in-scope and out-of-scope work.
-- [x] `[DOC]` Record the target in a decision record.
+- [x] `[DOC]` Record target, boundaries, and scope-change rules.
 
-Gate: target, boundaries, and scope-change rules are documented.
+Gate: `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md` documents the target and
+boundaries.
 
 ### S2. Corpus Construction
 
-Purpose: create a traceable literature set before extraction and experiment
-design.
+Goal: create a traceable literature set before extraction and experiment design.
 
 Checklist:
 
@@ -267,20 +264,20 @@ Checklist:
 - [ ] `[REVIEW]` Verify DOI, URL, species, cell type, stage, medium focus, dose
   availability, and endpoints.
 
-Wet-lab entry gate:
+Wet-lab-entry corpus gate:
 
-- 35-50 peer-reviewed sources are curated.
-- At least 8 are recent reviews or scoping papers.
-- At least 12 are primary medium or cell-culture papers.
-- At least 10 are bovine satellite-cell or myoblast relevant.
-- At least 5 include extractable dose or range information.
-- At least 3 report serum-free or animal-component-free bovine muscle-cell
-  culture.
-- Background-only sources are excluded from wet-lab evidence counts.
+- 35-50 peer-reviewed sources curated.
+- At least 8 recent review or scoping papers.
+- At least 12 primary medium or cell-culture papers.
+- At least 10 bovine satellite-cell or myoblast relevant papers.
+- At least 5 papers with extractable dose or range information.
+- At least 3 papers reporting serum-free or animal-component-free bovine
+  muscle-cell culture.
+- Background-only sources excluded from wet-lab evidence counts.
 
 ### S3. Full-Text Extraction
 
-Purpose: convert papers into structured, grounded data.
+Goal: convert papers into structured, grounded data.
 
 Checklist:
 
@@ -288,23 +285,19 @@ Checklist:
   paper files.
 - [ ] `[AI]` Prefer structured parsing when available: GROBID TEI, structured
   text sections, or future PDF backends.
-- [ ] `[AI]` When a GROBID service is available, run `cultivate ingest
-  --grobid-tei` so PDFs produce `fulltext.xml` before extraction.
 - [ ] `[AI]` Run triage and extraction on P1/P2 sources.
 - [ ] `[AI]` Export screening, component, evidence, and extraction tables.
-- [ ] `[AI]` Run `cultivate evidence-audit` on extracted effect items before
-  proposing wet-lab variables.
+- [ ] `[AI]` Run `cultivate evidence-audit` before proposing wet-lab variables.
 - [ ] `[AI]` Record extraction coverage, non-missing fields, and grounding rate.
 - [ ] `[REVIEW]` Flag sparse or unreliable extraction runs.
-- [ ] `[AI]` Repair parser or prompt issues only when evidence shows a technical
-  failure rather than missing source content.
+- [ ] `[AI]` Repair parser or prompt issues only when evidence shows a
+  technical failure rather than missing source content.
 
 Commands:
 
 ```bash
 cultivate ingest
-# optional, when a GROBID service is running:
-cultivate ingest --grobid-tei --grobid-url http://localhost:8070
+cultivate ingest --grobid-tei --grobid-url http://localhost:8070  # optional
 cultivate triage
 cultivate extract --tier A
 cultivate export
@@ -322,14 +315,12 @@ Gate:
 
 ### S4. Human Evidence Review
 
-Purpose: turn extracted evidence into scientifically usable evidence.
+Goal: turn extracted evidence into scientifically usable evidence.
 
 Checklist:
 
-- [ ] `[HUMAN]` Review `H001-H016` first in
-  `data/literature/bovine_human_review_queue.tsv`.
-- [ ] `[AI]` Generate passage locators with `cultivate review-packet` before
-  human adjudication.
+- [ ] `[AI]` Generate passage locators with `cultivate review-packet`.
+- [ ] `[HUMAN]` Review `H001-H016` first.
 - [ ] `[HUMAN]` Mark each item as `supported`, `partial`, `unsupported`,
   `uncertain`, or `defer`.
 - [ ] `[HUMAN]` Add concise notes with formulation, dose, endpoint, caveat, or
@@ -337,6 +328,12 @@ Checklist:
 - [ ] `[AI]` Convert notes into a structured adjudication table.
 - [ ] `[REVIEW]` Resolve conflicts between AI extraction and human reading.
 - [ ] `[DOC]` Update `docs/BOVINE_CORPUS_MANIFEST.md`.
+
+Command:
+
+```bash
+cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
+```
 
 Recommended review order:
 
@@ -349,18 +346,12 @@ Recommended review order:
 7. Safety and cost annotations.
 
 Gate: every non-exploratory variable entering the first design batch has
-human-reviewed support, and `docs/EVIDENCE_AUDIT_PROLIFERATION.md` has no
-open wet-lab entry blockers.
-
-Command:
-
-```bash
-cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
-```
+human-reviewed support, and `docs/EVIDENCE_AUDIT_PROLIFERATION.md` has no open
+wet-lab-entry blockers.
 
 ### S5. Search-Space Design
 
-Purpose: define what the optimizer may change.
+Goal: define what the optimizer may change.
 
 Checklist:
 
@@ -379,7 +370,7 @@ evidence-supported.
 
 ### S6. In-Silico Robustness
 
-Purpose: test whether the proposed design is robust to retrieval and optimizer
+Goal: test whether the proposed design is robust to retrieval and optimizer
 choices.
 
 Checklist:
@@ -402,7 +393,7 @@ Gate:
 
 ### S7. Wet-Lab Pre-Registration
 
-Purpose: freeze the experiment before results exist.
+Goal: freeze the experiment before results exist.
 
 Checklist:
 
@@ -431,7 +422,7 @@ Gate: the design packet is committed before wet-lab work starts.
 
 ### S8. Wet-Lab Execution
 
-Purpose: execute the frozen design without changing the question mid-run.
+Goal: execute the frozen design without changing the question mid-run.
 
 Checklist:
 
@@ -440,16 +431,16 @@ Checklist:
   density, and timing.
 - [ ] `[LAB]` Store raw measurements and raw images where applicable.
 - [ ] `[HUMAN]` Record deviations immediately.
-- [ ] `[REVIEW]` Decide whether deviations invalidate, qualify, or simply
-  annotate the run.
-- [ ] `[DOC]` Commit metadata and result manifests. Store large raw files
+- [ ] `[REVIEW]` Decide whether deviations invalidate, qualify, or annotate the
+  run.
+- [ ] `[DOC]` Commit metadata and result manifests; store large raw files
   outside git unless storage policy changes.
 
 Gate: the run is completed or stopped with deviations and raw data recorded.
 
 ### S9. Result Comparison
 
-Purpose: compare measured results against controls and objectives.
+Goal: compare measured results against controls and objectives.
 
 Checklist:
 
@@ -468,7 +459,7 @@ Gate: results are processed, compared, and reviewed.
 
 ### S10. Closed-Loop Update
 
-Purpose: decide whether and how to run another round.
+Goal: decide whether and how to run another round.
 
 Checklist:
 
@@ -485,7 +476,7 @@ Gate: the next action is documented.
 
 ### S11. Manuscript Audit
 
-Purpose: turn the system and experiments into a defensible paper workflow.
+Goal: turn the system and experiments into a defensible paper workflow.
 
 Checklist:
 
@@ -501,158 +492,112 @@ Checklist:
 
 Gate: paper claims are traceable to evidence and results.
 
-## 8. Parallel Work Protocol
+## 7. Parallel Work Plan
 
-Human stream:
+Work that can happen now:
 
-- Review `H001-H016`.
-- Confirm cell source and assay constraints.
-- Confirm reagent availability and budget limits.
-- Approve candidate variable classes.
-- Sign off on pre-registration before wet-lab work.
+| Stream | Can start now | Must not do yet |
+|---|---|---|
+| `[HUMAN]` evidence review | Adjudicate H001-H005, H008, H009, H012, H013 using the locator packet; record notes in the review queue | Approve wet-lab variables without completed S3-S4 gates |
+| `[AI]` corpus/extraction | Acquire or ingest missing full text for H006-H007, H010-H011, H014-H016; regenerate review packet; improve extraction coverage | Generate a wet-lab design packet as if the evidence gate passed |
+| `[LAB]` feasibility | Confirm cell source, passage limits, baseline medium, plate format, assay duration, maximum conditions, and reagent constraints | Start experiments or change formulation candidates |
+| `[REVIEW]` gatekeeping | Check whether extracted claims match source text and whether variables are supported | Treat direction-only evidence as quantitative proof |
 
-AI stream:
+Conflict rules:
 
-- Pull and organize P1 full texts.
-- Extract component tables, dose ranges, endpoints, and quotes.
-- Build `data/literature/bovine_evidence_table.tsv`.
-- Convert human notes into adjudicated evidence records.
-- Generate candidate variable classes.
-- Run retrieval and optimizer robustness checks.
-- Draft design packets and analysis reports after gates pass.
+- Pull latest changes before editing.
+- Treat untracked files as another contributor's work unless ownership is clear.
+- Prefer small, reviewable commits.
+- Record important coordination decisions in `SESSION_LOG.md`, decision records,
+  or commit messages.
+- If a human-only blocker appears, record it and continue with non-blocked work.
 
-Lab stream:
+## 8. Current Project Ledger
 
-- Confirm cell source, passage limits, and culture constraints.
-- Confirm control media and assay protocol.
-- Confirm throughput: number of conditions and replicates per round.
-- Execute only frozen, committed designs.
-- Return raw results in an agreed structured format.
+This section is the concise status snapshot. It should be updated after material
+work sessions; detailed history stays in `SESSION_LOG.md`.
 
-Parallel rule: human review, AI extraction hardening, and lab feasibility checks
-can run at the same time. Wet-lab execution cannot start until S7 passes.
-
-## 9. Current Project Ledger
-
-Update this section after major sessions. Do not scatter status updates through
-the procedural sections above.
-
-### 9.1 Stage Ledger
-
-| Stage | Done | Open problems | Next action |
-|---|---|---|---|
-| S0 | Package installs, tests pass, smoke passes, demo optimization passes | Optional provider credentials and quotas are external | Keep gates green after each change |
-| S1 | Wet-lab target and boundaries recorded | Scope must remain locked unless decision record changes | Preserve bovine expansion-medium focus |
-| S2 | 44-record bovine manifest and 30-task review queue created | P1 human review and full-text acquisition incomplete | Human reviews H001-H016; AI pulls P1 full text |
-| S3 | Structured paper schema, plain-text fallback, section routing, GROBID TEI parser, and optional GROBID service client exist | P1 corpus has not been batch-converted/extracted; GROBID service availability is external | Run `cultivate ingest --grobid-tei` on accessible P1 PDFs, then extract |
-| S4 | Review queue exists | No adjudicated evidence table yet | Convert human notes into structured adjudication |
-| S5 | Ontology can expose more component classes to search space | Candidate variables not approved | Build only after S3-S4 gates |
-| S6 | MOBO backends and benchmark script exist | Robustness not run on bovine evidence | Run retrieval and optimizer sensitivity after S5 |
-| S7 | Pre-registration format defined | No design packet frozen | Draft after evidence and robustness gates |
-| S8 | Execution record requirements defined | No wet-lab run | Wait for S7 |
-| S9 | Analysis requirements defined | No wet-lab results | Wait for S8 |
-| S10 | Closed-loop update requirements defined | No measured objectives | Wait for S9 |
-| S11 | Manuscript audit requirements defined | No final claims or figures | Wait for validated results |
-
-### 9.2 Completed Technical Work
+### 8.1 Completed Technical Work
 
 - CLI-first Python package exists.
-- Latest validation: `.venv/bin/python -m pytest -q` reports 54 passed with 3
-  known warnings.
+- Latest committed validation before this documentation rewrite: 54 tests
+  passed with 3 known warnings.
 - Smoke pipeline passes.
 - Demo optimization loop passes.
-- Extraction evaluator exists.
-- Offline four-paper evaluation fixture exists.
+- Extraction evaluator and offline four-paper fixture exist.
+- Provider-agnostic LLM layer exists, including mock mode for offline runs.
+- Operator extraction exists for smaller section-routed prompts.
+- Structured-paper schema, plain-text fallback, and GROBID TEI parsing exist.
+- `cultivate ingest --grobid-tei` can call a running GROBID service and save
+  `fulltext.xml`.
 - Embedding retriever exists.
 - BoTorch qNEHVI and qLogNEHVI backends exist.
 - Optional citation verifier exists.
 - Ontology-to-search-space handling includes hydrolysates, extracts, defined
-  supplements, albumin substitutes, amino acids, carbon sources, and trace
-  elements.
-- Live-run ontology gaps have been partially closed for SFB, SFGM, Beefy-R,
-  rapeseed-protein isolate, Grifola frondosa extract, Auxenochlorella
-  pyrenoidosa protein extract, and copper ions. These are normalization hooks,
-  not wet-lab approval.
-- Trace-element search bounds were widened from nM to 0-10 uM so the optimizer
-  can represent copper-ion evidence reported around 5 uM; this is a broad search
-  bound, not a recommended dose.
-- Live provider mode exists for extraction evaluation.
-- Parser accepts both A-M block letters and schema attribute block names.
-- Structured-paper schema and plain-text fallback exist.
-- Extractor can route block-specific context through structured sections and
-  records routing metadata.
-- GROBID-flavored TEI XML can be parsed into `StructuredPaper` when TEI has
-  already been generated externally.
-- `cultivate ingest --grobid-tei` can call a running GROBID service, save
-  `fulltext.xml`, and `cultivate extract` will use that TEI for structured
-  section routing.
-- `scripts/ingest_pdfs.py` can ingest loose PDF folders/lists when BibTeX is not
-  available.
-- `scripts/run_evidence_parallel.py` can generate effect-item exports across the
-  ingested corpus for later synthesis and audit.
-- `cultivate evidence` now writes raw `effect_items_<outcome>.json` next to the
-  synthesized evidence CSV so audits can be rerun without another LLM call.
-- `cultivate evidence-audit` can inspect extracted `EvidenceItem` JSON and
-  produce a conservative wet-lab entry gate report.
-- `cultivate review-packet` can generate local full-text character-range
-  locators for human review without making AI adjudication decisions.
+  supplements, albumin substitutes, amino acids, carbon sources, trace elements,
+  B8/Beefy-9/Beefy-R/SFB/SFGM, rapeseed-protein isolate, Grifola frondosa
+  extract, Auxenochlorella pyrenoidosa protein extract, and copper ions. These
+  are normalization hooks, not wet-lab approvals.
+- `scripts/ingest_pdfs.py` can ingest loose PDF folders/lists.
+- `scripts/run_evidence_parallel.py` can generate effect-item exports.
+- `cultivate evidence` writes raw `effect_items_<outcome>.json`.
+- `cultivate evidence-audit` produces a conservative wet-lab-entry report.
+- `cultivate review-packet` generates local full-text character-range locators
+  for human review without making adjudication decisions.
 
-### 9.3 Completed Literature And Planning Work
+### 8.2 Completed Literature And Planning Work
 
 - First wet-lab-facing target is documented.
 - Bovine manifest v0 contains 44 records.
 - Human review queue v0 contains 30 open tasks.
 - AI-for-science method review exists.
-- Method-source registry contains reviewed sources across autonomous labs,
-  scientific RAG, information extraction, document parsing, ETL, and Bayesian
+- Method-source registry covers autonomous labs, scientific RAG, information
+  extraction, document parsing, ETL, systematic-review tooling, and Bayesian
   optimization.
-- Current method decision: prioritize S3 full-text extraction reliability and
-  S4 evidence audit/human review before new wet-lab design generation.
+- Current method decision: prioritize S3 full-text extraction reliability and S4
+  evidence audit / human review before wet-lab design generation.
 
-### 9.4 Known Blockers And Risks
+### 8.3 Current Gate Status
+
+| Gate | Current result | Meaning |
+|---|---|---|
+| Corpus manifest | Partial | Useful bovine set exists, but P1 human review and full-text coverage are incomplete |
+| Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
+| Critical human review | 16/16 open | No adjudicated evidence table yet |
+| Review-packet coverage | 9/16 with local locators | H001-H005, H008, H009, H012, H013 are ready for efficient human review |
+| Missing review-packet sources | 7/16 | H006-H007, H010-H011, H014-H016 need source/full-text acquisition or stricter matching |
+| Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
+
+### 8.4 Known Blockers And Risks
 
 - Live OpenAI/Anthropic extraction was too sparse to count as successful model
   agreement.
 - Gemini live comparison is incomplete because no Gemini/Google key was
   available.
 - OpenAI raw-response debugging hit insufficient quota.
-- The current corpus manifest is not yet full-text extracted.
-- GROBID service availability is external; if no service is running, ingestion
-  keeps the plain-text fallback and records the failure as a warning.
-- Human review queue remains open.
-- Current proliferation evidence audit is `NO-GO`: local extracted evidence has
-  AI-review candidates, but all are direction-only and 16/16 critical human
-  review tasks remain open.
-- Current human-review packet covers 9/16 critical tasks with local full-text
-  locators; 7/16 require source/full-text acquisition or stricter matching.
+- Current corpus manifest is not yet fully extracted.
+- GROBID service availability is external.
 - Cost, supplier, and food-grade annotations are incomplete.
-- Newly added ontology entries from the live run still need human evidence
-  adjudication before they can become non-exploratory wet-lab variables.
-- In-silico robustness has not been run on the bovine manifest.
-- No wet-lab design packet has been generated or frozen.
-- No wet-lab results exist.
+- Current audit candidates are direction-only; they are not quantitative wet-lab
+  proof.
+- In-silico robustness has not been run on reviewed bovine evidence.
+- No wet-lab design packet or wet-lab result exists.
 
-### 9.5 Immediate Next Actions
+### 8.5 Immediate Next Actions
 
-1. `[AI]` Run optional GROBID TEI generation on accessible P1 PDFs with
-   `cultivate ingest --grobid-tei`, then inspect coverage.
-2. `[AI]` Pull full text for all P1 core records.
-3. `[AI]` Re-run evidence extraction/normalization on live/P1 sources after the
-   ontology update and inspect which components now pool correctly.
-4. `[AI]` Re-run `cultivate evidence-audit` after updated extraction outputs.
-5. `[AI]` Extract exact formulations, dose ranges, endpoints, and quotes for
-   the audit candidates.
-6. `[HUMAN]` Review `H001-H016` using
-   `docs/HUMAN_REVIEW_PACKET_H001_H016.md` where locators exist.
-7. `[AI]` Acquire or ingest missing full text for H006-H007, H010-H011, and
+1. `[AI]` Acquire or ingest missing full text for H006-H007, H010-H011, and
    H014-H016.
-8. `[AI]` Build the adjudicated bovine evidence table.
-9. `[REVIEW]` Decide which variables can enter the first search space.
-10. `[AI]` Draft the first design packet only after earlier gates pass.
+2. `[AI]` Regenerate `docs/HUMAN_REVIEW_PACKET_H001_H016.md`.
+3. `[HUMAN]` Adjudicate H001-H005, H008, H009, H012, and H013 using the current
+   locator packet.
+4. `[AI]` Convert human notes into structured adjudication records.
+5. `[AI]` Re-run extraction and `cultivate evidence-audit`.
+6. `[REVIEW]` Decide which variables can enter S5 search-space design.
+7. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 
-## 10. AI Handoff Protocol
+## 9. AI Handoff Protocol
 
-When another AI agent resumes the project:
+Any AI agent taking over must:
 
 1. Read `README.md`.
 2. Read `docs/AI_COLLABORATION_PROTOCOL.md`.
@@ -660,18 +605,18 @@ When another AI agent resumes the project:
 4. Read `docs/SESSION_LOG.md`.
 5. Read `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md`.
 6. Read `docs/BOVINE_CORPUS_MANIFEST.md`.
-7. Run `git fetch --all --prune` and `git status --short --branch`.
-8. Continue from the next failed gate in Section 9.1 without touching
-   untracked files owned by another agent.
+7. Run `git fetch --all --prune`.
+8. Run `git status --short --branch`.
+9. Identify untracked files and avoid overwriting them.
+10. Continue from the next failed gate in Section 8.3.
 
-Suggested handoff prompt:
+Recommended handoff prompt:
 
 ```text
 Continue CultivateAgent using docs/PROJECT_WORKFLOW.md as the controlling
-manual and docs/AI_COLLABORATION_PROTOCOL.md as the concurrent-agent protocol.
-Preserve the bovine satellite-cell/myoblast expansion-medium scope unless you
-create a documented scope-change decision record. Start by fetching, checking
-git status, and identifying untracked files, then advance the next failed gate.
-Do not overwrite human review notes, another agent's files, or invent missing
-evidence.
+workflow manual and docs/AI_COLLABORATION_PROTOCOL.md as the concurrent-agent
+protocol. Keep the current bovine satellite-cell/myoblast expansion-medium
+target unless a new scope-change decision record exists. Fetch first, inspect
+git status and untracked files, then advance the next failed gate. Do not
+overwrite human review notes, another agent's files, or missing evidence.
 ```

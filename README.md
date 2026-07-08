@@ -57,6 +57,9 @@ For the end-to-end project operating manual, including developer orientation,
 human/AI/lab checklists, gates, handoff rules, and current status, see
 [`docs/PROJECT_WORKFLOW.md`](docs/PROJECT_WORKFLOW.md) or the Chinese version
 [`docs/PROJECT_WORKFLOW_ZH.md`](docs/PROJECT_WORKFLOW_ZH.md).
+Those workflow manuals are now structured as maintainable control documents:
+stable process sections are separated from the current project ledger so future
+updates should not be scattered through the whole file.
 For concurrent Codex/Claude work, start with
 [`docs/AI_COLLABORATION_PROTOCOL.md`](docs/AI_COLLABORATION_PROTOCOL.md) before
 editing.

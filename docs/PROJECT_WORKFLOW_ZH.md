@@ -1,92 +1,83 @@
-# CultivateAgent 项目手册
+# CultivateAgent 项目流程手册
 
-状态：使用中  
+状态：使用中
 最后更新：2026-07-08
 English version: [`PROJECT_WORKFLOW.md`](PROJECT_WORKFLOW.md)
 
-> **第二轮新增（详见 `SESSION_LOG.md`）。** 在“抽取”与“优化”之间新增两个阶段：
-> (1) **算子式抽取**——`cultivate extract --mode operators` 把 A–M schema 拆成若干
-> 小的、按章节路由的算子（对真实大模型更可靠）；(2) **证据综合**——`cultivate
-> evidence --outcome <指标>` 用随机效应 meta 分析把跨文献的异质结果汇聚为
-> `P(成分有益)`+I² 后验，存入知识库，并作为 πBO 先验注入 `cultivate optimize
-> --evidence-prior`（只作先验、绝不作标签；高异质 I² 的成分标记为“需直接实验验证”）。
-> 详见 [`EVIDENCE_SYNTHESIS.md`](EVIDENCE_SYNTHESIS.md)、[`OPTIMIZATION.md`](OPTIMIZATION.md)。
+这是 CultivateAgent 的控制性流程手册，给开发者、文献复核者、湿实验合作者、
+项目负责人，以及需要接管同一论文项目的 Codex、Claude 或其他 AI 使用。目标是
+让多人和多 AI 能看懂同一个项目、接同一个流程、更新同一套记录，而不互相覆盖。
 
-这是 CultivateAgent 的控制性项目手册，给开发者、文献复核者、湿实验合作者、
-项目负责人，以及需要接管同一项目的 Codex、Claude 或其他 AI 使用。它不是日记，
-而是让多人和多 AI 不冲突地推进同一个论文项目的操作地图。
+## 0. 文档维护约定
 
-## 0. 如何使用本手册
+本手册把“稳定流程”和“当前进度”分开，避免越写越像流水账。
 
-| 你想做什么 | 看哪里 |
-|---|---|
-| 先理解项目 | 第 1-3 节 |
-| 知道谁负责什么 | 第 4 节 |
-| 找到该改哪个文件 | 第 5 节 |
-| 看完整论文流程 | 第 6 节 |
-| 执行某个阶段 | 第 7 节 |
-| 让人工、AI、实验队友并行开工 | 第 8 节 |
-| 查看当前进度、问题、下一步 | 第 9 节 |
-| 把项目交给另一个 AI 或队友 | 第 10 节 |
+| 章节 | 用途 | 更新频率 |
+|---|---|---|
+| 0-4 | 项目定位、边界、仓库结构、职责权限 | 很少更新；只有项目结构或决策权变化时改 |
+| 5-6 | 完整论文流程和每阶段 gate | gate、必需产物或 review 规则变化时改 |
+| 7 | 人工、AI、实验线并行方式 | 团队分工变化时改 |
+| 8 | 当前项目账本 | 重要工作完成后更新 |
+| 9 | AI/队友接管协议 | 接管入口变化时改 |
 
-维护规则：
+每天或每次 session 的详细历史写在 [`SESSION_LOG.md`](SESSION_LOG.md)。新的科学
+判断或方法学选择，应单独写 decision record 放在 `docs/`。人工复核 notes 不能被
+AI 生成内容覆盖。
 
-- 第 1-8 节定义稳定流程，不要因为每日进展频繁改动。
-- 第 9 节是当前状态账本，重要工作后更新这里。
-- 新的科学决策单独写 decision record，放在 `docs/`。
-- `docs/SESSION_LOG.md` 保持时间顺序记录。
-- AI 不允许覆盖人工复核 notes。
+本次重写参考的文档规范：
 
-本结构参考了以下文档写法：
-
-- [Diataxis](https://diataxis.fr/)：区分解释、操作、教程式上手和参考资料。
 - [Google developer documentation style guide](https://developers.google.com/style)：
-  保持任务导向、清晰一致。
-- [Microsoft Learn contributor guide](https://learn.microsoft.com/en-us/contribute/)：
-  强调可维护的文档归属和更新流程。
-- [GitLab documentation style guide](https://docs.gitlab.com/development/documentation/styleguide/)：
-  强调 topic-based、可扫描的文档结构。
+  面向开发者的清晰、一致技术文档，并且项目内规则优先。
+- [Microsoft Writing Style Guide](https://learn.microsoft.com/en-us/style-guide/welcome/)：
+  面向混合技术读者的简洁写法。
+- [Microsoft reference documentation guidance](https://learn.microsoft.com/en-us/style-guide/developer-content/reference-documentation)：
+  用稳定标题和一致结构帮助开发者快速定位事实。
+- [Diataxis](https://diataxis.fr/start-here/)：区分解释、操作指南、参考资料和
+  教学内容。
+- [GOV.UK user-needs guidance](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/plan-manage-content/identify-user-needs/)：
+  围绕真实用户任务和 acceptance criteria 写内容。
 
-## 1. 项目定义
+## 1. 项目一页说明
 
 CultivateAgent 是一个 CLI-first 的培养肉培养基文献挖掘和优化系统。它把
-ReactionSeek 式流程改造成面向培养肉湿实验的闭环：
+ReactionSeek 式科学文献挖掘思路改造成面向培养基湿实验的流程：
 
-1. 收集并初筛文献；
-2. 用 LLM 和确定性 grounding check 抽取结构化事实；
-3. 标准化成分、剂量、单位、物种、细胞类型和 endpoint；
-4. 把证据存入可查询知识库；
-5. 针对锁定生物目标检索证据；
-6. 生成有引用支撑的培养基假设；
-7. 用多目标贝叶斯优化选择有边界的湿实验批次；
-8. 比较湿实验结果并进入下一轮闭环。
+```text
+ingest -> triage -> extract -> normalize -> knowledge base -> retrieve -> design -> optimize
+```
 
-锁定的第一阶段湿实验目标：
+系统不会把跨论文 outcome 数值当作可直接比较的训练标签。文献证据用于定义搜索
+区域、先验、限制条件和候选方案理由；优化目标值必须来自本项目自己的湿实验结果，
+并通过闭环 `tell()` 路径进入优化器。
 
-> 牛 satellite cells / bovine myoblasts 的扩增阶段培养基优化，目标是
-> 无血清、优先 animal-component-free、成本敏感，同时保留 myogenic identity。
+已锁定的第一阶段湿实验目标：
+
+> 牛 satellite cells / bovine myoblasts 扩增阶段培养基优化；目标是无血清、
+> 优先 animal-component-free、成本敏感，同时保留 myogenic identity。
 
 第一轮范围：
 
-| 范围内 | 第一轮范围外 |
+| 范围内 | 除非新 decision record 批准，否则范围外 |
 |---|---|
-| 牛肌源细胞扩增阶段培养基变量 | 支架、微载体、灌流、生物反应器 |
-| 无血清和 animal-component-free 证据 | 基因工程和稳定细胞系工程 |
-| 成本和供应可行性 | Whole-cut texture 和感官评价 |
+| 牛肌源细胞扩增阶段培养基变量 | 支架、微载体、灌流、生物反应器优化 |
+| 无血清和 animal-component-free 培养基证据 | 基因工程和稳定细胞系工程 |
+| 剂量/range、endpoint、成本、供应可行性 | Whole-cut texture、感官评价、产品配方 |
 | Myogenic identity 保留 endpoint | 以分化培养基为主的优化 |
 
 任何 scope 改动都必须先新增 decision record，再修改下游文件。
 
 ## 2. 交付形态
 
-当前交付界面：
+当前交付是本地、文件化、CLI-first。
 
-- CLI 命令：`cultivate ingest`、`cultivate extract`、`cultivate export`、
-  `cultivate design`、`cultivate optimize`。
-- 主要产物：Markdown、TSV、CSV、JSONL、SQLite 和评估报告。
-- 当前没有生产级网页 UI。以后可以增加 dashboard，但它不是目前默认交付方式。
+| 交付面 | 当前状态 |
+|---|---|
+| CLI | `cultivate ingest`、`triage`、`extract`、`evidence`、`evidence-audit`、`review-packet`、`export`、`design`、`optimize` |
+| 文件产物 | Markdown 报告、TSV/CSV 表格、JSON/JSONL 记录、SQLite 知识库 |
+| 网页 UI | 当前没有实现，也不是本阶段论文流程必需项 |
+| 湿实验入口 | 在证据、人工复核、search-space、稳健性和预注册 gate 通过前保持阻塞 |
 
-在第 7 节和第 9 节的证据与设计 gate 通过前，不能进入湿实验。
+README 是快速开始；本文件是操作手册；session log 是时间顺序记录。
 
 ## 3. 仓库结构
 
@@ -97,109 +88,118 @@ CultivateAgent/
   requirements.txt                  默认运行依赖
   config/
     config.example.yaml             运行配置模板
+    ontology/                       成分 ontology seed 和 normalization hooks
   cultivate_agent/
     cli.py                          CLI 入口
-    ingest/                         BibTeX、PDF、全文和 structured-paper 导入
+    ingest/                         BibTeX、PDF、全文、GROBID TEI 导入
     triage/                         论文初筛和 A/B/C 分层
-    extract/                        LLM prompt、JSON 解析、grounding check
-    schema/                         A-M schema、evidence model、structured paper objects
+    extract/                        prompt、operator extraction、grounding checks
+    schema/                         A-M schema、evidence model、paper objects
     normalize/                      成分名和单位标准化
-    kb/                             SQLite 知识库和导出
+    kb/                             SQLite store 和 export helpers
+    evidence/                       effect extraction、synthesis、audit、review packet
     retrieve/                       BM25 和可选 embedding retrieval
     design/                         有证据支撑的培养基推荐
     optimize/                       搜索空间、代理模型、MOBO 闭环
     evaluate/                       抽取评分和模型一致性
-    llm/                            OpenAI、Anthropic、Gemini、mock clients
+    llm/                            provider-agnostic LLM clients 和 mock client
   scripts/
-    ingest_pdfs.py                   无 BibTeX 时从 PDF folder/list 导入
-    run_evidence_parallel.py         对已导入论文并行抽取 effect items
-    evaluate_medium_corpus.py       抽取和模型一致性 benchmark
+    ingest_pdfs.py                  无 BibTeX 时导入 loose PDF folders/lists
+    run_evidence_parallel.py        并行 evidence extraction helper
+    evaluate_medium_corpus.py       抽取和 provider-agreement benchmark
     compare_mobo_backends.py        优化后端对比
-  data/
-    library.example.bib             BibTeX 示例
-    literature/
-      bovine_corpus_manifest.tsv    牛相关文献 metadata
-      bovine_human_review_queue.tsv 人工复核队列
-      ai_for_science_method_sources.tsv 方法文献登记表
+  data/literature/
+    bovine_corpus_manifest.tsv      牛相关文献 metadata
+    bovine_human_review_queue.tsv   人工裁决队列
+    ai_for_science_method_sources.tsv 方法文献登记表
   docs/
     PROJECT_WORKFLOW.md             英文手册
     PROJECT_WORKFLOW_ZH.md          本手册
     AI_COLLABORATION_PROTOCOL.md    Codex/Claude 并行协作协议
-    SESSION_LOG.md                  时间顺序工作记录
+    SESSION_LOG.md                  时间顺序工作日志
     ARCHITECTURE.md                 技术架构
     OPTIMIZATION.md                 优化层设计
-    AI_FOR_SCIENCE_METHOD_REVIEW.md AI-for-science 方法综述
-    LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md
-    BOVINE_CORPUS_MANIFEST.md
-    REVIEW_BY_NEXT_ENGINEER.md
+    EVIDENCE_SYNTHESIS.md           随机效应证据综合设计
+    BOVINE_CORPUS_MANIFEST.md       corpus 状态和 gate
+    EVIDENCE_AUDIT_PROLIFERATION.md 当前保守 wet-lab-entry audit
+    HUMAN_REVIEW_PACKET_H001_H016.md 第一批人工复核定位包
+    LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md 第一阶段目标决策
+    AI_FOR_SCIENCE_METHOD_REVIEW.md 方法综述和算法路线
 ```
 
-## 4. 角色和决策权
+## 4. 角色、权限和产物
 
-在任务、review notes、commit 和 handoff 中使用这些标签。
+在 issue、notes、表格、commit 和 handoff 中使用这些标签。
 
 | 标签 | 角色 | 决策权 |
 |---|---|---|
-| `[人工]` | 项目负责人或领域复核者 | 生物目标、证据裁决、湿实验 go/no-go |
+| `[HUMAN]` | 项目负责人或领域复核者 | 生物目标、证据裁决、湿实验 go/no-go |
 | `[AI]` | Codex、Claude 或其他 AI | 搜索、抽取、编码、报告草稿、结构化表格 |
-| `[实验]` | 湿实验合作者 | 细胞来源、试剂可行性、protocol 执行 |
-| `[复核]` | 指定 reviewer | Gate 检查、冲突解决、claim audit |
-| `[记录]` | 任意贡献者 | 可追踪文档更新 |
+| `[LAB]` | 湿实验合作者 | 细胞来源、试剂可行性、protocol 执行 |
+| `[REVIEW]` | 指定 reviewer | Gate 检查、冲突解决、claim audit |
+| `[DOC]` | 任意贡献者 | 可追踪文档更新 |
 
-规则：
+不可违反的规则：
 
 - AI 可以准备证据，人类批准科学用途。
 - AI 必须记录不确定性，不能编造缺失数据。
-- AI 不能覆盖人工 notes。
+- AI 不能覆盖人工 notes 或其他贡献者的 untracked work。
 - 湿实验 design packet 必须在结果出现前 commit。
 - 不能用结果倒改预注册方案。
 - 大型 PDF、原始图片、SQLite 数据库和仪器原始文件默认不进 git，除非另有
-  存储规则。
+  存储规则批准。
 
-## 5. 产物登记表
+产物登记表：
 
-| 产物 | 路径 | 负责人 | 何时更新 |
+| 产物 | 路径 | 主要负责人 | 何时更新 |
 |---|---|---|---|
-| 项目手册 | `docs/PROJECT_WORKFLOW.md`, `docs/PROJECT_WORKFLOW_ZH.md` | `[记录]` | 流程变化或重要状态更新 |
-| AI 协作协议 | `docs/AI_COLLABORATION_PROTOCOL.md` | `[AI]` + `[记录]` | 多 agent 协作规则或高冲突流程变化 |
+| 操作手册 | `docs/PROJECT_WORKFLOW.md`, `docs/PROJECT_WORKFLOW_ZH.md` | `[DOC]` | 流程或重要状态变化 |
+| 协作协议 | `docs/AI_COLLABORATION_PROTOCOL.md` | `[AI]` + `[DOC]` | 多 agent 协作规则变化 |
 | 时间顺序日志 | `docs/SESSION_LOG.md` | `[AI]` | 每次重要工作后 |
-| 湿实验目标决策 | `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md` | `[人工]` + `[AI]` | 目标或 scope 变化 |
-| 文献 manifest | `data/literature/bovine_corpus_manifest.tsv` | `[AI]` + `[复核]` | 文献状态变化 |
-| 人工复核队列 | `data/literature/bovine_human_review_queue.tsv` | `[人工]` + `[AI]` | 证据裁决 |
+| 目标决策 | `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md` | `[HUMAN]` + `[AI]` | 目标或 scope 变化 |
+| 文献 manifest | `data/literature/bovine_corpus_manifest.tsv` | `[AI]` + `[REVIEW]` | 文献状态变化 |
+| 人工复核队列 | `data/literature/bovine_human_review_queue.tsv` | `[HUMAN]` + `[AI]` | 证据裁决更新 |
 | Corpus summary | `docs/BOVINE_CORPUS_MANIFEST.md` | `[AI]` | Manifest 或 gate 变化 |
-| 方法文献登记表 | `data/literature/ai_for_science_method_sources.tsv` | `[AI]` + `[复核]` | 算法或 pipeline 决策 |
-| 方法综述 | `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md` | `[AI]` + `[复核]` | 方法决策 |
+| 方法文献登记表 | `data/literature/ai_for_science_method_sources.tsv` | `[AI]` + `[REVIEW]` | 算法或 pipeline 决策 |
+| 方法综述 | `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md` | `[AI]` + `[REVIEW]` | 方法决策 |
 | 抽取评估 | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | Evaluation run 后 |
-| 优化评估 | `docs/OPTIMIZATION_BENCHMARK.md` | `[AI]` | Optimizer benchmark 后 |
-| 证据表 | `data/literature/bovine_evidence_table.tsv` | `[AI]` + `[复核]` | 全文抽取和复核后 |
-| 候选变量 | `docs/CANDIDATE_VARIABLES.md` | `[AI]` + `[人工]` | 证据复核完成后 |
-| 湿实验设计包 | `docs/wetlab/ROUND_<n>_DESIGN_PACKET.md` | `[AI]` + `[实验]` + `[复核]` | 每轮湿实验前 |
-| 湿实验结果 | `docs/wetlab/ROUND_<n>_RESULTS.md` | `[AI]` + `[实验]` | 每轮湿实验后 |
+| 证据审计 | `docs/EVIDENCE_AUDIT_PROLIFERATION.md` | `[AI]` + `[REVIEW]` | Evidence export 或 gate 更新 |
+| 复核定位包 | `docs/HUMAN_REVIEW_PACKET_H001_H016.md` | `[AI]` + `[HUMAN]` | source 可用性或 review queue 更新 |
+| 候选变量 | `docs/CANDIDATE_VARIABLES.md` | `[AI]` + `[HUMAN]` | 人工证据复核完成后 |
+| 湿实验设计包 | `docs/wetlab/ROUND_<n>_DESIGN_PACKET.md` | `[AI]` + `[LAB]` + `[REVIEW]` | 每轮湿实验前 |
+| 湿实验结果 | `docs/wetlab/ROUND_<n>_RESULTS.md` | `[AI]` + `[LAB]` | 每轮湿实验后 |
 
-## 6. 生命周期总览
+## 5. 论文全流程
 
-| 阶段 | 名称 | 主要产物 | 当前状态 |
-|---|---|---|---|
-| S0 | 环境准备 | 可运行仓库 | pass |
-| S1 | 目标锁定 | 湿实验目标决策 | pass |
-| S2 | 文献 corpus | bovine manifest 和 review queue | partial |
-| S3 | 全文抽取 | grounded evidence tables | fail |
-| S4 | 人工证据复核 | adjudicated evidence | fail |
-| S5 | Search-space 设计 | 有边界的候选变量 | fail |
-| S6 | In-silico 稳健性 | 稳定设计依据 | fail |
-| S7 | 湿实验预注册 | 已 commit 的 design packet | fail |
-| S8 | 湿实验执行 | raw results 和偏差记录 | not started |
-| S9 | 结果比较 | processed results 和 Pareto analysis | not started |
-| S10 | 闭环更新 | 下一轮设计或停止决策 | not started |
-| S11 | 论文审计 | 论文级 claims 和 artifacts | not started |
+Gate 层面是顺序流程。阶段内部可以并行，但湿实验执行必须等 S7 通过。
 
-只有当 gate 满足，或 blocker 被明确记录后，才允许推进到下一阶段。
+| 阶段 | 名称 | 主要产物 | 当前状态 | Gate owner |
+|---|---|---|---|---|
+| S0 | 环境准备 | 可运行仓库 | Pass | `[AI]` |
+| S1 | 范围锁定 | 湿实验目标决策 | Pass | `[HUMAN]` + `[REVIEW]` |
+| S2 | 文献 corpus | Bovine manifest 和 review queue | Partial | `[AI]` + `[REVIEW]` |
+| S3 | 全文抽取 | Grounded evidence tables | Fail / incomplete | `[AI]` + `[REVIEW]` |
+| S4 | 人工证据复核 | Adjudicated evidence table | Fail / open | `[HUMAN]` |
+| S5 | Search-space 设计 | 有边界的候选变量 | Not started | `[HUMAN]` + `[REVIEW]` |
+| S6 | In-silico 稳健性 | Sensitivity 和 optimizer checks | Not started | `[AI]` + `[REVIEW]` |
+| S7 | 湿实验预注册 | 冻结 design packet | Not started | `[HUMAN]` + `[LAB]` + `[REVIEW]` |
+| S8 | 湿实验执行 | Raw results 和 deviations | Not started | `[LAB]` |
+| S9 | 结果比较 | Processed results 和 Pareto analysis | Not started | `[AI]` + `[HUMAN]` |
+| S10 | 闭环更新 | 下一轮或停止决策 | Not started | `[HUMAN]` + `[REVIEW]` |
+| S11 | 论文审计 | 论文级 claims 和 artifacts | Not started | `[REVIEW]` |
 
-## 7. 阶段 Checklist
+状态词含义：
+
+- `Pass`：gate 条件满足或产物已存在。
+- `Partial`：已有可用工作，但 gate 证据还不完整。
+- `Fail / incomplete`：当前证据明确阻止推进。
+- `Not started`：必须等待上游 gate。
+
+## 6. 阶段 Checklist
 
 ### S0. 环境准备
 
-目的：让仓库可复现、可运行。
+目标：让仓库可复现、可运行。
 
 Checklist：
 
@@ -208,8 +208,8 @@ Checklist：
 - [ ] `[AI]` 运行单元测试。
 - [ ] `[AI]` 运行 smoke pipeline。
 - [ ] `[AI]` 运行 demo optimization。
-- [ ] `[人工]` 确认 live provider 的 API key 策略。
-- [ ] `[记录]` 把失败和修复写入 `docs/SESSION_LOG.md`。
+- [ ] `[HUMAN]` 确认 live provider 的 API key 策略。
+- [ ] `[DOC]` 把失败和修复写入 `docs/SESSION_LOG.md`。
 
 命令：
 
@@ -225,22 +225,22 @@ pip install -e .
 
 Gate：测试、smoke 和 demo optimization 通过，或 blocker 已记录且有修复计划。
 
-### S1. 目标锁定
+### S1. 范围锁定
 
-目的：避免第一轮湿实验变成太宽、无法解释的问题。
+目标：让第一轮湿实验可解释，不变成过宽的问题。
 
 Checklist：
 
 - [x] `[AI]` 查阅近期培养肉培养基和细胞生物学文献。
-- [x] `[AI]` 提出第一阶段湿实验目标。
-- [x] `[复核]` 区分 in-scope 和 out-of-scope。
-- [x] `[记录]` 把目标写入 decision record。
+- [x] `[AI]` 提出第一阶段湿实验生物目标。
+- [x] `[REVIEW]` 区分 in-scope 和 out-of-scope。
+- [x] `[DOC]` 记录目标、边界和 scope-change 规则。
 
-Gate：目标、边界和 scope-change 规则已记录。
+Gate：`docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md` 已记录目标和边界。
 
 ### S2. 文献 Corpus
 
-目的：先建立可追踪文献集合，再做抽取和实验设计。
+目标：先建立可追踪文献集合，再抽取和设计实验。
 
 Checklist：
 
@@ -248,48 +248,43 @@ Checklist：
 - [x] `[AI]` 将记录分类为 `core`、`core_context`、`context`、`defer` 或
   `background`。
 - [x] `[AI]` 建立人工复核队列。
-- [ ] `[人工]` 确认 P1 core 纳入和排除。
-- [ ] `[AI]` 尽可能拉取 P1 全文或 PDF。
-- [ ] `[复核]` 检查 DOI、URL、物种、细胞类型、阶段、培养基重点、
-  剂量可得性和 endpoints。
+- [ ] `[HUMAN]` 确认 P1 core 纳入和排除。
+- [ ] `[AI]` 尽可能拉取 P1 records 的全文或 PDF。
+- [ ] `[REVIEW]` 检查 DOI、URL、物种、细胞类型、阶段、培养基重点、剂量
+  可得性和 endpoints。
 
-湿实验入口 gate：
+湿实验入口 corpus gate：
 
 - 35-50 篇 peer-reviewed sources 已整理。
 - 至少 8 篇近期 review 或 scoping papers。
 - 至少 12 篇 primary medium 或 cell-culture papers。
 - 至少 10 篇 bovine satellite-cell 或 myoblast 相关。
 - 至少 5 篇有可抽取剂量或 range。
-- 至少 3 篇报道 serum-free 或 animal-component-free bovine muscle-cell
-  culture。
+- 至少 3 篇报道 serum-free 或 animal-component-free bovine muscle-cell culture。
 - Background-only 文献不计入湿实验证据。
 
 ### S3. 全文抽取
 
-目的：把论文转成结构化、有证据支撑的数据。
+目标：把论文转成结构化、有证据支撑的数据。
 
 Checklist：
 
-- [ ] `[AI]` 导入 BibTeX、PDF、全文或外部生成的 structured paper 文件。
+- [ ] `[AI]` 导入 BibTeX、PDF、全文或外部生成的 structured paper files。
 - [ ] `[AI]` 可用时优先使用结构化解析：GROBID TEI、structured text sections
-  或未来 PDF backend。
-- [ ] `[AI]` 如果 GROBID service 可用，先运行 `cultivate ingest --grobid-tei`，
-  让 PDF 生成 `fulltext.xml` 后再进入抽取。
-- [ ] `[AI]` 对 P1/P2 文献运行 triage 和 extraction。
+  或未来 PDF backends。
+- [ ] `[AI]` 对 P1/P2 sources 运行 triage 和 extraction。
 - [ ] `[AI]` 导出 screening、component、evidence、extraction tables。
-- [ ] `[AI]` 在提出湿实验变量前，对 extracted effect items 运行
-  `cultivate evidence-audit`。
+- [ ] `[AI]` 在提出湿实验变量前运行 `cultivate evidence-audit`。
 - [ ] `[AI]` 记录 extraction coverage、non-missing fields 和 grounding rate。
-- [ ] `[复核]` 标记稀疏或不可靠抽取。
-- [ ] `[AI]` 只有在证据显示是技术问题时，才修 parser 或 prompt；如果原文缺失，
+- [ ] `[REVIEW]` 标记稀疏或不可靠抽取。
+- [ ] `[AI]` 只有当证据显示是技术失败时才修 parser 或 prompt；如果原文缺失，
   不要把它当代码问题。
 
 命令：
 
 ```bash
 cultivate ingest
-# 可选：已有运行中的 GROBID service 时使用
-cultivate ingest --grobid-tei --grobid-url http://localhost:8070
+cultivate ingest --grobid-tei --grobid-url http://localhost:8070  # 可选
 cultivate triage
 cultivate extract --tier A
 cultivate export
@@ -306,20 +301,24 @@ Gate：
 
 ### S4. 人工证据复核
 
-目的：把抽取证据变成科学上可使用的证据。
+目标：把抽取证据变成科学上可使用的证据。
 
 Checklist：
 
-- [ ] `[人工]` 优先复核 `data/literature/bovine_human_review_queue.tsv` 中的
-  `H001-H016`。
-- [ ] `[AI]` 在人工 adjudication 前，用 `cultivate review-packet` 生成 passage
-  locators。
-- [ ] `[人工]` 将每项标为 `supported`、`partial`、`unsupported`、`uncertain`
-  或 `defer`。
-- [ ] `[人工]` 添加简短 notes：formulation、dose、endpoint、caveat 或排除原因。
+- [ ] `[AI]` 用 `cultivate review-packet` 生成 passage locators。
+- [ ] `[HUMAN]` 优先复核 `H001-H016`。
+- [ ] `[HUMAN]` 将每项标为 `supported`、`partial`、`unsupported`、
+  `uncertain` 或 `defer`。
+- [ ] `[HUMAN]` 添加简短 notes：formulation、dose、endpoint、caveat 或排除原因。
 - [ ] `[AI]` 把 notes 转成结构化 adjudication table。
-- [ ] `[复核]` 解决 AI 抽取和人工阅读的冲突。
-- [ ] `[记录]` 更新 `docs/BOVINE_CORPUS_MANIFEST.md`。
+- [ ] `[REVIEW]` 解决 AI 抽取和人工阅读的冲突。
+- [ ] `[DOC]` 更新 `docs/BOVINE_CORPUS_MANIFEST.md`。
+
+命令：
+
+```bash
+cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
+```
 
 建议复核顺序：
 
@@ -332,17 +331,11 @@ Checklist：
 7. Safety and cost annotations。
 
 Gate：进入第一轮设计的所有非 exploratory 变量都有人工复核支持，并且
-`docs/EVIDENCE_AUDIT_PROLIFERATION.md` 没有开放的 wet-lab entry blocker。
-
-命令：
-
-```bash
-cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
-```
+`docs/EVIDENCE_AUDIT_PROLIFERATION.md` 没有开放的 wet-lab-entry blocker。
 
 ### S5. Search-Space 设计
 
-目的：定义优化器允许改变什么。
+目标：定义优化器允许改变什么。
 
 Checklist：
 
@@ -350,16 +343,16 @@ Checklist：
 - [ ] `[AI]` 给每个变量分配 mechanism class。
 - [ ] `[AI]` 添加 cost class、animal-origin status、food-grade plausibility、
   supplier risk。
-- [ ] `[人工]` 确认可获得且可接受的试剂。
-- [ ] `[实验]` 确认细胞来源、baseline medium、plate format、assay duration、
+- [ ] `[HUMAN]` 确认可获得且可接受的试剂。
+- [ ] `[LAB]` 确认细胞来源、baseline medium、plate format、assay duration、
   throughput。
-- [ ] `[复核]` 移除机制不支持、组成不透明或风险不可接受的变量。
+- [ ] `[REVIEW]` 移除机制不支持、组成不透明或风险不可接受的变量。
 
 Gate：search space 有边界、可控、可采购且有证据支撑。
 
 ### S6. In-Silico 稳健性
 
-目的：测试设计是否对检索器和优化器选择稳定。
+目标：测试设计是否对检索器和优化器选择稳定。
 
 Checklist：
 
@@ -367,8 +360,8 @@ Checklist：
 - [ ] `[AI]` 比较 q-ParEGO 和 qLogNEHVI 的设计建议。
 - [ ] `[AI]` 对关键变量类做 leave-one-source-out sensitivity。
 - [ ] `[AI]` 生成第一版 candidate formulation table。
-- [ ] `[复核]` 检查重复、危险外推、unsupported claims 和 dominated candidates。
-- [ ] `[人工]` 批准或修改变量和 controls。
+- [ ] `[REVIEW]` 检查重复、危险外推、unsupported claims 和 dominated candidates。
+- [ ] `[HUMAN]` 批准或修改变量和 controls。
 
 Gate：
 
@@ -379,17 +372,17 @@ Gate：
 
 ### S7. 湿实验预注册
 
-目的：在结果出现前冻结实验。
+目标：在结果出现前冻结实验。
 
 Checklist：
 
 - [ ] `[AI]` 起草 design packet。
-- [ ] `[实验]` 确认 reagent list 和配制限制。
-- [ ] `[实验]` 确认 cell source、passage window、seeding density、
+- [ ] `[LAB]` 确认 reagent list 和配制限制。
+- [ ] `[LAB]` 确认 cell source、passage window、seeding density、
   culture duration、media-change schedule、plate format、replicate count。
-- [ ] `[人工]` 确认 primary 和 secondary endpoints。
-- [ ] `[复核]` 在任何结果出现前冻结 candidate formulations。
-- [ ] `[记录]` commit design packet。
+- [ ] `[HUMAN]` 确认 primary 和 secondary endpoints。
+- [ ] `[REVIEW]` 在任何结果出现前冻结 candidate formulations。
+- [ ] `[DOC]` commit design packet。
 
 最小 design packet：
 
@@ -408,23 +401,23 @@ Gate：design packet 已在湿实验开始前 commit。
 
 ### S8. 湿实验执行
 
-目的：按冻结设计执行，不在中途改变问题。
+目标：按冻结设计执行，不在中途改变问题。
 
 Checklist：
 
-- [ ] `[实验]` 按冻结 protocol 准备细胞和试剂。
-- [ ] `[实验]` 记录 plate map、reagent lots、operator、passage number、
+- [ ] `[LAB]` 按冻结 protocol 准备细胞和试剂。
+- [ ] `[LAB]` 记录 plate map、reagent lots、operator、passage number、
   seeding density 和 timing。
-- [ ] `[实验]` 保存 raw measurements 和必要 raw images。
-- [ ] `[人工]` 立即记录偏离 protocol 的情况。
-- [ ] `[复核]` 判断偏离是否导致无效、限定解释或只需备注。
-- [ ] `[记录]` commit metadata 和 result manifests。大型原始文件默认放 git 外。
+- [ ] `[LAB]` 保存 raw measurements 和必要 raw images。
+- [ ] `[HUMAN]` 立即记录偏离 protocol 的情况。
+- [ ] `[REVIEW]` 判断偏离是否导致无效、限定解释或只需备注。
+- [ ] `[DOC]` commit metadata 和 result manifests；大型原始文件默认放 git 外。
 
 Gate：实验完成或停止，并且偏差和 raw data 已记录。
 
 ### S9. 结果比较
 
-目的：把实测结果与 controls 和目标比较。
+目标：把实测结果与 controls 和目标比较。
 
 Checklist：
 
@@ -433,29 +426,29 @@ Checklist：
 - [ ] `[AI]` 计算 primary endpoint、secondary endpoints 和 cost estimates。
 - [ ] `[AI]` 与 baseline 和 positive controls 比较。
 - [ ] `[AI]` 更新 proliferation、cost、identity retention 的 Pareto front。
-- [ ] `[人工]` 检查统计结果是否符合生物学解释。
-- [ ] `[复核]` 将每个 claim 标为 `supported`、`partial`、`unsupported` 或
+- [ ] `[HUMAN]` 检查统计结果是否符合生物学解释。
+- [ ] `[REVIEW]` 将每个 claim 标为 `supported`、`partial`、`unsupported` 或
   `exploratory`。
 
 Gate：结果已处理、比较并复核。
 
 ### S10. 闭环更新
 
-目的：决定是否以及如何进行下一轮。
+目标：决定是否以及如何进行下一轮。
 
 Checklist：
 
 - [ ] `[AI]` 把 measured objective values 输入 `optimize.tell()`。
 - [ ] `[AI]` 生成下一轮候选或停止建议。
-- [ ] `[复核]` 检查模型是在 exploitation、exploration，还是重复失败区域。
-- [ ] `[人工]` 决定继续、缩小 search space、增加 assay 或停止。
-- [ ] `[记录]` 如果继续，commit round summary 和下一轮 design packet。
+- [ ] `[REVIEW]` 检查模型是在 exploitation、exploration，还是重复失败区域。
+- [ ] `[HUMAN]` 决定继续、缩小 search space、增加 assay 或停止。
+- [ ] `[DOC]` 如果继续，commit round summary 和下一轮 design packet。
 
 Gate：下一步行动已记录。
 
 ### S11. 论文审计
 
-目的：把系统和实验变成可辩护的论文流程。
+目标：把系统和实验变成可辩护的论文流程。
 
 Checklist：
 
@@ -463,153 +456,111 @@ Checklist：
   results、Pareto comparison、sensitivity checks。
 - [ ] `[AI]` 生成图：workflow、evidence map、variable support、
   experimental outcomes、Pareto front、closed-loop trajectory。
-- [ ] `[人工]` 写生物学解释和 limitations。
-- [ ] `[复核]` 每个 claim 都要能追溯到 evidence 和 wet-lab data。
-- [ ] `[复核]` 如实报告 negative 或 inconclusive results。
-- [ ] `[记录]` 归档 code commit、data manifests、analysis scripts 和 protocol
+- [ ] `[HUMAN]` 写生物学解释和 limitations。
+- [ ] `[REVIEW]` 每个 claim 都要能追溯到 evidence 和 wet-lab data。
+- [ ] `[REVIEW]` 如实报告 negative 或 inconclusive results。
+- [ ] `[DOC]` 归档 code commit、data manifests、analysis scripts 和 protocol
   versions。
 
 Gate：论文 claims 可追溯到证据和结果。
 
-## 8. 并行工作协议
+## 7. 并行工作计划
 
-人工线：
+现在可以并行做的工作：
 
-- 复核 `H001-H016`。
-- 确认细胞来源和 assay 限制。
-- 确认试剂可获得性和预算上限。
-- 批准候选变量类。
-- 湿实验前签字确认 pre-registration。
+| 工作线 | 现在可以做 | 现在不能做 |
+|---|---|---|
+| `[HUMAN]` 证据复核 | 用 locator packet 复核 H001-H005、H008、H009、H012、H013，并在 review queue 写 notes | 在 S3-S4 gate 未完成时批准湿实验变量 |
+| `[AI]` corpus/extraction | 获取或导入 H006-H007、H010-H011、H014-H016 缺失全文；重跑 review packet；提高抽取 coverage | 假装证据 gate 已过并生成 wet-lab design packet |
+| `[LAB]` 可行性 | 确认 cell source、passage limits、baseline medium、plate format、assay duration、最大条件数和 reagent constraints | 开始实验或修改候选配方 |
+| `[REVIEW]` gatekeeping | 检查 extracted claims 是否和 source text 一致，变量是否有证据支撑 | 把 direction-only evidence 当成定量证明 |
 
-AI 线：
+冲突规则：
 
-- 拉取和整理 P1 全文。
-- 抽取 component tables、dose ranges、endpoints、quotes。
-- 建立 `data/literature/bovine_evidence_table.tsv`。
-- 把人工 notes 转成 adjudicated evidence records。
-- 生成 candidate variable classes。
-- 跑 retrieval 和 optimizer robustness checks。
-- Gate 通过后起草 design packets 和 analysis reports。
+- 编辑前先 pull 最新更改。
+- 除非 ownership 清楚，否则把 untracked files 当作其他贡献者的工作。
+- 使用小而可 review 的 commit。
+- 重要协调决策写入 `SESSION_LOG.md`、decision record 或 commit message。
+- 遇到只有人工能解决的 blocker，记录后继续做不阻塞的工作。
 
-实验线：
+## 8. 当前项目账本
 
-- 确认细胞来源、passage limits 和培养限制。
-- 确认 control media 和 assay protocol。
-- 确认 throughput：每轮条件数和重复数。
-- 只执行已冻结并 commit 的 design。
-- 按约定结构返回 raw results。
+本节是简明状态快照。重要工作后更新；详细历史保留在 `SESSION_LOG.md`。
 
-并行规则：人工复核、AI 抽取可靠性加固、实验可行性确认可以同时进行。湿实验执行
-必须等 S7 通过。
-
-## 9. 当前项目账本
-
-重要工作后更新本节。不要把状态更新散落到前面的流程定义里。
-
-### 9.1 阶段账本
-
-| 阶段 | 已完成 | 未解决问题 | 下一步 |
-|---|---|---|---|
-| S0 | Package 可安装，测试通过，smoke 通过，demo optimization 通过 | Provider credentials 和 quota 属于外部条件 | 每次改动后保持 gate 绿色 |
-| S1 | Wet-lab target 和边界已记录 | 除非新 decision record，否则 scope 不能漂移 | 保持 bovine expansion-medium focus |
-| S2 | 44 条 bovine manifest 和 30 项 review queue 已建 | P1 人工复核和全文获取未完成 | 人工复核 H001-H016；AI 拉取 P1 全文 |
-| S3 | Structured paper schema、plain-text fallback、section routing、GROBID TEI parser 和 optional GROBID service client 已有 | P1 corpus 尚未批量转换/抽取；GROBID service 是否可用属于外部条件 | 对可访问 P1 PDFs 运行 `cultivate ingest --grobid-tei`，再抽取 |
-| S4 | Review queue 已有 | 尚无 adjudicated evidence table | 把人工 notes 转成结构化 adjudication |
-| S5 | Ontology 可把更多 component classes 暴露给 search space | Candidate variables 未批准 | 只在 S3-S4 gate 后建立 |
-| S6 | MOBO backend 和 benchmark script 已有 | 尚未在 bovine evidence 上跑 robustness | S5 后跑 retrieval 和 optimizer sensitivity |
-| S7 | Pre-registration 格式已定义 | 尚无冻结 design packet | 证据和稳健性 gate 后起草 |
-| S8 | 执行记录要求已定义 | 尚无湿实验 | 等 S7 |
-| S9 | 分析要求已定义 | 尚无湿实验结果 | 等 S8 |
-| S10 | 闭环更新要求已定义 | 尚无 measured objectives | 等 S9 |
-| S11 | 论文审计要求已定义 | 尚无最终 claims 或 figures | 等 validated results |
-
-### 9.2 已完成的技术工作
+### 8.1 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- 最新验证：`.venv/bin/python -m pytest -q` 为 54 passed，3 个已知 warnings。
+- 本次文档重写前的最新 committed validation：54 tests passed，3 个已知 warnings。
 - Smoke pipeline 通过。
 - Demo optimization loop 通过。
-- Extraction evaluator 已有。
-- 四篇文献的 offline evaluation fixture 已有。
+- Extraction evaluator 和四篇文献 offline fixture 已有。
+- Provider-agnostic LLM layer 已有，并支持 offline mock mode。
+- Operator extraction 已有，可把大 schema 拆成更小的 section-routed prompts。
+- Structured-paper schema、plain-text fallback 和 GROBID TEI parsing 已有。
+- `cultivate ingest --grobid-tei` 可调用运行中的 GROBID service 并保存
+  `fulltext.xml`。
 - Embedding retriever 已有。
 - BoTorch qNEHVI 和 qLogNEHVI backend 已有。
 - Optional citation verifier 已有。
 - Ontology-to-search-space 已覆盖 hydrolysates、extracts、defined supplements、
-  albumin substitutes、amino acids、carbon sources、trace elements。
-- Live run 暴露的 ontology gaps 已部分修补：SFB、SFGM、Beefy-R、
-  rapeseed-protein isolate、Grifola frondosa extract、Auxenochlorella
-  pyrenoidosa protein extract、copper ions 已可规范化。这只是 normalization
-  hook，不代表湿实验批准。
-- Trace-element 搜索边界已从 nM 级改为 0-10 uM，使优化器能表示约 5 uM 的
-  copper-ion 证据；这是宽搜索边界，不是推荐剂量。
-- Extraction evaluation 已支持 live provider mode。
-- Parser 支持 A-M block letters 和 schema attribute block names。
-- Structured-paper schema 和 plain-text fallback 已有。
-- Extractor 可以根据 structured sections 路由不同 block 的上下文，并记录 routing
-  metadata。
-- 已能把外部 GROBID 生成的 TEI XML 解析为 `StructuredPaper`。
-- `cultivate ingest --grobid-tei` 可以调用运行中的 GROBID service，保存
-  `fulltext.xml`；`cultivate extract` 会用该 TEI 做 structured section routing。
-- `scripts/ingest_pdfs.py` 可以在没有 BibTeX 时从 PDF folder/list 导入文献。
-- `scripts/run_evidence_parallel.py` 可以在已导入 corpus 上并行生成 effect-item
-  exports，供后续 synthesis 和 audit 使用。
-- `cultivate evidence` 现在会把 raw `effect_items_<outcome>.json` 写在 synthesized
-  evidence CSV 旁边，便于不重新调用 LLM 就复跑 audit。
-- `cultivate evidence-audit` 可以检查已抽取的 `EvidenceItem` JSON，并输出保守的
-  wet-lab entry gate report。
-- `cultivate review-packet` 可以为人工复核生成本地 fulltext 字符范围 locators，
-  不做 AI adjudication。
+  albumin substitutes、amino acids、carbon sources、trace elements、
+  B8/Beefy-9/Beefy-R/SFB/SFGM、rapeseed-protein isolate、Grifola frondosa
+  extract、Auxenochlorella pyrenoidosa protein extract、copper ions。这些只是
+  normalization hooks，不是湿实验批准。
+- `scripts/ingest_pdfs.py` 可以导入 loose PDF folders/lists。
+- `scripts/run_evidence_parallel.py` 可以生成 effect-item exports。
+- `cultivate evidence` 会写出 raw `effect_items_<outcome>.json`。
+- `cultivate evidence-audit` 能生成保守的 wet-lab-entry report。
+- `cultivate review-packet` 能为人工复核生成本地 full-text 字符范围 locators，
+  但不做 evidence adjudication。
 
-### 9.3 已完成的文献和计划工作
+### 8.2 已完成的文献和计划工作
 
 - 第一阶段 wet-lab-facing target 已记录。
 - Bovine manifest v0 有 44 条记录。
 - Human review queue v0 有 30 个 open tasks。
 - AI-for-science 方法综述已存在。
 - 方法文献登记表已覆盖 autonomous labs、scientific RAG、information extraction、
-  document parsing、ETL 和 Bayesian optimization。
-- 当前方法决策：在生成新的湿实验设计前，优先提高 S3 全文抽取可靠性，并完成
-  S4 evidence audit / 人工复核。
+  document parsing、ETL、systematic-review tooling 和 Bayesian optimization。
+- 当前方法决策：在生成湿实验设计前，优先提高 S3 全文抽取可靠性，并完成 S4
+  evidence audit / 人工复核。
 
-### 9.4 已知 blocker 和风险
+### 8.3 当前 Gate 状态
+
+| Gate | 当前结果 | 含义 |
+|---|---|---|
+| Corpus manifest | Partial | 已有可用 bovine set，但 P1 人工复核和全文覆盖不完整 |
+| Proliferation evidence audit | `NO-GO` | 当前 extracted evidence 不能支持湿实验入口 |
+| Critical human review | 16/16 open | 尚无 adjudicated evidence table |
+| Review-packet 覆盖 | 9/16 有本地 locators | H001-H005、H008、H009、H012、H013 可进入高效人工复核 |
+| 缺失 review-packet source | 7/16 | H006-H007、H010-H011、H014-H016 需要补全文或更严格匹配 |
+| Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
+
+### 8.4 已知 Blocker 和风险
 
 - Live OpenAI/Anthropic extraction 太稀疏，不能算成功 model agreement。
 - Gemini live comparison 未完成，因为没有 Gemini/Google key。
 - OpenAI raw-response debugging 遇到 insufficient quota。
-- 当前 corpus manifest 尚未全文抽取。
-- GROBID service 是否可用属于外部条件；如果没有运行中的 service，ingestion
-  会保留 plain-text fallback，并把失败记录为 warning。
-- Human review queue 仍未完成。
-- 当前 proliferation evidence audit 是 `NO-GO`：本地 extracted evidence 已有
-  AI-review candidates，但全部是 direction-only，且 16/16 个关键人工复核任务仍 open。
-- 当前 human-review packet 覆盖 9/16 个关键任务的本地 fulltext locators；7/16
-  还需要补 source/fulltext 或更严格匹配。
+- 当前 corpus manifest 尚未完整全文抽取。
+- GROBID service 是否可用属于外部条件。
 - Cost、supplier、food-grade annotations 不完整。
-- Live run 新增 ontology 词条仍需人工证据裁决，才能成为非 exploratory 湿实验变量。
-- In-silico robustness 尚未在 bovine manifest 上运行。
-- 尚未生成或冻结 wet-lab design packet。
-- 尚无湿实验结果。
+- 当前 audit candidates 是 direction-only，不能作为定量湿实验证明。
+- In-silico robustness 尚未在 reviewed bovine evidence 上运行。
+- 尚无 wet-lab design packet，也无湿实验结果。
 
-### 9.5 近期下一步
+### 8.5 近期下一步
 
-1. `[AI]` 对可访问的 P1 PDFs 运行 optional GROBID TEI 生成：
-   `cultivate ingest --grobid-tei`，然后检查 coverage。
-2. `[AI]` 拉取所有 P1 core records 的全文。
-3. `[AI]` 在 ontology 更新后，对 live/P1 sources 重新跑 evidence
-   extraction/normalization，检查哪些 component 已能正确 pooling。
-4. `[AI]` 在更新 extraction outputs 后，重新运行 `cultivate evidence-audit`。
-5. `[AI]` 为 audit candidates 抽取 exact formulations、dose ranges、endpoints、
-   quotes。
-6. `[人工]` 使用 `docs/HUMAN_REVIEW_PACKET_H001_H016.md` 中已有 locators 复核
-   `H001-H016`。
-7. `[AI]` 为 H006-H007、H010-H011 和 H014-H016 补充或导入缺失 full text。
-8. `[AI]` 建立 adjudicated bovine evidence table。
-9. `[复核]` 决定哪些变量可进入第一轮 search space。
-10. `[AI]` 只有在前置 gate 通过后，才起草第一版 design packet。
+1. `[AI]` 获取或导入 H006-H007、H010-H011、H014-H016 的缺失全文。
+2. `[AI]` 重新生成 `docs/HUMAN_REVIEW_PACKET_H001_H016.md`。
+3. `[HUMAN]` 用当前 locator packet 复核 H001-H005、H008、H009、H012、H013。
+4. `[AI]` 把人工 notes 转成结构化 adjudication records。
+5. `[AI]` 重新运行 extraction 和 `cultivate evidence-audit`。
+6. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
+7. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 
-## 10. AI 接管协议
+## 9. AI 接管协议
 
-任何 AI 接手时：
+任何 AI 接手时必须：
 
 1. 读 `README.md`。
 2. 读 `docs/AI_COLLABORATION_PROTOCOL.md`。
@@ -617,16 +568,17 @@ AI 线：
 4. 读 `docs/SESSION_LOG.md`。
 5. 读 `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md`。
 6. 读 `docs/BOVINE_CORPUS_MANIFEST.md`。
-7. 运行 `git fetch --all --prune` 和 `git status --short --branch`。
-8. 从第 9.1 节的下一个未通过 gate 继续，并且不要触碰其他 agent 的
-   untracked files。
+7. 运行 `git fetch --all --prune`。
+8. 运行 `git status --short --branch`。
+9. 识别 untracked files，避免覆盖。
+10. 从第 8.3 节的下一个未通过 gate 继续。
 
 推荐接管 prompt：
 
 ```text
-请继续 CultivateAgent，使用 docs/PROJECT_WORKFLOW_ZH.md 作为控制手册，并使用
-docs/AI_COLLABORATION_PROTOCOL.md 作为多 agent 协作协议。除非新增 scope-change
-decision record，否则保持当前 bovine satellite-cell/myoblast 扩增培养基优化目标。
-先 fetch、检查 git status、识别 untracked files，再推进下一个未通过 gate。不要覆盖
-人工复核 notes、其他 agent 的文件，也不要编造缺失证据。
+请继续 CultivateAgent，使用 docs/PROJECT_WORKFLOW_ZH.md 作为控制性流程手册，并
+使用 docs/AI_COLLABORATION_PROTOCOL.md 作为多 agent 协作协议。除非新增
+scope-change decision record，否则保持当前 bovine satellite-cell/myoblast 扩增
+培养基优化目标。先 fetch、检查 git status 和 untracked files，再推进下一个未通过
+gate。不要覆盖人工复核 notes、其他 agent 的文件，也不要编造缺失证据。
 ```

@@ -569,3 +569,74 @@ mark any item `supported`, `partial`, `unsupported`, `uncertain`, or `defer`.
    H014-H016.
 3. Re-run `cultivate review-packet` and `cultivate evidence-audit` after the
    missing sources are available.
+
+---
+
+# Session 7 (Codex) — workflow manual rewrite for maintainability
+
+Date: 2026-07-08
+Branch: `main`
+
+## Coordination Decision
+
+The project owner reported that the English and Chinese workflow manuals were
+logically cluttered, hard to update, and incomplete as professional project
+guides. The highest-value task for this session was therefore documentation
+repair, not new wet-lab design or additional evidence claims.
+
+The manuals were rewritten as control documents with stable process sections
+separated from the current project ledger. This keeps future updates focused:
+change process sections only when rules change, and update the ledger after
+material work sessions.
+
+## Documentation Sources Checked
+
+- Google developer documentation style guide: used for clear, consistent,
+  project-specific technical documentation.
+- Microsoft Writing Style Guide: used for concise writing for mixed technical
+  audiences.
+- Microsoft reference documentation guidance: used for predictable headings and
+  repeatable reference structure.
+- Diataxis: used to separate explanation, how-to guidance, reference material,
+  and learning/onboarding content.
+- GOV.UK user-needs guidance: used to frame sections around real user tasks and
+  acceptance criteria.
+
+## Changes Made
+
+- Rewrote `docs/PROJECT_WORKFLOW.md` into a stable structure:
+  documentation contract, project overview, delivery surface, repository map,
+  roles and artifacts, thesis lifecycle, stage checklists, parallel work plan,
+  current ledger, and handoff protocol.
+- Rewrote `docs/PROJECT_WORKFLOW_ZH.md` with the same structure and current
+  project status in Chinese.
+- Kept the locked bovine satellite-cell/myoblast expansion-medium target and
+  did not introduce new scientific conclusions.
+- Preserved current committed status: S2 partial, S3/S4 blocked, evidence audit
+  `NO-GO`, human review `H001-H016` still open, and review-packet coverage 9/16.
+- Updated `README.md` to explain that the workflow manuals now separate stable
+  process from the current project ledger.
+
+## What This Does Not Claim
+
+- No new literature evidence was adjudicated.
+- No missing full text was acquired in this session.
+- No wet-lab variable, formulation, or design packet was approved.
+- The rewrite improves handoff structure; it does not advance any wet-lab gate.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 54 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+
+## Next 3 Steps
+
+1. Run verification commands and update this session entry if anything fails.
+2. Resume the S3/S4 blocker: acquire or ingest missing full text for H006-H007,
+   H010-H011, and H014-H016.
+3. Regenerate `docs/HUMAN_REVIEW_PACKET_H001_H016.md` after missing sources are
+   available, then continue human adjudication.

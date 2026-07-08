@@ -37,9 +37,16 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--by-context", action="store_true",
                     help="group by (component,outcome,context); default pools across context so I² captures heterogeneity")
+    ap.add_argument("--model", default=None, help="override llm.model (e.g. deepseek-v4-flash)")
+    ap.add_argument("--max-tokens", type=int, default=0, help="override llm.max_tokens (raise for reasoning models)")
+    ap.add_argument("--items-out", default=None, help="override items JSON output path")
     args = ap.parse_args()
 
     cfg = load_config(root=ROOT)
+    if args.model:
+        cfg.llm.model = args.model
+    if args.max_tokens:
+        cfg.llm.max_tokens = args.max_tokens
     normalizer = ComponentNormalizer(cfg.ontology_dir)
 
     def clean_component(name: str) -> str:
@@ -85,9 +92,16 @@ def main() -> int:
     for it in all_items:
         it.component = clean_component(it.component)
     # Persist raw items so we can re-synthesize without re-calling the API.
-    items_path = cfg.data_path / "exports" / f"effect_items_{args.outcome}.json"
+    items_path = Path(args.items_out) if args.items_out else (
+        cfg.data_path / "exports" / f"effect_items_{args.outcome}.json")
     items_path.parent.mkdir(parents=True, exist_ok=True)
     items_path.write_text(json.dumps([it.__dict__ for it in all_items], ensure_ascii=False, indent=1))
+
+    # tier distribution (does the model give effect sizes, or only directions?)
+    tier = {1: 0, 2: 0, 3: 0}
+    for it in all_items:
+        tier[it.tier] += 1
+    print(f"tiers -> tier1(effect+var)={tier[1]} tier2(effect)={tier[2]} tier3(direction)={tier[3]}")
 
     summaries = synthesize(all_items, by_context=args.by_context)
     kb = KnowledgeBase(cfg.kb_file, normalizer=normalizer)

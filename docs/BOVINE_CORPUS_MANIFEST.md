@@ -122,6 +122,9 @@ Gate 2, extraction reliability: **not passed**.
   human-fillable worksheet for H001-H014, and
   `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` confirms the blank template
   is structurally valid. This is not evidence approval.
+- `docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md` now records worksheet progress:
+  0/14 resolved decisions, 0 evidence-bearing decisions, and 0 validation
+  issues. This confirms that the S4 gate is still waiting for human review.
 - `data/literature/bovine_evidence_table.tsv` now exists as the export target
   for human-supported or partial adjudication rows. The committed file is
   header-only because no human decisions have been entered yet.

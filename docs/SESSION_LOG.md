@@ -1552,3 +1552,72 @@ defaults to stdout so source excerpts are not committed.
    H001-H014 or valid-provider H014 live extraction.
 3. Keep Claude's model-comparison commits separate until that worktree is
    rebased on current `main`.
+
+---
+
+# Session 21 (Codex) — adjudication worksheet status gate
+
+Date: 2026-07-09
+Branch: `codex/adjudication-status`
+
+## Coordination Decision
+
+The next non-conflicting S4 task was to make worksheet progress machine-readable
+without reading source passages or changing any human fields. `adjudication-validate`
+already proved the blank worksheet was structurally valid, but it did not tell
+humans or other agents whether the review gate had actually advanced.
+
+The decision was to add `cultivate adjudication-status`: a lightweight summary
+of blank, resolved, evidence-bearing, invalid, and validation-issue counts. This
+helps prevent a blank PASS from being mistaken for evidence approval.
+
+## Changes Made
+
+- Added `AdjudicationStatus`, `summarize_adjudication_worksheet`,
+  `format_adjudication_status_markdown`, and
+  `write_adjudication_status_markdown`.
+- Added CLI command:
+  `cultivate adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md`.
+- Generated `docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md`.
+- Extended adjudication tests to cover blank and supported worksheet status.
+- Updated README, both workflow manuals, and the bovine corpus manifest.
+
+## Current Result
+
+- H001-H014 status: 14 rows, 14 blank decisions, 0 resolved decisions,
+  0 evidence-bearing decisions, 0 validation issues.
+- Ready for evidence export: no.
+
+## What This Does Not Claim
+
+- No human decision was entered.
+- No evidence field was approved.
+- No live extraction was run.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `.venv/bin/python -m pytest tests/test_evidence.py::test_adjudication_template_and_validation -q`:
+  passed.
+- `.venv/bin/python -m pytest -q`: 63 passed, 2 skipped.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md`:
+  passed; 0/14 resolved, 0 evidence-bearing decisions, 0 validation issues.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+
+## Next 3 Steps
+
+1. Merge this short-lived branch into `main`, push, and delete it.
+2. Human reviewers can now use `adjudication-status`, `adjudication-passages`,
+   and `adjudication-validate` together while filling H001-H014.
+3. After human decisions exist, run `adjudication-status` and
+   `adjudication-export` before any S5 search-space decision.

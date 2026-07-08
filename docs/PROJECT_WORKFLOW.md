@@ -176,6 +176,7 @@ Artifact registry:
 | Review packet | `docs/HUMAN_REVIEW_PACKET_H001_H016.md` | `[AI]` + `[HUMAN]` | Source availability or review queue update |
 | Human adjudication worksheet | `data/literature/bovine_adjudication_H001_H014.tsv` | `[HUMAN]` + `[AI]` | Before and after human evidence review |
 | Worksheet validation report | `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` | `[AI]` + `[REVIEW]` | After worksheet creation or edits |
+| Worksheet status report | `docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md` | `[AI]` + `[REVIEW]` | After worksheet creation or edits |
 | Adjudicated evidence table | `data/literature/bovine_evidence_table.tsv` | `[HUMAN]` + `[AI]` + `[REVIEW]` | After valid human adjudication export |
 | Candidate variables | `docs/CANDIDATE_VARIABLES.md` | `[AI]` + `[HUMAN]` | Human evidence review completion |
 | Wet-lab design packet | `docs/wetlab/ROUND_<n>_DESIGN_PACKET.md` | `[AI]` + `[LAB]` + `[REVIEW]` | Before each wet-lab round |
@@ -357,6 +358,7 @@ Command:
 ```bash
 cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
 cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
+cultivate adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md
 cultivate adjudication-passages --ids H014 --max-ranges 1
 cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
   --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md
@@ -589,6 +591,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - `cultivate adjudication-template` and `cultivate adjudication-validate`
   create and check the human-fillable H001-H014 worksheet with portable
   `data/papers/...` paths, without deciding evidence support.
+- `cultivate adjudication-status` summarizes blank, resolved, evidence-bearing,
+  and invalid worksheet decisions. Current H001-H014 status: 0/14 resolved,
+  0 evidence-bearing decisions, 0 validation issues.
 - `cultivate adjudication-passages` previews short local snippets for worksheet
   ranges to speed human inspection. It does not adjudicate support, and generated
   snippet files should stay local unless source quotation rights are reviewed.
@@ -616,6 +621,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
 | Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 are ready for section-routed operators; H015-H016 need R024 |
 | Critical human review | 16/16 open | H001-H014 worksheet and evidence-table export path exist, but no human decisions have been entered |
+| H001-H014 adjudication status | 0/14 resolved, 0 evidence-bearing | Status report confirms the worksheet is structurally valid but still awaiting human decisions |
 | Adjudicated evidence table | 0 rows | Header-only export from the blank worksheet; not evidence approval |
 | Review-packet coverage | 14/16 with local locators | H001-H014 are ready for efficient human review |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |

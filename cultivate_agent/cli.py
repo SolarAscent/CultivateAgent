@@ -441,6 +441,29 @@ def cmd_adjudication_validate(args) -> int:
     return 1 if args.fail_on_issues and not result.ok else 0
 
 
+def cmd_adjudication_status(args) -> int:
+    """Summarize human-adjudication worksheet progress."""
+    from .evidence import (
+        format_adjudication_status_markdown,
+        summarize_adjudication_worksheet,
+        write_adjudication_status_markdown,
+    )
+
+    status = summarize_adjudication_worksheet(args.worksheet)
+    if args.out:
+        out = write_adjudication_status_markdown(status, args.out)
+        print(f"+ wrote {out}")
+    else:
+        print(format_adjudication_status_markdown(status))
+    print(
+        "Adjudication status: "
+        f"{status.resolved}/{status.rows} resolved, "
+        f"{status.evidence_bearing} evidence-bearing, "
+        f"{status.validation_issues} validation issues"
+    )
+    return 1 if args.fail_on_incomplete and (status.blank or status.validation_issues) else 0
+
+
 def cmd_adjudication_passages(args) -> int:
     """Preview worksheet passage ranges for human adjudication."""
     cfg = load_config(root=args.root)
@@ -946,6 +969,14 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--out", help="optional Markdown validation report")
     sp.add_argument("--fail-on-issues", action="store_true", help="exit nonzero if validation finds issues")
     sp.set_defaults(func=cmd_adjudication_validate)
+
+    sp = sub.add_parser("adjudication-status", help="summarize human-adjudication worksheet progress")
+    sp.add_argument("--worksheet", default="data/literature/bovine_adjudication_H001_H014.tsv",
+                    help="human-adjudication TSV worksheet")
+    sp.add_argument("--out", help="optional Markdown status report")
+    sp.add_argument("--fail-on-incomplete", action="store_true",
+                    help="exit nonzero if blank decisions or validation issues remain")
+    sp.set_defaults(func=cmd_adjudication_status)
 
     sp = sub.add_parser("adjudication-passages", help="preview worksheet passage ranges for human review")
     sp.add_argument("--worksheet", default="data/literature/bovine_adjudication_H001_H014.tsv",

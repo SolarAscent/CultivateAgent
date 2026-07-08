@@ -215,6 +215,7 @@ def test_adjudication_template_and_validation(tmp_path):
     from cultivate_agent.evidence import (
         count_evidence_rows,
         export_adjudicated_evidence,
+        summarize_adjudication_worksheet,
         validate_adjudication_worksheet,
         write_adjudication_template,
     )
@@ -263,6 +264,11 @@ def test_adjudication_template_and_validation(tmp_path):
 
     # Blank decisions are allowed while the worksheet is still awaiting human review.
     assert validate_adjudication_worksheet(worksheet).ok
+    blank_status = summarize_adjudication_worksheet(worksheet)
+    assert blank_status.rows == 1
+    assert blank_status.blank == 1
+    assert blank_status.evidence_bearing == 0
+    assert not blank_status.ready_for_export
     empty_export = export_adjudicated_evidence(
         worksheet_path=worksheet,
         out_path=tmp_path / "empty_evidence.tsv",
@@ -281,6 +287,10 @@ def test_adjudication_template_and_validation(tmp_path):
     worksheet.write_text("\n".join([lines[0], "\t".join(row)]) + "\n", encoding="utf-8")
     result = validate_adjudication_worksheet(worksheet)
     assert result.ok
+    supported_status = summarize_adjudication_worksheet(worksheet)
+    assert supported_status.blank == 0
+    assert supported_status.evidence_bearing == 1
+    assert supported_status.ready_for_export
     evidence = export_adjudicated_evidence(
         worksheet_path=worksheet,
         out_path=tmp_path / "evidence.tsv",

@@ -164,6 +164,7 @@ cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016
 # Create and check the human-fillable adjudication worksheet for ready tasks:
 cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
 cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv
+cultivate adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md
 # Local helper for a human reviewer: preview short snippets for suggested ranges.
 # Omit --out to avoid committing source excerpts.
 cultivate adjudication-passages --ids H014 --max-ranges 1
@@ -293,6 +294,8 @@ Useful scripts:
   and checks a human-fillable evidence-adjudication worksheet with the same
   portable paths; a blank PASS only means the worksheet format is valid, not
   that evidence has been approved.
+- `cultivate adjudication-status`: summarizes worksheet progress and whether any
+  evidence-bearing human decisions are ready to export.
 - `cultivate adjudication-passages`: prints short local snippets for worksheet
   ranges so a human can inspect the source faster; it is a review aid, not an
   AI adjudication step, and generated snippet files should not be committed by
@@ -304,9 +307,9 @@ Useful scripts:
 Run the tests: `pip install pytest && pytest -q` (offline suite).
 
 Current main-line verification after merging the Codex JATS/readiness and
-provider fail-fast branches: `62 passed, 2 skipped` in the isolated Codex
+provider fail-fast branches and S4 review helpers: `63 passed, 2 skipped` in the isolated Codex
 worktree venv, plus `smoke`, `optimize --demo --rounds 6`,
-`extraction-readiness --ids H001-H016`, `adjudication-validate`, and
+`extraction-readiness --ids H001-H016`, `adjudication-status`, `adjudication-validate`, and
 `adjudication-export`.
 
 ---

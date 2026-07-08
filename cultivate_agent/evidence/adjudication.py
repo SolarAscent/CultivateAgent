@@ -75,6 +75,29 @@ class ValidationResult:
 
 
 @dataclass
+class AdjudicationStatus:
+    rows: int
+    decisions: dict[str, int]
+    validation_issues: int = 0
+
+    @property
+    def blank(self) -> int:
+        return self.decisions.get("", 0)
+
+    @property
+    def evidence_bearing(self) -> int:
+        return self.decisions.get("supported", 0) + self.decisions.get("partial", 0)
+
+    @property
+    def resolved(self) -> int:
+        return self.rows - self.blank
+
+    @property
+    def ready_for_export(self) -> bool:
+        return self.validation_issues == 0 and self.evidence_bearing > 0
+
+
+@dataclass
 class PassagePreview:
     review_id: str
     source_record_id: str
@@ -212,6 +235,60 @@ def write_validation_markdown(result: ValidationResult, path: str | Path) -> Pat
             lines.append(f"| {issue.row_number} | {issue.review_id} | {issue.field} | {issue.message} |")
         lines.append("")
     out.write_text("\n".join(lines), encoding="utf-8")
+    return out
+
+
+def summarize_adjudication_worksheet(path: str | Path) -> AdjudicationStatus:
+    decisions = {decision: 0 for decision in sorted(ALLOWED_DECISIONS)}
+    rows = 0
+    with Path(path).open(newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f, delimiter="\t")
+        for row in reader:
+            rows += 1
+            decision = (row.get("decision") or "").strip().lower()
+            if decision not in decisions:
+                decision = "invalid"
+            decisions[decision] = decisions.get(decision, 0) + 1
+    validation = validate_adjudication_worksheet(path)
+    return AdjudicationStatus(
+        rows=rows,
+        decisions=decisions,
+        validation_issues=len(validation.issues),
+    )
+
+
+def format_adjudication_status_markdown(status: AdjudicationStatus) -> str:
+    lines = [
+        "# Human Adjudication Status",
+        "",
+        "Status: worksheet progress summary; not an evidence approval.",
+        "",
+        "| Metric | Value |",
+        "|---|---:|",
+        f"| Rows | {status.rows} |",
+        f"| Blank decisions | {status.blank} |",
+        f"| Resolved decisions | {status.resolved} |",
+        f"| Evidence-bearing decisions | {status.evidence_bearing} |",
+        f"| Validation issues | {status.validation_issues} |",
+        f"| Ready for evidence export | {'yes' if status.ready_for_export else 'no'} |",
+        "",
+        "## Decision Counts",
+        "",
+        "| Decision | Count |",
+        "|---|---:|",
+    ]
+    for decision in ["", "supported", "partial", "unsupported", "uncertain", "defer", "invalid"]:
+        count = status.decisions.get(decision, 0)
+        label = "<blank>" if decision == "" else decision
+        lines.append(f"| `{label}` | {count} |")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def write_adjudication_status_markdown(status: AdjudicationStatus, path: str | Path) -> Path:
+    out = Path(path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(format_adjudication_status_markdown(status), encoding="utf-8")
     return out
 
 

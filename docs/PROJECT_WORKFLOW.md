@@ -299,6 +299,9 @@ Checklist:
   source record IDs, or paper IDs select an explicit paper set.
 - [x] `[AI]` Treat total provider-call failure as extraction failure; do not
   write empty extraction records when all operators return `call_error`.
+- [x] `[AI]` Fail fast on non-retryable provider errors such as authentication,
+  balance, permission, invalid-request, invalid-parameter, or missing-model
+  errors; keep retry/backoff for transient rate-limit/server errors.
 - [ ] `[REVIEW]` Flag sparse or unreliable extraction runs.
 - [ ] `[AI]` Repair parser or prompt issues only when evidence shows a
   technical failure rather than missing source content.
@@ -545,8 +548,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 ### 8.1 Completed Technical Work
 
 - CLI-first Python package exists.
-- Latest local validation after provider-failure handling:
-  61 tests passed with 3 known warnings.
+- Latest local validation after provider retry fail-fast handling:
+  63 tests passed with 3 known warnings on `codex/llm-provider-fail-fast`.
 - Smoke pipeline passes.
 - Demo optimization loop passes.
 - Extraction evaluator and offline four-paper fixture exist.

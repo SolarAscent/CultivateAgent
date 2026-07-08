@@ -145,6 +145,8 @@ cultivate extraction-readiness --ids H001-H016
 cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
 # If every operator fails at the provider-call layer, the command exits nonzero
 # and does not write an extraction record.
+# Non-retryable provider errors such as auth/balance/request-format failures are
+# fail-fast; transient server/rate-limit errors still use retry/backoff.
 
 # 4. Look at what you have:
 cultivate stats

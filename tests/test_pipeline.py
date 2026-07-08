@@ -118,6 +118,53 @@ def test_openai_compatible_client_passes_extra_body(monkeypatch):
     assert call["extra_body"] == {"thinking": {"type": "disabled"}}
 
 
+def test_llm_client_does_not_retry_auth_errors(monkeypatch):
+    from cultivate_agent.llm.base import LLMClient, LLMError, Message
+
+    class AuthError(RuntimeError):
+        status_code = 401
+
+    class FailingClient(LLMClient):
+        def __init__(self):
+            super().__init__("m", max_retries=4)
+            self.calls = 0
+
+        def _raw_complete(self, messages, **kwargs):
+            self.calls += 1
+            raise AuthError("Authentication Fails, Your api key: test-token is invalid")
+
+    monkeypatch.setattr("time.sleep", lambda _seconds: None)
+    client = FailingClient()
+    with pytest.raises(LLMError) as err:
+        client.complete([Message("user", "hello")])
+    assert client.calls == 1
+    assert "Non-retryable" in str(err.value)
+    assert "test-token" not in str(err.value)
+
+
+def test_llm_client_retries_transient_errors(monkeypatch):
+    from cultivate_agent.llm.base import LLMClient, LLMError, Message
+
+    class TransientError(RuntimeError):
+        status_code = 503
+
+    class FailingClient(LLMClient):
+        def __init__(self):
+            super().__init__("m", max_retries=3)
+            self.calls = 0
+
+        def _raw_complete(self, messages, **kwargs):
+            self.calls += 1
+            raise TransientError("server overloaded")
+
+    monkeypatch.setattr("time.sleep", lambda _seconds: None)
+    client = FailingClient()
+    with pytest.raises(LLMError) as err:
+        client.complete([Message("user", "hello")])
+    assert client.calls == 3
+    assert "after 3 attempts" in str(err.value)
+
+
 def test_extract_id_resolution_maps_review_and_source_ids(tmp_path):
     from cultivate_agent.cli import _expand_review_ids, _resolve_extract_paper_ids
     from cultivate_agent.config import Config

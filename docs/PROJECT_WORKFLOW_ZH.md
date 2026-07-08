@@ -163,6 +163,7 @@ CultivateAgent/
 | 方法文献登记表 | `data/literature/ai_for_science_method_sources.tsv` | `[AI]` + `[REVIEW]` | 算法或 pipeline 决策 |
 | 方法综述 | `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md` | `[AI]` + `[REVIEW]` | 方法决策 |
 | 抽取评估 | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | Evaluation run 后 |
+| 抽取就绪度报告 | `docs/EXTRACTION_READINESS_H001_H016.md`, `data/literature/bovine_extraction_readiness_H001_H016.tsv` | `[AI]` + `[REVIEW]` | live operator extraction 前 |
 | 证据审计 | `docs/EVIDENCE_AUDIT_PROLIFERATION.md` | `[AI]` + `[REVIEW]` | Evidence export 或 gate 更新 |
 | 复核定位包 | `docs/HUMAN_REVIEW_PACKET_H001_H016.md` | `[AI]` + `[HUMAN]` | source 可用性或 review queue 更新 |
 | 人工裁决工作表 | `data/literature/bovine_adjudication_H001_H014.tsv` | `[HUMAN]` + `[AI]` | 人工证据复核前后 |
@@ -279,6 +280,8 @@ Checklist：
 - [ ] `[AI]` 导出 screening、component、evidence、extraction tables。
 - [ ] `[AI]` 在提出湿实验变量前运行 `cultivate evidence-audit`。
 - [ ] `[AI]` 记录 extraction coverage、non-missing fields 和 grounding rate。
+- [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
+  区分 source missing 和 section routing weak。
 - [ ] `[REVIEW]` 标记稀疏或不可靠抽取。
 - [ ] `[AI]` 只有当证据显示是技术失败时才修 parser 或 prompt；如果原文缺失，
   不要把它当代码问题。
@@ -289,6 +292,9 @@ Checklist：
 cultivate ingest
 cultivate ingest --grobid-tei --grobid-url http://localhost:8070  # 可选
 cultivate triage
+cultivate extraction-readiness --ids H001-H016 \
+  --out docs/EXTRACTION_READINESS_H001_H016.md \
+  --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv
 cultivate extract --tier A
 cultivate export
 cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md
@@ -523,6 +529,9 @@ Gate：论文 claims 可追溯到证据和结果。
 - `scripts/run_evidence_parallel.py` 可以生成 effect-item exports。
 - `cultivate evidence` 会写出 raw `effect_items_<outcome>.json`。
 - `cultivate evidence-audit` 能生成保守的 wet-lab-entry report。
+- `cultivate extraction-readiness` 会在调用 LLM 前检查本地全文和 section routing
+  是否足够支持 operator extractor，但不抽取、不裁决证据。当前 H001-H016 结果：
+  13 个 direct-ready、1 个 full-text fallback-ready、2 个 R024 missing。
 - `cultivate review-packet` 能为人工复核生成本地 full-text 字符范围 locators，
   但不做 evidence adjudication。
 - `cultivate adjudication-template` 和 `cultivate adjudication-validate` 能创建和
@@ -548,6 +557,7 @@ Gate：论文 claims 可追溯到证据和结果。
 |---|---|---|
 | Corpus manifest | Partial | 已有可用 bovine set，但 P1 人工复核和全文覆盖不完整 |
 | Proliferation evidence audit | `NO-GO` | 当前 extracted evidence 不能支持湿实验入口 |
+| Extraction readiness | 13 direct-ready, 1 fallback-ready, 2 missing | H001-H013 可跑 section-routed operators；H014 可用全文 fallback；H015-H016 需要 R024 |
 | Critical human review | 16/16 open | H001-H014 工作表和证据表导出路径已存在，但尚无人工 decision |
 | 已裁决证据表 | 0 行 | 来自空白工作表的仅表头导出；不是证据批准 |
 | Review-packet 覆盖 | 14/16 有本地 locators | H001-H014 可进入高效人工复核 |
@@ -574,7 +584,8 @@ Gate：论文 claims 可追溯到证据和结果。
 3. `[AI]` R024 可用后重新生成 `docs/HUMAN_REVIEW_PACKET_H001_H016.md`。
 4. `[AI]` 校验已填写工作表，并运行 `cultivate adjudication-export` 更新
    `data/literature/bovine_evidence_table.tsv`。
-5. `[AI]` 重新运行 extraction 和 `cultivate evidence-audit`。
+5. `[AI]` 优先对 H001-H013 来源运行 operator extraction，把 H014 标为
+   fallback-context，再重新运行 `cultivate evidence-audit`。
 6. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 7. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 

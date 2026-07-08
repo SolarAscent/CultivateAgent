@@ -137,6 +137,8 @@ cultivate triage
 cultivate extract --tier A
 # Real LLMs are more reliable with the decomposed operator extractor:
 cultivate extract --tier A --mode operators
+# Before spending LLM calls, audit whether local full text supports operator routing:
+cultivate extraction-readiness --ids H001-H016
 
 # 4. Look at what you have:
 cultivate stats
@@ -261,6 +263,9 @@ Useful scripts:
   available.
 - `scripts/run_evidence_parallel.py`: generate corpus-wide effect-item exports
   for synthesis and `cultivate evidence-audit`.
+- `cultivate extraction-readiness`: checks whether local full text can support
+  section-routed `context`, `medium`, `dose`, `endpoints`, and `findings`
+  operators before spending LLM calls; it does not extract or approve evidence.
 - `cultivate review-packet`: creates human-review passage locators without AI
   adjudication.
 - `cultivate adjudication-template` / `cultivate adjudication-validate`: creates

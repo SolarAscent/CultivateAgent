@@ -9,6 +9,7 @@ Subcommands map onto the pipeline stages::
     cultivate export    # screening table / components / evidence / JSONL
     cultivate stats     # knowledge-base summary
     cultivate evidence-audit
+    cultivate extraction-readiness
     cultivate review-packet
     cultivate adjudication-template
     cultivate adjudication-validate
@@ -322,6 +323,36 @@ def cmd_evidence_audit(args) -> int:
     for blocker in audit.blockers:
         print(f"  BLOCKER: {blocker}")
     return 1 if args.fail_on_no_go and audit.decision != "GO" else 0
+
+
+def cmd_extraction_readiness(args) -> int:
+    """Audit local full text before section-routed operator extraction."""
+    cfg = load_config(root=args.root)
+    from .extract import (
+        build_extraction_readiness,
+        write_extraction_readiness_markdown,
+        write_extraction_readiness_tsv,
+    )
+
+    ids = _expand_review_ids(args.ids)
+    rows = build_extraction_readiness(
+        review_queue_path=args.review_queue or (cfg.data_path / "literature" / "bovine_human_review_queue.tsv"),
+        manifest_path=args.manifest or (cfg.data_path / "literature" / "bovine_corpus_manifest.tsv"),
+        papers_dir=cfg.papers_dir,
+        review_ids=ids,
+    )
+    md = write_extraction_readiness_markdown(rows, args.out)
+    tsv = write_extraction_readiness_tsv(rows, args.tsv)
+    ready = sum(1 for row in rows if row.status == "ready_for_operator_extraction")
+    fallback = sum(1 for row in rows if row.status == "ready_with_fulltext_fallback")
+    partial = sum(1 for row in rows if row.status == "partial_operator_ready")
+    print(f"+ wrote {md}")
+    print(f"+ wrote {tsv}")
+    print(
+        f"Extraction readiness: {ready} ready, {fallback} fallback-ready, "
+        f"{partial} partial, {len(rows) - ready - fallback - partial} not ready"
+    )
+    return 0
 
 
 def cmd_review_packet(args) -> int:
@@ -763,6 +794,16 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--fail-on-no-go", action="store_true",
                     help="exit nonzero when the audit decision is NO-GO")
     sp.set_defaults(func=cmd_evidence_audit)
+
+    sp = sub.add_parser("extraction-readiness", help="audit local full text before section-routed extraction")
+    sp.add_argument("--ids", default="H001-H016", help="review IDs, e.g. H001-H016 or H001,H004")
+    sp.add_argument("--review-queue", help="review queue TSV")
+    sp.add_argument("--manifest", help="bovine corpus manifest TSV")
+    sp.add_argument("--out", default="docs/EXTRACTION_READINESS_H001_H016.md",
+                    help="Markdown output path")
+    sp.add_argument("--tsv", default="data/literature/bovine_extraction_readiness_H001_H016.tsv",
+                    help="machine-readable TSV output path")
+    sp.set_defaults(func=cmd_extraction_readiness)
 
     sp = sub.add_parser("review-packet", help="build human-review passage locators for review tasks")
     sp.add_argument("--ids", default="H001-H016", help="review IDs, e.g. H001-H016 or H001,H004")

@@ -112,3 +112,79 @@ def test_operator_flags_unverified_quote():
     ext = OperatorExtractor(client).extract(PaperRef(paper_id="p3", title="t"), TEXT)
     ev = ext.evidence["E.serum_free_status"]
     assert "UNVERIFIED" in (ev.location or "")
+
+
+def test_extraction_readiness_reports_operator_context(tmp_path):
+    from cultivate_agent.extract import (
+        build_extraction_readiness,
+        write_extraction_readiness_markdown,
+        write_extraction_readiness_tsv,
+    )
+    from cultivate_agent.schema.paper import PaperMetadata, PaperPaths, PaperRef
+
+    papers = tmp_path / "papers"
+    ref = PaperRef(
+        paper_id="p-ready",
+        title="Defined bovine satellite cell medium",
+        doi="10.123/example",
+    )
+    paths = PaperPaths(papers, ref.paper_id, slug=ref.slug).ensure()
+    paths.fulltext.write_text(
+        "Abstract\nSerum-free bovine satellite cell medium.\n\n"
+        "Materials and methods\nCells were cultured in DMEM/F12 medium with FGF2 at 20 ng/ml "
+        "and recombinant albumin supplement.\n\n"
+        "Results\nProliferation was measured by cell counting. Doubling time was 39 h and "
+        "MYOD differentiation was monitored.\n",
+        encoding="utf-8",
+    )
+    paths.save_metadata(PaperMetadata(ref=ref))
+
+    manifest = tmp_path / "manifest.tsv"
+    manifest.write_text(
+        "record_id\ttitle\tdoi\tyear\tspecies\tcell_type\tstage\tmedium_focus\tendpoints\n"
+        "R001\tDefined bovine satellite cell medium\t10.123/example\t2026\tbovine\tsatellite cells"
+        "\texpansion\tserum-free medium; FGF2\tproliferation\n",
+        encoding="utf-8",
+    )
+    queue = tmp_path / "queue.tsv"
+    queue.write_text(
+        "review_id\tpriority\tsource_record_id\tevidence_topic\tfield_to_verify\thuman_question"
+        "\tdecision_impact\tsuggested_action\tstatus\n"
+        "H001\tP1\tR001\tMedium dose\tmedium; dose\tDoes the paper report medium dose?"
+        "\tSearch-space seed\tCheck methods/results\topen\n",
+        encoding="utf-8",
+    )
+
+    rows = build_extraction_readiness(
+        review_queue_path=queue,
+        manifest_path=manifest,
+        papers_dir=papers,
+        review_ids=["H001"],
+    )
+    assert len(rows) == 1
+    assert rows[0].status == "ready_for_operator_extraction"
+    assert rows[0].critical_ready == 3
+    assert {op.operator for op in rows[0].operators if op.ready} >= {"medium", "dose", "endpoints"}
+
+    md = write_extraction_readiness_markdown(rows, tmp_path / "readiness.md")
+    tsv = write_extraction_readiness_tsv(rows, tmp_path / "readiness.tsv")
+    assert "Ready for operator extraction" in md.read_text(encoding="utf-8")
+    assert "ready_for_operator_extraction" in tsv.read_text(encoding="utf-8")
+
+
+def test_extraction_readiness_distinguishes_fulltext_fallback():
+    from cultivate_agent.extract.readiness import assess_operator_readiness
+    from cultivate_agent.extract import OPERATORS
+    from cultivate_agent.schema.structured_paper import structured_paper_from_text
+
+    paper = structured_paper_from_text(
+        "p-fallback",
+        "No obvious headings here. Bovine satellite cells used DMEM medium with serum-free "
+        "albumin supplement. FGF2 was tested at 20 ng/ml. Proliferation and doubling were "
+        "reported by cell counting.",
+        title="Fallback paper",
+    )
+    medium = next(op for op in OPERATORS if op.name == "medium")
+    result = assess_operator_readiness(paper, medium)
+    assert result.ready
+    assert result.status == "fallback_ready"

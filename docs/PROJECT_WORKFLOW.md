@@ -171,6 +171,7 @@ Artifact registry:
 | Method-source registry | `data/literature/ai_for_science_method_sources.tsv` | `[AI]` + `[REVIEW]` | Algorithm or pipeline decision |
 | Method review | `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md` | `[AI]` + `[REVIEW]` | Method decision |
 | Extraction reports | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | Evaluation run |
+| Extraction readiness report | `docs/EXTRACTION_READINESS_H001_H016.md`, `data/literature/bovine_extraction_readiness_H001_H016.tsv` | `[AI]` + `[REVIEW]` | Before live operator extraction |
 | Evidence audit | `docs/EVIDENCE_AUDIT_PROLIFERATION.md` | `[AI]` + `[REVIEW]` | Evidence export or gate update |
 | Review packet | `docs/HUMAN_REVIEW_PACKET_H001_H016.md` | `[AI]` + `[HUMAN]` | Source availability or review queue update |
 | Human adjudication worksheet | `data/literature/bovine_adjudication_H001_H014.tsv` | `[HUMAN]` + `[AI]` | Before and after human evidence review |
@@ -292,6 +293,8 @@ Checklist:
 - [ ] `[AI]` Export screening, component, evidence, and extraction tables.
 - [ ] `[AI]` Run `cultivate evidence-audit` before proposing wet-lab variables.
 - [ ] `[AI]` Record extraction coverage, non-missing fields, and grounding rate.
+- [x] `[AI]` Run `cultivate extraction-readiness` before live operator
+  extraction to separate missing sources from weak section routing.
 - [ ] `[REVIEW]` Flag sparse or unreliable extraction runs.
 - [ ] `[AI]` Repair parser or prompt issues only when evidence shows a
   technical failure rather than missing source content.
@@ -302,6 +305,9 @@ Commands:
 cultivate ingest
 cultivate ingest --grobid-tei --grobid-url http://localhost:8070  # optional
 cultivate triage
+cultivate extraction-readiness --ids H001-H016 \
+  --out docs/EXTRACTION_READINESS_H001_H016.md \
+  --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv
 cultivate extract --tier A
 cultivate export
 cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md
@@ -556,6 +562,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - `scripts/run_evidence_parallel.py` can generate effect-item exports.
 - `cultivate evidence` writes raw `effect_items_<outcome>.json`.
 - `cultivate evidence-audit` produces a conservative wet-lab-entry report.
+- `cultivate extraction-readiness` checks local full-text and section-routing
+  readiness for the operator extractor without calling an LLM or adjudicating
+  evidence. Current H001-H016 result: 13 direct-ready, 1 full-text fallback-ready,
+  2 missing R024 tasks.
 - `cultivate review-packet` generates local full-text character-range locators
   for human review without making adjudication decisions.
 - `cultivate adjudication-template` and `cultivate adjudication-validate`
@@ -583,6 +593,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 |---|---|---|
 | Corpus manifest | Partial | Useful bovine set exists, but P1 human review and full-text coverage are incomplete |
 | Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
+| Extraction readiness | 13 direct-ready, 1 fallback-ready, 2 missing | H001-H013 are ready for section-routed operators; H014 can use full-text fallback; H015-H016 need R024 |
 | Critical human review | 16/16 open | H001-H014 worksheet and evidence-table export path exist, but no human decisions have been entered |
 | Adjudicated evidence table | 0 rows | Header-only export from the blank worksheet; not evidence approval |
 | Review-packet coverage | 14/16 with local locators | H001-H014 are ready for efficient human review |
@@ -613,7 +624,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    available.
 4. `[AI]` Validate the filled worksheet and run `cultivate adjudication-export`
    to refresh `data/literature/bovine_evidence_table.tsv`.
-5. `[AI]` Re-run extraction and `cultivate evidence-audit`.
+5. `[AI]` Run operator extraction first on H001-H013 sources, treat H014 as
+   fallback-context, and re-run `cultivate evidence-audit`.
 6. `[REVIEW]` Decide which variables can enter S5 search-space design.
 7. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 

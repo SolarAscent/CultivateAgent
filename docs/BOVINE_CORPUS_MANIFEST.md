@@ -118,6 +118,11 @@ Gate 2, extraction reliability: **not passed**.
 - `data/literature/bovine_evidence_table.tsv` now exists as the export target
   for human-supported or partial adjudication rows. The committed file is
   header-only because no human decisions have been entered yet.
+- `docs/EXTRACTION_READINESS_H001_H016.md` and
+  `data/literature/bovine_extraction_readiness_H001_H016.tsv` now report
+  offline operator-readiness before live extraction: H001-H013 are direct-ready,
+  H014 is ready only through full-text fallback, and H015-H016 remain missing
+  because R024 is not ingested locally.
 
 Gate 3, biological plausibility: **not passed**.
 
@@ -149,10 +154,12 @@ Gate 6, pre-registration readiness: **not passed**.
 3. After human edits, run `cultivate adjudication-validate`, then
    `cultivate adjudication-export` to refresh
    `data/literature/bovine_evidence_table.tsv`.
-4. Re-run `cultivate review-packet` and `cultivate evidence-audit` after updated
+4. Run operator extraction first on the direct-ready H001-H013 sources; treat
+   H014 as fallback-context until TEI section routing improves.
+5. Re-run `cultivate review-packet` and `cultivate evidence-audit` after updated
    extraction outputs.
-5. Extract exact component tables, dose ranges, endpoints, and evidence quotes
+6. Extract exact component tables, dose ranges, endpoints, and evidence quotes
    for audit candidates.
-6. Fill the 30 human review tasks, starting with `H001-H016`.
-7. Promote only reviewed and grounded variables into a bounded search space.
-8. Generate a first wet-lab design packet only after Gates 1-6 pass.
+7. Fill the 30 human review tasks, starting with `H001-H016`.
+8. Promote only reviewed and grounded variables into a bounded search space.
+9. Generate a first wet-lab design packet only after Gates 1-6 pass.

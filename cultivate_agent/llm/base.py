@@ -34,6 +34,48 @@ class LLMError(RuntimeError):
     pass
 
 
+_NON_RETRYABLE_STATUS_CODES = {400, 401, 402, 403, 404, 422}
+_NON_RETRYABLE_PATTERNS = (
+    "authentication",
+    "invalid api key",
+    "invalid_api_key",
+    "insufficient balance",
+    "insufficient_quota",
+    "permission denied",
+    "invalid parameter",
+    "invalid request",
+    "model not found",
+)
+_SECRET_RE = re.compile(r"(sk-[A-Za-z0-9_-]+|AQ\.[A-Za-z0-9_-]+)")
+_API_KEY_MSG_RE = re.compile(r"(api key\s*:?)\s*[^\s,'}]+", re.IGNORECASE)
+
+
+def _status_code(exc: Exception) -> Optional[int]:
+    code = getattr(exc, "status_code", None)
+    if isinstance(code, int):
+        return code
+    response = getattr(exc, "response", None)
+    code = getattr(response, "status_code", None)
+    return code if isinstance(code, int) else None
+
+
+def is_non_retryable_error(exc: Exception) -> bool:
+    """Return true for provider errors that should fail fast, not back off."""
+    code = _status_code(exc)
+    if code in _NON_RETRYABLE_STATUS_CODES:
+        return True
+    msg = str(exc).lower()
+    return any(pattern in msg for pattern in _NON_RETRYABLE_PATTERNS)
+
+
+def safe_error_message(exc: Exception) -> str:
+    """Scrub likely API-key material before errors enter metadata or logs."""
+    msg = str(exc)
+    msg = _SECRET_RE.sub("[REDACTED_KEY]", msg)
+    msg = _API_KEY_MSG_RE.sub(r"\1 [REDACTED_KEY]", msg)
+    return msg
+
+
 # --------------------------------------------------------------------------- #
 # JSON extraction helpers (LLMs love wrapping JSON in prose / code fences).    #
 # --------------------------------------------------------------------------- #
@@ -104,11 +146,14 @@ class LLMClient:
                 return resp
             except Exception as e:  # noqa: BLE001 - provider SDKs raise varied types
                 last_err = e
+                if is_non_retryable_error(e):
+                    raise LLMError(f"Non-retryable LLM call failed: {safe_error_message(e)}") from e
                 if attempt == self.max_retries - 1:
                     break
                 time.sleep(delay)
                 delay *= 2
-        raise LLMError(f"LLM call failed after {self.max_retries} attempts: {last_err}") from last_err
+        safe = safe_error_message(last_err) if last_err else "unknown error"
+        raise LLMError(f"LLM call failed after {self.max_retries} attempts: {safe}") from last_err
 
     def chat(self, system: str, user: str, **kwargs) -> str:
         """Convenience: system+user -> assistant text."""

@@ -305,6 +305,10 @@ Implementation now available:
   with the current environment key, so it produced no extraction evidence. The
   CLI now treats total operator `call_error` as a failed extraction and avoids
   writing empty records.
+- DeepSeek's official error-code guidance distinguishes key/balance/request
+  problems from rate-limit/server overload. CultivateAgent now fail-fasts
+  non-retryable provider errors to avoid wasting operator calls during live
+  extraction pilots.
 
 ## 4. Explicit Non-Adoptions
 

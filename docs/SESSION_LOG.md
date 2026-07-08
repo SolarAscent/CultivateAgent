@@ -1004,7 +1004,7 @@ spend.
 # Session 13 (Codex) — DeepSeek/OpenAI-compatible config hardening
 
 Date: 2026-07-09
-Branch: `codex/jats-fulltext-readiness`
+Branch: `codex/llm-provider-fail-fast`
 
 ## Coordination Decision
 
@@ -1209,3 +1209,81 @@ or review could mistake a provider failure for a sparse extraction.
 2. Re-run `cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash`.
 3. Proceed to H001-H014 only after H014 has nonzero filled fields and acceptable
    grounding metadata.
+
+---
+
+# Session 16 (Codex) — fail-fast non-retryable provider errors
+
+Date: 2026-07-09
+Branch: `codex/llm-provider-fail-fast`
+
+## Coordination Decision
+
+The next non-blocked task was to reduce live extraction trial-and-error after
+the H014 DeepSeek-compatible pilot failed authentication. The previous fix
+prevented empty extraction records, but the LLM layer still retried
+non-retryable authentication failures. That wastes time and provider calls
+before every operator reports `call_error`.
+
+During this session, a separate local unpushed commit
+`0c8d279 fix(optimize): dedupe evidence beliefs by component in EvidencePrior`
+was present on `codex/jats-fulltext-readiness`. To avoid mixing another agent's
+optimization work into this provider-layer change, this session's final commit
+was moved to a new branch from `origin/codex/jats-fulltext-readiness`:
+`codex/llm-provider-fail-fast`.
+
+DeepSeek's official error-code documentation distinguishes configuration or
+account problems (400 invalid format, 401 authentication, 402 balance, 422
+invalid parameters) from rate-limit/server conditions (429, 500, 503). The
+project should therefore fail fast for non-retryable provider errors and keep
+backoff for transient errors.
+
+## Changes Made
+
+- Added provider-agnostic non-retryable error detection to `LLMClient.complete`.
+- Fail-fast now covers common authentication, balance/quota, permission,
+  invalid-request, invalid-parameter, and missing-model failures.
+- Transient provider errors still use the existing retry/backoff path.
+- Added light error-message scrubbing before provider errors enter logs or
+  extraction metadata.
+- Added offline tests proving auth-like errors call the provider once and
+  transient 503-like errors retry up to `max_retries`.
+- Verified the current H014 DeepSeek-compatible pilot now fails quickly, exits
+  nonzero, and writes no extraction record.
+- Updated README, workflow manuals, method review, method-source registry, and
+  this session log.
+
+## What This Does Not Claim
+
+- No successful live DeepSeek extraction occurred.
+- No evidence field was extracted or approved.
+- No human adjudication decision was made.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `OPENAI_BASE_URL=https://api.deepseek.com .venv/bin/python -m cultivate_agent.cli extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash --limit 1`:
+  after fail-fast handling, failed quickly with provider authentication error,
+  exited nonzero, and wrote no extraction record.
+- `.venv/bin/python -m pytest tests/test_pipeline.py::test_llm_client_does_not_retry_auth_errors tests/test_pipeline.py::test_llm_client_retries_transient_errors -q`:
+  passed; auth-like errors call once, transient 503-like errors retry.
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 63 passed, 3 warnings on
+  `codex/llm-provider-fail-fast`.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Configure a valid provider key locally without committing secrets.
+2. Re-run H014 live pilot and inspect filled fields, per-operator status, and
+   quote grounding.
+3. Scale to H001-H014 only after H014 is technically successful.

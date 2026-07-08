@@ -286,6 +286,9 @@ Checklist：
   source record IDs 或 paper IDs 精确选择 paper set。
 - [x] `[AI]` 把全 operator provider-call failure 视为抽取失败；当所有
   operators 都是 `call_error` 时，不写空 extraction record。
+- [x] `[AI]` 对 authentication、balance、permission、invalid-request、
+  invalid-parameter、missing-model 等非暂态 provider 错误 fail-fast；对
+  rate-limit/server 这类暂态错误保留 retry/backoff。
 - [ ] `[REVIEW]` 标记稀疏或不可靠抽取。
 - [ ] `[AI]` 只有当证据显示是技术失败时才修 parser 或 prompt；如果原文缺失，
   不要把它当代码问题。
@@ -513,8 +516,8 @@ Gate：论文 claims 可追溯到证据和结果。
 ### 8.1 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- Provider-failure handling 后的最新本地 validation：
-  61 tests passed，3 个已知 warnings。
+- Provider retry fail-fast handling 后的最新本地 validation：
+  在 `codex/llm-provider-fail-fast` 上 63 tests passed，3 个已知 warnings。
 - Smoke pipeline 通过。
 - Demo optimization loop 通过。
 - Extraction evaluator 和四篇文献 offline fixture 已有。

@@ -18,6 +18,10 @@
 - canonical: sodium-selenite
   aliases: ["selenium", "selenite", "Na2SeO3"]
   category: trace_element
+- canonical: copper-ions
+  aliases: ["copper ions", "Cu2+", "Cu(II)", "copper ion", "Cu ions"]
+  category: trace_element
+  notes: "Gu et al. 2025 review reports copper ions at 5 uM as a cultivated-meat proliferation-related cue; human review required before wet-lab use."
 - canonical: soy-protein-hydrolysate
   aliases: ["soy hydrolysate", "soy peptone", "hydrolyzed soy protein"]
   category: hydrolysate
@@ -34,6 +38,18 @@
 - canonical: algae-extract
   aliases: ["algal extract", "microalgae extract", "Chlorella extract", "spirulina extract"]
   category: extract
+- canonical: Auxenochlorella-pyrenoidosa-protein-extract
+  aliases: ["Auxenochlorella pyrenoidosa protein extract", "Auxenochlorella pyrenoidosa extract", "APE", "A. pyrenoidosa protein extract"]
+  category: extract
+  notes: "Dong et al. 2024 JAFC reports APE as a low-serum FBS-replacement candidate in fish muscle cells; weak cross-species prior only."
+- canonical: Grifola-frondosa-extract
+  aliases: ["Grifola frondosa extract", "GFE", "maitake extract", "GF extract"]
+  category: extract
+  notes: "Yu et al. 2024 Food Research International reports 0.78-12.5 ug/mL GFE under low serum for Hanwoo satellite cells; DOI 10.1016/j.foodres.2024.115173."
+- canonical: rapeseed-protein-isolate
+  aliases: ["rapeseed protein isolate", "rapeseed protein isolates", "RPI", "rapeseed isolate"]
+  category: albumin_substitute
+  notes: "Albumin-replacement axis in Beefy-R; Biomaterials 2023, DOI 10.1016/j.biomaterials.2023.122092."
 - canonical: L-glutamine
   aliases: ["glutamine", "GlutaMAX", "L-alanyl-L-glutamine", "Ala-Gln"]
   category: amino_acid

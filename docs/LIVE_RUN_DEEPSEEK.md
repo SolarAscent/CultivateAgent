@@ -94,6 +94,12 @@ medium-specific content, so an *empty* medium operator is largely correct here.
 - **Non-determinism.** Even at `temperature=0`, DeepSeek varies slightly run-to-run, so
   grounding rates move by a few points between runs.
 
+2026-07-08 follow-up: the ontology gap is now partially closed for SFB, SFGM,
+Beefy-R, rapeseed-protein isolate, Grifola frondosa extract, Auxenochlorella
+pyrenoidosa protein extract, and copper ions. These entries only support
+normalization and evidence pooling; each still requires human review before
+being promoted into a non-exploratory wet-lab variable.
+
 ## Conclusion
 
 The pipeline ran end-to-end on real papers with a weak model and produced *verifiable*

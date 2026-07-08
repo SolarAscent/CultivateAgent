@@ -36,7 +36,7 @@ CLASS_RANGES = {
     "extract": (0.0, 20.0, "g/L"),
     "amino_acid": (0.0, 10.0, "mM"),
     "carbon_source": (0.0, 25.0, "mM"),
-    "trace_element": (0.0, 100.0, "nM"),
+    "trace_element": (0.0, 10.0, "uM"),
     "albumin_substitute": (0.0, 5.0, "mg/mL"),
 }
 

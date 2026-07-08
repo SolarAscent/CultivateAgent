@@ -30,6 +30,18 @@
   aliases: ["Beefy 9", "beefy9"]
   category: basal_medium
   notes: "B8 + recombinant albumin; long-term bovine satellite-cell expansion without loss of myogenicity."
+- canonical: Beefy-R
+  aliases: ["Beefy R", "beefy-r medium", "Beefy-R medium"]
+  category: basal_medium
+  notes: "Beefy-9-family medium where rapeseed protein isolate replaces albumin; Biomaterials 2023, DOI 10.1016/j.biomaterials.2023.122092."
+- canonical: SFB
+  aliases: ["serum-free base", "serum-free base medium", "SFB medium"]
+  category: basal_medium
+  notes: "Messmer et al. Nature Food 2022 serum-free base formulation for bovine satellite-cell differentiation; DOI 10.1038/s43016-021-00419-1."
+- canonical: SFGM
+  aliases: ["serum-free growth medium", "SFGM medium"]
+  category: basal_medium
+  notes: "Serum-free growth medium abbreviation used in bovine cultivated-meat literature, including Mosa/Messmer/Kolkmann-derived workflows."
 - canonical: chemically-defined-custom
   aliases: ["custom chemically defined", "in-house defined medium", "proprietary defined base"]
   category: basal_medium

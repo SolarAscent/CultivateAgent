@@ -509,7 +509,7 @@ AI 线：
 ### 9.2 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- 最新验证：`.venv/bin/python -m pytest -q` 为 30 passed，3 个已知 warnings。
+- 最新验证：`.venv/bin/python -m pytest -q` 为 47 passed，3 个已知 warnings。
 - Smoke pipeline 通过。
 - Demo optimization loop 通过。
 - Extraction evaluator 已有。
@@ -519,6 +519,12 @@ AI 线：
 - Optional citation verifier 已有。
 - Ontology-to-search-space 已覆盖 hydrolysates、extracts、defined supplements、
   albumin substitutes、amino acids、carbon sources、trace elements。
+- Live run 暴露的 ontology gaps 已部分修补：SFB、SFGM、Beefy-R、
+  rapeseed-protein isolate、Grifola frondosa extract、Auxenochlorella
+  pyrenoidosa protein extract、copper ions 已可规范化。这只是 normalization
+  hook，不代表湿实验批准。
+- Trace-element 搜索边界已从 nM 级改为 0-10 uM，使优化器能表示约 5 uM 的
+  copper-ion 证据；这是宽搜索边界，不是推荐剂量。
 - Extraction evaluation 已支持 live provider mode。
 - Parser 支持 A-M block letters 和 schema attribute block names。
 - Structured-paper schema 和 plain-text fallback 已有。
@@ -548,6 +554,7 @@ AI 线：
   会保留 plain-text fallback，并把失败记录为 warning。
 - Human review queue 仍未完成。
 - Cost、supplier、food-grade annotations 不完整。
+- Live run 新增 ontology 词条仍需人工证据裁决，才能成为非 exploratory 湿实验变量。
 - In-silico robustness 尚未在 bovine manifest 上运行。
 - 尚未生成或冻结 wet-lab design packet。
 - 尚无湿实验结果。
@@ -557,11 +564,13 @@ AI 线：
 1. `[AI]` 对可访问的 P1 PDFs 运行 optional GROBID TEI 生成：
    `cultivate ingest --grobid-tei`，然后检查 coverage。
 2. `[AI]` 拉取所有 P1 core records 的全文。
-3. `[AI]` 抽取 exact formulations、dose ranges、endpoints、quotes。
-4. `[人工]` 复核 `H001-H016`。
-5. `[AI]` 建立 adjudicated bovine evidence table。
-6. `[复核]` 决定哪些变量可进入第一轮 search space。
-7. `[AI]` 只有在前置 gate 通过后，才起草第一版 design packet。
+3. `[AI]` 在 ontology 更新后，对 live/P1 sources 重新跑 evidence
+   extraction/normalization，检查哪些 component 已能正确 pooling。
+4. `[AI]` 抽取 exact formulations、dose ranges、endpoints、quotes。
+5. `[人工]` 复核 `H001-H016`。
+6. `[AI]` 建立 adjudicated bovine evidence table。
+7. `[复核]` 决定哪些变量可进入第一轮 search space。
+8. `[AI]` 只有在前置 gate 通过后，才起草第一版 design packet。
 
 ## 10. AI 接管协议
 

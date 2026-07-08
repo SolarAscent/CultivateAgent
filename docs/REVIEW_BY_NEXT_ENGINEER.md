@@ -42,6 +42,10 @@ This is likely more publishable than another wrapper around qEHVI because it att
 - `CLASS_RANGES["serum"] = 0-20%` excludes some legacy high-serum expansion protocols; that is acceptable for a serum-reduction optimizer but should be documented as an intervention range, not a literature-universal range.
 - Fixed in this branch: ontology categories such as `hydrolysate` and `extract` now enter `space_from_kb`, so cost-reduction components such as algae extract or plant hydrolysates are not silently dropped from the warm-started search space.
 - Fixed in this branch: class-specific ranges for `defined_supplement`, `hydrolysate`, and `extract` were added. Existing KB rows that stored a broad role but a precise category are still found because component role queries now match either `role` or `category`.
+- Fixed after the DeepSeek live run: `trace_element` bounds now use a broad
+  0-10 uM range instead of 0-100 nM, because the review evidence surfaced copper
+  ions around 5 uM. This is a search-space boundary, not a wet-lab dose
+  recommendation.
 
 ## Verified Sources Used
 

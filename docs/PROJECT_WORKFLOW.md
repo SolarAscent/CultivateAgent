@@ -540,7 +540,7 @@ the procedural sections above.
 ### 9.2 Completed Technical Work
 
 - CLI-first Python package exists.
-- Latest validation: `.venv/bin/python -m pytest -q` reports 30 passed with 3
+- Latest validation: `.venv/bin/python -m pytest -q` reports 47 passed with 3
   known warnings.
 - Smoke pipeline passes.
 - Demo optimization loop passes.
@@ -552,6 +552,13 @@ the procedural sections above.
 - Ontology-to-search-space handling includes hydrolysates, extracts, defined
   supplements, albumin substitutes, amino acids, carbon sources, and trace
   elements.
+- Live-run ontology gaps have been partially closed for SFB, SFGM, Beefy-R,
+  rapeseed-protein isolate, Grifola frondosa extract, Auxenochlorella
+  pyrenoidosa protein extract, and copper ions. These are normalization hooks,
+  not wet-lab approval.
+- Trace-element search bounds were widened from nM to 0-10 uM so the optimizer
+  can represent copper-ion evidence reported around 5 uM; this is a broad search
+  bound, not a recommended dose.
 - Live provider mode exists for extraction evaluation.
 - Parser accepts both A-M block letters and schema attribute block names.
 - Structured-paper schema and plain-text fallback exist.
@@ -587,6 +594,8 @@ the procedural sections above.
   keeps the plain-text fallback and records the failure as a warning.
 - Human review queue remains open.
 - Cost, supplier, and food-grade annotations are incomplete.
+- Newly added ontology entries from the live run still need human evidence
+  adjudication before they can become non-exploratory wet-lab variables.
 - In-silico robustness has not been run on the bovine manifest.
 - No wet-lab design packet has been generated or frozen.
 - No wet-lab results exist.
@@ -596,11 +605,13 @@ the procedural sections above.
 1. `[AI]` Run optional GROBID TEI generation on accessible P1 PDFs with
    `cultivate ingest --grobid-tei`, then inspect coverage.
 2. `[AI]` Pull full text for all P1 core records.
-3. `[AI]` Extract exact formulations, dose ranges, endpoints, and quotes.
-4. `[HUMAN]` Review `H001-H016`.
-5. `[AI]` Build the adjudicated bovine evidence table.
-6. `[REVIEW]` Decide which variables can enter the first search space.
-7. `[AI]` Draft the first design packet only after earlier gates pass.
+3. `[AI]` Re-run evidence extraction/normalization on live/P1 sources after the
+   ontology update and inspect which components now pool correctly.
+4. `[AI]` Extract exact formulations, dose ranges, endpoints, and quotes.
+5. `[HUMAN]` Review `H001-H016`.
+6. `[AI]` Build the adjudicated bovine evidence table.
+7. `[REVIEW]` Decide which variables can enter the first search space.
+8. `[AI]` Draft the first design packet only after earlier gates pass.
 
 ## 10. AI Handoff Protocol
 

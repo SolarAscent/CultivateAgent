@@ -38,6 +38,11 @@ mapping to ReactionSeek.
   posteriors *with uncertainty*, which bias the optimizer as **priors** (πBO), never as
   labels. High-heterogeneity components are flagged "test directly". See
   [`docs/EVIDENCE_SYNTHESIS.md`](docs/EVIDENCE_SYNTHESIS.md).
+* **Literature-grown ontology**: live extractions now feed back into the seed
+  ontology. Current normalization covers B8/Beefy-9/Beefy-R/SFB/SFGM,
+  rapeseed-protein isolate, Grifola frondosa extract, Auxenochlorella
+  pyrenoidosa protein extract, and copper ions; these are normalization hooks,
+  not wet-lab approval.
 
 The last stage — `optimize` — closes the loop: it proposes a **pre-registerable
 batch of next experiments** on the cost/performance Pareto front using

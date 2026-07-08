@@ -5,6 +5,13 @@ Date: 2026-07-07
 This document records the first bovine-focused literature manifest and human
 review queue for moving CultivateAgent toward a wet-lab-ready design packet.
 
+2026-07-08 normalization follow-up: the first DeepSeek live run exposed
+ontology gaps for real extracted components. The seed ontology now includes
+SFB/SFGM, Beefy-R, rapeseed-protein isolate, Grifola frondosa extract,
+Auxenochlorella pyrenoidosa protein extract, and copper ions so evidence can be
+canonicalized for review and pooling. This does not approve any of those entries
+for wet-lab use; it only prevents known aliases from remaining unnormalized.
+
 Data files:
 
 - `data/literature/bovine_corpus_manifest.tsv`
@@ -62,6 +69,8 @@ Top review topics:
 - chemically defined animal-free bovine medium component tables;
 - DOE/RSM factor levels and validated endpoints;
 - protein isolate and hydrolysate evidence grading;
+- live-run extract candidates such as Beefy-R, GFE, APE, copper ions, and
+  SFB/SFGM as normalization targets;
 - myogenic identity guardrails;
 - cost and safety annotations for growth-factor-heavy formulations.
 

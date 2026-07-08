@@ -51,6 +51,12 @@ def test_component_canonicalization():
     assert norm.canonicalize("bFGF").canonical == "FGF2"
     assert norm.canonicalize("basic FGF").canonical == "FGF2"
     assert norm.canonicalize("fetal bovine serum").canonical == "FBS"
+    assert norm.canonicalize("serum-free base medium").canonical == "SFB"
+    assert norm.canonicalize("Beefy R").canonical == "Beefy-R"
+    assert norm.canonicalize("Grifola frondosa extract").canonical == "Grifola-frondosa-extract"
+    assert norm.canonicalize("APE").canonical == "Auxenochlorella-pyrenoidosa-protein-extract"
+    assert norm.canonicalize("rapeseed protein isolates").canonical == "rapeseed-protein-isolate"
+    assert norm.canonicalize("copper ions").canonical == "copper-ions"
     assert norm.canonicalize("totally unknown reagent").matched_via == "none"
 
 

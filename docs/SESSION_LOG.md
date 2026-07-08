@@ -105,7 +105,7 @@ Branch: `session/eval-retrieval-mobo-hardening`
 
 ## Final Verification
 
-- Latest `.venv/bin/python -m pytest -q`: 30 passed, 3 warnings.
+- Latest `.venv/bin/python -m pytest -q`: 47 passed, 3 warnings.
 - Warnings:
   - BoTorch recommends replacing legacy `qNoisyExpectedHypervolumeImprovement` with `qLogNoisyExpectedHypervolumeImprovement`.
   - PyTorch sparse invariant warning from `linear_operator`.
@@ -254,3 +254,62 @@ Gu et al. 2025 Compr Rev Food Sci review). Wired DeepSeek with **zero code chang
 - **Honest limits**: 2 papers → all components k=1 → Beta-Binomial p=0.67 (no fake
   confidence); ontology lacks the real components (Beefy-9/SFB/etc.) so no cross-paper
   pooling yet. 47 tests still pass.
+
+---
+
+# Session 3 (Codex) — live-run ontology normalization patch
+
+Date: 2026-07-08
+Branch: `main`
+
+## Coordination Decision
+
+Claude's Session 2 already implemented operator extraction, evidence synthesis,
+πBO priors, and the DeepSeek live run on `main`. To avoid conflicts or rollback,
+this session did not edit the operator/evidence core. The most valuable
+non-conflicting next step was to close the live run's normalization gap so real
+component names can be canonicalized before evidence pooling and human review.
+
+## Literature Checked And Applied
+
+- Messmer et al. 2022, Nature Food, DOI `10.1038/s43016-021-00419-1`: confirms
+  serum-free bovine satellite-cell differentiation media terminology including
+  SFB/SFGM-family abbreviations.
+- Stout et al. 2023, Biomaterials, DOI `10.1016/j.biomaterials.2023.122092`:
+  supports Beefy-R and rapeseed-protein isolate as the albumin-replacement axis.
+- Yu et al. 2024, Food Research International, DOI
+  `10.1016/j.foodres.2024.115173`: supports Grifola frondosa extract / GFE,
+  including the 12.5 ug/mL low-serum bovine satellite-cell context.
+- Dong et al. 2024, Journal of Agricultural and Food Chemistry, DOI
+  `10.1021/acs.jafc.4c00624`: supports Auxenochlorella pyrenoidosa protein
+  extract / APE as a weak cross-species algae-extract prior.
+- Gu et al. 2025 review and the DeepSeek live report: surfaced copper ions around
+  5 uM, motivating a trace-element search-bound correction.
+
+## Changes Made
+
+- Added ontology canonical entries and aliases for SFB, SFGM, Beefy-R,
+  rapeseed-protein isolate, Grifola frondosa extract, Auxenochlorella
+  pyrenoidosa protein extract, and copper ions.
+- Updated `CLASS_RANGES["trace_element"]` from `0-100 nM` to `0-10 uM`, because
+  the prior nM range would exclude the copper-ion evidence surfaced by the live
+  run.
+- Added tests for the new canonicalization targets and for copper ions entering
+  `space_from_kb` with the uM trace-element range.
+- Updated README, both project workflow manuals, `BOVINE_CORPUS_MANIFEST.md`,
+  `LIVE_RUN_DEEPSEEK.md`, and `REVIEW_BY_NEXT_ENGINEER.md`.
+
+## What This Does Not Claim
+
+- These ontology entries are normalization hooks only; they do not make any
+  component approved for wet-lab use.
+- GFE, APE, Beefy-R, and copper-ion claims still require human adjudication and
+  dose/risk review before becoming non-exploratory variables.
+
+## Verification
+
+- `.venv/bin/python -m pytest -q`: 47 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.

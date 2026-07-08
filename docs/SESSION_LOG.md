@@ -1683,3 +1683,63 @@ overwrite only with `--force` after a reviewed copy has been saved.
    `adjudication-validate`, and `adjudication-export`; do not regenerate the
    template unless `--force` is intentional.
 3. Claude still needs to rebase its three local commits onto current `main`.
+
+---
+
+# Session 23 (Codex) — backup before forced worksheet overwrite
+
+Date: 2026-07-09
+Branch: `codex/adjudication-force-backup`
+
+## Coordination Decision
+
+Session 22 protected filled adjudication worksheets by default. The remaining
+risk was the explicit `--force` path: a reviewer or AI could intentionally
+overwrite a filled worksheet but forget to preserve the reviewed copy first.
+
+The decision was to make `force_overwrite=True` safer by automatically creating
+a timestamped `.bak` copy of the existing worksheet when it contains nonblank
+decisions. This backup is a last-resort guard; the normal workflow is still to
+avoid regenerating a filled worksheet.
+
+## Changes Made
+
+- Added automatic backup creation before forced overwrite of a worksheet with
+  nonblank decisions.
+- Added regression coverage proving the backup preserves the prior supported
+  decision before the template is regenerated.
+- Updated README and both workflow manuals.
+
+## What This Does Not Claim
+
+- No human decision was entered.
+- No evidence field was approved.
+- No live extraction was run.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `.venv/bin/python -m pytest tests/test_evidence.py::test_adjudication_template_and_validation -q`:
+  passed.
+- `.venv/bin/python -m pytest -q`: 63 passed, 2 skipped.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv`:
+  passed because the committed worksheet is still blank.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md`:
+  passed; 0/14 resolved, 0 evidence-bearing decisions, 0 validation issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+
+## Next 3 Steps
+
+1. Merge this short-lived branch into `main`, push, and delete it.
+2. Continue to treat H001-H014 human adjudication as the blocking S4 gate.
+3. Claude still needs to rebase its three local commits onto current `main`.

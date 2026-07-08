@@ -294,7 +294,8 @@ Useful scripts:
   and checks a human-fillable evidence-adjudication worksheet with the same
   portable paths; a blank PASS only means the worksheet format is valid, not
   that evidence has been approved. The template command refuses to overwrite a
-  worksheet that already contains decisions unless `--force` is passed.
+  worksheet that already contains decisions unless `--force` is passed; forced
+  overwrites create a timestamped `.bak` copy next to the worksheet first.
 - `cultivate adjudication-status`: summarizes worksheet progress and whether any
   evidence-bearing human decisions are ready to export.
 - `cultivate adjudication-passages`: prints short local snippets for worksheet

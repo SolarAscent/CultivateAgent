@@ -592,7 +592,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   create and check the human-fillable H001-H014 worksheet with portable
   `data/papers/...` paths, without deciding evidence support. The template
   command refuses to overwrite a worksheet that already contains human decisions
-  unless `--force` is passed.
+  unless `--force` is passed; forced overwrites create a timestamped `.bak` copy
+  next to the worksheet first.
 - `cultivate adjudication-status` summarizes blank, resolved, evidence-bearing,
   and invalid worksheet decisions. Current H001-H014 status: 0/14 resolved,
   0 evidence-bearing decisions, 0 validation issues.
@@ -636,7 +637,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   or regenerated locally.
 - Once a reviewer starts filling `data/literature/bovine_adjudication_H001_H014.tsv`,
   do not regenerate it with `adjudication-template` unless a reviewed copy has
-  been saved and `--force` is intentionally used.
+  been saved and `--force` is intentionally used. Forced overwrites create a
+  timestamped `.bak` copy, but the backup is a last-resort guard, not the normal
+  review workflow.
 - Live OpenAI/Anthropic extraction was too sparse to count as successful model
   agreement.
 - Gemini live comparison is incomplete because no Gemini/Google key was

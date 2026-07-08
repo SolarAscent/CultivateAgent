@@ -313,6 +313,9 @@ def test_adjudication_template_and_validation(tmp_path):
         path_base=tmp_path,
         force_overwrite=True,
     )
+    backups = sorted(tmp_path.glob("worksheet.tsv.bak.*"))
+    assert len(backups) == 1
+    assert "FGF2 dose supported proliferation" in backups[0].read_text(encoding="utf-8")
     assert summarize_adjudication_worksheet(worksheet).blank == 1
 
     # Recreate the supported row for export/validation checks below.

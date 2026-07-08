@@ -8,7 +8,9 @@ locator packet to structured adjudication less lossy.
 from __future__ import annotations
 
 import csv
+import shutil
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, List
 
@@ -123,11 +125,14 @@ def write_adjudication_template(
 ) -> Path:
     """Write a TSV worksheet prefilled with review task metadata and locators."""
     out = Path(out_path)
-    if out.exists() and not force_overwrite and _worksheet_has_decisions(out):
+    has_decisions = out.exists() and _worksheet_has_decisions(out)
+    if has_decisions and not force_overwrite:
         raise FileExistsError(
             f"{out} already contains human decisions; refusing to overwrite. "
             "Use force_overwrite=True only after saving a reviewed copy."
         )
+    if has_decisions and force_overwrite:
+        _backup_worksheet(out)
     items = build_review_packet(
         review_queue_path=review_queue_path,
         manifest_path=manifest_path,
@@ -536,3 +541,15 @@ def _worksheet_has_decisions(path: Path) -> bool:
             return any((row.get("decision") or "").strip() for row in reader)
     except OSError:
         return False
+
+
+def _backup_worksheet(path: Path) -> Path:
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    base = path.with_name(f"{path.name}.bak.{timestamp}")
+    backup = base
+    counter = 1
+    while backup.exists():
+        backup = path.with_name(f"{base.name}.{counter}")
+        counter += 1
+    shutil.copy2(path, backup)
+    return backup

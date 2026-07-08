@@ -290,6 +290,9 @@ Useful scripts:
   Codex/Claude worktrees.
 - `cultivate review-packet`: creates human-review passage locators without AI
   adjudication; local full-text paths are repo-relative for portable handoff.
+  S4 uses a human-in-the-loop systematic-review rule: AI may prioritize and
+  surface source locations, but humans decide evidence support, dose/range
+  interpretation, exclusions, and wet-lab readiness.
 - `cultivate adjudication-template` / `cultivate adjudication-validate`: creates
   and checks a human-fillable evidence-adjudication worksheet with the same
   portable paths; a blank PASS only means the worksheet format is valid, not

@@ -19,6 +19,13 @@ auto-detects JATS sections and `table-wrap` tables. H014 is now direct
 section-routed-ready for operator extraction. This still does not approve the
 evidence for wet-lab use.
 
+2026-07-09 S4 method follow-up: the human review gate is now explicitly tied to
+systematic-review practice. AI-generated packets and snippet previews are
+review aids only; human reviewers own support labels, selected ranges, dose and
+endpoint interpretation, exclusions, and conflict resolution. Outcome-direction
+or dose/range rows that could affect wet-lab variables need independent checking
+or an explicit review waiver before S5 search-space design.
+
 Data files:
 
 - `data/literature/bovine_corpus_manifest.tsv`
@@ -125,6 +132,9 @@ Gate 2, extraction reliability: **not passed**.
 - `docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md` now records worksheet progress:
   0/14 resolved decisions, 0 evidence-bearing decisions, and 0 validation
   issues. This confirms that the S4 gate is still waiting for human review.
+- The S4 gate now follows a human-in-the-loop systematic-review rule: AI may
+  generate locators and validate worksheet structure, but it does not decide
+  evidence support or promote variables into the wet-lab search space.
 - `data/literature/bovine_evidence_table.tsv` now exists as the export target
   for human-supported or partial adjudication rows. The committed file is
   header-only because no human decisions have been entered yet.

@@ -1800,3 +1800,81 @@ backup files and document that they are local-only safeguards.
 1. Merge this short-lived branch into `main`, push, and delete it.
 2. Continue to treat H001-H014 human adjudication as the blocking S4 gate.
 3. Claude still needs to rebase its three local commits onto current `main`.
+
+---
+
+# Session 25 (Codex) — S4 human-in-the-loop method record
+
+Date: 2026-07-09
+Branch: `codex/s4-hitl-method-record`
+
+## Coordination Decision
+
+The project already had review-packet and adjudication tooling, but the method
+rule behind S4 needed to be explicit enough for humans, Claude, and future AI
+agents to apply consistently.
+
+After checking systematic-review and review-automation sources, the adopted rule
+is:
+
+- AI may rank records, generate source locators, preview snippets, and validate
+  worksheet structure.
+- Humans decide evidence support, selected ranges, dose and endpoint
+  interpretation, exclusion reasons, and wet-lab readiness.
+- Outcome-direction and dose/range rows that can affect wet-lab variables need
+  independent checking or an explicit `[REVIEW]` waiver.
+- A blank worksheet that validates is only a valid form, not evidence approval.
+
+## Sources Added
+
+- `M038`: Cochrane MECIR selection/data-collection standards.
+- `M039`: PRISMA-trAIce AI-assisted systematic-review reporting checklist.
+- `M040`: Marshall and Wallace 2019 practical guide to systematic-review
+  automation.
+
+These complement the existing PRISMA, ASReview, SWIFT-Review, and
+RobotReviewer entries.
+
+## Changes Made
+
+- Added `M038-M040` to
+  `data/literature/ai_for_science_method_sources.tsv`.
+- Added a new S4 method subsection to
+  `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`.
+- Updated the S4 checklists and gate language in both workflow manuals.
+- Updated README and `docs/BOVINE_CORPUS_MANIFEST.md` to state that S4 tools are
+  review aids, not adjudicators.
+- Updated this session log.
+
+## What This Does Not Claim
+
+- No human decision was entered.
+- No evidence row was approved.
+- No live extraction was run.
+- No wet-lab design packet was generated.
+
+## Verification
+
+- TSV registry structure check: 40 rows, 9 columns, no malformed rows.
+- Secret scan for pasted-style Gemini/DeepSeek/OpenAI key patterns: no hits.
+- `.venv/bin/python -m pytest -q`: 63 passed, 2 skipped.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md`:
+  passed; 0/14 resolved, 0 evidence-bearing decisions, 0 validation issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+
+## Next 3 Steps
+
+1. Merge this short-lived branch into `main`, push, and delete it.
+2. Have a human reviewer pilot 2-3 H001-H014 worksheet rows before filling the
+   whole worksheet.
+3. After human edits, validate and export only supported or partial rows.

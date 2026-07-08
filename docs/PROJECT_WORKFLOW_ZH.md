@@ -321,14 +321,26 @@ Gate：
 
 目标：把抽取证据变成科学上可使用的证据。
 
+方法规则：S4 采用 human-in-the-loop 的系统综述模式。AI 可以排序记录、生成
+locator、预览短片段、校验工作表结构；但不能决定证据是否 supported、不能排除
+source，也不能把变量推进湿实验 search space。这个规则来自 Cochrane 的重复检查和
+透明决策原则、PRISMA/PRISMA-trAIce 对 AI-assisted review 的报告要求，以及
+ASReview/RobotReviewer 这类自动化工具“辅助而不替代 reviewer”的边界。
+
 Checklist：
 
 - [ ] `[AI]` 用 `cultivate review-packet` 生成 passage locators。
 - [ ] `[AI]` 用 `cultivate adjudication-template` 生成可人工填写的裁决工作表。
+- [ ] `[AI]` 为所有 AI-assisted review 产物记录 provider、model、extraction
+  mode、locator source 和 validator status。
+- [ ] `[REVIEW]` 先用 2-3 条记录 pilot 工作表，确认 decision、range、notes 和
+  conflict labels 能用，再扩大复核。
 - [ ] `[HUMAN]` 优先复核 `H001-H016`。
 - [ ] `[HUMAN]` 将每项标为 `supported`、`partial`、`unsupported`、
   `uncertain` 或 `defer`。
 - [ ] `[HUMAN]` 添加简短 notes：formulation、dose、endpoint、caveat 或排除原因。
+- [ ] `[HUMAN]` 对会影响湿实验变量的 outcome-direction 和 dose/range 行做独立
+  复核。
 - [ ] `[AI]` 用 `cultivate adjudication-validate` 校验已填写工作表。
 - [ ] `[AI]` 只把人工标记为 `supported` 或 `partial` 的行用
   `cultivate adjudication-export` 导出到
@@ -360,7 +372,9 @@ cultivate adjudication-export --worksheet data/literature/bovine_adjudication_H0
 7. Safety and cost annotations。
 
 Gate：进入第一轮设计的所有非 exploratory 变量都有人工复核支持，并且
-`docs/EVIDENCE_AUDIT_PROLIFERATION.md` 没有开放的 wet-lab-entry blocker。
+会影响第一轮设计的 outcome-direction 和 dose/range 行已经独立复核，或由
+`[REVIEW]` 明确豁免；`docs/EVIDENCE_AUDIT_PROLIFERATION.md` 没有开放的
+wet-lab-entry blocker。
 
 ### S5. Search-Space 设计
 
@@ -576,7 +590,8 @@ Gate：论文 claims 可追溯到证据和结果。
 - Human review queue v0 有 30 个 open tasks。
 - AI-for-science 方法综述已存在。
 - 方法文献登记表已覆盖 autonomous labs、scientific RAG、information extraction、
-  document parsing、ETL、systematic-review tooling 和 Bayesian optimization。
+  document parsing、ETL、systematic-review tooling、human-in-the-loop 证据复核、
+  AI review reporting 和 Bayesian optimization。
 - 当前方法决策：在生成湿实验设计前，优先提高 S3 全文抽取可靠性，并完成 S4
   evidence audit / 人工复核。
 

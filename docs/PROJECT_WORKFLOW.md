@@ -335,16 +335,29 @@ Gate:
 
 Goal: turn extracted evidence into scientifically usable evidence.
 
+Method rule: S4 follows a human-in-the-loop systematic-review pattern. AI may
+rank records, generate locators, preview snippets, and validate worksheet
+structure. It may not decide evidence support, exclude a source, or promote a
+variable into the wet-lab search space. This follows Cochrane duplicate-checking
+and transparent-decision principles, PRISMA/PRISMA-trAIce reporting expectations
+for AI-assisted reviews, and the ASReview/RobotReviewer automation boundary.
+
 Checklist:
 
 - [ ] `[AI]` Generate passage locators with `cultivate review-packet`.
 - [ ] `[AI]` Generate a human-fillable adjudication worksheet with
   `cultivate adjudication-template`.
+- [ ] `[AI]` Record provider, model, extraction mode, locator source, and
+  validator status for any AI-assisted review artifact.
+- [ ] `[REVIEW]` Pilot the worksheet on 2-3 records before scaling; check that
+  decisions, ranges, notes, and conflict labels are usable.
 - [ ] `[HUMAN]` Review `H001-H016` first.
 - [ ] `[HUMAN]` Mark each item as `supported`, `partial`, `unsupported`,
   `uncertain`, or `defer`.
 - [ ] `[HUMAN]` Add concise notes with formulation, dose, endpoint, caveat, or
   exclusion reason.
+- [ ] `[HUMAN]` Independently check outcome-direction and dose/range rows when a
+  row could affect wet-lab variables.
 - [ ] `[AI]` Validate the filled worksheet with
   `cultivate adjudication-validate`.
 - [ ] `[AI]` Export only `supported` and `partial` human decisions to
@@ -377,8 +390,9 @@ Recommended review order:
 7. Safety and cost annotations.
 
 Gate: every non-exploratory variable entering the first design batch has
-human-reviewed support, and `docs/EVIDENCE_AUDIT_PROLIFERATION.md` has no open
-wet-lab-entry blockers.
+human-reviewed support, outcome-direction and dose/range rows that affect the
+first design are independently checked or explicitly waived by `[REVIEW]`, and
+`docs/EVIDENCE_AUDIT_PROLIFERATION.md` has no open wet-lab-entry blockers.
 
 ### S5. Search-Space Design
 
@@ -611,8 +625,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - Human review queue v0 contains 30 open tasks.
 - AI-for-science method review exists.
 - Method-source registry covers autonomous labs, scientific RAG, information
-  extraction, document parsing, ETL, systematic-review tooling, and Bayesian
-  optimization.
+  extraction, document parsing, ETL, systematic-review tooling, human-in-the-loop
+  evidence review, AI review reporting, and Bayesian optimization.
 - Current method decision: prioritize S3 full-text extraction reliability and S4
   evidence audit / human review before wet-lab design generation.
 

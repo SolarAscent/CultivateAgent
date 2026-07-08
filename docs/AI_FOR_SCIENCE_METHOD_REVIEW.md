@@ -160,6 +160,40 @@ Project implication:
 - Revisit DPP batch diversity once generated wet-lab batches risk near
   duplicates.
 
+### 2.8 Human-in-the-loop evidence review is the S4 rule
+
+Systematic-review standards and automation studies converge on a conservative
+rule for CultivateAgent: software may reduce reviewer workload, but it must not
+silently decide which evidence is usable for wet-lab design.
+
+Cochrane MECIR standards support predefined data-collection forms, transparent
+selection records, duplicate or independent extraction/checking where feasible,
+and explicit disagreement-resolution rules. PRISMA 2020 and PRISMA-trAIce add
+the reporting requirement: when AI is used, the project must record what tool
+was used, how humans interacted with it, how much output was manually verified,
+what performance was measured, and what limitations remain. ASReview,
+SWIFT-Review, RobotReviewer, and Marshall and Wallace's review automation guide
+support the same operational boundary: AI can rank records, surface snippets,
+and propose structured candidates, while humans remain responsible for
+scientific inclusion, support labels, and stop/go decisions.
+
+Project implication:
+
+- `cultivate review-packet` and `cultivate adjudication-passages` are review
+  aids only. They may shorten the path to the relevant source passage, but they
+  do not approve evidence.
+- `data/literature/bovine_adjudication_H001_H014.tsv` is the current S4
+  controlled form. Human reviewers own `decision`, `selected_range`,
+  interpretation notes, and conflict resolution.
+- A blank worksheet with a passing validator means only that the form is
+  structurally valid. It is not evidence approval.
+- `cultivate adjudication-export` remains intentionally narrow: only
+  human-marked `supported` or `partial` rows become
+  `data/literature/bovine_evidence_table.tsv`.
+- Wet-lab entry requires documentation of the AI provider/model/mode, human
+  review coverage, unresolved conflicts, and whether evidence is quantitative
+  or direction-only.
+
 ## 3. Adopted Algorithm Roadmap
 
 ### R1. Structured paper objects

@@ -2,7 +2,7 @@
 # (commonly cited as 60-80% of medium cost), so they are first-class actionable
 # variables for the design agent.
 - canonical: FGF2
-  aliases: ["FGF-2", "bFGF", "basic FGF", "fibroblast growth factor 2", "fibroblast growth factor-basic", "FGF-basic"]
+  aliases: ["FGF-2", "bFGF", "basic FGF", "basic fibroblast growth factor", "fibroblast growth factor 2", "fibroblast growth factor-basic", "FGF-basic"]
   category: growth_factor
   typical_role: proliferation
 - canonical: IGF-1

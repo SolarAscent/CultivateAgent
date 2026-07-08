@@ -548,8 +548,13 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 ### 8.1 Completed Technical Work
 
 - CLI-first Python package exists.
-- Latest local validation after provider retry fail-fast handling:
-  63 tests passed with 3 known warnings on `codex/llm-provider-fail-fast`.
+- Latest main-line validation after merging the Codex JATS/readiness and
+  provider fail-fast branches: 62 tests passed and 2 optional tests skipped in
+  the isolated Codex worktree venv.
+- Codex now works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`;
+  Claude works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`.
+  Short-lived feature branches should be merged into `main` and deleted instead
+  of accumulating as stale side branches.
 - Smoke pipeline passes.
 - Demo optimization loop passes.
 - Extraction evaluator and offline four-paper fixture exist.
@@ -612,6 +617,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 ### 8.4 Known Blockers And Risks
 
+- Fresh worktrees do not automatically contain ignored local paper assets
+  (`data/papers/`). Extraction-readiness verification needs those assets copied
+  or regenerated locally; do not commit path-only report churn caused by moving
+  between worktrees.
 - Live OpenAI/Anthropic extraction was too sparse to count as successful model
   agreement.
 - Gemini live comparison is incomplete because no Gemini/Google key was
@@ -658,7 +667,8 @@ Any AI agent taking over must:
 7. Run `git fetch --all --prune`.
 8. Run `git status --short --branch`.
 9. Identify untracked files and avoid overwriting them.
-10. Continue from the next failed gate in Section 8.3.
+10. Work only in that agent's own worktree.
+11. Continue from the next failed gate in Section 8.3.
 
 Recommended handoff prompt:
 

@@ -1287,3 +1287,64 @@ backoff for transient errors.
 2. Re-run H014 live pilot and inspect filled fields, per-operator status, and
    quote grounding.
 3. Scale to H001-H014 only after H014 is technically successful.
+
+---
+
+# Session 17 (Codex) — worktree migration and main-line merge
+
+Date: 2026-07-09
+Branch: `main` in `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`
+
+## Coordination Decision
+
+Claude identified that Codex's recent work was stranded on two side branches
+while `main` had already advanced with the isolated-worktree protocol. The
+highest-value task was therefore not new extraction work, but coordination:
+move Codex into its own worktree, merge the Codex branches into `main`, validate
+the integrated state, and delete stale feature branches after pushing.
+
+## Changes Made
+
+- Confirmed active worktrees:
+  `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude` for Claude and
+  `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex` for Codex.
+- Merged `origin/codex/jats-fulltext-readiness` into `main`.
+- Merged `origin/codex/llm-provider-fail-fast` into `main`.
+- Created an isolated `.venv` in the Codex worktree instead of reusing another
+  worktree's interpreter.
+- Copied ignored local `data/papers/` assets into the Codex worktree for
+  readiness verification only; these assets remain untracked.
+- Updated the collaboration protocol, README, English workflow, Chinese
+  workflow, and this session log.
+
+## What This Does Not Claim
+
+- No new live DeepSeek/GPT/Claude/Gemini extraction was run.
+- No evidence field was approved.
+- No human adjudication decision was entered.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 62 passed, 2 skipped in the isolated Codex
+  worktree venv.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed after local paper assets were copied into the Codex worktree; 14 ready,
+  0 fallback-ready, 0 partial, 2 not ready. The generated files were restored to
+  avoid committing path-only changes from the new worktree location.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Push merged `main` and delete the merged Codex remote branches.
+2. Ask Claude to rebase/rebaseline on the updated `main` before the v4 quality
+   re-run.
+3. Continue with H014 live pilot only after valid provider credentials are
+   configured locally without committing secrets.

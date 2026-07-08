@@ -61,7 +61,9 @@ stable process sections are separated from the current project ledger so future
 updates should not be scattered through the whole file.
 For concurrent Codex/Claude work, start with
 [`docs/AI_COLLABORATION_PROTOCOL.md`](docs/AI_COLLABORATION_PROTOCOL.md) before
-editing.
+editing. Current convention: Claude works in `../CultivateAgent-claude`, Codex
+works in `../CultivateAgent-codex`, and completed short-lived branches are merged
+back into `main` promptly.
 For the current AI-for-science method review and algorithm roadmap, see
 [`docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`](docs/AI_FOR_SCIENCE_METHOD_REVIEW.md).
 
@@ -290,6 +292,12 @@ Useful scripts:
   evidence; the current blank worksheet exports zero rows.
 
 Run the tests: `pip install pytest && pytest -q` (offline suite).
+
+Current main-line verification after merging the Codex JATS/readiness and
+provider fail-fast branches: `62 passed, 2 skipped` in the isolated Codex
+worktree venv, plus `smoke`, `optimize --demo --rounds 6`,
+`extraction-readiness --ids H001-H016`, `adjudication-validate`, and
+`adjudication-export`.
 
 ---
 

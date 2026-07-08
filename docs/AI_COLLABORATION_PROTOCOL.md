@@ -155,7 +155,9 @@ Codex feature branch and vanished from the tree when Codex switched branches).
 - Each agent works in its **own `git worktree`** (or its own clone), never the
   same directory as another active agent. Example:
   `git worktree add -b <agent>/<topic> ../CultivateAgent-<agent> origin/main`.
-  Claude uses `../CultivateAgent-claude`; Codex keeps the primary directory.
+  Claude uses `../CultivateAgent-claude`; Codex uses
+  `../CultivateAgent-codex`. The primary directory is no longer a shared active
+  checkout for concurrent work.
 - Each worktree has its own `.venv`; do not share the interpreter across worktrees
   (an editable install points at one directory only).
 

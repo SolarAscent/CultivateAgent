@@ -516,8 +516,13 @@ Gate：论文 claims 可追溯到证据和结果。
 ### 8.1 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- Provider retry fail-fast handling 后的最新本地 validation：
-  在 `codex/llm-provider-fail-fast` 上 63 tests passed，3 个已知 warnings。
+- Codex 的 JATS/readiness 和 provider fail-fast 分支合并入 `main` 后，最新
+  main-line validation：在 Codex 独立 worktree venv 中 62 tests passed、2 个
+  optional tests skipped。
+- Codex 现在使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`；
+  Claude 使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`。
+  短生命周期 feature branch 应及时合并到 `main` 并删除，避免 side branch 变成
+  stale 状态。
 - Smoke pipeline 通过。
 - Demo optimization loop 通过。
 - Extraction evaluator 和四篇文献 offline fixture 已有。
@@ -577,6 +582,9 @@ Gate：论文 claims 可追溯到证据和结果。
 
 ### 8.4 已知 Blocker 和风险
 
+- 新 worktree 不会自动带有 ignored 的本地 paper assets（`data/papers/`）。
+  运行 extraction-readiness 前需要本地复制或重新生成这些材料；不要提交仅由
+  worktree 路径变化导致的报告噪音。
 - Live OpenAI/Anthropic extraction 太稀疏，不能算成功 model agreement。
 - Gemini live comparison 未完成，因为没有 Gemini/Google key。
 - OpenAI raw-response debugging 遇到 insufficient quota。
@@ -617,7 +625,8 @@ Gate：论文 claims 可追溯到证据和结果。
 7. 运行 `git fetch --all --prune`。
 8. 运行 `git status --short --branch`。
 9. 识别 untracked files，避免覆盖。
-10. 从第 8.3 节的下一个未通过 gate 继续。
+10. 只在该 agent 自己的 worktree 中工作。
+11. 从第 8.3 节的下一个未通过 gate 继续。
 
 推荐接管 prompt：
 

@@ -199,9 +199,17 @@ def meta_analyze(items: List[EvidenceItem], *, high_i2: float = 0.5) -> Evidence
     return summ
 
 
-def synthesize(items: List[EvidenceItem], *, by_context: bool = True, high_i2: float = 0.5
+def synthesize(items: List[EvidenceItem], *, by_context: bool = False, high_i2: float = 0.5
                ) -> List[EvidenceSummary]:
-    """Group items by (component, outcome[, context]) and meta-analyze each group."""
+    """Group items by (component, outcome[, context]) and meta-analyze each group.
+
+    Default pools across context (``by_context=False``): context (species, cell
+    type, stage) is treated as a source of *heterogeneity* that I² surfaces,
+    rather than a hard split. Splitting by context (``by_context=True``) yields
+    mostly k=1 groups on real corpora and defeats pooling; a validated 50-paper
+    DeepSeek run went from 0 to 5 components at k>1 (FGF2, FBS at k=5) by pooling
+    across context. Use ``by_context=True`` only for deliberate subgroup analysis.
+    """
     groups: Dict[Tuple, List[EvidenceItem]] = {}
     for it in items:
         key = (it.component, it.outcome, _context_key(it.context) if by_context else "*")

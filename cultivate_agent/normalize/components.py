@@ -12,11 +12,16 @@ else is passed through unchanged, never dropped).
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
 
 import yaml
+
+# Strip trailing/parenthetical qualifiers so verbose LLM component names pool.
+_QUALIFIER_RE = re.compile(r"\s*\([^)]*\)")
+_DOSE_TAIL_RE = re.compile(r"\s+at\s+[\d.].*$", re.IGNORECASE)
 
 
 @dataclass
@@ -81,6 +86,19 @@ class ComponentNormalizer:
                     return ComponentMatch(raw=raw, canonical=canon, category=cat, matched_via="fuzzy", score=best[1] / 100.0)
         except ImportError:
             pass
+
+        # Fallback: drop parenthetical qualifiers / trailing doses and retry.
+        # "FGF2 (immobilized in affibody hydrogels)" -> "FGF2";
+        # "copper ions (5 uM)" -> "copper ions". This lets verbose LLM names
+        # canonicalize (if the base is in the ontology) and, failing that, still
+        # pool across papers by returning the stripped base as the canonical key.
+        stripped = _DOSE_TAIL_RE.sub("", _QUALIFIER_RE.sub("", raw)).strip()
+        if stripped and stripped.lower() != key:
+            hit = self._lookup.get(stripped.lower())
+            if hit:
+                canon, cat = hit
+                return ComponentMatch(raw=raw, canonical=canon, category=cat, matched_via="stripped", score=0.9)
+            return ComponentMatch(raw=raw, canonical=stripped, category=None, matched_via="none", score=0.0)
 
         return ComponentMatch(raw=raw, canonical=raw, category=None, matched_via="none", score=0.0)
 

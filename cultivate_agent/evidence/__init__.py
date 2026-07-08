@@ -8,6 +8,7 @@ from .audit import (
     load_effect_items_json,
     write_evidence_audit_markdown,
 )
+from .review_packet import build_review_packet, write_review_packet_markdown
 from .meta_analysis import (
     EvidenceItem,
     EvidenceSummary,
@@ -23,4 +24,5 @@ __all__ = [
     "extract_effects",
     "EvidenceAudit", "ComponentAudit", "audit_effect_items", "load_effect_items_json",
     "write_evidence_audit_markdown",
+    "build_review_packet", "write_review_packet_markdown",
 ]

@@ -268,12 +268,18 @@ Acceptance criteria:
 Implementation now available:
 
 - `cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md`.
+- `cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`.
 - The audit adapts GRADE-style certainty concerns (indirectness, imprecision,
   inconsistency), PRISMA-style traceability, and NIST AI RMF-style measurement
   and risk documentation into a conservative wet-lab entry guardrail.
+- The review packet follows ASReview/SWIFT-Review/RobotReviewer principles:
+  prioritize and surface traceable source locations while leaving adjudication
+  to human reviewers.
 - The current proliferation audit is `NO-GO`: 145 local extracted effect items
   across 40 papers produced 4 AI-review candidates, but all are direction-only
   and 16/16 critical human-review tasks remain open.
+- The current H001-H016 packet has local full-text locators for 9/16 critical
+  tasks; the missing 7 tasks need full-text acquisition or stricter matching.
 
 ## 4. Explicit Non-Adoptions
 
@@ -293,12 +299,13 @@ These are not adopted now:
 1. Run optional GROBID service/client invocation on the P1 corpus PDFs now that
    `cultivate ingest --grobid-tei` can produce `fulltext.xml` when a service is
    available.
-2. Re-run `cultivate evidence-audit` after each updated extraction/effect export.
-3. Create `bovine_evidence_table.tsv` from P1 full text.
-4. Build section-routed extraction operators for medium components, dose ranges,
+2. Re-run `cultivate review-packet` after each full-text acquisition pass.
+3. Re-run `cultivate evidence-audit` after each updated extraction/effect export.
+4. Create `bovine_evidence_table.tsv` from P1 full text.
+5. Build section-routed extraction operators for medium components, dose ranges,
    endpoints, and quotes.
-5. Update the evaluation script to report operator-level coverage and grounding.
-6. Connect operator outputs to `bovine_human_review_queue.tsv`.
+6. Update the evaluation script to report operator-level coverage and grounding.
+7. Connect operator outputs to `bovine_human_review_queue.tsv`.
 
 ## 6. Human-Only Or Blocked Items
 
@@ -330,4 +337,6 @@ Key sources include:
 - DocETL: modular LLM document processing.
 - GRADE, PRISMA, and NIST AI RMF: evidence-to-action gates, traceable review
   records, and AI risk documentation before wet-lab decisions.
+- ASReview, SWIFT-Review, and RobotReviewer: transparent human-in-the-loop
+  review support and source-location surfacing without replacing reviewers.
 - TuRBO, SCBO, JES, and DPP-BBO: later optimization roadmap candidates.

@@ -492,3 +492,80 @@ Main blockers:
    for the 4 audit candidates and any newly recovered direct bovine candidates.
 3. Re-run `cultivate evidence-audit` after the next extraction/evidence export;
    only then decide whether S5 search-space design can start.
+
+---
+
+# Session 6 (Codex) — human-review packet for H001-H016
+
+Date: 2026-07-08
+Branch: `main`
+
+## Coordination Decision
+
+Session 5 established that wet-lab entry is still `NO-GO` because critical human
+review tasks remain open. The highest-value next step was not another design
+generator; it was to reduce the human review burden without replacing human
+judgment. This session added a deterministic review-packet builder that links
+review tasks to local full-text character ranges.
+
+During this session Claude's `968d38f` landed on `main`, adding a
+context-dependent flag for conflicting direction-only evidence. This work does
+not modify that evidence-synthesis logic and was verified on top of it.
+
+## Method Sources Checked
+
+- ASReview: supports transparent human-in-the-loop prioritization for systematic
+  review screening.
+- SWIFT-Review: supports keeping the review expert in control while software
+  organizes and prioritizes literature.
+- RobotReviewer: supports surfacing source text for review tasks while avoiding
+  final automated evidence judgments.
+
+## Changes Made
+
+- Added `cultivate_agent/evidence/review_packet.py`.
+- Added CLI command:
+  `cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`.
+- Generated `docs/HUMAN_REVIEW_PACKET_H001_H016.md`.
+- Added tests covering packet generation from local full text.
+- Updated README, both workflow manuals, `BOVINE_CORPUS_MANIFEST.md`,
+  `AI_FOR_SCIENCE_METHOD_REVIEW.md`, and the method-source registry.
+
+## Current Review Packet Result
+
+- Review tasks covered: 16 (`H001-H016`).
+- Local full-text locators found: 9/16.
+- Ready for human review with locators: H001-H005, H008, H009, H012, H013.
+- Missing local source/full-text or strict title match: H006-H007, H010-H011,
+  H014-H016.
+
+The committed packet gives full-text paths, character ranges, matched terms, and
+task metadata. It intentionally does not embed long source excerpts and does not
+mark any item `supported`, `partial`, `unsupported`, `uncertain`, or `defer`.
+
+## What This Does Not Claim
+
+- No human review decision was made.
+- No wet-lab variable was approved.
+- Missing review tasks still require source/full-text acquisition or stricter
+  matching before efficient adjudication.
+
+## Verification
+
+- `.venv/bin/python -m pytest -q`: 54 passed, 3 warnings after Claude commit
+  `968d38f`.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 9/16 tasks have local full-text locators.
+
+## Next 3 Steps
+
+1. Human reviewer adjudicates H001-H005, H008, H009, H012, and H013 using the
+   locator packet.
+2. AI acquires or ingests missing full text for H006-H007, H010-H011, and
+   H014-H016.
+3. Re-run `cultivate review-packet` and `cultivate evidence-audit` after the
+   missing sources are available.

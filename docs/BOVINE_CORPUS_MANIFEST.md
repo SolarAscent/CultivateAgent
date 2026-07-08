@@ -104,6 +104,11 @@ Gate 2, extraction reliability: **not passed**.
   bovine/medium-actionable/dose/grounding filter.
 - The audit is still **NO-GO** because 16/16 critical human-review tasks remain
   open and all AI-review candidates are direction-only rather than quantitative.
+- `docs/HUMAN_REVIEW_PACKET_H001_H016.md` now gives local full-text
+  character-range locators for 9/16 critical review tasks: H001-H005, H008,
+  H009, H012, and H013. The remaining H006-H007, H010-H011, and H014-H016 need
+  missing source/full-text acquisition or stricter title matching before review
+  can be efficient.
 - Next step is full-text extraction plus human adjudication for the top 20-30
   review tasks.
 
@@ -129,10 +134,13 @@ Gate 6, pre-registration readiness: **not passed**.
 
 ## Immediate Next Steps
 
-1. Pull full text/PDFs for all P1 core records.
-2. Re-run `cultivate evidence-audit` after updated extraction outputs.
-3. Extract exact component tables, dose ranges, endpoints, and evidence quotes
+1. Use `docs/HUMAN_REVIEW_PACKET_H001_H016.md` to review H001-H005, H008, H009,
+   H012, and H013.
+2. Pull or ingest full text/PDFs for H006-H007, H010-H011, and H014-H016.
+3. Re-run `cultivate review-packet` and `cultivate evidence-audit` after updated
+   extraction outputs.
+4. Extract exact component tables, dose ranges, endpoints, and evidence quotes
    for audit candidates.
-4. Fill the 30 human review tasks, starting with `H001-H016`.
-5. Promote only reviewed and grounded variables into a bounded search space.
-6. Generate a first wet-lab design packet only after Gates 1-6 pass.
+5. Fill the 30 human review tasks, starting with `H001-H016`.
+6. Promote only reviewed and grounded variables into a bounded search space.
+7. Generate a first wet-lab design packet only after Gates 1-6 pass.

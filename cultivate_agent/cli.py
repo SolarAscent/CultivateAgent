@@ -9,6 +9,7 @@ Subcommands map onto the pipeline stages::
     cultivate export    # screening table / components / evidence / JSONL
     cultivate stats     # knowledge-base summary
     cultivate evidence-audit
+    cultivate review-packet
     cultivate design    # goal-conditioned medium recommendation
     cultivate schema    # print the field guide or JSON schema
     cultivate smoke     # offline end-to-end self-test (mock LLM, no API key)
@@ -318,6 +319,44 @@ def cmd_evidence_audit(args) -> int:
     for blocker in audit.blockers:
         print(f"  BLOCKER: {blocker}")
     return 1 if args.fail_on_no_go and audit.decision != "GO" else 0
+
+
+def cmd_review_packet(args) -> int:
+    """Build a human-review packet with local passage locators."""
+    cfg = load_config(root=args.root)
+    from .evidence import build_review_packet, write_review_packet_markdown
+
+    ids = _expand_review_ids(args.ids)
+    items = build_review_packet(
+        review_queue_path=args.review_queue or (cfg.data_path / "literature" / "bovine_human_review_queue.tsv"),
+        manifest_path=args.manifest or (cfg.data_path / "literature" / "bovine_corpus_manifest.tsv"),
+        papers_dir=cfg.papers_dir,
+        review_ids=ids,
+        top_k=args.top_k,
+    )
+    out = write_review_packet_markdown(items, args.out)
+    ready = sum(1 for i in items if i.status == "ready_for_human_review")
+    print(f"+ wrote {out}")
+    print(f"Review packet: {ready}/{len(items)} tasks have local full-text locators")
+    return 0
+
+
+def _expand_review_ids(spec: str) -> List[str]:
+    out: List[str] = []
+    for part in (spec or "").split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            a, b = part.split("-", 1)
+            prefix = "".join(ch for ch in a if not ch.isdigit()) or "H"
+            start = int("".join(ch for ch in a if ch.isdigit()))
+            end = int("".join(ch for ch in b if ch.isdigit()))
+            width = max(len("".join(ch for ch in a if ch.isdigit())), len("".join(ch for ch in b if ch.isdigit())))
+            out.extend(f"{prefix}{i:0{width}d}" for i in range(start, end + 1))
+        else:
+            out.append(part)
+    return out
 
 
 def _parse_weights(spec: str) -> dict:
@@ -668,6 +707,15 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--fail-on-no-go", action="store_true",
                     help="exit nonzero when the audit decision is NO-GO")
     sp.set_defaults(func=cmd_evidence_audit)
+
+    sp = sub.add_parser("review-packet", help="build human-review passage locators for review tasks")
+    sp.add_argument("--ids", default="H001-H016", help="review IDs, e.g. H001-H016 or H001,H004")
+    sp.add_argument("--review-queue", help="review queue TSV")
+    sp.add_argument("--manifest", help="bovine corpus manifest TSV")
+    sp.add_argument("--out", default="docs/HUMAN_REVIEW_PACKET_H001_H016.md",
+                    help="Markdown output path")
+    sp.add_argument("--top-k", type=int, default=5, help="candidate passages per review task")
+    sp.set_defaults(func=cmd_review_packet)
 
     sp = sub.add_parser("design", help="goal-conditioned medium recommendation")
     sp.add_argument("--preset", help="objective-weight preset from config")

@@ -149,3 +149,59 @@ def test_evidence_audit_blocks_until_human_review_and_filters_process_items(tmp_
     text = out.read_text(encoding="utf-8")
     assert "Wet-lab entry gate: NO-GO" in text
     assert "FGF2 20 ng/mL" in text
+
+
+def test_review_packet_builds_locators_without_adjudicating(tmp_path):
+    from cultivate_agent.evidence import build_review_packet, write_review_packet_markdown
+    from cultivate_agent.schema.paper import IngestStatus, PaperMetadata, PaperPaths, PaperRef
+
+    papers = tmp_path / "papers"
+    paths = PaperPaths(papers, "p1", slug="beefy").ensure()
+    text = (
+        "Simple serum-free medium for bovine satellite cells.\n\n"
+        "Beefy-9 contains recombinant albumin and supported proliferation over seven passages. "
+        "FGF2 at 20 ng/mL was used in the expansion medium.\n\n"
+        "Differentiation markers included PAX7 and MYOD after expansion."
+    )
+    paths.fulltext.write_text(text, encoding="utf-8")
+    meta = PaperMetadata(
+        ref=PaperRef(
+            paper_id="p1",
+            title="Simple and effective serum-free medium for sustained expansion of bovine satellite cells",
+        ),
+        status=IngestStatus(has_fulltext=True, fulltext_chars=len(text)),
+    )
+    paths.save_metadata(meta)
+
+    manifest = tmp_path / "manifest.tsv"
+    manifest.write_text(
+        "record_id\ttitle\tmedium_focus\tendpoints\n"
+        "R015\tSimple and effective serum-free medium for sustained expansion of bovine satellite cells\t"
+        "Beefy-9; albumin; FGF2\tproliferation; passages\n",
+        encoding="utf-8",
+    )
+    queue = tmp_path / "queue.tsv"
+    queue.write_text(
+        "review_id\tpriority\tsource_record_id\tevidence_topic\tfield_to_verify\t"
+        "human_question\tdecision_impact\tsuggested_action\tstatus\n"
+        "H001\tP1\tR015\tBeefy-9 expansion benchmark\tpassages\t"
+        "What passages and proliferation claims are supported?\tcontrol\t"
+        "Extract formulation and passage claims.\topen\n",
+        encoding="utf-8",
+    )
+
+    packet = build_review_packet(
+        review_queue_path=queue,
+        manifest_path=manifest,
+        papers_dir=papers,
+        review_ids=["H001"],
+        top_k=2,
+    )
+    assert packet[0].status == "ready_for_human_review"
+    assert packet[0].hits
+    assert packet[0].hits[0].start < packet[0].hits[0].end
+
+    out = write_review_packet_markdown(packet, tmp_path / "packet.md")
+    rendered = out.read_text(encoding="utf-8")
+    assert "candidate passage locators" in rendered
+    assert "decision: supported" not in rendered.lower()  # no AI adjudication label

@@ -328,6 +328,8 @@ Checklist:
 
 - [ ] `[HUMAN]` Review `H001-H016` first in
   `data/literature/bovine_human_review_queue.tsv`.
+- [ ] `[AI]` Generate passage locators with `cultivate review-packet` before
+  human adjudication.
 - [ ] `[HUMAN]` Mark each item as `supported`, `partial`, `unsupported`,
   `uncertain`, or `defer`.
 - [ ] `[HUMAN]` Add concise notes with formulation, dose, endpoint, caveat, or
@@ -349,6 +351,12 @@ Recommended review order:
 Gate: every non-exploratory variable entering the first design batch has
 human-reviewed support, and `docs/EVIDENCE_AUDIT_PROLIFERATION.md` has no
 open wet-lab entry blockers.
+
+Command:
+
+```bash
+cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
+```
 
 ### S5. Search-Space Design
 
@@ -549,7 +557,7 @@ the procedural sections above.
 ### 9.2 Completed Technical Work
 
 - CLI-first Python package exists.
-- Latest validation: `.venv/bin/python -m pytest -q` reports 51 passed with 3
+- Latest validation: `.venv/bin/python -m pytest -q` reports 54 passed with 3
   known warnings.
 - Smoke pipeline passes.
 - Demo optimization loop passes.
@@ -586,6 +594,8 @@ the procedural sections above.
   synthesized evidence CSV so audits can be rerun without another LLM call.
 - `cultivate evidence-audit` can inspect extracted `EvidenceItem` JSON and
   produce a conservative wet-lab entry gate report.
+- `cultivate review-packet` can generate local full-text character-range
+  locators for human review without making AI adjudication decisions.
 
 ### 9.3 Completed Literature And Planning Work
 
@@ -613,6 +623,8 @@ the procedural sections above.
 - Current proliferation evidence audit is `NO-GO`: local extracted evidence has
   AI-review candidates, but all are direction-only and 16/16 critical human
   review tasks remain open.
+- Current human-review packet covers 9/16 critical tasks with local full-text
+  locators; 7/16 require source/full-text acquisition or stricter matching.
 - Cost, supplier, and food-grade annotations are incomplete.
 - Newly added ontology entries from the live run still need human evidence
   adjudication before they can become non-exploratory wet-lab variables.
@@ -630,10 +642,13 @@ the procedural sections above.
 4. `[AI]` Re-run `cultivate evidence-audit` after updated extraction outputs.
 5. `[AI]` Extract exact formulations, dose ranges, endpoints, and quotes for
    the audit candidates.
-6. `[HUMAN]` Review `H001-H016`.
-7. `[AI]` Build the adjudicated bovine evidence table.
-8. `[REVIEW]` Decide which variables can enter the first search space.
-9. `[AI]` Draft the first design packet only after earlier gates pass.
+6. `[HUMAN]` Review `H001-H016` using
+   `docs/HUMAN_REVIEW_PACKET_H001_H016.md` where locators exist.
+7. `[AI]` Acquire or ingest missing full text for H006-H007, H010-H011, and
+   H014-H016.
+8. `[AI]` Build the adjudicated bovine evidence table.
+9. `[REVIEW]` Decide which variables can enter the first search space.
+10. `[AI]` Draft the first design packet only after earlier gates pass.
 
 ## 10. AI Handoff Protocol
 

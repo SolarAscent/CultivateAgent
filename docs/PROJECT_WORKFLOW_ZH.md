@@ -312,6 +312,8 @@ Checklist：
 
 - [ ] `[人工]` 优先复核 `data/literature/bovine_human_review_queue.tsv` 中的
   `H001-H016`。
+- [ ] `[AI]` 在人工 adjudication 前，用 `cultivate review-packet` 生成 passage
+  locators。
 - [ ] `[人工]` 将每项标为 `supported`、`partial`、`unsupported`、`uncertain`
   或 `defer`。
 - [ ] `[人工]` 添加简短 notes：formulation、dose、endpoint、caveat 或排除原因。
@@ -331,6 +333,12 @@ Checklist：
 
 Gate：进入第一轮设计的所有非 exploratory 变量都有人工复核支持，并且
 `docs/EVIDENCE_AUDIT_PROLIFERATION.md` 没有开放的 wet-lab entry blocker。
+
+命令：
+
+```bash
+cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
+```
 
 ### S5. Search-Space 设计
 
@@ -518,7 +526,7 @@ AI 线：
 ### 9.2 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- 最新验证：`.venv/bin/python -m pytest -q` 为 51 passed，3 个已知 warnings。
+- 最新验证：`.venv/bin/python -m pytest -q` 为 54 passed，3 个已知 warnings。
 - Smoke pipeline 通过。
 - Demo optimization loop 通过。
 - Extraction evaluator 已有。
@@ -549,6 +557,8 @@ AI 线：
   evidence CSV 旁边，便于不重新调用 LLM 就复跑 audit。
 - `cultivate evidence-audit` 可以检查已抽取的 `EvidenceItem` JSON，并输出保守的
   wet-lab entry gate report。
+- `cultivate review-packet` 可以为人工复核生成本地 fulltext 字符范围 locators，
+  不做 AI adjudication。
 
 ### 9.3 已完成的文献和计划工作
 
@@ -572,6 +582,8 @@ AI 线：
 - Human review queue 仍未完成。
 - 当前 proliferation evidence audit 是 `NO-GO`：本地 extracted evidence 已有
   AI-review candidates，但全部是 direction-only，且 16/16 个关键人工复核任务仍 open。
+- 当前 human-review packet 覆盖 9/16 个关键任务的本地 fulltext locators；7/16
+  还需要补 source/fulltext 或更严格匹配。
 - Cost、supplier、food-grade annotations 不完整。
 - Live run 新增 ontology 词条仍需人工证据裁决，才能成为非 exploratory 湿实验变量。
 - In-silico robustness 尚未在 bovine manifest 上运行。
@@ -588,10 +600,12 @@ AI 线：
 4. `[AI]` 在更新 extraction outputs 后，重新运行 `cultivate evidence-audit`。
 5. `[AI]` 为 audit candidates 抽取 exact formulations、dose ranges、endpoints、
    quotes。
-6. `[人工]` 复核 `H001-H016`。
-7. `[AI]` 建立 adjudicated bovine evidence table。
-8. `[复核]` 决定哪些变量可进入第一轮 search space。
-9. `[AI]` 只有在前置 gate 通过后，才起草第一版 design packet。
+6. `[人工]` 使用 `docs/HUMAN_REVIEW_PACKET_H001_H016.md` 中已有 locators 复核
+   `H001-H016`。
+7. `[AI]` 为 H006-H007、H010-H011 和 H014-H016 补充或导入缺失 full text。
+8. `[AI]` 建立 adjudicated bovine evidence table。
+9. `[复核]` 决定哪些变量可进入第一轮 search space。
+10. `[AI]` 只有在前置 gate 通过后，才起草第一版 design packet。
 
 ## 10. AI 接管协议
 

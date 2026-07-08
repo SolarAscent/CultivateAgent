@@ -165,6 +165,30 @@ def test_extract_id_resolution_maps_review_and_source_ids(tmp_path):
     }
 
 
+def test_total_operator_call_failure_is_not_success():
+    from cultivate_agent.cli import _is_total_operator_call_failure
+
+    failed = types.SimpleNamespace(extraction_meta={
+        "mode": "operators",
+        "operators": [
+            {"operator": "context", "status": "call_error"},
+            {"operator": "medium", "status": "call_error"},
+        ],
+    })
+    partial = types.SimpleNamespace(extraction_meta={
+        "mode": "operators",
+        "operators": [
+            {"operator": "context", "status": "ok"},
+            {"operator": "medium", "status": "call_error"},
+        ],
+    })
+    blocks = types.SimpleNamespace(extraction_meta={"mode": "blocks"})
+
+    assert _is_total_operator_call_failure(failed) is True
+    assert _is_total_operator_call_failure(partial) is False
+    assert _is_total_operator_call_failure(blocks) is False
+
+
 def test_extraction_with_mock_and_grounding():
     from cultivate_agent.extract import extract_paper
     from cultivate_agent.llm import get_client

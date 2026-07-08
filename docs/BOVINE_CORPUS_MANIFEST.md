@@ -162,7 +162,10 @@ Gate 6, pre-registration readiness: **not passed**.
    `data/literature/bovine_evidence_table.tsv`.
 4. Run a small targeted operator-extraction pilot first, for example
    `cultivate extract --ids H014 --mode operators`, then scale to
-   `--ids H001-H014` only after checking grounding and extraction metadata.
+   `--ids H001-H014` only after checking grounding and extraction metadata. The
+   latest DeepSeek-compatible H014 pilot failed provider authentication and
+   produced no extraction evidence, so a valid local provider key is required
+   before repeating this step.
 5. Re-run `cultivate review-packet` and `cultivate evidence-audit` after updated
    extraction outputs.
 6. Extract exact component tables, dose ranges, endpoints, and evidence quotes

@@ -1140,3 +1140,72 @@ map to the same source paper are extracted once.
    `cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash`.
 3. Inspect extraction metadata and grounding before scaling to
    `cultivate extract --ids H001-H014 --mode operators`.
+
+---
+
+# Session 15 (Codex) — provider-failure handling for live extraction
+
+Date: 2026-07-09
+Branch: `codex/jats-fulltext-readiness`
+
+## Coordination Decision
+
+The next non-blocked task was to run the planned H014 live operator-extraction
+pilot through the new `--ids` targeting path. The command reached the
+DeepSeek-compatible provider endpoint, but every operator failed at the provider
+call layer because the currently available environment key did not authenticate.
+
+This exposed a real pipeline bug: `cultivate extract` printed a successful
+extraction message and wrote an empty extraction record even when all operators
+had `call_error`. That is unsafe for a thesis workflow because downstream export
+or review could mistake a provider failure for a sparse extraction.
+
+## Changes Made
+
+- Cleaned the local ignored SQLite failed extraction row created by the failed
+  pilot.
+- Added `_is_total_operator_call_failure` to detect operator-mode extractions
+  where all operators failed at the provider-call layer.
+- Updated `cultivate extract` so total provider-call failure is not written to
+  the knowledge base and returns a nonzero exit code.
+- Added an offline regression test for total operator-call failure detection.
+- Re-ran the same H014 live pilot; it now exits nonzero, reports 0 extracted
+  papers, and leaves the local extraction table empty.
+- Updated README, workflow manuals, method review, and this session log.
+
+## What This Does Not Claim
+
+- No successful live DeepSeek extraction occurred.
+- No evidence field was extracted or approved.
+- No human adjudication decision was made.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `OPENAI_BASE_URL=https://api.deepseek.com .venv/bin/python -m cultivate_agent.cli extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash --limit 1`:
+  reached the provider but failed authentication; after the fix it exited
+  nonzero, reported 0 extracted papers, and did not write an extraction record.
+- Local cleanup check: removed the failed ignored SQLite row; after final mock
+  smoke cleanup, `remaining_extractions=0`.
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 61 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli extract --ids H014 --mode operators --provider mock --model mock --limit 1`:
+  passed as a target-selection smoke test only; the local mock extraction row was
+  removed afterward.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Provide or configure a valid provider key locally without committing secrets.
+2. Re-run `cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash`.
+3. Proceed to H001-H014 only after H014 has nonzero filled fields and acceptable
+   grounding metadata.

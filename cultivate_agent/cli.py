@@ -159,6 +159,7 @@ def cmd_extract(args) -> int:
     operator_extractor = OperatorExtractor(client, verify_evidence=cfg.extract.require_evidence) if mode == "operators" else None
     kb = _kb(cfg)
     n = 0
+    failed = 0
     ingested = list(iter_ingested(cfg.papers_dir))
     selected_paper_ids: Optional[set[str]] = None
     if getattr(args, "ids", None):
@@ -211,6 +212,14 @@ def cmd_extract(args) -> int:
                 triage_category=meta.triage_category,
                 structured_paper=structured_paper,
             )
+        if _is_total_operator_call_failure(ext):
+            failed += 1
+            print(
+                f"! extraction failed for {meta.ref.paper_id} "
+                "(all operators had provider call_error; not writing extraction)",
+                file=sys.stderr,
+            )
+            continue
         kb.upsert_paper(meta.ref, triage_category=meta.triage_category)
         kb.upsert_extraction(ext)
         g = (ext.extraction_meta or {}).get("grounding_rate")
@@ -223,6 +232,9 @@ def cmd_extract(args) -> int:
         n += 1
     kb.close()
     print(f"\nExtracted {n} papers into {cfg.kb_file}")
+    if failed:
+        print(f"Failed extractions: {failed}", file=sys.stderr)
+        return 2
     return 0
 
 
@@ -504,6 +516,14 @@ def _resolve_extract_paper_ids(
                 _paths, meta = match
                 selected.add(meta.ref.paper_id)
     return selected
+
+
+def _is_total_operator_call_failure(ext) -> bool:
+    meta = getattr(ext, "extraction_meta", None) or {}
+    if meta.get("mode") != "operators":
+        return False
+    operators = meta.get("operators") or []
+    return bool(operators) and all((op.get("status") == "call_error") for op in operators)
 
 
 def _parse_weights(spec: str) -> dict:

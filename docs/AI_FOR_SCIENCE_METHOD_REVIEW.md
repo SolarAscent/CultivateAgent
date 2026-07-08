@@ -301,6 +301,10 @@ Implementation now available:
   (`deepseek-v4-flash` or `deepseek-v4-pro`) rather than the legacy
   `deepseek-chat` compatibility name, and any outputs still require quote
   grounding plus human review.
+- The latest H014 DeepSeek-compatible pilot failed at provider authentication
+  with the current environment key, so it produced no extraction evidence. The
+  CLI now treats total operator `call_error` as a failed extraction and avoids
+  writing empty records.
 
 ## 4. Explicit Non-Adoptions
 

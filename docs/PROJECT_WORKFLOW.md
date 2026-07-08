@@ -297,6 +297,8 @@ Checklist:
   extraction to separate missing sources from weak section routing.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,
   source record IDs, or paper IDs select an explicit paper set.
+- [x] `[AI]` Treat total provider-call failure as extraction failure; do not
+  write empty extraction records when all operators return `call_error`.
 - [ ] `[REVIEW]` Flag sparse or unreliable extraction runs.
 - [ ] `[AI]` Repair parser or prompt issues only when evidence shows a
   technical failure rather than missing source content.
@@ -543,8 +545,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 ### 8.1 Completed Technical Work
 
 - CLI-first Python package exists.
-- Latest local validation after targeted extraction ID filtering:
-  60 tests passed with 3 known warnings.
+- Latest local validation after provider-failure handling:
+  61 tests passed with 3 known warnings.
 - Smoke pipeline passes.
 - Demo optimization loop passes.
 - Extraction evaluator and offline four-paper fixture exist.
@@ -612,6 +614,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - Gemini live comparison is incomplete because no Gemini/Google key was
   available.
 - OpenAI raw-response debugging hit insufficient quota.
+- The latest DeepSeek-compatible H014 live pilot reached the provider but failed
+  authentication with the currently available environment key; no extraction was
+  written.
 - Current corpus manifest is not yet fully extracted.
 - GROBID service availability is external; legally obtained JATS/Open Access XML
   can also be parsed when available.

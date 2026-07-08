@@ -295,6 +295,8 @@ Checklist:
 - [ ] `[AI]` Record extraction coverage, non-missing fields, and grounding rate.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
+- [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,
+  source record IDs, or paper IDs select an explicit paper set.
 - [ ] `[REVIEW]` Flag sparse or unreliable extraction runs.
 - [ ] `[AI]` Repair parser or prompt issues only when evidence shows a
   technical failure rather than missing source content.
@@ -308,7 +310,8 @@ cultivate triage
 cultivate extraction-readiness --ids H001-H016 \
   --out docs/EXTRACTION_READINESS_H001_H016.md \
   --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv
-cultivate extract --tier A
+cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
+cultivate extract --ids H001-H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate export
 cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md
 ```
@@ -540,8 +543,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 ### 8.1 Completed Technical Work
 
 - CLI-first Python package exists.
-- Latest local validation after DeepSeek/OpenAI-compatible config hardening:
-  59 tests passed with 3 known warnings.
+- Latest local validation after targeted extraction ID filtering:
+  60 tests passed with 3 known warnings.
 - Smoke pipeline passes.
 - Demo optimization loop passes.
 - Extraction evaluator and offline four-paper fixture exist.
@@ -627,8 +630,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    available.
 4. `[AI]` Validate the filled worksheet and run `cultivate adjudication-export`
    to refresh `data/literature/bovine_evidence_table.tsv`.
-5. `[AI]` Run operator extraction first on H001-H014 section-routed sources and
-   re-run `cultivate evidence-audit`.
+5. `[AI]` Run a small live operator-extraction pilot with
+   `cultivate extract --ids H014 --mode operators`, inspect grounding and raw
+   extraction metadata, then scale to `--ids H001-H014` only if the pilot is
+   acceptable.
 6. `[REVIEW]` Decide which variables can enter S5 search-space design.
 7. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 

@@ -141,6 +141,8 @@ cultivate extract --tier A --mode operators
 # Before spending LLM calls, audit whether local full text supports operator routing:
 cultivate extraction-readiness --ids H001-H016
 # Current H001-H016 preflight: 14 direct-ready, 0 fallback-ready, 2 missing R024 tasks.
+# For a controlled live pilot, target review IDs/source IDs instead of the whole tier:
+cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
 
 # 4. Look at what you have:
 cultivate stats

@@ -160,7 +160,9 @@ Gate 6, pre-registration readiness: **not passed**.
 3. After human edits, run `cultivate adjudication-validate`, then
    `cultivate adjudication-export` to refresh
    `data/literature/bovine_evidence_table.tsv`.
-4. Run operator extraction first on the direct-ready H001-H014 sources.
+4. Run a small targeted operator-extraction pilot first, for example
+   `cultivate extract --ids H014 --mode operators`, then scale to
+   `--ids H001-H014` only after checking grounding and extraction metadata.
 5. Re-run `cultivate review-packet` and `cultivate evidence-audit` after updated
    extraction outputs.
 6. Extract exact component tables, dose ranges, endpoints, and evidence quotes

@@ -282,6 +282,8 @@ Checklist：
 - [ ] `[AI]` 记录 extraction coverage、non-missing fields 和 grounding rate。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
+- [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、
+  source record IDs 或 paper IDs 精确选择 paper set。
 - [ ] `[REVIEW]` 标记稀疏或不可靠抽取。
 - [ ] `[AI]` 只有当证据显示是技术失败时才修 parser 或 prompt；如果原文缺失，
   不要把它当代码问题。
@@ -295,7 +297,8 @@ cultivate triage
 cultivate extraction-readiness --ids H001-H016 \
   --out docs/EXTRACTION_READINESS_H001_H016.md \
   --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv
-cultivate extract --tier A
+cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
+cultivate extract --ids H001-H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate export
 cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md
 ```
@@ -508,8 +511,8 @@ Gate：论文 claims 可追溯到证据和结果。
 ### 8.1 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- DeepSeek/OpenAI-compatible config hardening 后的最新本地 validation：
-  59 tests passed，3 个已知 warnings。
+- Targeted extraction ID filtering 后的最新本地 validation：
+  60 tests passed，3 个已知 warnings。
 - Smoke pipeline 通过。
 - Demo optimization loop 通过。
 - Extraction evaluator 和四篇文献 offline fixture 已有。
@@ -588,8 +591,9 @@ Gate：论文 claims 可追溯到证据和结果。
 3. `[AI]` R024 可用后重新生成 `docs/HUMAN_REVIEW_PACKET_H001_H016.md`。
 4. `[AI]` 校验已填写工作表，并运行 `cultivate adjudication-export` 更新
    `data/literature/bovine_evidence_table.tsv`。
-5. `[AI]` 优先对 H001-H014 已能 section-route 的来源运行 operator extraction，
-   再重新运行 `cultivate evidence-audit`。
+5. `[AI]` 先用 `cultivate extract --ids H014 --mode operators` 跑小规模 live
+   operator-extraction pilot，检查 grounding 和 raw extraction metadata；只有
+   pilot 可接受后再扩大到 `--ids H001-H014`。
 6. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 7. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 

@@ -320,7 +320,9 @@ These are not adopted now:
 1. Run optional GROBID service/client invocation on remaining P1 corpus PDFs
    when a service is available, or add legally obtained JATS/Open Access XML as
    `fulltext.xml` when that source is available.
-2. Use `cultivate extraction-readiness` before live operator extraction.
+2. Use `cultivate extraction-readiness` before live operator extraction, then
+   use `cultivate extract --ids ... --mode operators` for a small targeted pilot
+   before scaling to the full H001-H014 ready set.
 3. Re-run `cultivate review-packet` after each full-text acquisition pass.
 4. Fill `data/literature/bovine_adjudication_H001_H014.tsv` with human
    adjudication and validate it with `cultivate adjudication-validate`.

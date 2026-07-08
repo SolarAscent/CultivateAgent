@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -158,7 +159,24 @@ def cmd_extract(args) -> int:
     operator_extractor = OperatorExtractor(client, verify_evidence=cfg.extract.require_evidence) if mode == "operators" else None
     kb = _kb(cfg)
     n = 0
-    for paths, meta in iter_ingested(cfg.papers_dir):
+    ingested = list(iter_ingested(cfg.papers_dir))
+    selected_paper_ids: Optional[set[str]] = None
+    if getattr(args, "ids", None):
+        selected_paper_ids = _resolve_extract_paper_ids(
+            args.ids,
+            cfg,
+            ingested,
+            review_queue=getattr(args, "review_queue", None),
+            manifest=getattr(args, "manifest", None),
+        )
+        if not selected_paper_ids:
+            print(f"! no ingested papers matched --ids {args.ids!r}", file=sys.stderr)
+            kb.close()
+            return 2
+
+    for paths, meta in ingested:
+        if selected_paper_ids is not None and meta.ref.paper_id not in selected_paper_ids:
+            continue
         if args.tier and (meta.triage_category or "").upper() != args.tier.upper():
             continue
         if args.limit and n >= args.limit:
@@ -434,16 +452,58 @@ def _expand_review_ids(spec: str) -> List[str]:
         part = part.strip()
         if not part:
             continue
-        if "-" in part:
-            a, b = part.split("-", 1)
-            prefix = "".join(ch for ch in a if not ch.isdigit()) or "H"
-            start = int("".join(ch for ch in a if ch.isdigit()))
-            end = int("".join(ch for ch in b if ch.isdigit()))
-            width = max(len("".join(ch for ch in a if ch.isdigit())), len("".join(ch for ch in b if ch.isdigit())))
+        m = re.fullmatch(r"([A-Za-z]+)(\d+)-(?:(?:[A-Za-z]+)?)(\d+)", part)
+        if m:
+            prefix, start_s, end_s = m.groups()
+            start = int(start_s)
+            end = int(end_s)
+            width = max(len(start_s), len(end_s))
             out.extend(f"{prefix}{i:0{width}d}" for i in range(start, end + 1))
         else:
             out.append(part)
     return out
+
+
+def _resolve_extract_paper_ids(
+    spec: str,
+    cfg: Config,
+    ingested: list,
+    *,
+    review_queue: Optional[str] = None,
+    manifest: Optional[str] = None,
+) -> set[str]:
+    """Resolve extract targets from paper IDs, review IDs, or source record IDs."""
+    requested = set(_expand_review_ids(spec))
+    selected: set[str] = set()
+    for paths, meta in ingested:
+        aliases = {
+            meta.ref.paper_id,
+            meta.ref.slug,
+            paths.paper_id,
+            paths.slug,
+            paths.dir.name,
+        }
+        if requested & aliases:
+            selected.add(meta.ref.paper_id)
+
+    from .evidence.review_packet import _best_paper_match, load_manifest, load_review_tasks
+
+    review_queue_path = review_queue or (cfg.data_path / "literature" / "bovine_human_review_queue.tsv")
+    manifest_path = manifest or (cfg.data_path / "literature" / "bovine_corpus_manifest.tsv")
+    if Path(review_queue_path).exists() and Path(manifest_path).exists():
+        records = load_manifest(manifest_path)
+        tasks = load_review_tasks(review_queue_path)
+        source_ids = set()
+        for task in tasks:
+            if task.review_id in requested or task.source_record_id in requested:
+                source_ids.add(task.source_record_id)
+        source_ids.update(rid for rid in requested if rid in records)
+        for source_id in source_ids:
+            match = _best_paper_match(records.get(source_id), ingested)
+            if match:
+                _paths, meta = match
+                selected.add(meta.ref.paper_id)
+    return selected
 
 
 def _parse_weights(spec: str) -> dict:
@@ -760,6 +820,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("extract", help="evidence-grounded schema extraction")
     sp.add_argument("--tier", help="only papers in this tier (A/B/C)")
+    sp.add_argument(
+        "--ids",
+        help="only extract selected paper IDs, review IDs, or source record IDs; e.g. H001-H014,R023,my-paper-id",
+    )
+    sp.add_argument("--review-queue", help="review queue TSV for resolving H review IDs")
+    sp.add_argument("--manifest", help="bovine corpus manifest TSV for resolving R source IDs")
     sp.add_argument("--limit", type=int)
     sp.add_argument("--triage-only", action="store_true", help="run only fast-triage blocks")
     sp.add_argument("--mode", choices=["blocks", "operators"], default="blocks",

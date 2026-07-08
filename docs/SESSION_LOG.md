@@ -1072,3 +1072,71 @@ for non-secret provider/model settings and was not edited.
 2. Run a small supervised H001-H014 operator-extraction pilot before scaling to
    all 14 ready tasks.
 3. Keep the human adjudication worksheet as the wet-lab evidence gate.
+
+---
+
+# Session 14 (Codex) — target live extraction by review/source IDs
+
+Date: 2026-07-09
+Branch: `codex/jats-fulltext-readiness`
+
+## Coordination Decision
+
+The next non-blocked task was to make the planned H001-H014 live operator
+extraction controllable. Before this session, `cultivate extract` could filter
+by tier and limit, but not by H review IDs or R source record IDs. That made a
+small DeepSeek/GPT/Claude pilot too easy to aim at the wrong papers or scale
+accidentally.
+
+The decision was to add target selection before spending live LLM calls:
+`cultivate extract --ids H014 --mode operators` now resolves H review IDs
+through the bovine review queue and manifest to the matching ingested paper.
+Direct paper IDs and R source record IDs also work. Duplicate review tasks that
+map to the same source paper are extracted once.
+
+## Changes Made
+
+- Added `--ids`, `--review-queue`, and `--manifest` to `cultivate extract`.
+- Added review/source/paper ID resolution for extraction targets.
+- Hardened ID range parsing so only patterns like `H001-H014` are expanded;
+  hyphenated paper IDs/slugs are no longer misread as ranges.
+- Added an offline unit test for H review ID, R source ID, and direct paper ID
+  resolution.
+- Ran a mock-provider smoke check:
+  `cultivate extract --ids H014 --mode operators --provider mock --model mock --limit 1`.
+  This verified target selection only; it is not a scientific extraction result.
+- Updated README, both workflow manuals, bovine manifest, method review, and
+  this session log.
+
+## What This Does Not Claim
+
+- No live DeepSeek/GPT/Claude extraction was run in this session.
+- The mock smoke run does not approve any evidence field.
+- No human adjudication decision was made.
+- No wet-lab variable was approved.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 60 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli extract --ids H014 --mode operators --provider mock --model mock --limit 1`:
+  passed; extracted exactly 1 paper, R023/H014. This was a target-selection
+  smoke test only.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Configure the live provider locally without committing secrets.
+2. Run a small supervised live pilot, for example
+   `cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash`.
+3. Inspect extraction metadata and grounding before scaling to
+   `cultivate extract --ids H001-H014 --mode operators`.

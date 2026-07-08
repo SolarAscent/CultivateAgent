@@ -118,6 +118,53 @@ def test_openai_compatible_client_passes_extra_body(monkeypatch):
     assert call["extra_body"] == {"thinking": {"type": "disabled"}}
 
 
+def test_extract_id_resolution_maps_review_and_source_ids(tmp_path):
+    from cultivate_agent.cli import _expand_review_ids, _resolve_extract_paper_ids
+    from cultivate_agent.config import Config
+    from cultivate_agent.ingest import iter_ingested
+    from cultivate_agent.schema.paper import PaperMetadata, PaperPaths, PaperRef
+
+    papers = tmp_path / "papers"
+    ref = PaperRef(
+        paper_id="paper-alpha",
+        title="Defined bovine satellite cell medium",
+        doi="10.123/example",
+    )
+    paths = PaperPaths(papers, ref.paper_id, slug=ref.slug).ensure()
+    paths.fulltext.write_text("Bovine cells in serum-free medium.", encoding="utf-8")
+    paths.save_metadata(PaperMetadata(ref=ref, triage_category="A"))
+
+    manifest = tmp_path / "manifest.tsv"
+    manifest.write_text(
+        "record_id\ttitle\tdoi\tyear\tspecies\tcell_type\tstage\tmedium_focus\tendpoints\n"
+        "R001\tDefined bovine satellite cell medium\t10.123/example\t2026\tbovine"
+        "\tsatellite cells\texpansion\tserum-free medium\tproliferation\n",
+        encoding="utf-8",
+    )
+    queue = tmp_path / "queue.tsv"
+    queue.write_text(
+        "review_id\tpriority\tsource_record_id\tevidence_topic\tfield_to_verify\thuman_question"
+        "\tdecision_impact\tsuggested_action\tstatus\n"
+        "H001\tP1\tR001\tMedium dose\tmedium; dose\tDoes the paper report medium dose?"
+        "\tSearch-space seed\tCheck methods/results\topen\n",
+        encoding="utf-8",
+    )
+
+    cfg = Config()
+    cfg.root = str(tmp_path)
+    ingested = list(iter_ingested(papers))
+    assert _expand_review_ids("H001-H003,my-paper-slug") == ["H001", "H002", "H003", "my-paper-slug"]
+    assert _resolve_extract_paper_ids("H001", cfg, ingested, review_queue=str(queue), manifest=str(manifest)) == {
+        "paper-alpha"
+    }
+    assert _resolve_extract_paper_ids("R001", cfg, ingested, review_queue=str(queue), manifest=str(manifest)) == {
+        "paper-alpha"
+    }
+    assert _resolve_extract_paper_ids("paper-alpha", cfg, ingested, review_queue=str(queue), manifest=str(manifest)) == {
+        "paper-alpha"
+    }
+
+
 def test_extraction_with_mock_and_grounding():
     from cultivate_agent.extract import extract_paper
     from cultivate_agent.llm import get_client

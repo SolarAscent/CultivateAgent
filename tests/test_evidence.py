@@ -209,6 +209,8 @@ def test_review_packet_builds_locators_without_adjudicating(tmp_path):
 
 def test_adjudication_template_and_validation(tmp_path):
     from cultivate_agent.evidence import (
+        count_evidence_rows,
+        export_adjudicated_evidence,
         validate_adjudication_worksheet,
         write_adjudication_template,
     )
@@ -255,17 +257,32 @@ def test_adjudication_template_and_validation(tmp_path):
 
     # Blank decisions are allowed while the worksheet is still awaiting human review.
     assert validate_adjudication_worksheet(worksheet).ok
+    empty_export = export_adjudicated_evidence(
+        worksheet_path=worksheet,
+        out_path=tmp_path / "empty_evidence.tsv",
+    )
+    assert count_evidence_rows(empty_export) == 0
 
     lines = text.splitlines()
     header = lines[0].split("\t")
     row = lines[1].split("\t")
     row[header.index("decision")] = "supported"
+    row[header.index("selected_range")] = row[header.index("suggested_ranges")].split(";")[0]
     row[header.index("key_finding")] = "FGF2 dose supported proliferation"
+    row[header.index("dose_or_range")] = "10 ng/mL"
+    row[header.index("endpoint")] = "proliferation"
     row[header.index("wetlab_use")] = "range_seed"
     worksheet.write_text("\n".join([lines[0], "\t".join(row)]) + "\n", encoding="utf-8")
     result = validate_adjudication_worksheet(worksheet)
-    assert not result.ok
-    assert any(i.field == "selected_range" for i in result.issues)
+    assert result.ok
+    evidence = export_adjudicated_evidence(
+        worksheet_path=worksheet,
+        out_path=tmp_path / "evidence.tsv",
+    )
+    assert count_evidence_rows(evidence) == 1
+    rendered = evidence.read_text(encoding="utf-8")
+    assert "FGF2 dose supported proliferation" in rendered
+    assert "human_reviewed" in rendered
 
     row[header.index("decision")] = "maybe"
     worksheet.write_text("\n".join([lines[0], "\t".join(row)]) + "\n", encoding="utf-8")

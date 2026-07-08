@@ -12,6 +12,7 @@ Subcommands map onto the pipeline stages::
     cultivate review-packet
     cultivate adjudication-template
     cultivate adjudication-validate
+    cultivate adjudication-export
     cultivate design    # goal-conditioned medium recommendation
     cultivate schema    # print the field guide or JSON schema
     cultivate smoke     # offline end-to-end self-test (mock LLM, no API key)
@@ -374,6 +375,26 @@ def cmd_adjudication_validate(args) -> int:
     for issue in result.issues[:20]:
         print(f"  row {issue.row_number} {issue.review_id} {issue.field}: {issue.message}")
     return 1 if args.fail_on_issues and not result.ok else 0
+
+
+def cmd_adjudication_export(args) -> int:
+    """Export human-supported decisions into the adjudicated evidence table."""
+    from .evidence import count_evidence_rows, export_adjudicated_evidence
+
+    try:
+        out = export_adjudicated_evidence(
+            worksheet_path=args.worksheet,
+            out_path=args.out,
+            include_partial=not args.supported_only,
+            require_valid=not args.skip_validation,
+        )
+    except ValueError as e:
+        print(f"! {e}", file=sys.stderr)
+        return 2
+    rows = count_evidence_rows(out)
+    print(f"+ wrote {out}")
+    print(f"Adjudicated evidence rows exported: {rows}")
+    return 0
 
 
 def _expand_review_ids(spec: str) -> List[str]:
@@ -768,6 +789,15 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--out", help="optional Markdown validation report")
     sp.add_argument("--fail-on-issues", action="store_true", help="exit nonzero if validation finds issues")
     sp.set_defaults(func=cmd_adjudication_validate)
+
+    sp = sub.add_parser("adjudication-export", help="export human-supported adjudication rows to evidence table")
+    sp.add_argument("--worksheet", default="data/literature/bovine_adjudication_H001_H014.tsv",
+                    help="human-adjudication TSV worksheet")
+    sp.add_argument("--out", default="data/literature/bovine_evidence_table.tsv",
+                    help="adjudicated evidence TSV output")
+    sp.add_argument("--supported-only", action="store_true", help="exclude partial decisions")
+    sp.add_argument("--skip-validation", action="store_true", help="do not validate worksheet before exporting")
+    sp.set_defaults(func=cmd_adjudication_export)
 
     sp = sub.add_parser("design", help="goal-conditioned medium recommendation")
     sp.add_argument("--preset", help="objective-weight preset from config")

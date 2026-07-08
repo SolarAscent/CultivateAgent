@@ -167,6 +167,7 @@ CultivateAgent/
 | 复核定位包 | `docs/HUMAN_REVIEW_PACKET_H001_H016.md` | `[AI]` + `[HUMAN]` | source 可用性或 review queue 更新 |
 | 人工裁决工作表 | `data/literature/bovine_adjudication_H001_H014.tsv` | `[HUMAN]` + `[AI]` | 人工证据复核前后 |
 | 工作表校验报告 | `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` | `[AI]` + `[REVIEW]` | 工作表创建或编辑后 |
+| 已裁决证据表 | `data/literature/bovine_evidence_table.tsv` | `[HUMAN]` + `[AI]` + `[REVIEW]` | 有效人工裁决导出后 |
 | 候选变量 | `docs/CANDIDATE_VARIABLES.md` | `[AI]` + `[HUMAN]` | 人工证据复核完成后 |
 | 湿实验设计包 | `docs/wetlab/ROUND_<n>_DESIGN_PACKET.md` | `[AI]` + `[LAB]` + `[REVIEW]` | 每轮湿实验前 |
 | 湿实验结果 | `docs/wetlab/ROUND_<n>_RESULTS.md` | `[AI]` + `[LAB]` | 每轮湿实验后 |
@@ -313,7 +314,10 @@ Checklist：
 - [ ] `[HUMAN]` 将每项标为 `supported`、`partial`、`unsupported`、
   `uncertain` 或 `defer`。
 - [ ] `[HUMAN]` 添加简短 notes：formulation、dose、endpoint、caveat 或排除原因。
-- [ ] `[AI]` 把 notes 转成结构化 adjudication table。
+- [ ] `[AI]` 用 `cultivate adjudication-validate` 校验已填写工作表。
+- [ ] `[AI]` 只把人工标记为 `supported` 或 `partial` 的行用
+  `cultivate adjudication-export` 导出到
+  `data/literature/bovine_evidence_table.tsv`。
 - [ ] `[REVIEW]` 解决 AI 抽取和人工阅读的冲突。
 - [ ] `[DOC]` 更新 `docs/BOVINE_CORPUS_MANIFEST.md`。
 
@@ -324,6 +328,8 @@ cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016
 cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
 cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
   --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md
+cultivate adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
+  --out data/literature/bovine_evidence_table.tsv
 ```
 
 建议复核顺序：
@@ -521,6 +527,9 @@ Gate：论文 claims 可追溯到证据和结果。
   但不做 evidence adjudication。
 - `cultivate adjudication-template` 和 `cultivate adjudication-validate` 能创建和
   检查 H001-H014 人工填写工作表，但不判断证据是否 supported。
+- `cultivate adjudication-export` 会把有效的人工 `supported` 或 `partial`
+  行导出到 `data/literature/bovine_evidence_table.tsv`；当前提交的证据表只有表头，
+  因为还没有人工 decision。
 
 ### 8.2 已完成的文献和计划工作
 
@@ -539,7 +548,8 @@ Gate：论文 claims 可追溯到证据和结果。
 |---|---|---|
 | Corpus manifest | Partial | 已有可用 bovine set，但 P1 人工复核和全文覆盖不完整 |
 | Proliferation evidence audit | `NO-GO` | 当前 extracted evidence 不能支持湿实验入口 |
-| Critical human review | 16/16 open | H001-H014 工作表已存在，但尚无人工 decision |
+| Critical human review | 16/16 open | H001-H014 工作表和证据表导出路径已存在，但尚无人工 decision |
+| 已裁决证据表 | 0 行 | 来自空白工作表的仅表头导出；不是证据批准 |
 | Review-packet 覆盖 | 14/16 有本地 locators | H001-H014 可进入高效人工复核 |
 | 缺失 review-packet source | 2/16 | H015-H016 对应 R024，需要机构访问或人工提供主文全文 |
 | Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
@@ -562,7 +572,8 @@ Gate：论文 claims 可追溯到证据和结果。
    复核 H001-H014。
 2. `[HUMAN]` 提供 R024 主文全文，或确认 R024 暂时 defer。
 3. `[AI]` R024 可用后重新生成 `docs/HUMAN_REVIEW_PACKET_H001_H016.md`。
-4. `[AI]` 把人工 notes 转成结构化 adjudication records。
+4. `[AI]` 校验已填写工作表，并运行 `cultivate adjudication-export` 更新
+   `data/literature/bovine_evidence_table.tsv`。
 5. `[AI]` 重新运行 extraction 和 `cultivate evidence-audit`。
 6. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 7. `[LAB]` 并行确认 assay 限制和 reagent feasibility。

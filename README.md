@@ -152,6 +152,9 @@ cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016
 # Create and check the human-fillable adjudication worksheet for ready tasks:
 cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
 cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv
+# Export only human-supported/partial rows after the worksheet is filled:
+cultivate adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
+  --out data/literature/bovine_evidence_table.tsv
 
 # 5. Ask for a medium design, conditioned on objectives + context:
 cultivate design \
@@ -263,6 +266,9 @@ Useful scripts:
 - `cultivate adjudication-template` / `cultivate adjudication-validate`: creates
   and checks a human-fillable evidence-adjudication worksheet; a blank PASS only
   means the worksheet format is valid, not that evidence has been approved.
+- `cultivate adjudication-export`: converts valid human-supported or partial
+  decisions into `data/literature/bovine_evidence_table.tsv` without inventing
+  evidence; the current blank worksheet exports zero rows.
 
 Run the tests: `pip install pytest && pytest -q` (offline suite).
 

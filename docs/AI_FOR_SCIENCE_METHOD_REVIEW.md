@@ -278,6 +278,9 @@ Implementation now available:
 - The adjudication worksheet follows the same human-in-control rule: AI may
   prefill task metadata and locators, but the `decision`, `selected_range`, and
   evidence interpretation fields remain human-entered and validator-checked.
+- The adjudication export is deliberately narrow: it copies only valid
+  human-supported or partial rows into `bovine_evidence_table.tsv`. It does not
+  convert literature outcomes into BO training labels.
 - The current proliferation audit is `NO-GO`: 145 local extracted effect items
   across 40 papers produced 4 AI-review candidates, but all are direction-only
   and 16/16 critical human-review tasks remain open.
@@ -306,8 +309,8 @@ These are not adopted now:
 2. Re-run `cultivate review-packet` after each full-text acquisition pass.
 3. Fill `data/literature/bovine_adjudication_H001_H014.tsv` with human
    adjudication and validate it with `cultivate adjudication-validate`.
-4. Re-run `cultivate evidence-audit` after each updated extraction/effect export.
-5. Create `bovine_evidence_table.tsv` from reviewed P1 full text.
+4. Export valid human-supported or partial rows with `cultivate adjudication-export`.
+5. Re-run `cultivate evidence-audit` after each updated extraction/effect export.
 6. Build section-routed extraction operators for medium components, dose ranges,
    endpoints, and quotes.
 7. Update the evaluation script to report operator-level coverage and grounding.

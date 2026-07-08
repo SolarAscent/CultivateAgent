@@ -37,6 +37,24 @@ WORKSHEET_COLUMNS = [
     "notes",
 ]
 
+EVIDENCE_TABLE_COLUMNS = [
+    "review_id",
+    "source_record_id",
+    "decision",
+    "evidence_status",
+    "fulltext_path",
+    "selected_range",
+    "key_finding",
+    "formulation_or_variable",
+    "dose_or_range",
+    "endpoint",
+    "cell_context",
+    "limitations",
+    "wetlab_use",
+    "reviewer",
+    "review_date",
+]
+
 
 @dataclass
 class ValidationIssue:
@@ -176,6 +194,70 @@ def write_validation_markdown(result: ValidationResult, path: str | Path) -> Pat
         lines.append("")
     out.write_text("\n".join(lines), encoding="utf-8")
     return out
+
+
+def export_adjudicated_evidence(
+    *,
+    worksheet_path: str | Path,
+    out_path: str | Path,
+    include_partial: bool = True,
+    require_valid: bool = True,
+) -> Path:
+    """Export human-supported worksheet rows to the adjudicated evidence table.
+
+    This table records human-reviewed claims for downstream search-space design.
+    It is not a cross-paper training-label table.
+    """
+    if require_valid:
+        result = validate_adjudication_worksheet(worksheet_path)
+        if not result.ok:
+            first = result.issues[0]
+            raise ValueError(
+                f"worksheet validation failed at row {first.row_number} "
+                f"{first.review_id} {first.field}: {first.message}"
+            )
+    allowed = {"supported", "partial"} if include_partial else {"supported"}
+    out = Path(out_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with (
+        Path(worksheet_path).open(newline="", encoding="utf-8") as f_in,
+        out.open("w", newline="", encoding="utf-8") as f_out,
+    ):
+        reader = csv.DictReader(f_in, delimiter="\t")
+        writer = csv.DictWriter(
+            f_out,
+            fieldnames=EVIDENCE_TABLE_COLUMNS,
+            delimiter="\t",
+            lineterminator="\n",
+        )
+        writer.writeheader()
+        for row in reader:
+            decision = (row.get("decision") or "").strip().lower()
+            if decision not in allowed:
+                continue
+            writer.writerow({
+                "review_id": row.get("review_id", ""),
+                "source_record_id": row.get("source_record_id", ""),
+                "decision": decision,
+                "evidence_status": "human_reviewed",
+                "fulltext_path": row.get("fulltext_path", ""),
+                "selected_range": row.get("selected_range", ""),
+                "key_finding": row.get("key_finding", ""),
+                "formulation_or_variable": row.get("formulation_or_variable", ""),
+                "dose_or_range": row.get("dose_or_range", ""),
+                "endpoint": row.get("endpoint", ""),
+                "cell_context": row.get("cell_context", ""),
+                "limitations": row.get("limitations", ""),
+                "wetlab_use": row.get("wetlab_use", ""),
+                "reviewer": row.get("reviewer", ""),
+                "review_date": row.get("review_date", ""),
+            })
+    return out
+
+
+def count_evidence_rows(path: str | Path) -> int:
+    with Path(path).open(newline="", encoding="utf-8") as f:
+        return sum(1 for _ in csv.DictReader(f, delimiter="\t"))
 
 
 def _is_range(value: str) -> bool:

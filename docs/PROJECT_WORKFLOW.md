@@ -175,6 +175,7 @@ Artifact registry:
 | Review packet | `docs/HUMAN_REVIEW_PACKET_H001_H016.md` | `[AI]` + `[HUMAN]` | Source availability or review queue update |
 | Human adjudication worksheet | `data/literature/bovine_adjudication_H001_H014.tsv` | `[HUMAN]` + `[AI]` | Before and after human evidence review |
 | Worksheet validation report | `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` | `[AI]` + `[REVIEW]` | After worksheet creation or edits |
+| Adjudicated evidence table | `data/literature/bovine_evidence_table.tsv` | `[HUMAN]` + `[AI]` + `[REVIEW]` | After valid human adjudication export |
 | Candidate variables | `docs/CANDIDATE_VARIABLES.md` | `[AI]` + `[HUMAN]` | Human evidence review completion |
 | Wet-lab design packet | `docs/wetlab/ROUND_<n>_DESIGN_PACKET.md` | `[AI]` + `[LAB]` + `[REVIEW]` | Before each wet-lab round |
 | Wet-lab results | `docs/wetlab/ROUND_<n>_RESULTS.md` | `[AI]` + `[LAB]` | After each wet-lab round |
@@ -329,7 +330,11 @@ Checklist:
   `uncertain`, or `defer`.
 - [ ] `[HUMAN]` Add concise notes with formulation, dose, endpoint, caveat, or
   exclusion reason.
-- [ ] `[AI]` Convert notes into a structured adjudication table.
+- [ ] `[AI]` Validate the filled worksheet with
+  `cultivate adjudication-validate`.
+- [ ] `[AI]` Export only `supported` and `partial` human decisions to
+  `data/literature/bovine_evidence_table.tsv` with
+  `cultivate adjudication-export`.
 - [ ] `[REVIEW]` Resolve conflicts between AI extraction and human reading.
 - [ ] `[DOC]` Update `docs/BOVINE_CORPUS_MANIFEST.md`.
 
@@ -340,6 +345,8 @@ cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016
 cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
 cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
   --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md
+cultivate adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
+  --out data/literature/bovine_evidence_table.tsv
 ```
 
 Recommended review order:
@@ -554,6 +561,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - `cultivate adjudication-template` and `cultivate adjudication-validate`
   create and check the human-fillable H001-H014 worksheet without deciding
   evidence support.
+- `cultivate adjudication-export` exports valid human-supported or partial rows
+  into `data/literature/bovine_evidence_table.tsv`; the committed table is
+  currently header-only because no human decisions have been entered.
 
 ### 8.2 Completed Literature And Planning Work
 
@@ -573,7 +583,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 |---|---|---|
 | Corpus manifest | Partial | Useful bovine set exists, but P1 human review and full-text coverage are incomplete |
 | Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
-| Critical human review | 16/16 open | H001-H014 worksheet exists, but no human decisions have been entered |
+| Critical human review | 16/16 open | H001-H014 worksheet and evidence-table export path exist, but no human decisions have been entered |
+| Adjudicated evidence table | 0 rows | Header-only export from the blank worksheet; not evidence approval |
 | Review-packet coverage | 14/16 with local locators | H001-H014 are ready for efficient human review |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
@@ -600,7 +611,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 2. `[HUMAN]` Provide R024 main full text, or confirm it should remain deferred.
 3. `[AI]` Regenerate `docs/HUMAN_REVIEW_PACKET_H001_H016.md` after R024 is
    available.
-4. `[AI]` Convert human notes into structured adjudication records.
+4. `[AI]` Validate the filled worksheet and run `cultivate adjudication-export`
+   to refresh `data/literature/bovine_evidence_table.tsv`.
 5. `[AI]` Re-run extraction and `cultivate evidence-audit`.
 6. `[REVIEW]` Decide which variables can enter S5 search-space design.
 7. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.

@@ -790,3 +790,61 @@ whether evidence is supported.
 2. AI runs `cultivate adjudication-validate` after human edits.
 3. AI converts valid human decisions into the adjudicated bovine evidence table
    and then re-runs `cultivate evidence-audit`.
+
+---
+
+# Session 10 (Codex) — adjudicated evidence export path
+
+Date: 2026-07-08
+Branch: `main`
+
+## Coordination Decision
+
+The human worksheet exists, but no human decisions have been entered. The next
+non-blocked engineering step was therefore not to approve evidence, but to add
+the deterministic export path that will run immediately after human review.
+
+## Changes Made
+
+- Added `cultivate adjudication-export`.
+- Added `data/literature/bovine_evidence_table.tsv` as the adjudicated evidence
+  table target.
+- Added export tests covering the current blank worksheet and a filled
+  supported-row example.
+- Updated README, both workflow manuals, `BOVINE_CORPUS_MANIFEST.md`, and
+  `AI_FOR_SCIENCE_METHOD_REVIEW.md` to state that export follows human
+  adjudication and does not create evidence by itself.
+
+## Current Evidence Table Result
+
+- Exported rows: 0.
+- Reason: `data/literature/bovine_adjudication_H001_H014.tsv` is still blank.
+- Meaning: the pipeline can now preserve human-supported or partial decisions in
+  a structured TSV, but no wet-lab variable has been approved.
+
+## What This Does Not Claim
+
+- No human evidence decision was made.
+- No literature outcome was converted into a BO training label.
+- The proliferation audit remains `NO-GO`.
+- R024 / H015-H016 remain blocked on main full text.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 55 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+
+## Next 3 Steps
+
+1. Human reviewer fills `data/literature/bovine_adjudication_H001_H014.tsv`.
+2. AI runs `cultivate adjudication-validate` and `cultivate adjudication-export`.
+3. AI re-runs evidence audit and updates candidate-variable decisions only from
+   reviewed evidence.

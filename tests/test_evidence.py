@@ -295,3 +295,47 @@ def test_adjudication_template_and_validation(tmp_path):
     result = validate_adjudication_worksheet(worksheet)
     assert not result.ok
     assert any(i.field == "decision" for i in result.issues)
+
+
+def test_adjudication_passage_preview_resolves_relative_paths(tmp_path):
+    from cultivate_agent.evidence import (
+        build_adjudication_passage_previews,
+        format_adjudication_passages_markdown,
+    )
+
+    papers = tmp_path / "papers" / "paper-one"
+    papers.mkdir(parents=True)
+    fulltext = papers / "fulltext.txt"
+    text = (
+        "Defined bovine medium benchmark.\n\n"
+        "The tested medium used FGF2 at 10 ng/mL and supported bovine satellite "
+        "cell proliferation over six days."
+    )
+    fulltext.write_text(text, encoding="utf-8")
+    start = text.index("FGF2")
+    end = len(text)
+    worksheet = tmp_path / "worksheet.tsv"
+    worksheet.write_text(
+        "review_id\tsource_record_id\tstatus\tdecision\treviewer\treview_date\t"
+        "fulltext_path\tsuggested_ranges\tselected_range\tkey_finding\t"
+        "formulation_or_variable\tdose_or_range\tendpoint\tcell_context\t"
+        "limitations\twetlab_use\tnotes\n"
+        f"H001\tR001\tready_for_human_review\t\t\t\tpapers/paper-one/fulltext.txt\t"
+        f"0-10;{start}-{end}\t{start}-{end}\t\t\t\t\t\t\t\t\n",
+        encoding="utf-8",
+    )
+
+    previews = build_adjudication_passage_previews(
+        worksheet,
+        review_ids=["H001"],
+        path_base=tmp_path,
+        context_chars=90,
+    )
+    assert len(previews) == 1
+    assert previews[0].status == "ok"
+    assert previews[0].range_text == f"{start}-{end}"
+    assert "FGF2 at 10 ng/mL" in previews[0].excerpt
+
+    rendered = format_adjudication_passages_markdown(previews)
+    assert "not an AI adjudication decision" in rendered
+    assert "FGF2 at 10 ng/mL" in rendered

@@ -340,6 +340,7 @@ Checklist：
 ```bash
 cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
 cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
+cultivate adjudication-passages --ids H014 --max-ranges 1
 cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
   --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md
 cultivate adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
@@ -555,6 +556,8 @@ Gate：论文 claims 可追溯到证据和结果。
 - `cultivate adjudication-template` 和 `cultivate adjudication-validate` 能创建和
   检查带有可移植 `data/papers/...` 路径的 H001-H014 人工填写工作表，但不判断证据
   是否 supported。
+- `cultivate adjudication-passages` 能根据 worksheet range 输出短本地片段，帮助人工
+  更快查看原文；它不是 AI 裁决，生成的 snippet 文件默认不应提交，除非确认引用权限。
 - `cultivate adjudication-export` 会把有效的人工 `supported` 或 `partial`
   行导出到 `data/literature/bovine_evidence_table.tsv`；当前提交的证据表只有表头，
   因为还没有人工 decision。

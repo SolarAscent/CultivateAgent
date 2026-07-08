@@ -164,6 +164,9 @@ cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016
 # Create and check the human-fillable adjudication worksheet for ready tasks:
 cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
 cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv
+# Local helper for a human reviewer: preview short snippets for suggested ranges.
+# Omit --out to avoid committing source excerpts.
+cultivate adjudication-passages --ids H014 --max-ranges 1
 # Export only human-supported/partial rows after the worksheet is filled:
 cultivate adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
   --out data/literature/bovine_evidence_table.tsv
@@ -290,6 +293,10 @@ Useful scripts:
   and checks a human-fillable evidence-adjudication worksheet with the same
   portable paths; a blank PASS only means the worksheet format is valid, not
   that evidence has been approved.
+- `cultivate adjudication-passages`: prints short local snippets for worksheet
+  ranges so a human can inspect the source faster; it is a review aid, not an
+  AI adjudication step, and generated snippet files should not be committed by
+  default.
 - `cultivate adjudication-export`: converts valid human-supported or partial
   decisions into `data/literature/bovine_evidence_table.tsv` without inventing
   evidence; the current blank worksheet exports zero rows.

@@ -1482,3 +1482,73 @@ stable across isolated worktrees and avoids noisy path-only diffs.
    adjudication after Claude rebases on current `main`.
 3. Do not regenerate or overwrite the human worksheet after a reviewer starts
    filling decisions; validate/export it instead.
+
+---
+
+# Session 20 (Codex) — local adjudication passage preview
+
+Date: 2026-07-09
+Branch: `codex/adjudication-passages`
+
+## Coordination Decision
+
+The next non-conflicting S4 task was to reduce the manual cost of using the
+blank H001-H014 adjudication worksheet. The worksheet already had portable
+`fulltext_path` values and suggested character ranges, but a human still had to
+open files manually and jump to ranges without a helper.
+
+The decision was to add a local preview command that reads the worksheet and
+prints short snippets for suggested or selected ranges. It is deliberately a
+review aid only: it does not set decisions, does not approve evidence, and
+defaults to stdout so source excerpts are not committed.
+
+## Changes Made
+
+- Added `build_adjudication_passage_previews`,
+  `format_adjudication_passages_markdown`, and
+  `write_adjudication_passages_markdown`.
+- Added CLI command:
+  `cultivate adjudication-passages --ids H014 --max-ranges 1`.
+- The command resolves repo-relative `data/papers/...` paths against the project
+  root, prefers `selected_range` when present, otherwise previews
+  `suggested_ranges`, and reports missing files or invalid ranges explicitly.
+- Added regression coverage for relative path resolution and selected-range
+  preview behavior.
+- Updated README and both workflow manuals.
+
+## What This Does Not Claim
+
+- No human decision was entered.
+- No evidence field was approved.
+- No live extraction was run.
+- No wet-lab variable was approved.
+- No source excerpts were committed as generated output; the preview command is
+  for local human use.
+
+## Verification
+
+- `.venv/bin/python -m pytest tests/test_evidence.py::test_adjudication_passage_preview_resolves_relative_paths -q`:
+  passed.
+- `.venv/bin/python -m pytest -q`: 63 passed, 2 skipped.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-passages --ids H014 --max-ranges 1 --context-chars 80`:
+  passed locally; 1/1 ranges readable. Output was redirected to `/tmp` and not
+  committed.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+
+## Next 3 Steps
+
+1. Merge this short-lived branch into `main`, push, and delete it.
+2. Next scientific progress still requires either human adjudication of
+   H001-H014 or valid-provider H014 live extraction.
+3. Keep Claude's model-comparison commits separate until that worktree is
+   rebased on current `main`.

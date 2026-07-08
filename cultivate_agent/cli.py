@@ -441,6 +441,33 @@ def cmd_adjudication_validate(args) -> int:
     return 1 if args.fail_on_issues and not result.ok else 0
 
 
+def cmd_adjudication_passages(args) -> int:
+    """Preview worksheet passage ranges for human adjudication."""
+    cfg = load_config(root=args.root)
+    from .evidence import (
+        build_adjudication_passage_previews,
+        format_adjudication_passages_markdown,
+        write_adjudication_passages_markdown,
+    )
+
+    ids = _expand_review_ids(args.ids) if args.ids else []
+    previews = build_adjudication_passage_previews(
+        args.worksheet,
+        review_ids=ids,
+        path_base=cfg.root,
+        max_ranges=args.max_ranges,
+        context_chars=args.context_chars,
+    )
+    if args.out:
+        out = write_adjudication_passages_markdown(previews, args.out)
+        print(f"+ wrote {out}")
+    else:
+        print(format_adjudication_passages_markdown(previews))
+    ok = sum(1 for p in previews if p.status == "ok")
+    print(f"Adjudication passage previews: {ok}/{len(previews)} ranges readable")
+    return 0 if ok or not previews else 1
+
+
 def cmd_adjudication_export(args) -> int:
     """Export human-supported decisions into the adjudicated evidence table."""
     from .evidence import count_evidence_rows, export_adjudicated_evidence
@@ -919,6 +946,15 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--out", help="optional Markdown validation report")
     sp.add_argument("--fail-on-issues", action="store_true", help="exit nonzero if validation finds issues")
     sp.set_defaults(func=cmd_adjudication_validate)
+
+    sp = sub.add_parser("adjudication-passages", help="preview worksheet passage ranges for human review")
+    sp.add_argument("--worksheet", default="data/literature/bovine_adjudication_H001_H014.tsv",
+                    help="human-adjudication TSV worksheet")
+    sp.add_argument("--ids", help="optional review IDs, e.g. H001-H003 or H014")
+    sp.add_argument("--out", help="optional Markdown output path; omit to print to stdout")
+    sp.add_argument("--max-ranges", type=int, default=3, help="suggested ranges to show per row")
+    sp.add_argument("--context-chars", type=int, default=260, help="maximum characters per short snippet")
+    sp.set_defaults(func=cmd_adjudication_passages)
 
     sp = sub.add_parser("adjudication-export", help="export human-supported adjudication rows to evidence table")
     sp.add_argument("--worksheet", default="data/literature/bovine_adjudication_H001_H014.tsv",

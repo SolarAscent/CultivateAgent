@@ -14,6 +14,9 @@ from .adjudication import (
     ValidationIssue,
     ValidationResult,
     validate_adjudication_worksheet,
+    build_adjudication_passage_previews,
+    format_adjudication_passages_markdown,
+    write_adjudication_passages_markdown,
     export_adjudicated_evidence,
     count_evidence_rows,
     write_adjudication_template,
@@ -37,6 +40,8 @@ __all__ = [
     "build_review_packet", "write_review_packet_markdown",
     "ALLOWED_DECISIONS", "ValidationIssue", "ValidationResult",
     "write_adjudication_template", "validate_adjudication_worksheet",
+    "build_adjudication_passage_previews", "format_adjudication_passages_markdown",
+    "write_adjudication_passages_markdown",
     "export_adjudicated_evidence", "count_evidence_rows",
     "write_validation_markdown",
 ]

@@ -74,6 +74,18 @@ class ValidationResult:
         return not self.issues
 
 
+@dataclass
+class PassagePreview:
+    review_id: str
+    source_record_id: str
+    fulltext_path: str
+    range_text: str
+    start: int
+    end: int
+    excerpt: str
+    status: str = "ok"
+
+
 def write_adjudication_template(
     *,
     review_queue_path: str | Path,
@@ -203,6 +215,129 @@ def write_validation_markdown(result: ValidationResult, path: str | Path) -> Pat
     return out
 
 
+def build_adjudication_passage_previews(
+    worksheet_path: str | Path,
+    *,
+    review_ids: Iterable[str] | None = None,
+    path_base: str | Path | None = None,
+    max_ranges: int = 3,
+    context_chars: int = 260,
+) -> List[PassagePreview]:
+    """Load short local snippets for worksheet ranges without adjudicating them."""
+    wanted = set(review_ids or [])
+    base = Path(path_base).resolve() if path_base is not None else Path.cwd().resolve()
+    previews: List[PassagePreview] = []
+    with Path(worksheet_path).open(newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f, delimiter="\t")
+        for row in reader:
+            review_id = row.get("review_id", "")
+            if wanted and review_id not in wanted:
+                continue
+            source_record_id = row.get("source_record_id", "")
+            fulltext_path = row.get("fulltext_path", "")
+            ranges = _ranges_for_preview(row, max_ranges=max_ranges)
+            if not ranges:
+                previews.append(PassagePreview(
+                    review_id=review_id,
+                    source_record_id=source_record_id,
+                    fulltext_path=fulltext_path,
+                    range_text="",
+                    start=0,
+                    end=0,
+                    excerpt="",
+                    status="missing_range",
+                ))
+                continue
+            if not fulltext_path:
+                previews.append(PassagePreview(
+                    review_id=review_id,
+                    source_record_id=source_record_id,
+                    fulltext_path="",
+                    range_text="",
+                    start=0,
+                    end=0,
+                    excerpt="",
+                    status="missing_fulltext_path",
+                ))
+                continue
+            resolved = _resolve_fulltext_path(fulltext_path, base)
+            if not resolved.exists():
+                previews.append(PassagePreview(
+                    review_id=review_id,
+                    source_record_id=source_record_id,
+                    fulltext_path=fulltext_path,
+                    range_text="",
+                    start=0,
+                    end=0,
+                    excerpt="",
+                    status="missing_fulltext_file",
+                ))
+                continue
+            text = resolved.read_text(encoding="utf-8", errors="ignore")
+            for range_text in ranges:
+                parsed = _parse_range(range_text)
+                if parsed is None:
+                    previews.append(PassagePreview(
+                        review_id=review_id,
+                        source_record_id=source_record_id,
+                        fulltext_path=fulltext_path,
+                        range_text=range_text,
+                        start=0,
+                        end=0,
+                        excerpt="",
+                        status="invalid_range",
+                    ))
+                    continue
+                start, end = parsed
+                if start >= len(text):
+                    excerpt = ""
+                    status = "range_out_of_bounds"
+                else:
+                    bounded_end = min(end, len(text))
+                    excerpt = _short_excerpt(text[start:bounded_end], context_chars)
+                    status = "ok"
+                previews.append(PassagePreview(
+                    review_id=review_id,
+                    source_record_id=source_record_id,
+                    fulltext_path=fulltext_path,
+                    range_text=range_text,
+                    start=start,
+                    end=end,
+                    excerpt=excerpt,
+                    status=status,
+                ))
+    return previews
+
+
+def write_adjudication_passages_markdown(previews: List[PassagePreview], path: str | Path) -> Path:
+    out = Path(path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(format_adjudication_passages_markdown(previews), encoding="utf-8")
+    return out
+
+
+def format_adjudication_passages_markdown(previews: List[PassagePreview]) -> str:
+    lines = [
+        "# Human Adjudication Passage Preview",
+        "",
+        "Status: local review aid with short source snippets; not an AI adjudication decision.",
+        "Do not commit expanded excerpts unless source rights and quotation limits are reviewed.",
+        "",
+        "| Review ID | Source | Range | Status | Full text | Excerpt |",
+        "|---|---|---|---|---|---|",
+    ]
+    if not previews:
+        lines.append("| - | - | - | no_rows | - | - |")
+    for item in previews:
+        excerpt = item.excerpt.replace("|", "\\|")
+        lines.append(
+            f"| `{item.review_id}` | `{item.source_record_id}` | `{item.range_text or '-'}` | "
+            f"`{item.status}` | `{item.fulltext_path or 'MISSING'}` | {excerpt or '-'} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
 def export_adjudicated_evidence(
     *,
     worksheet_path: str | Path,
@@ -274,3 +409,36 @@ def _is_range(value: str) -> bool:
     if not (start.isdigit() and end.isdigit()):
         return False
     return int(start) < int(end)
+
+
+def _ranges_for_preview(row: dict[str, str], *, max_ranges: int) -> List[str]:
+    selected = (row.get("selected_range") or "").strip()
+    if selected:
+        return [selected]
+    ranges = [
+        r.strip()
+        for r in (row.get("suggested_ranges") or "").split(";")
+        if r.strip()
+    ]
+    return ranges[:max_ranges]
+
+
+def _resolve_fulltext_path(path: str, base: Path) -> Path:
+    p = Path(path)
+    if p.is_absolute():
+        return p
+    return base / p
+
+
+def _parse_range(value: str) -> tuple[int, int] | None:
+    if not _is_range(value):
+        return None
+    start, end = value.split("-", 1)
+    return int(start), int(end)
+
+
+def _short_excerpt(text: str, limit: int) -> str:
+    normalized = " ".join(text.split())
+    if len(normalized) <= limit:
+        return normalized
+    return normalized[: max(0, limit - 3)].rstrip() + "..."

@@ -357,6 +357,7 @@ Command:
 ```bash
 cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
 cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
+cultivate adjudication-passages --ids H014 --max-ranges 1
 cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
   --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md
 cultivate adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv \
@@ -588,6 +589,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - `cultivate adjudication-template` and `cultivate adjudication-validate`
   create and check the human-fillable H001-H014 worksheet with portable
   `data/papers/...` paths, without deciding evidence support.
+- `cultivate adjudication-passages` previews short local snippets for worksheet
+  ranges to speed human inspection. It does not adjudicate support, and generated
+  snippet files should stay local unless source quotation rights are reviewed.
 - `cultivate adjudication-export` exports valid human-supported or partial rows
   into `data/literature/bovine_evidence_table.tsv`; the committed table is
   currently header-only because no human decisions have been entered.

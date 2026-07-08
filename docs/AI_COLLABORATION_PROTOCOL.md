@@ -141,3 +141,35 @@ At the end of a work session:
   `scripts/run_evidence_parallel.py` were untracked local files. They should not
   be removed or committed unless their author confirms ownership or they are
   intentionally adopted in a later documented commit.
+
+## 7. Isolated Worktrees And Branch Hygiene (2026-07-09)
+
+Concurrent agents must NOT share one working-tree checkout. A shared checkout has
+a single `HEAD`, index, and set of files, so when one agent runs `git checkout`
+it silently rewrites the other agent's files and strands its commits on an
+abandoned branch. This happened on 2026-07-08/09 (a Claude commit landed on a
+Codex feature branch and vanished from the tree when Codex switched branches).
+
+**Required setup — one checkout per agent:**
+
+- Each agent works in its **own `git worktree`** (or its own clone), never the
+  same directory as another active agent. Example:
+  `git worktree add -b <agent>/<topic> ../CultivateAgent-<agent> origin/main`.
+  Claude uses `../CultivateAgent-claude`; Codex keeps the primary directory.
+- Each worktree has its own `.venv`; do not share the interpreter across worktrees
+  (an editable install points at one directory only).
+
+**Required flow — short-lived branches, merge to `main`, no leftovers:**
+
+1. `git fetch origin` and branch from `origin/main`.
+2. Make one coherent change; run `pytest -q` (and `smoke` for non-doc changes).
+3. Merge to `main` immediately by fast-forward: `git push origin HEAD:main`
+   (rebase onto the new `origin/main` and retry if it is rejected).
+4. Delete the feature branch on origin and locally. **Do not leave unmerged
+   feature branches lying around** — `main` is the single source of truth and
+   must not go stale while work piles up on side branches.
+5. Re-sync your worktree branch to `main` (`git fetch && git reset --hard origin/main`)
+   before starting the next change.
+
+Commit-message coordination (Section 4) and file ownership (Section 3) still
+apply; worktrees remove the *filesystem* collision, not the need to communicate.

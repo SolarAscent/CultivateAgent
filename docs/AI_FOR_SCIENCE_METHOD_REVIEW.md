@@ -278,8 +278,9 @@ Implementation now available:
 - The current proliferation audit is `NO-GO`: 145 local extracted effect items
   across 40 papers produced 4 AI-review candidates, but all are direction-only
   and 16/16 critical human-review tasks remain open.
-- The current H001-H016 packet has local full-text locators for 9/16 critical
-  tasks; the missing 7 tasks need full-text acquisition or stricter matching.
+- The current H001-H016 packet has local full-text locators for 14/16 critical
+  tasks; the missing 2 tasks map to R024 and need institutional or
+  human-provided main full text.
 
 ## 4. Explicit Non-Adoptions
 

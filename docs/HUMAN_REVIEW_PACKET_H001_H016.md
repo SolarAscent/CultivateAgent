@@ -7,8 +7,8 @@ Status: candidate passage locators for human adjudication; not an AI decision.
 | Metric | Value |
 |---|---:|
 | Review tasks | 16 |
-| Tasks with local full text | 9 |
-| Tasks needing source/fulltext action | 7 |
+| Tasks with local full text | 14 |
+| Tasks needing source/fulltext action | 2 |
 
 ## How To Use
 
@@ -114,33 +114,41 @@ The packet avoids embedding long source excerpts; record the final human decisio
 
 ## H006: Commercial SFM benchmark
 
-- Status: `missing_ingested_paper`
+- Status: `ready_for_human_review`
 - Source record: `R017`
 - Manifest title: Serum-free media for the growth of primary bovine myoblasts
 - Human question: Which commercial chemically defined serum-free media supported primary bovine myoblast growth, and how did they compare with serum-containing medium?
 - Suggested action: Record media names, 6-day proliferation data, morphology notes, and limitations.
-- Local paper: `MISSING`
-- Full text: `MISSING`
+- Local paper: `serum-free-media-for-the-growth-of-primary-bovine-myoblasts`
+- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/fulltext.txt`
 - Query terms: commercial, sfm, benchmark, negative_evidence, serum_free_status, chemically, defined, serum-free, media, supported, primary, bovine, myoblast, growth, they, compare, serum-containing, medium, names, 6-day, proliferation, data, morphology, notes
 
 | Rank | Score | Character Range | Matched Terms |
 |---:|---:|---|---|
-| - | - | - | - |
+| 1 | 18.5 | `11523-14880` | bovine, chemically, data, growth, media, medium, morphology, mts, myoblast, myoblasts, proliferation, serum-containing |
+| 2 | 16.0 | `7578-11522` | benchmark, commercial, data, growth, media, medium, mts, myoblast, myoblasts, proliferation, serum-free, sfm |
+| 3 | 16.0 | `20219-23837` | benchmark, bovine, data, growth, media, medium, myoblast, myoblasts, primary, serum-containing, serum-free, supported |
+| 4 | 14.0 | `15803-18055` | bovine, growth, media, medium, mts, myoblast, myoblasts, serum-free, supported, they |
+| 5 | 13.5 | `0-3108` | bovine, growth, media, medium, mts, myoblast, myoblasts, primary, proliferation, serum-free |
 
 ## H007: Serum-free differentiation guardrail
 
-- Status: `missing_ingested_paper`
+- Status: `ready_for_human_review`
 - Source record: `R018`
 - Manifest title: A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation
 - Human question: Which ligands/receptors enabled serum-free myogenic differentiation, and are any of these also plausible expansion-stage risks or constraints?
 - Suggested action: Extract IGF1R/TFRC/LPAR1-related ligands, markers, and whether expansion formulation should avoid differentiation induction.
-- Local paper: `MISSING`
-- Full text: `MISSING`
+- Local paper: `a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate`
+- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/fulltext.txt`
 - Query terms: serum-free, differentiation, guardrail, differentiation_endpoint, ligand_list, ligands/receptors, enabled, myogenic, plausible, expansion-stage, risks, constraints, extract, igf1r/tfrc/lpar1-related, ligands, markers, whether, expansion, formulation, avoid, induction., media, cultured, meat
 
 | Rank | Score | Character Range | Matched Terms |
 |---:|---:|---|---|
-| - | - | - | - |
+| 1 | 28.5 | `2378-8256` | absence, bovine, cell, chemically, cultured, defined, differentiation, enabled, expression, formulation, gene, igf1r |
+| 2 | 26.5 | `23235-31306` | absence, bovine, cell, chemically, cultured, defined, differentiation, expression, formulation, gene, ligands, markers |
+| 3 | 23.0 | `12469-20778` | absence, bovine, cell, differentiation, expression, formulation, gene, igf1r, ligands, lpar1, markers, media |
+| 4 | 19.0 | `48895-58888` | bovine, cell, chemically, cultured, defined, differentiation, expression, gene, media, medium, myogenic, satellite |
+| 5 | 17.5 | `32536-38369` | absence, cell, cultured, differentiation, expression, formulation, ligands, meat, medium, myogenic, production, serum |
 
 ## H008: Species and cell-type dependence
 
@@ -182,33 +190,41 @@ The packet avoids embedding long source excerpts; record the final human decisio
 
 ## H010: DOE/RSM bovine SFM formulation
 
-- Status: `missing_ingested_paper`
+- Status: `ready_for_human_review`
 - Source record: `R021`
 - Manifest title: A simple and robust serum-free media for the proliferation of muscle cells
 - Human question: What factors and levels were screened by DOE/RSM, and which optimized formulation should seed the search space?
 - Suggested action: Extract factor list, low/high levels, optimal recipe, response metrics, and validation data.
-- Local paper: `MISSING`
-- Full text: `MISSING`
+- Local paper: `a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells`
+- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
 - Query terms: doe/rsm, bovine, sfm, formulation, doe_factors, optimized_levels, endpoint, factors, levels, were, screened, optimized, seed, search, space, extract, factor, list, low/high, optimal, recipe, response, metrics, validation
 
 | Rank | Score | Character Range | Matched Terms |
 |---:|---:|---|---|
-| - | - | - | - |
+| 1 | 18.5 | `0-5055` | bovine, cells, factors, long-term, media, muscle, optimized, performance, proliferation, response, robust, serum-free |
+| 2 | 17.0 | `65213-74491` | bovine, cells, factors, formulation, levels, long-term, media, muscle, optimized, proliferation, response, serum-free |
+| 3 | 16.5 | `18625-26847` | bovine, cells, factors, levels, list, media, optimized, performance, proliferation, response, serum-free, transcriptomics |
+| 4 | 16.5 | `74492-82848` | bovine, cells, factor, long-term, media, muscle, optimized, performance, proliferation, response, seed, serum-free |
+| 5 | 14.0 | `5056-11010` | bovine, cells, extract, factor, factors, long-term, media, optimized, response, screened, serum-free, transcriptomics |
 
 ## H011: Long-term and transcriptomic validation
 
-- Status: `missing_ingested_paper`
+- Status: `ready_for_human_review`
 - Source record: `R021`
 - Manifest title: A simple and robust serum-free media for the proliferation of muscle cells
 - Human question: Did the DOE/RSM formulation preserve proliferative attributes and myogenic identity over longer culture?
 - Suggested action: Record long-term assay length, live assays, transcriptomics summary, and warnings.
-- Local paper: `MISSING`
-- Full text: `MISSING`
+- Local paper: `a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells`
+- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
 - Query terms: long-term, transcriptomic, validation, long_term_performance, identity_markers, doe/rsm, formulation, preserve, proliferative, attributes, myogenic, identity, longer, culture, assay, length, live, assays, transcriptomics, summary, warnings., simple, robust, serum-free
 
 | Rank | Score | Character Range | Matched Terms |
 |---:|---:|---|---|
-| - | - | - | - |
+| 1 | 17.0 | `0-5055` | attributes, cells, culture, live, long-term, media, muscle, performance, proliferation, proliferative, robust, serum-free |
+| 2 | 16.5 | `18625-26847` | assay, assays, cells, culture, live, longer, media, myogenic, performance, proliferation, proliferative, serum-free |
+| 3 | 16.5 | `46453-52400` | assay, assays, cells, live, long-term, media, muscle, myogenic, performance, proliferation, proliferative, serum-free |
+| 4 | 15.5 | `65213-74491` | assay, assays, cells, culture, formulation, live, long-term, longer, media, muscle, proliferation, serum-free |
+| 5 | 14.5 | `60011-65212` | assays, cells, culture, long-term, media, myogenic, proliferation, proliferative, robust, serum-free, simple |
 
 ## H012: Albumin replacement candidates
 
@@ -250,18 +266,22 @@ The packet avoids embedding long source excerpts; record the final human decisio
 
 ## H014: bFGF/media composition interactions
 
-- Status: `missing_ingested_paper`
+- Status: `ready_for_human_review`
 - Source record: `R023`
 - Manifest title: Influence of Media Composition on the Level of Bovine Satellite Cell Proliferation
 - Human question: What media components interacted with bFGF in bovine satellite proliferation, and what were the tested levels?
 - Suggested action: Extract DOE design, factor levels, interaction terms, and effect direction.
-- Local paper: `MISSING`
-- Full text: `MISSING`
+- Local paper: `influence-of-media-composition-on-the-level-of-bovine-satellite-cell-proliferati`
+- Full text: `/Users/tianyangsong/Desktop/Research/CultivateAgent/data/papers/influence-of-media-composition-on-the-level-of-bovine-satellite-cell-proliferati/fulltext.txt`
 - Query terms: bfgf/media, composition, interactions, bfgf_dose, interaction_effects, doe_model, media, components, interacted, bfgf, bovine, satellite, proliferation, were, tested, levels, extract, doe, design, factor, interaction, terms, effect, direction.
 
 | Rank | Score | Character Range | Matched Terms |
 |---:|---:|---|---|
-| - | - | - | - |
+| 1 | 19.0 | `6376-8434` | bfgf, bovine, cell, components, composition, design, doe, factor, influence, interactions, level, media |
+| 2 | 16.5 | `35731-38478` | bfgf, bovine, cell, components, composition, design, effect, factor, interaction, level, proliferation, satellite |
+| 3 | 16.5 | `38479-40034` | bfgf, bovine, cell, effect, factor, influence, interaction, interactions, level, levels, proliferation, tested |
+| 4 | 15.5 | `1312-2991` | bfgf, bovine, cell, components, composition, effect, factor, level, proliferation, satellite, tested |
+| 5 | 14.5 | `21192-22098` | bfgf, cell, components, effect, factor, interaction, level, levels, proliferation, satellite, terms, tested |
 
 ## H015: Plant/insect protein isolate status
 

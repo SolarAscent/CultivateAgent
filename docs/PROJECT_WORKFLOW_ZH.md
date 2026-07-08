@@ -470,8 +470,8 @@ Gate：论文 claims 可追溯到证据和结果。
 
 | 工作线 | 现在可以做 | 现在不能做 |
 |---|---|---|
-| `[HUMAN]` 证据复核 | 用 locator packet 复核 H001-H005、H008、H009、H012、H013，并在 review queue 写 notes | 在 S3-S4 gate 未完成时批准湿实验变量 |
-| `[AI]` corpus/extraction | 获取或导入 H006-H007、H010-H011、H014-H016 缺失全文；重跑 review packet；提高抽取 coverage | 假装证据 gate 已过并生成 wet-lab design packet |
+| `[HUMAN]` 证据复核 | 用 locator packet 复核 H001-H014，并在 review queue 写 notes | 在 S3-S4 gate 未完成时批准湿实验变量 |
+| `[AI]` corpus/extraction | 等人工/机构访问可用后获取 R024 主文全文；把人工 notes 转成 adjudication records；提高抽取 coverage | 假装证据 gate 已过并生成 wet-lab design packet |
 | `[LAB]` 可行性 | 确认 cell source、passage limits、baseline medium、plate format、assay duration、最大条件数和 reagent constraints | 开始实验或修改候选配方 |
 | `[REVIEW]` gatekeeping | 检查 extracted claims 是否和 source text 一致，变量是否有证据支撑 | 把 direction-only evidence 当成定量证明 |
 
@@ -532,8 +532,8 @@ Gate：论文 claims 可追溯到证据和结果。
 | Corpus manifest | Partial | 已有可用 bovine set，但 P1 人工复核和全文覆盖不完整 |
 | Proliferation evidence audit | `NO-GO` | 当前 extracted evidence 不能支持湿实验入口 |
 | Critical human review | 16/16 open | 尚无 adjudicated evidence table |
-| Review-packet 覆盖 | 9/16 有本地 locators | H001-H005、H008、H009、H012、H013 可进入高效人工复核 |
-| 缺失 review-packet source | 7/16 | H006-H007、H010-H011、H014-H016 需要补全文或更严格匹配 |
+| Review-packet 覆盖 | 14/16 有本地 locators | H001-H014 可进入高效人工复核 |
+| 缺失 review-packet source | 2/16 | H015-H016 对应 R024，需要机构访问或人工提供主文全文 |
 | Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
 
 ### 8.4 已知 Blocker 和风险
@@ -550,9 +550,9 @@ Gate：论文 claims 可追溯到证据和结果。
 
 ### 8.5 近期下一步
 
-1. `[AI]` 获取或导入 H006-H007、H010-H011、H014-H016 的缺失全文。
-2. `[AI]` 重新生成 `docs/HUMAN_REVIEW_PACKET_H001_H016.md`。
-3. `[HUMAN]` 用当前 locator packet 复核 H001-H005、H008、H009、H012、H013。
+1. `[HUMAN]` 用当前 locator packet 复核 H001-H014。
+2. `[HUMAN]` 提供 R024 主文全文，或确认 R024 暂时 defer。
+3. `[AI]` R024 可用后重新生成 `docs/HUMAN_REVIEW_PACKET_H001_H016.md`。
 4. `[AI]` 把人工 notes 转成结构化 adjudication records。
 5. `[AI]` 重新运行 extraction 和 `cultivate evidence-audit`。
 6. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。

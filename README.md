@@ -148,6 +148,7 @@ cultivate evidence --outcome proliferation   # -> effect_items JSON + P(componen
 cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md
 # Build character-range locators for the first human review gate:
 cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
+# Current committed packet covers 14/16 tasks; H015-H016 still need R024 main full text.
 
 # 5. Ask for a medium design, conditioned on objectives + context:
 cultivate design \

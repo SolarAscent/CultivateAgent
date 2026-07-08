@@ -105,10 +105,10 @@ Gate 2, extraction reliability: **not passed**.
 - The audit is still **NO-GO** because 16/16 critical human-review tasks remain
   open and all AI-review candidates are direction-only rather than quantitative.
 - `docs/HUMAN_REVIEW_PACKET_H001_H016.md` now gives local full-text
-  character-range locators for 9/16 critical review tasks: H001-H005, H008,
-  H009, H012, and H013. The remaining H006-H007, H010-H011, and H014-H016 need
-  missing source/full-text acquisition or stricter title matching before review
-  can be efficient.
+  character-range locators for 14/16 critical review tasks: H001-H014. R017,
+  R018, and R021 were added from accessible PDFs; R023 was added from Europe PMC
+  fullTextXML. The remaining H015-H016 map to R024 and still need institutional
+  or human-provided main full text before efficient review.
 - Next step is full-text extraction plus human adjudication for the top 20-30
   review tasks.
 
@@ -134,9 +134,10 @@ Gate 6, pre-registration readiness: **not passed**.
 
 ## Immediate Next Steps
 
-1. Use `docs/HUMAN_REVIEW_PACKET_H001_H016.md` to review H001-H005, H008, H009,
-   H012, and H013.
-2. Pull or ingest full text/PDFs for H006-H007, H010-H011, and H014-H016.
+1. Use `docs/HUMAN_REVIEW_PACKET_H001_H016.md` to review H001-H014.
+2. Obtain R024 main full text through institutional access or a human-provided
+   PDF; ACS and ACS Figshare automated downloads were access-challenged in this
+   session.
 3. Re-run `cultivate review-packet` and `cultivate evidence-audit` after updated
    extraction outputs.
 4. Extract exact component tables, dose ranges, endpoints, and evidence quotes

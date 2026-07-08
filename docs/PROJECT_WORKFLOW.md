@@ -498,8 +498,8 @@ Work that can happen now:
 
 | Stream | Can start now | Must not do yet |
 |---|---|---|
-| `[HUMAN]` evidence review | Adjudicate H001-H005, H008, H009, H012, H013 using the locator packet; record notes in the review queue | Approve wet-lab variables without completed S3-S4 gates |
-| `[AI]` corpus/extraction | Acquire or ingest missing full text for H006-H007, H010-H011, H014-H016; regenerate review packet; improve extraction coverage | Generate a wet-lab design packet as if the evidence gate passed |
+| `[HUMAN]` evidence review | Adjudicate H001-H014 using the locator packet; record notes in the review queue | Approve wet-lab variables without completed S3-S4 gates |
+| `[AI]` corpus/extraction | Acquire R024 main full text when human/institutional access is available; convert human notes into adjudication records; improve extraction coverage | Generate a wet-lab design packet as if the evidence gate passed |
 | `[LAB]` feasibility | Confirm cell source, passage limits, baseline medium, plate format, assay duration, maximum conditions, and reagent constraints | Start experiments or change formulation candidates |
 | `[REVIEW]` gatekeeping | Check whether extracted claims match source text and whether variables are supported | Treat direction-only evidence as quantitative proof |
 
@@ -564,8 +564,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | Corpus manifest | Partial | Useful bovine set exists, but P1 human review and full-text coverage are incomplete |
 | Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
 | Critical human review | 16/16 open | No adjudicated evidence table yet |
-| Review-packet coverage | 9/16 with local locators | H001-H005, H008, H009, H012, H013 are ready for efficient human review |
-| Missing review-packet sources | 7/16 | H006-H007, H010-H011, H014-H016 need source/full-text acquisition or stricter matching |
+| Review-packet coverage | 14/16 with local locators | H001-H014 are ready for efficient human review |
+| Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
 
 ### 8.4 Known Blockers And Risks
@@ -585,11 +585,11 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 ### 8.5 Immediate Next Actions
 
-1. `[AI]` Acquire or ingest missing full text for H006-H007, H010-H011, and
-   H014-H016.
-2. `[AI]` Regenerate `docs/HUMAN_REVIEW_PACKET_H001_H016.md`.
-3. `[HUMAN]` Adjudicate H001-H005, H008, H009, H012, and H013 using the current
+1. `[HUMAN]` Adjudicate H001-H014 using the current
    locator packet.
+2. `[HUMAN]` Provide R024 main full text, or confirm it should remain deferred.
+3. `[AI]` Regenerate `docs/HUMAN_REVIEW_PACKET_H001_H016.md` after R024 is
+   available.
 4. `[AI]` Convert human notes into structured adjudication records.
 5. `[AI]` Re-run extraction and `cultivate evidence-audit`.
 6. `[REVIEW]` Decide which variables can enter S5 search-space design.

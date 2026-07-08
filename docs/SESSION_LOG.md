@@ -640,3 +640,87 @@ material work sessions.
    H010-H011, and H014-H016.
 3. Regenerate `docs/HUMAN_REVIEW_PACKET_H001_H016.md` after missing sources are
    available, then continue human adjudication.
+
+---
+
+# Session 8 (Codex) — acquire missing review-packet full text
+
+Date: 2026-07-08
+Branch: `main`
+
+## Coordination Decision
+
+After the workflow manuals were reorganized, the next highest-value non-wet-lab
+task was to reduce the S4 human-review blocker. The committed review packet only
+had local full-text locators for 9/16 critical tasks. This session focused on
+legally accessible source acquisition for H006-H007, H010-H011, and H014-H016,
+then regenerated the locator packet without making any human adjudication
+decision.
+
+## Sources Checked Or Acquired
+
+- R017 / H006: Kolkmann et al. 2020, `Serum-free media for the growth of primary
+  bovine myoblasts`, DOI `10.1007/s10616-019-00361-y`; PDF acquired from the
+  publisher/PMC-accessible route and ingested.
+- R018 / H007: Messmer et al. 2022, `A serum-free media formulation for cultured
+  meat production supports bovine satellite cell differentiation in the absence
+  of serum starvation`, DOI `10.1038/s43016-021-00419-1`; Maastricht University
+  Pure portal-file PDF was accessible and ingested.
+- R021 / H010-H011: Skrivergaard et al. 2023, `A simple and robust serum-free
+  media for the proliferation of muscle cells`, DOI
+  `10.1016/j.foodres.2023.113194`; Aarhus Pure PDF was accessible and ingested.
+- R023 / H014: Zygmunt et al. 2023, `Influence of Media Composition on the Level
+  of Bovine Satellite Cell Proliferation`, DOI `10.3390/ani13111855`; MDPI/PMC
+  PDF downloads were access-challenged, so Europe PMC `fullTextXML` for PMCID
+  `PMC10251972` was used to create local `fulltext.txt` and `fulltext.xml`.
+- R024 / H015-H016: Amirvaresi et al. 2025, `Sustainable alternatives to fetal
+  bovine serum...`, DOI `10.1021/acsfoodscitech.5c00023`; ACS main PDF and ACS
+  Figshare supporting-information downloads were access-challenged. This remains
+  a human/institutional-access blocker.
+
+## Changes Made
+
+- Ingested accessible PDFs into ignored `data/papers/` using
+  `scripts/ingest_pdfs.py`.
+- Added ignored local full-text data for R023 from Europe PMC XML.
+- Regenerated `docs/HUMAN_REVIEW_PACKET_H001_H016.md`.
+- Updated `data/literature/bovine_corpus_manifest.tsv`: R017, R018, R021, and
+  R023 are now `fulltext_ingested_for_review_packet`; R024 is
+  `needs_institutional_or_human_full_text`.
+- Updated README, both workflow manuals, `BOVINE_CORPUS_MANIFEST.md`, and
+  `AI_FOR_SCIENCE_METHOD_REVIEW.md` to reflect 14/16 review-packet coverage.
+
+## Current Review Packet Result
+
+- Review tasks covered: 16 (`H001-H016`).
+- Local full-text locators found: 14/16.
+- Ready for human review with locators: H001-H014.
+- Still missing: H015-H016 because R024 main full text is not locally available.
+
+## What This Does Not Claim
+
+- No human review decision was made.
+- No R024 evidence was adjudicated from partial or access-challenged sources.
+- No wet-lab variable was approved.
+- The proliferation audit remains `NO-GO` until human adjudication and updated
+  evidence audit pass.
+
+## Verification
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m pytest -q`: 54 passed, 3 warnings.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology loaded 176
+  surface terms.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+
+## Next 3 Steps
+
+1. Human reviewer adjudicates H001-H014 using
+   `docs/HUMAN_REVIEW_PACKET_H001_H016.md`.
+2. Human owner provides R024 main full text through institutional access, or
+   explicitly defers H015-H016.
+3. After human notes exist, AI converts them into structured adjudication and
+   re-runs `cultivate evidence-audit`.

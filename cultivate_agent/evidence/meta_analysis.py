@@ -194,6 +194,16 @@ def meta_analyze(items: List[EvidenceItem], *, high_i2: float = 0.5) -> Evidence
         summ.ci_low = round(max(0.0, p - 1.96 * se), 4)
         summ.ci_high = round(min(1.0, p + 1.96 * se), 4)
         summ.note = f"Direction-only evidence (helps~alpha={a:.0f}, hurts~beta={b:.0f}); no effect sizes."
+        # Direction-only heterogeneity: when papers disagree (both directions well
+        # represented) the effect is context-dependent, the same conclusion I^2
+        # gives for continuous evidence. Flag it so the optimizer explores rather
+        # than trusts a pooled ~0.5 posterior.
+        helps, hurts = len([d for d in directions if d > 0]), len([d for d in directions if d < 0])
+        signed = helps + hurts
+        if signed >= 3 and min(helps, hurts) / signed >= 0.3:
+            summ.context_dependent = True
+            summ.note += (f" Conflicting directions ({helps} help / {hurts} hurt) across "
+                          "studies; context-dependent — test directly.")
     else:
         summ.note = "No usable directional or quantitative evidence."
     return summ

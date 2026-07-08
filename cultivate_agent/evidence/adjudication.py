@@ -119,8 +119,15 @@ def write_adjudication_template(
     top_k: int = 3,
     include_missing: bool = False,
     path_base: str | Path | None = None,
+    force_overwrite: bool = False,
 ) -> Path:
     """Write a TSV worksheet prefilled with review task metadata and locators."""
+    out = Path(out_path)
+    if out.exists() and not force_overwrite and _worksheet_has_decisions(out):
+        raise FileExistsError(
+            f"{out} already contains human decisions; refusing to overwrite. "
+            "Use force_overwrite=True only after saving a reviewed copy."
+        )
     items = build_review_packet(
         review_queue_path=review_queue_path,
         manifest_path=manifest_path,
@@ -157,7 +164,6 @@ def write_adjudication_template(
                 "and key_finding."
             ),
         })
-    out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
@@ -519,3 +525,14 @@ def _short_excerpt(text: str, limit: int) -> str:
     if len(normalized) <= limit:
         return normalized
     return normalized[: max(0, limit - 3)].rstrip() + "..."
+
+
+def _worksheet_has_decisions(path: Path) -> bool:
+    try:
+        with path.open(newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            if "decision" not in (reader.fieldnames or []):
+                return False
+            return any((row.get("decision") or "").strip() for row in reader)
+    except OSError:
+        return False

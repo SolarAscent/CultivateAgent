@@ -413,16 +413,21 @@ def cmd_adjudication_template(args) -> int:
     from .evidence import write_adjudication_template
 
     ids = _expand_review_ids(args.ids)
-    out = write_adjudication_template(
-        review_queue_path=args.review_queue or (cfg.data_path / "literature" / "bovine_human_review_queue.tsv"),
-        manifest_path=args.manifest or (cfg.data_path / "literature" / "bovine_corpus_manifest.tsv"),
-        papers_dir=cfg.papers_dir,
-        review_ids=ids,
-        out_path=args.out,
-        top_k=args.top_k,
-        include_missing=args.include_missing,
-        path_base=cfg.root,
-    )
+    try:
+        out = write_adjudication_template(
+            review_queue_path=args.review_queue or (cfg.data_path / "literature" / "bovine_human_review_queue.tsv"),
+            manifest_path=args.manifest or (cfg.data_path / "literature" / "bovine_corpus_manifest.tsv"),
+            papers_dir=cfg.papers_dir,
+            review_ids=ids,
+            out_path=args.out,
+            top_k=args.top_k,
+            include_missing=args.include_missing,
+            path_base=cfg.root,
+            force_overwrite=args.force,
+        )
+    except FileExistsError as e:
+        print(f"! {e}", file=sys.stderr)
+        return 2
     print(f"+ wrote {out}")
     return 0
 
@@ -961,6 +966,7 @@ def build_parser() -> argparse.ArgumentParser:
                     help="TSV output path")
     sp.add_argument("--top-k", type=int, default=3, help="candidate ranges per review task")
     sp.add_argument("--include-missing", action="store_true", help="include rows without local full text")
+    sp.add_argument("--force", action="store_true", help="overwrite a worksheet that already has decisions")
     sp.set_defaults(func=cmd_adjudication_template)
 
     sp = sub.add_parser("adjudication-validate", help="validate a filled human evidence-adjudication worksheet")

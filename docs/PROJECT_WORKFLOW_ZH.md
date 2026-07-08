@@ -557,7 +557,8 @@ Gate：论文 claims 可追溯到证据和结果。
   locators，但不做 evidence adjudication。
 - `cultivate adjudication-template` 和 `cultivate adjudication-validate` 能创建和
   检查带有可移植 `data/papers/...` 路径的 H001-H014 人工填写工作表，但不判断证据
-  是否 supported。
+  是否 supported。如果工作表中已有人工 decision，template 命令默认拒绝覆盖；只有
+  显式传入 `--force` 才会覆盖。
 - `cultivate adjudication-status` 会汇总 blank、resolved、evidence-bearing 和 invalid
   decisions。当前 H001-H014 状态：0/14 resolved，0 个 evidence-bearing decisions，
   0 个 validation issues。
@@ -596,6 +597,9 @@ Gate：论文 claims 可追溯到证据和结果。
 
 - 新 worktree 不会自动带有 ignored 的本地 paper assets（`data/papers/`）。
   运行 extraction-readiness 前需要本地复制或重新生成这些材料。
+- 一旦 reviewer 开始填写 `data/literature/bovine_adjudication_H001_H014.tsv`，
+  不要再直接运行 `adjudication-template` 覆盖；除非已经保存人工版本，并且有意使用
+  `--force`。
 - Live OpenAI/Anthropic extraction 太稀疏，不能算成功 model agreement。
 - Gemini live comparison 未完成，因为没有 Gemini/Google key。
 - OpenAI raw-response debugging 遇到 insufficient quota。

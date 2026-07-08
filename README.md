@@ -293,7 +293,8 @@ Useful scripts:
 - `cultivate adjudication-template` / `cultivate adjudication-validate`: creates
   and checks a human-fillable evidence-adjudication worksheet with the same
   portable paths; a blank PASS only means the worksheet format is valid, not
-  that evidence has been approved.
+  that evidence has been approved. The template command refuses to overwrite a
+  worksheet that already contains decisions unless `--force` is passed.
 - `cultivate adjudication-status`: summarizes worksheet progress and whether any
   evidence-bearing human decisions are ready to export.
 - `cultivate adjudication-passages`: prints short local snippets for worksheet

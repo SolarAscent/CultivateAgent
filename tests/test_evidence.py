@@ -291,6 +291,41 @@ def test_adjudication_template_and_validation(tmp_path):
     assert supported_status.blank == 0
     assert supported_status.evidence_bearing == 1
     assert supported_status.ready_for_export
+    try:
+        write_adjudication_template(
+            review_queue_path=queue,
+            manifest_path=manifest,
+            papers_dir=papers,
+            review_ids=["H001"],
+            out_path=worksheet,
+            path_base=tmp_path,
+        )
+    except FileExistsError as exc:
+        assert "already contains human decisions" in str(exc)
+    else:
+        raise AssertionError("expected template overwrite guard")
+    write_adjudication_template(
+        review_queue_path=queue,
+        manifest_path=manifest,
+        papers_dir=papers,
+        review_ids=["H001"],
+        out_path=worksheet,
+        path_base=tmp_path,
+        force_overwrite=True,
+    )
+    assert summarize_adjudication_worksheet(worksheet).blank == 1
+
+    # Recreate the supported row for export/validation checks below.
+    lines = worksheet.read_text(encoding="utf-8").splitlines()
+    header = lines[0].split("\t")
+    row = lines[1].split("\t")
+    row[header.index("decision")] = "supported"
+    row[header.index("selected_range")] = row[header.index("suggested_ranges")].split(";")[0]
+    row[header.index("key_finding")] = "FGF2 dose supported proliferation"
+    row[header.index("dose_or_range")] = "10 ng/mL"
+    row[header.index("endpoint")] = "proliferation"
+    row[header.index("wetlab_use")] = "range_seed"
+    worksheet.write_text("\n".join([lines[0], "\t".join(row)]) + "\n", encoding="utf-8")
     evidence = export_adjudicated_evidence(
         worksheet_path=worksheet,
         out_path=tmp_path / "evidence.tsv",

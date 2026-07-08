@@ -11,6 +11,8 @@ data/**
 !data/library.example.bib
 !data/literature/
 !data/literature/*.tsv
+# Local backups created before forced adjudication worksheet overwrite.
+data/literature/*.tsv.bak.*
 *.sqlite
 *.sqlite3
 *.db

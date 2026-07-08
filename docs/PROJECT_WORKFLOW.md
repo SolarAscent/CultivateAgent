@@ -593,7 +593,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   `data/papers/...` paths, without deciding evidence support. The template
   command refuses to overwrite a worksheet that already contains human decisions
   unless `--force` is passed; forced overwrites create a timestamped `.bak` copy
-  next to the worksheet first.
+  next to the worksheet first. These local backup files are ignored by git.
 - `cultivate adjudication-status` summarizes blank, resolved, evidence-bearing,
   and invalid worksheet decisions. Current H001-H014 status: 0/14 resolved,
   0 evidence-bearing decisions, 0 validation issues.
@@ -639,7 +639,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   do not regenerate it with `adjudication-template` unless a reviewed copy has
   been saved and `--force` is intentionally used. Forced overwrites create a
   timestamped `.bak` copy, but the backup is a last-resort guard, not the normal
-  review workflow.
+  review workflow, and these backup files should stay local.
 - Live OpenAI/Anthropic extraction was too sparse to count as successful model
   agreement.
 - Gemini live comparison is incomplete because no Gemini/Google key was

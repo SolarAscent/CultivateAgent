@@ -189,6 +189,10 @@ Project implication:
   `numeric_effect_status`, `numeric_effect_metric`, `numeric_effect_value`,
   optional variance, and notes. Direction-only rows should be marked
   `not_applicable` for numeric effect status.
+- Deterministic log-ratio extraction from fold/percent phrases or explicit
+  treatment/control means is only a candidate numeric aid. It creates tier-2
+  evidence unless a verified variance is available and still needs the S4
+  numeric-effect fields before thesis use.
 - A blank worksheet with a passing validator means only that the form is
   structurally valid. It is not evidence approval.
 - `cultivate adjudication-export` remains intentionally narrow: only

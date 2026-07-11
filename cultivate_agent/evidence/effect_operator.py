@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import math
 import re
+from dataclasses import dataclass, field
 from typing import List, Optional
 
 from ..llm.base import LLMClient, LLMError, extract_json
@@ -134,19 +135,20 @@ def extract_effects(
             direction = None
         effect = _to_float(e.get("effect"))
         variance = _to_float(e.get("variance"))
+        context = {k: str(v) for k, v in (e.get("context") or {}).items() if v}
         if quote:
-            inferred_effect = _infer_log_response_ratio(quote, direction)
+            inferred = _infer_log_response_ratio(quote, direction, component, outcome)
             if effect is not None and not _number_supported_by_quote(effect, quote):
                 effect = None
             if variance is not None and not _number_supported_by_quote(variance, quote):
                 variance = None
-            if inferred_effect is not None:
-                effect = inferred_effect
+            if inferred.effect is not None:
+                effect = inferred.effect
                 variance = None
+                context.update(inferred.context)
         else:
             effect = None
             variance = None
-        context = {k: str(v) for k, v in (e.get("context") or {}).items() if v}
 
         items.append(EvidenceItem(
             component=component, outcome=outcome, paper_id=ref.paper_id,
@@ -175,6 +177,8 @@ def _number_supported_by_quote(value: float, quote: str) -> bool:
     or human reviewer verifies the calculation.
     """
     for match in _NUMBER_RE.finditer(quote):
+        if _number_is_embedded(quote, match.start(), match.end()):
+            continue
         token = match.group(0)
         try:
             observed = float(token)
@@ -205,20 +209,40 @@ _PERCENT_RE = re.compile(
 )
 
 
-def _infer_log_response_ratio(quote: str, direction: Optional[int]) -> Optional[float]:
-    """Infer ln(response ratio) from explicit fold/percent-change phrasing.
+@dataclass
+class _NumericInference:
+    effect: Optional[float] = None
+    context: dict[str, str] = field(default_factory=dict)
+
+
+def _infer_log_response_ratio(
+    quote: str,
+    direction: Optional[int],
+    component: str = "",
+    outcome: str = "",
+) -> _NumericInference:
+    """Infer ln(response ratio) from explicit proportional phrasing.
 
     The parser only handles directly reported proportional changes in the quote.
-    It does not compute from raw treatment/control means and never infers a
+    It also handles very explicit treatment/control means, but never infers a
     variance. This creates tier-2 evidence at most.
     """
     fold = _infer_fold_ratio(quote, direction)
     if fold is not None and fold > 0:
-        return math.log(fold)
+        return _NumericInference(math.log(fold), {
+            "effect_metric": "log_response_ratio",
+            "effect_inference_source": "explicit_fold_or_percent",
+        })
     percent = _infer_percent_ratio(quote, direction)
     if percent is not None and percent > 0:
-        return math.log(percent)
-    return None
+        return _NumericInference(math.log(percent), {
+            "effect_metric": "log_response_ratio",
+            "effect_inference_source": "explicit_fold_or_percent",
+        })
+    means = _infer_raw_mean_ratio(quote, component, outcome)
+    if means.effect is not None:
+        return means
+    return _NumericInference()
 
 
 def _infer_fold_ratio(quote: str, direction: Optional[int]) -> Optional[float]:
@@ -266,3 +290,109 @@ def _safe_positive_float(value: str) -> Optional[float]:
     except (TypeError, ValueError):
         return None
     return out if out > 0 else None
+
+
+_CONTROL_WORDS = (
+    "control", "vehicle", "untreated", "basal", "comparator", "baseline",
+)
+_TREATMENT_WORDS = (
+    "treated", "treatment", "supplemented", "supplementation", "with", "plus",
+    "exposed", "condition",
+)
+_NON_RESPONSE_UNITS = (
+    "%", "fold", "x", "\u00d7", "ng/ml", "ng ml", "ug/ml", "\u03bcg/ml", "mg/ml",
+    "g/l", "mm", "mmol", "um", "\u03bcm", "nm", "pm", "h", "hr", "hrs", "hour",
+    "hours", "d", "day", "days", "passage", "passages",
+)
+_TIMEPOINT_RE = re.compile(
+    r"\b(?:at|after|for)\s+(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>h|hr|hrs|hours?|d|days?)\b",
+    flags=re.IGNORECASE,
+)
+
+
+def _infer_raw_mean_ratio(quote: str, component: str, outcome: str) -> _NumericInference:
+    observations = _labelled_numeric_observations(quote, component)
+    treatment = [obs for obs in observations if obs["label"] == "treatment"]
+    control = [obs for obs in observations if obs["label"] == "control"]
+    if len(treatment) != 1 or len(control) != 1:
+        return _NumericInference()
+
+    treatment_value = treatment[0]["value"]
+    control_value = control[0]["value"]
+    if treatment_value <= 0 or control_value <= 0:
+        return _NumericInference()
+
+    context = {
+        "effect_metric": "log_response_ratio",
+        "effect_inference_source": "treatment_control_means",
+        "treatment_mean": _format_effect_number(treatment_value),
+        "control_mean": _format_effect_number(control_value),
+    }
+    if outcome:
+        context["effect_endpoint"] = outcome
+    timepoint = _extract_timepoint(quote)
+    if timepoint:
+        context["effect_timepoint"] = timepoint
+    return _NumericInference(math.log(treatment_value / control_value), context)
+
+
+def _labelled_numeric_observations(quote: str, component: str) -> list[dict[str, float | str]]:
+    out: list[dict[str, float | str]] = []
+    component_terms = _component_terms(component)
+    for match in _NUMBER_RE.finditer(quote):
+        if _number_is_embedded(quote, match.start(), match.end()):
+            continue
+        value = _safe_positive_float(match.group(0))
+        if value is None or _is_non_response_number(quote, match.end()):
+            continue
+        left = _local_left_phrase(quote[max(0, match.start() - 64):match.start()]).lower()
+        right = quote[match.end(): min(len(quote), match.end() + 12)].lower()
+        label_window = f"{left} {right}"
+        has_control = any(word in label_window for word in _CONTROL_WORDS)
+        has_component = any(term and term in label_window for term in component_terms)
+        has_treatment = has_component or any(word in label_window for word in _TREATMENT_WORDS)
+        if has_control and not has_treatment:
+            out.append({"label": "control", "value": value})
+        elif has_treatment and not has_control:
+            out.append({"label": "treatment", "value": value})
+    return out
+
+
+def _component_terms(component: str) -> list[str]:
+    terms = [component.strip().lower()]
+    for part in re.split(r"[^A-Za-z0-9+\-]+", component):
+        part = part.strip().lower()
+        if len(part) >= 3:
+            terms.append(part)
+    return sorted(set(terms), key=len, reverse=True)
+
+
+def _local_left_phrase(text: str) -> str:
+    parts = re.split(r"[,;:()]", text)
+    return parts[-1] if parts else text
+
+
+def _number_is_embedded(text: str, start: int, end: int) -> bool:
+    if start > 0 and text[start - 1].isalpha():
+        return True
+    if start > 1 and text[start - 1] == "-" and text[start - 2].isalpha():
+        return True
+    if end < len(text) and text[end].isalpha():
+        return True
+    return False
+
+
+def _is_non_response_number(quote: str, number_end: int) -> bool:
+    tail = quote[number_end: number_end + 20].strip().lower()
+    return any(tail.startswith(unit) for unit in _NON_RESPONSE_UNITS)
+
+
+def _extract_timepoint(quote: str) -> str:
+    match = _TIMEPOINT_RE.search(quote)
+    if not match:
+        return ""
+    return f"{match.group('value')} {match.group('unit')}"
+
+
+def _format_effect_number(value: float) -> str:
+    return f"{value:.12g}"

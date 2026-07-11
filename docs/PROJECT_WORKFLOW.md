@@ -572,8 +572,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - Latest main-line validation after merging the Codex JATS/readiness and
   provider fail-fast branches, S4 review helpers, and Claude DeepSeek comparison
   handoff, plus numeric quote verification and quote-based log fold-change
-  inference plus numeric adjudication fields for effect items: 65 tests passed
-  and 2 optional tests skipped in the isolated Codex worktree venv.
+  inference, numeric adjudication fields, and explicit treatment/control mean
+  log-ratio inference for effect items: 66 tests passed and 2 optional tests
+  skipped in the isolated Codex worktree venv.
 - Codex now works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`;
   Claude works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`.
   Short-lived feature branches should be merged into `main` and deleted instead
@@ -606,6 +607,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   cannot enter the random-effects pool as quantitative evidence.
 - Explicit quoted fold/percent changes can be converted into log response
   ratios `ln(ratio)`. This remains tier 2 because no variance is inferred.
+- Very explicit quoted treatment/control means can also be converted into
+  `ln(treatment_mean/control_mean)` with endpoint/timepoint context when
+  available. Dose, concentration, timepoint, and factor-name numbers are skipped
+  as response values. This remains tier 2 because no variance is inferred.
 - `cultivate evidence` writes raw `effect_items_<outcome>.json`.
 - `cultivate evidence-audit` produces a conservative wet-lab-entry report.
 - `cultivate extraction-readiness` checks local full-text and section-routing
@@ -652,8 +657,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   row can be supported directionally while a quantitative value remains
   `partial`, `unsupported`, `uncertain`, or `defer`.
 - Method-source registry now includes Cochrane ratio-measure guidance and
-  Hedges/Gurevitch/Curtis response ratios for the quote-based log fold-change
-  parser.
+  Hedges/Gurevitch/Curtis response ratios plus Friedrich/Adhikari/Beyene ratio
+  of means for deterministic quote-level log-ratio extraction.
 - Method-source registry covers autonomous labs, scientific RAG, information
   extraction, document parsing, ETL, systematic-review tooling, human-in-the-loop
   evidence review, AI review reporting, and Bayesian optimization.
@@ -717,10 +722,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    `cultivate extract --ids H014 --mode operators`, inspect grounding and raw
    extraction metadata, then scale to `--ids H001-H014` only if the pilot is
    acceptable.
-6. `[AI]` Extend deterministic number-aware extraction from explicit fold/percent
-   phrases to raw treatment/control means with units, endpoint, timepoint,
-   sample size, and SD/SE when available. Variance computation is still future
-   work and requires human numeric review.
+6. `[AI]` Extend deterministic number-aware extraction from treatment/control
+   means to sample size, SD/SE, confidence intervals, and variance only when
+   all required values are explicitly quoted and human numeric review remains
+   in the loop.
 7. `[REVIEW]` Decide which variables can enter S5 search-space design.
 8. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 

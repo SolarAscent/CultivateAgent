@@ -2177,3 +2177,83 @@ Adopted rule:
 2. AI validates and exports only after human decisions exist.
 3. Extend deterministic number-aware extraction to treatment/control means only
    after the S4 numeric review gate remains stable.
+
+---
+
+# Session 30 (Codex) — treatment/control mean log-ratio inference
+
+Date: 2026-07-12
+Branch: `codex/raw-mean-log-ratio`
+
+## Decision
+
+The next useful S3/S4 improvement was to reduce manual arithmetic for quoted
+quantitative evidence while keeping the human numeric gate intact. Cochrane
+ratio-measure guidance, Hedges/Gurevitch/Curtis response ratios, and
+Friedrich/Adhikari/Beyene ratio-of-means work support log-ratio effects when
+the experimental and control means are explicitly reported.
+
+Adopted rule:
+
+- Infer `ln(treatment_mean/control_mean)` only when a verified quote contains
+  exactly one treatment mean and one control/comparator mean.
+- Do not infer variance.
+- Skip numbers that are doses, concentrations, timepoints, passages, percentages,
+  fold changes handled by the existing parser, or embedded in factor names such
+  as `FGF2`.
+- Store `effect_metric`, `effect_inference_source`, treatment/control means,
+  endpoint, and timepoint in `EvidenceItem.context` for human review.
+
+## Changes Made
+
+- Added a conservative treatment/control mean parser to
+  `evidence.effect_operator`.
+- Hardened numeric matching so embedded factor-name numbers do not support or
+  create effect values.
+- Added an offline test covering quoted treatment/control means and a dose
+  number that must remain non-effect evidence.
+- Added method-source record `M043` for ratio of means.
+- Updated README, both workflow manuals, corpus manifest, evidence synthesis,
+  AI-for-science method review, and this session log.
+
+## What This Does Not Claim
+
+- No human numeric effect was approved.
+- No variance is inferred from means alone.
+- No cross-paper numeric value is used as a BO training label.
+- No wet-lab design packet or variable promotion was created.
+
+## Verification
+
+- Focused numeric tests:
+  `.venv/bin/python -m pytest tests/test_evidence.py::test_extract_effects_infers_log_ratio_from_treatment_control_means tests/test_evidence.py::test_extract_effects_infers_log_fold_change_from_quote tests/test_evidence.py::test_extract_effects_demotes_unquoted_numbers -q`:
+  passed.
+- TSV registry structure check:
+  passed; 43 rows, 9 columns, no malformed rows.
+- Secret scan for pasted-style Gemini/DeepSeek/OpenAI key patterns:
+  no hits.
+- Full pytest:
+  `.venv/bin/python -m pytest -q`: 66 passed, 2 skipped.
+- S4 CLI checks:
+  `.venv/bin/python -m cultivate_agent.cli adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md`:
+  passed; 0/14 resolved, 0 evidence-bearing decisions, 0 validation issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+- Smoke and demo optimization:
+  smoke passed; `optimize --demo --rounds 6` passed with hypervolume rising
+  from 7.050 to 16.464.
+
+## Next 3 Steps
+
+1. Human reviewer still needs to adjudicate H001-H014, including numeric-effect
+   status where an extracted row carries a quantitative claim.
+2. Extend deterministic variance extraction only when SD/SE, sample size, and
+   group mapping are explicitly quoted.
+3. Run a small live operator extraction pilot after the provider environment is
+   known to be valid.

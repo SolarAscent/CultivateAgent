@@ -173,6 +173,38 @@ def test_extract_effects_infers_log_fold_change_from_quote():
     assert by_component["Albumin"].effect is None
 
 
+def test_extract_effects_infers_log_ratio_from_treatment_control_means():
+    from cultivate_agent.evidence import extract_effects
+    from cultivate_agent.llm import get_client
+    from cultivate_agent.schema.paper import PaperRef
+
+    text = (
+        "FGF2-treated cultures reached 2.0 AU, whereas control cultures reached "
+        "1.0 AU after 72 h. Insulin was present at 10 ng/mL in all media."
+    )
+    payload = json.dumps({"evidence": [
+        {"component": "FGF2", "direction": 1, "effect": None, "variance": None, "context": {},
+         "quote": "FGF2-treated cultures reached 2.0 AU, whereas control cultures reached 1.0 AU after 72 h"},
+        {"component": "Insulin", "direction": 0, "effect": None, "variance": None, "context": {},
+         "quote": "Insulin was present at 10 ng/mL in all media"},
+    ]})
+    client = get_client("mock", "m", responses=[payload])
+    items = extract_effects(client, PaperRef(paper_id="p1", title="t"), text, "proliferation")
+    by_component = {it.component: it for it in items}
+
+    assert by_component["FGF2"].tier == 2
+    assert by_component["FGF2"].effect == pytest.approx(math.log(2.0))
+    assert by_component["FGF2"].variance is None
+    assert by_component["FGF2"].context["effect_metric"] == "log_response_ratio"
+    assert by_component["FGF2"].context["effect_inference_source"] == "treatment_control_means"
+    assert by_component["FGF2"].context["treatment_mean"] == "2"
+    assert by_component["FGF2"].context["control_mean"] == "1"
+    assert by_component["FGF2"].context["effect_endpoint"] == "proliferation"
+    assert by_component["FGF2"].context["effect_timepoint"] == "72 h"
+    assert by_component["Insulin"].tier == 3
+    assert by_component["Insulin"].effect is None
+
+
 def test_evidence_audit_blocks_until_human_review_and_filters_process_items(tmp_path):
     from cultivate_agent.evidence import EvidenceItem, audit_effect_items, write_evidence_audit_markdown
 

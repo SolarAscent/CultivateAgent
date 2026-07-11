@@ -77,11 +77,12 @@ Number handling is intentionally conservative. If an LLM returns `effect` or
 `variance` but the corresponding numeric token is not present in the verified
 quote, CultivateAgent clears that numeric field and keeps the item at the
 appropriate lower tier. For explicit proportional phrases such as "2-fold
-increase" or "50% reduction", the extractor can deterministically infer a log
-response ratio `ln(ratio)` from the quote. This creates tier-2 evidence at most:
-no variance is inferred, and no raw treatment/control means are transformed
-without a future deterministic calculator plus human numeric review. The current
-S4 worksheet separates this review into `numeric_effect_status`,
+increase" or "50% reduction", and for very explicit treatment/control means, the
+extractor can deterministically infer a log response ratio `ln(ratio)` from the
+quote. This creates tier-2 evidence at most: no variance is inferred, dose or
+timepoint numbers are ignored as response values, and any quantitative use still
+requires human numeric review. The current S4 worksheet separates this review
+into `numeric_effect_status`,
 `numeric_effect_metric`, `numeric_effect_value`, optional variance, and notes,
 so a directionally supported row is not automatically a thesis-ready
 quantitative effect.

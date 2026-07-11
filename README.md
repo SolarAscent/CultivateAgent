@@ -291,8 +291,8 @@ Useful scripts:
   Numeric `effect` and `variance` fields from `extract_effects` are accepted
   only when the verified quote contains the supporting number; otherwise the
   item is automatically downgraded to a lower evidence tier. Explicit
-  quote-backed fold or percent changes are converted to log response ratios,
-  but no variance is inferred.
+  quote-backed fold/percent changes and very explicit treatment/control means
+  are converted to log response ratios, but no variance is inferred.
 - `cultivate extraction-readiness`: checks whether local full text can support
   section-routed `context`, `medium`, `dose`, `endpoints`, and `findings`
   operators before spending LLM calls; it does not extract or approve evidence.
@@ -327,8 +327,8 @@ Run the tests: `pip install pytest && pytest -q` (offline suite).
 
 Current main-line verification after merging the Codex JATS/readiness and
 provider fail-fast branches, S4 review helpers, Claude's DeepSeek comparison
-handoff, numeric quote verification, quote-based log fold-change inference, and
-numeric adjudication fields for effect items: `65 passed, 2 skipped` in the
+handoff, numeric quote verification, quote-based log ratio inference, and
+numeric adjudication fields for effect items: `66 passed, 2 skipped` in the
 isolated Codex worktree venv, plus `smoke`, `optimize --demo --rounds 6`,
 `extraction-readiness --ids H001-H016`, `adjudication-status`,
 `adjudication-validate`, and `adjudication-export`.

@@ -76,10 +76,11 @@ not found verbatim in the source.
 Number handling is intentionally conservative. If an LLM returns `effect` or
 `variance` but the corresponding numeric token is not present in the verified
 quote, CultivateAgent clears that numeric field and keeps the item at the
-appropriate lower tier. This prevents unverified calculations or hallucinated
-numbers from entering the random-effects pool. A future number-aware extractor
-can add deterministic fold-change or variance computation, but only with
-quote-level number verification.
+appropriate lower tier. For explicit proportional phrases such as "2-fold
+increase" or "50% reduction", the extractor can deterministically infer a log
+response ratio `ln(ratio)` from the quote. This creates tier-2 evidence at most:
+no variance is inferred, and no raw treatment/control means are transformed
+without a future deterministic calculator plus human numeric review.
 
 ## Relation to prior art
 
@@ -98,4 +99,6 @@ heterogeneity), which the optimizer then refines with far fewer wet-lab runs.
   Med. 21(11):1539–1558, 2002. DOI 10.1002/sim.1186.
 - C. Röver et al. *Weakly informative priors for the heterogeneity parameter in
   Bayesian random-effects meta-analysis.* 2020. arXiv:2007.08352.
+- L. V. Hedges, J. Gurevitch, P. S. Curtis. *The meta-analysis of response
+  ratios in experimental ecology.* Ecology 80(4):1150-1156, 1999.
 - Prior art to differentiate: Cai et al., *Eng. Life Sci.* 2023, DOI 10.1002/elsc.202300005.

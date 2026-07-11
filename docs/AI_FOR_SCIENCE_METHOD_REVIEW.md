@@ -351,6 +351,12 @@ Implementation now available:
   item is demoted to tier 2 or tier 3. This is intentionally conservative; it
   blocks hallucinated or unverified numbers from entering random-effects
   synthesis while preserving the directional evidence for human review.
+- The next numeric step is partially implemented: explicit proportional phrases
+  in a quote, such as "2-fold increase" or "50% reduction", are converted into
+  log response ratios `ln(ratio)`, following Cochrane ratio-measure guidance and
+  the Hedges/Gurevitch/Curtis response-ratio method. These inferred effects do
+  not include variance and therefore remain tier 2 until raw means, SD/SE, and
+  sample sizes can be deterministically extracted and reviewed.
 - The latest H014 DeepSeek-compatible pilot failed at provider authentication
   with the current environment key, so it produced no extraction evidence. The
   CLI now treats total operator `call_error` as a failed extraction and avoids
@@ -423,4 +429,7 @@ Key sources include:
   records, and AI risk documentation before wet-lab decisions.
 - ASReview, SWIFT-Review, and RobotReviewer: transparent human-in-the-loop
   review support and source-location surfacing without replacing reviewers.
+- Cochrane effect-measure guidance and Hedges/Gurevitch/Curtis response ratios:
+  ratio outcomes should be handled on a log scale; CultivateAgent only infers
+  `ln(ratio)` from explicit quoted fold/percent changes.
 - TuRBO, SCBO, JES, and DPP-BBO: later optimization roadmap candidates.

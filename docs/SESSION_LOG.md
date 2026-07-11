@@ -2024,3 +2024,79 @@ from raw treatment/control data. That remains future work.
    units and endpoints.
 3. Add human review fields for numeric effect-size validation before any tier 1
    evidence is used in reports.
+
+---
+
+# Session 28 (Codex) — quote-based log fold-change inference
+
+Date: 2026-07-12
+Branch: `codex/infer-log-fold-change`
+
+## Decision
+
+The previous numeric gate prevented unsupported LLM numbers from entering
+quantitative evidence tiers. The next useful step was a tiny deterministic
+effect-size parser for explicit proportional phrases in verified quotes.
+
+Adopted rule:
+
+- If a verified quote explicitly reports a fold change, such as "2-fold
+  increase", infer `effect = ln(2)`.
+- If a verified quote explicitly reports a percent change, such as "50%
+  reduction", infer `effect = ln(0.5)`.
+- Do not infer any variance.
+- Do not parse medium concentrations, doses, or raw treatment/control means as
+  effect sizes.
+
+This follows Cochrane ratio-measure guidance and the Hedges/Gurevitch/Curtis
+log response-ratio method, recorded as `M041-M042`.
+
+## Changes Made
+
+- Added `M041-M042` to
+  `data/literature/ai_for_science_method_sources.tsv`.
+- Added conservative `ln(ratio)` inference to `evidence.extract_effects` for
+  explicit fold/percent-change phrases.
+- Added offline tests for 2-fold increase, 50% reduction, and a non-effect
+  medium percentage that must remain tier 3.
+- Updated README, `docs/EVIDENCE_SYNTHESIS.md`,
+  `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`,
+  `docs/MODEL_COMPARISON_DEEPSEEK.md`, and both workflow manuals.
+- Updated this session log.
+
+## What This Does Not Claim
+
+- No variance is inferred.
+- Raw treatment/control means are not parsed yet.
+- Literature effect sizes still do not become BO training labels.
+- No wet-lab variable or human evidence decision was approved.
+
+## Verification
+
+- Focused tests:
+  `.venv/bin/python -m pytest tests/test_evidence.py::test_extract_effects_infers_log_fold_change_from_quote tests/test_evidence.py::test_extract_effects_demotes_unquoted_numbers -q`:
+  passed.
+- TSV registry structure check: 42 rows, 9 columns, no malformed rows.
+- Secret scan for pasted-style Gemini/DeepSeek/OpenAI key patterns: no hits.
+- `.venv/bin/python -m pytest -q`: 65 passed, 2 skipped.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md`:
+  passed; 0/14 resolved, 0 evidence-bearing decisions, 0 validation issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+
+## Next 3 Steps
+
+1. Merge this branch into `main`, push, and delete it.
+2. Add deterministic treatment/control mean extraction with units and endpoint
+   labels.
+3. Add human numeric-review fields before any tier 1 evidence is used in thesis
+   claims.

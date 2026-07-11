@@ -534,9 +534,10 @@ Gate：论文 claims 可追溯到证据和结果。
 
 - 仓库是 CLI-first Python package。
 - Codex 的 JATS/readiness、provider fail-fast、S4 review helpers、Claude
-  DeepSeek comparison handoff 和 effect item 数字 quote verification 合并入
-  `main` 后，最新 main-line validation：在 Codex 独立 worktree venv 中 64 tests
-  passed、2 个 optional tests skipped。
+  DeepSeek comparison handoff、effect item 数字 quote verification 和
+  quote-based log fold-change inference 合并入 `main` 后，最新 main-line
+  validation：在 Codex 独立 worktree venv 中 65 tests passed、2 个 optional
+  tests skipped。
 - Codex 现在使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`；
   Claude 使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`。
   短生命周期 feature branch 应及时合并到 `main` 并删除，避免 side branch 变成
@@ -567,6 +568,8 @@ Gate：论文 claims 可追溯到证据和结果。
 - `evidence.extract_effects` 现在会把 numeric `effect` 和 `variance` 字段与
   evidence quote 核对；quote 不支持的数字会被清空，不能作为 quantitative
   evidence 进入 random-effects pool。
+- 明确写在 quote 中的 fold/percent change 可以转换成 log response ratio
+  `ln(ratio)`；因为不会推断 variance，所以这最多仍是 tier 2。
 - `cultivate evidence` 会写出 raw `effect_items_<outcome>.json`。
 - `cultivate evidence-audit` 能生成保守的 wet-lab-entry report。
 - `cultivate extraction-readiness` 会在调用 LLM 前检查本地全文和 section routing
@@ -602,6 +605,9 @@ Gate：论文 claims 可追溯到证据和结果。
   后续 numeric effect-size extraction。
 - Quote-level numeric gate 已实现：LLM 返回的 effect 或 variance 数字如果没有
   出现在已验证 quote 中，就不能把该 item 升级为 tier 1 或 tier 2 evidence。
+- 方法文献登记表已加入 Cochrane ratio-measure guidance 和
+  Hedges/Gurevitch/Curtis response ratio，用于支撑 quote-based log
+  fold-change parser。
 - 方法文献登记表已覆盖 autonomous labs、scientific RAG、information extraction、
   document parsing、ETL、systematic-review tooling、human-in-the-loop 证据复核、
   AI review reporting 和 Bayesian optimization。
@@ -656,9 +662,9 @@ Gate：论文 claims 可追溯到证据和结果。
 5. `[AI]` 先用 `cultivate extract --ids H014 --mode operators` 跑小规模 live
    operator-extraction pilot，检查 grounding 和 raw extraction metadata；只有
    pilot 可接受后再扩大到 `--ids H001-H014`。
-6. `[AI]` 在 DeepSeek 对比子集上 prototype deterministic number-aware
-   effect-size extraction。Quote-level numeric gate 已有，但 fold-change/variance
-   computation 仍是后续工作。
+6. `[AI]` 把 deterministic number-aware extraction 从明确 fold/percent phrase
+   扩展到 raw treatment/control means，并记录 units、endpoint、timepoint、
+   sample size、SD/SE。Variance computation 仍是后续工作，并且需要人工数字复核。
 7. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 8. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 

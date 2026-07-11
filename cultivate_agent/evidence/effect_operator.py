@@ -14,6 +14,7 @@ Each returned :class:`EvidenceItem` carries:
 
 from __future__ import annotations
 
+import math
 import re
 from typing import List, Optional
 
@@ -70,8 +71,8 @@ For each medium component the paper gives evidence about, report its effect on
 {outcome}: +1 = increases/beneficial, -1 = decreases/detrimental, 0 = no or
 unclear effect. Include an `effect` number and `variance` ONLY if the quoted
 span contains the exact reported number needed to support that field; otherwise
-omit it. Include experimental context. Every item needs a verbatim `quote` from
-the text.
+omit it. Do not compute transformed effect sizes yourself. Include experimental
+context. Every item needs a verbatim `quote` from the text.
 
 Return STRICT JSON:
 {{
@@ -134,9 +135,13 @@ def extract_effects(
         effect = _to_float(e.get("effect"))
         variance = _to_float(e.get("variance"))
         if quote:
+            inferred_effect = _infer_log_response_ratio(quote, direction)
             if effect is not None and not _number_supported_by_quote(effect, quote):
                 effect = None
             if variance is not None and not _number_supported_by_quote(variance, quote):
+                variance = None
+            if inferred_effect is not None:
+                effect = inferred_effect
                 variance = None
         else:
             effect = None
@@ -179,3 +184,85 @@ def _number_supported_by_quote(value: float, quote: str) -> bool:
         if abs(observed - value) <= tol:
             return True
     return False
+
+
+_POSITIVE_WORDS = (
+    "increase", "increased", "increases", "increasing", "improve", "improved",
+    "improves", "enhance", "enhanced", "enhances", "higher", "greater", "more",
+)
+_NEGATIVE_WORDS = (
+    "decrease", "decreased", "decreases", "decreasing", "reduce", "reduced",
+    "reduces", "reduction", "lower", "less", "suppress", "suppressed",
+    "inhibit", "inhibited", "decline", "declined",
+)
+_FOLD_RE = re.compile(
+    r"(?P<value>\d+(?:\.\d+)?)\s*(?:-| )?(?:fold|x|\u00d7)\b",
+    flags=re.IGNORECASE,
+)
+_PERCENT_RE = re.compile(
+    r"(?P<value>\d+(?:\.\d+)?)\s*%\s*(?:change|increase|decrease|reduction|improvement|higher|lower|more|less)?",
+    flags=re.IGNORECASE,
+)
+
+
+def _infer_log_response_ratio(quote: str, direction: Optional[int]) -> Optional[float]:
+    """Infer ln(response ratio) from explicit fold/percent-change phrasing.
+
+    The parser only handles directly reported proportional changes in the quote.
+    It does not compute from raw treatment/control means and never infers a
+    variance. This creates tier-2 evidence at most.
+    """
+    fold = _infer_fold_ratio(quote, direction)
+    if fold is not None and fold > 0:
+        return math.log(fold)
+    percent = _infer_percent_ratio(quote, direction)
+    if percent is not None and percent > 0:
+        return math.log(percent)
+    return None
+
+
+def _infer_fold_ratio(quote: str, direction: Optional[int]) -> Optional[float]:
+    for match in _FOLD_RE.finditer(quote):
+        fold = _safe_positive_float(match.group("value"))
+        if fold is None or fold <= 0:
+            continue
+        polarity = _local_polarity(quote, match.start(), match.end(), direction)
+        if polarity > 0:
+            return fold
+        if polarity < 0:
+            return 1.0 / fold
+    return None
+
+
+def _infer_percent_ratio(quote: str, direction: Optional[int]) -> Optional[float]:
+    for match in _PERCENT_RE.finditer(quote):
+        pct = _safe_positive_float(match.group("value"))
+        if pct is None:
+            continue
+        polarity = _local_polarity(quote, match.start(), match.end(), direction)
+        if polarity > 0:
+            return 1.0 + pct / 100.0
+        if polarity < 0 and pct < 100.0:
+            return 1.0 - pct / 100.0
+    return None
+
+
+def _local_polarity(quote: str, start: int, end: int, direction: Optional[int]) -> int:
+    window = quote[max(0, start - 48): min(len(quote), end + 48)].lower()
+    has_pos = any(word in window for word in _POSITIVE_WORDS)
+    has_neg = any(word in window for word in _NEGATIVE_WORDS)
+    if has_pos and not has_neg:
+        return 1
+    if has_neg and not has_pos:
+        return -1
+    if direction is not None:
+        return int(math.copysign(1, direction)) if direction != 0 else 0
+    return 0
+
+
+def _safe_positive_float(value: str) -> Optional[float]:
+    try:
+        out = float(value)
+    except (TypeError, ValueError):
+        return None
+    return out if out > 0 else None

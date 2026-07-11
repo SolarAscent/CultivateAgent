@@ -44,9 +44,10 @@ answer here is **more nuanced than a simple yes**.
 - **Numeric verification now exists, but computation is still future work.**
   After this comparison, `evidence.extract_effects` was hardened so returned
   `effect` and `variance` numbers are kept only when the verified quote contains
-  the supporting numeric token. This prevents unquoted numbers from entering
-  tier 1/2 evidence. It does not yet compute log fold-changes or variances from
-  raw control/treatment values.
+  the supporting numeric token. A later update added deterministic `ln(ratio)`
+  inference for explicit quoted fold/percent changes. This prevents unquoted
+  numbers from entering tier 1/2 evidence, but it still does not compute
+  variances from raw control/treatment values.
 
 ## Takeaways for the pipeline
 

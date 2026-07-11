@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 
 import pytest
 
@@ -116,13 +117,13 @@ def test_extract_effects_demotes_unquoted_numbers():
     from cultivate_agent.schema.paper import PaperRef
 
     text = (
-        "FGF2 increased bovine satellite cell proliferation by 2.0-fold with variance 0.04. "
+        "FGF2 had standardized effect 2.0 with variance 0.04. "
         "IGF-1 increased proliferation, but no effect size was reported. "
         "HGF increased proliferation by 1.5-fold."
     )
     payload = json.dumps({"evidence": [
         {"component": "FGF2", "direction": 1, "effect": 2.0, "variance": 0.04, "context": {},
-         "quote": "FGF2 increased bovine satellite cell proliferation by 2.0-fold with variance 0.04"},
+         "quote": "FGF2 had standardized effect 2.0 with variance 0.04"},
         {"component": "IGF-1", "direction": 1, "effect": 3.0, "variance": None, "context": {},
          "quote": "IGF-1 increased proliferation, but no effect size was reported"},
         {"component": "HGF", "direction": 1, "effect": 1.5, "variance": 0.02, "context": {},
@@ -138,8 +139,38 @@ def test_extract_effects_demotes_unquoted_numbers():
     assert by_component["IGF-1"].tier == 3
     assert by_component["IGF-1"].effect is None
     assert by_component["HGF"].tier == 2
-    assert by_component["HGF"].effect == pytest.approx(1.5)
+    assert by_component["HGF"].effect == pytest.approx(math.log(1.5))
     assert by_component["HGF"].variance is None
+
+
+def test_extract_effects_infers_log_fold_change_from_quote():
+    from cultivate_agent.evidence import extract_effects
+    from cultivate_agent.llm import get_client
+    from cultivate_agent.schema.paper import PaperRef
+
+    text = (
+        "FGF2 increased proliferation 2.0-fold compared with control. "
+        "TGF-beta reduced proliferation by 50% compared with control. "
+        "Albumin was present at 2% in the medium."
+    )
+    payload = json.dumps({"evidence": [
+        {"component": "FGF2", "direction": 1, "effect": None, "variance": None, "context": {},
+         "quote": "FGF2 increased proliferation 2.0-fold compared with control"},
+        {"component": "TGF-beta", "direction": -1, "effect": None, "variance": None, "context": {},
+         "quote": "TGF-beta reduced proliferation by 50% compared with control"},
+        {"component": "Albumin", "direction": 0, "effect": None, "variance": None, "context": {},
+         "quote": "Albumin was present at 2% in the medium"},
+    ]})
+    client = get_client("mock", "m", responses=[payload])
+    items = extract_effects(client, PaperRef(paper_id="p1", title="t"), text, "proliferation")
+    by_component = {it.component: it for it in items}
+
+    assert by_component["FGF2"].tier == 2
+    assert by_component["FGF2"].effect == pytest.approx(math.log(2.0))
+    assert by_component["TGF-beta"].tier == 2
+    assert by_component["TGF-beta"].effect == pytest.approx(math.log(0.5))
+    assert by_component["Albumin"].tier == 3
+    assert by_component["Albumin"].effect is None
 
 
 def test_evidence_audit_blocks_until_human_review_and_filters_process_items(tmp_path):

@@ -14,6 +14,7 @@ Each returned :class:`EvidenceItem` carries:
 
 from __future__ import annotations
 
+import re
 from typing import List, Optional
 
 from ..llm.base import LLMClient, LLMError, extract_json
@@ -67,9 +68,10 @@ OUTCOME OF INTEREST: {outcome}
 
 For each medium component the paper gives evidence about, report its effect on
 {outcome}: +1 = increases/beneficial, -1 = decreases/detrimental, 0 = no or
-unclear effect. Include a standardized `effect` number and `variance` ONLY if the
-paper reports enough to compute them (otherwise omit). Include experimental
-context. Every item needs a verbatim `quote` from the text.
+unclear effect. Include an `effect` number and `variance` ONLY if the quoted
+span contains the exact reported number needed to support that field; otherwise
+omit it. Include experimental context. Every item needs a verbatim `quote` from
+the text.
 
 Return STRICT JSON:
 {{
@@ -131,6 +133,14 @@ def extract_effects(
             direction = None
         effect = _to_float(e.get("effect"))
         variance = _to_float(e.get("variance"))
+        if quote:
+            if effect is not None and not _number_supported_by_quote(effect, quote):
+                effect = None
+            if variance is not None and not _number_supported_by_quote(variance, quote):
+                variance = None
+        else:
+            effect = None
+            variance = None
         context = {k: str(v) for k, v in (e.get("context") or {}).items() if v}
 
         items.append(EvidenceItem(
@@ -146,3 +156,26 @@ def _to_float(x) -> Optional[float]:
         return float(x) if x is not None else None
     except (TypeError, ValueError):
         return None
+
+
+_NUMBER_RE = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?")
+
+
+def _number_supported_by_quote(value: float, quote: str) -> bool:
+    """Return True only when ``quote`` contains a numerically matching token.
+
+    This is deliberately conservative. If an LLM computes a transformed effect
+    (for example log fold-change) without the resulting number appearing in the
+    quote, the item stays direction-only until a deterministic numeric extractor
+    or human reviewer verifies the calculation.
+    """
+    for match in _NUMBER_RE.finditer(quote):
+        token = match.group(0)
+        try:
+            observed = float(token)
+        except ValueError:
+            continue
+        tol = max(1e-9, abs(value) * 1e-6)
+        if abs(observed - value) <= tol:
+            return True
+    return False

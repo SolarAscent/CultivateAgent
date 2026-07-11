@@ -345,6 +345,12 @@ Implementation now available:
   comparison, not a clean V3-vs-V4 comparison. The result points the next
   extractor work toward numeric effect-size prompts plus quote-level number
   verification rather than simply scaling the current direction-first prompt.
+- The first quote-level numeric gate is now implemented in
+  `evidence.extract_effects`: if a returned `effect` or `variance` number is not
+  present in the verified evidence quote, the numeric field is cleared and the
+  item is demoted to tier 2 or tier 3. This is intentionally conservative; it
+  blocks hallucinated or unverified numbers from entering random-effects
+  synthesis while preserving the directional evidence for human review.
 - The latest H014 DeepSeek-compatible pilot failed at provider authentication
   with the current environment key, so it produced no extraction evidence. The
   CLI now treats total operator `call_error` as a failed extraction and avoids

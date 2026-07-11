@@ -567,8 +567,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - CLI-first Python package exists.
 - Latest main-line validation after merging the Codex JATS/readiness and
   provider fail-fast branches, S4 review helpers, and Claude DeepSeek comparison
-  handoff: 63 tests passed and 2 optional tests skipped in the isolated Codex
-  worktree venv.
+  handoff, plus numeric quote verification for effect items: 64 tests passed and
+  2 optional tests skipped in the isolated Codex worktree venv.
 - Codex now works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`;
   Claude works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`.
   Short-lived feature branches should be merged into `main` and deleted instead
@@ -596,6 +596,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   controlled provider/model comparison files with `--model`, `--max-tokens`,
   and `--items-out`; it reports tier counts to distinguish direction-only
   evidence from quantitative effect-size evidence.
+- `evidence.extract_effects` now verifies numeric `effect` and `variance`
+  fields against the evidence quote. Unsupported numbers are cleared so they
+  cannot enter the random-effects pool as quantitative evidence.
 - `cultivate evidence` writes raw `effect_items_<outcome>.json`.
 - `cultivate evidence-audit` produces a conservative wet-lab-entry report.
 - `cultivate extraction-readiness` checks local full-text and section-routing
@@ -633,6 +636,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   explicit v4-flash run cleaner and more critical but still direction-only, so
   it does not remove the need for human review or numeric effect-size extraction
   work.
+- A quote-level numeric gate now prevents unquoted LLM-provided effect or
+  variance numbers from upgrading an item into tier 1 or tier 2 evidence.
 - Method-source registry covers autonomous labs, scientific RAG, information
   extraction, document parsing, ETL, systematic-review tooling, human-in-the-loop
   evidence review, AI review reporting, and Bayesian optimization.
@@ -696,9 +701,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    `cultivate extract --ids H014 --mode operators`, inspect grounding and raw
    extraction metadata, then scale to `--ids H001-H014` only if the pilot is
    acceptable.
-6. `[AI]` Prototype a number-aware effect extractor prompt on the DeepSeek
-   comparison subset; do not replace direction-only evidence without quote-level
-   number verification.
+6. `[AI]` Prototype deterministic number-aware effect-size extraction on the
+   DeepSeek comparison subset. The quote-level numeric gate is now present, but
+   fold-change/variance computation itself is still future work.
 7. `[REVIEW]` Decide which variables can enter S5 search-space design.
 8. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 

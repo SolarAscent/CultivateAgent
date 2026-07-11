@@ -288,6 +288,9 @@ Useful scripts:
   quantitative effects. The current DeepSeek compatibility-alias vs explicit
   v4-flash comparison is recorded in
   [`docs/MODEL_COMPARISON_DEEPSEEK.md`](docs/MODEL_COMPARISON_DEEPSEEK.md).
+  Numeric `effect` and `variance` fields from `extract_effects` are accepted
+  only when the verified quote contains the supporting number; otherwise the
+  item is automatically downgraded to a lower evidence tier.
 - `cultivate extraction-readiness`: checks whether local full text can support
   section-routed `context`, `medium`, `dose`, `endpoints`, and `findings`
   operators before spending LLM calls; it does not extract or approve evidence.
@@ -318,9 +321,9 @@ Useful scripts:
 Run the tests: `pip install pytest && pytest -q` (offline suite).
 
 Current main-line verification after merging the Codex JATS/readiness and
-provider fail-fast branches, S4 review helpers, and Claude's DeepSeek
-comparison handoff: `63 passed, 2 skipped` in the isolated Codex worktree venv,
-plus `smoke`, `optimize --demo --rounds 6`,
+provider fail-fast branches, S4 review helpers, Claude's DeepSeek comparison
+handoff, and numeric quote verification for effect items: `64 passed, 2 skipped`
+in the isolated Codex worktree venv, plus `smoke`, `optimize --demo --rounds 6`,
 `extraction-readiness --ids H001-H016`, `adjudication-status`,
 `adjudication-validate`, and `adjudication-export`.
 

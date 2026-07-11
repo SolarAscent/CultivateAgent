@@ -73,6 +73,14 @@ Real evidence comes from `evidence.extract_effects(client, ref, text, "prolifera
 which is offline-testable with the mock client and drops any claim whose quote is
 not found verbatim in the source.
 
+Number handling is intentionally conservative. If an LLM returns `effect` or
+`variance` but the corresponding numeric token is not present in the verified
+quote, CultivateAgent clears that numeric field and keeps the item at the
+appropriate lower tier. This prevents unverified calculations or hallucinated
+numbers from entering the random-effects pool. A future number-aware extractor
+can add deterministic fold-change or variance computation, but only with
+quote-level number verification.
+
 ## Relation to prior art
 
 The closest prior work — **Cai et al. 2023**, "Multi-objective Bayesian algorithm

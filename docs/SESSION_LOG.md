@@ -1952,3 +1952,75 @@ V3-vs-V4 model-family comparison.
    controlled live comparisons.
 3. Prototype a number-aware effect extractor before claiming random-effects
    quantitative synthesis from literature.
+
+---
+
+# Session 27 (Codex) — quote-level numeric verification for effect items
+
+Date: 2026-07-12
+Branch: `codex/verify-effect-numbers`
+
+## Decision
+
+The DeepSeek comparison showed that both routes produced direction-only evidence.
+The next safe step was not to claim quantitative synthesis, but to prevent LLM
+numbers from entering `EvidenceItem.effect` or `EvidenceItem.variance` unless
+the verified quote actually contains the supporting number.
+
+This is a conservative gate:
+
+- If the quote supports both `effect` and `variance`, the item can remain tier 1.
+- If the quote supports `effect` but not `variance`, the item becomes tier 2.
+- If the quote supports neither numeric field, the item stays tier 3
+  direction-only.
+
+It does not compute fold-changes, standardized mean differences, or variances
+from raw treatment/control data. That remains future work.
+
+## Changes Made
+
+- Hardened `evidence.extract_effects` so unquoted `effect` and `variance`
+  numbers are cleared before creating `EvidenceItem` records.
+- Updated the effect-extraction prompt to require quoted numeric support for
+  numeric fields.
+- Added an offline mock-LLM test for numeric demotion behavior.
+- Updated README, `docs/EVIDENCE_SYNTHESIS.md`,
+  `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`,
+  `docs/MODEL_COMPARISON_DEEPSEEK.md`, and both workflow manuals.
+- Updated this session log.
+
+## What This Does Not Claim
+
+- No new wet-lab evidence was approved.
+- No human adjudication decision was entered.
+- No deterministic fold-change or variance calculator was implemented.
+- Literature numbers still do not become BO training labels.
+
+## Verification
+
+- Focused numeric-demotion tests:
+  `.venv/bin/python -m pytest tests/test_evidence.py::test_extract_effects_demotes_unquoted_numbers tests/test_evidence.py::test_extract_effects_drops_ungrounded -q`:
+  passed.
+- `.venv/bin/python -m pytest -q`: 64 passed, 2 skipped.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- Secret scan for pasted-style Gemini/DeepSeek/OpenAI key patterns: no hits.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md`:
+  passed; 0/14 resolved, 0 evidence-bearing decisions, 0 validation issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+
+## Next 3 Steps
+
+1. Merge this branch into `main`, push, and delete it.
+2. Prototype deterministic extraction of treatment/control numeric values with
+   units and endpoints.
+3. Add human review fields for numeric effect-size validation before any tier 1
+   evidence is used in reports.

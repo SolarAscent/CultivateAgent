@@ -533,9 +533,10 @@ Gate：论文 claims 可追溯到证据和结果。
 ### 8.1 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- Codex 的 JATS/readiness、provider fail-fast、S4 review helpers 和 Claude
-  DeepSeek comparison handoff 合并入 `main` 后，最新 main-line validation：在
-  Codex 独立 worktree venv 中 63 tests passed、2 个 optional tests skipped。
+- Codex 的 JATS/readiness、provider fail-fast、S4 review helpers、Claude
+  DeepSeek comparison handoff 和 effect item 数字 quote verification 合并入
+  `main` 后，最新 main-line validation：在 Codex 独立 worktree venv 中 64 tests
+  passed、2 个 optional tests skipped。
 - Codex 现在使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`；
   Claude 使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`。
   短生命周期 feature branch 应及时合并到 `main` 并删除，避免 side branch 变成
@@ -563,6 +564,9 @@ Gate：论文 claims 可追溯到证据和结果。
   `--model`、`--max-tokens`、`--items-out` 生成受控 provider/model 对比文件；
   它会报告 tier counts，用来区分 direction-only evidence 和 quantitative
   effect-size evidence。
+- `evidence.extract_effects` 现在会把 numeric `effect` 和 `variance` 字段与
+  evidence quote 核对；quote 不支持的数字会被清空，不能作为 quantitative
+  evidence 进入 random-effects pool。
 - `cultivate evidence` 会写出 raw `effect_items_<outcome>.json`。
 - `cultivate evidence-audit` 能生成保守的 wet-lab-entry report。
 - `cultivate extraction-readiness` 会在调用 LLM 前检查本地全文和 section routing
@@ -596,6 +600,8 @@ Gate：论文 claims 可追溯到证据和结果。
   对比已记录在 `docs/MODEL_COMPARISON_DEEPSEEK.md`；结论是显式 v4-flash run
   更干净、更批判，但仍然是 direction-only，因此不能替代人工复核，也不能替代
   后续 numeric effect-size extraction。
+- Quote-level numeric gate 已实现：LLM 返回的 effect 或 variance 数字如果没有
+  出现在已验证 quote 中，就不能把该 item 升级为 tier 1 或 tier 2 evidence。
 - 方法文献登记表已覆盖 autonomous labs、scientific RAG、information extraction、
   document parsing、ETL、systematic-review tooling、human-in-the-loop 证据复核、
   AI review reporting 和 Bayesian optimization。
@@ -650,9 +656,9 @@ Gate：论文 claims 可追溯到证据和结果。
 5. `[AI]` 先用 `cultivate extract --ids H014 --mode operators` 跑小规模 live
    operator-extraction pilot，检查 grounding 和 raw extraction metadata；只有
    pilot 可接受后再扩大到 `--ids H001-H014`。
-6. `[AI]` 在 DeepSeek 对比子集上 prototype number-aware effect extractor
-   prompt；没有 quote-level number verification 前，不要用它替换 direction-only
-   evidence。
+6. `[AI]` 在 DeepSeek 对比子集上 prototype deterministic number-aware
+   effect-size extraction。Quote-level numeric gate 已有，但 fold-change/variance
+   computation 仍是后续工作。
 7. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 8. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 

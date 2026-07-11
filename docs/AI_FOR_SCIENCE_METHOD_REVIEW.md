@@ -184,7 +184,11 @@ Project implication:
   do not approve evidence.
 - `data/literature/bovine_adjudication_H001_H014.tsv` is the current S4
   controlled form. Human reviewers own `decision`, `selected_range`,
-  interpretation notes, and conflict resolution.
+  interpretation notes, numeric-effect review fields, and conflict resolution.
+- Quantitative claims must be reviewed separately through
+  `numeric_effect_status`, `numeric_effect_metric`, `numeric_effect_value`,
+  optional variance, and notes. Direction-only rows should be marked
+  `not_applicable` for numeric effect status.
 - A blank worksheet with a passing validator means only that the form is
   structurally valid. It is not evidence approval.
 - `cultivate adjudication-export` remains intentionally narrow: only

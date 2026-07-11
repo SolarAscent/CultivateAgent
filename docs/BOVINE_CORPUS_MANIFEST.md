@@ -135,7 +135,10 @@ Gate 2, extraction reliability: **not passed**.
 - `data/literature/bovine_adjudication_H001_H014.tsv` now provides the
   human-fillable worksheet for H001-H014, and
   `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` confirms the blank template
-  is structurally valid. This is not evidence approval.
+  is structurally valid. The worksheet includes numeric-effect review columns
+  (`numeric_effect_status`, metric, value, variance, notes) so direction
+  support and quantitative support can be adjudicated separately. This is not
+  evidence approval.
 - `docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md` now records worksheet progress:
   0/14 resolved decisions, 0 evidence-bearing decisions, and 0 validation
   issues. This confirms that the S4 gate is still waiting for human review.

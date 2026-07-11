@@ -17,9 +17,19 @@ from typing import Iterable, List
 from .review_packet import build_review_packet
 
 ALLOWED_DECISIONS = {"", "supported", "partial", "unsupported", "uncertain", "defer"}
+ALLOWED_NUMERIC_EFFECT_STATUS = {
+    "",
+    "not_applicable",
+    "supported",
+    "partial",
+    "unsupported",
+    "uncertain",
+    "defer",
+}
 REQUIRES_RANGE = {"supported", "partial"}
+NUMERIC_EFFECT_REQUIRES_VALUE = {"supported", "partial"}
 
-WORKSHEET_COLUMNS = [
+BASE_WORKSHEET_COLUMNS = [
     "review_id",
     "source_record_id",
     "status",
@@ -38,6 +48,18 @@ WORKSHEET_COLUMNS = [
     "wetlab_use",
     "notes",
 ]
+NUMERIC_EFFECT_COLUMNS = [
+    "numeric_effect_status",
+    "numeric_effect_metric",
+    "numeric_effect_value",
+    "numeric_effect_variance",
+    "numeric_effect_notes",
+]
+WORKSHEET_COLUMNS = [
+    *BASE_WORKSHEET_COLUMNS[:13],
+    *NUMERIC_EFFECT_COLUMNS,
+    *BASE_WORKSHEET_COLUMNS[13:],
+]
 
 EVIDENCE_TABLE_COLUMNS = [
     "review_id",
@@ -50,6 +72,11 @@ EVIDENCE_TABLE_COLUMNS = [
     "formulation_or_variable",
     "dose_or_range",
     "endpoint",
+    "numeric_effect_status",
+    "numeric_effect_metric",
+    "numeric_effect_value",
+    "numeric_effect_variance",
+    "numeric_effect_notes",
     "cell_context",
     "limitations",
     "wetlab_use",
@@ -160,6 +187,11 @@ def write_adjudication_template(
             "formulation_or_variable": "",
             "dose_or_range": "",
             "endpoint": "",
+            "numeric_effect_status": "",
+            "numeric_effect_metric": "",
+            "numeric_effect_value": "",
+            "numeric_effect_variance": "",
+            "numeric_effect_notes": "",
             "cell_context": "",
             "limitations": "",
             "wetlab_use": "",
@@ -188,7 +220,7 @@ def validate_adjudication_worksheet(path: str | Path) -> ValidationResult:
     rows = 0
     with Path(path).open(newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f, delimiter="\t")
-        missing = [c for c in WORKSHEET_COLUMNS if c not in (reader.fieldnames or [])]
+        missing = [c for c in BASE_WORKSHEET_COLUMNS if c not in (reader.fieldnames or [])]
         if missing:
             for col in missing:
                 issues.append(ValidationIssue(0, "", col, "missing required column"))
@@ -223,6 +255,38 @@ def validate_adjudication_worksheet(path: str | Path) -> ValidationResult:
                     issues.append(ValidationIssue(row_number, rid, "key_finding", "required for supported/partial"))
             if decision in {"supported", "partial", "unsupported"} and not (row.get("wetlab_use") or "").strip():
                 issues.append(ValidationIssue(row_number, rid, "wetlab_use", "required for evidence-bearing decisions"))
+            numeric_status = (row.get("numeric_effect_status") or "").strip().lower()
+            if numeric_status not in ALLOWED_NUMERIC_EFFECT_STATUS:
+                issues.append(ValidationIssue(
+                    row_number, rid, "numeric_effect_status",
+                    "must be one of "
+                    f"{', '.join(sorted(s or '<blank>' for s in ALLOWED_NUMERIC_EFFECT_STATUS))}",
+                ))
+                continue
+            if numeric_status in NUMERIC_EFFECT_REQUIRES_VALUE:
+                if not (row.get("numeric_effect_metric") or "").strip():
+                    issues.append(
+                        ValidationIssue(
+                            row_number,
+                            rid,
+                            "numeric_effect_metric",
+                            "required for numeric supported/partial",
+                        )
+                    )
+                value = (row.get("numeric_effect_value") or "").strip()
+                if not _is_float(value):
+                    issues.append(
+                        ValidationIssue(
+                            row_number,
+                            rid,
+                            "numeric_effect_value",
+                            "required as a number for numeric supported/partial",
+                        )
+                    )
+            for numeric_col in ["numeric_effect_value", "numeric_effect_variance"]:
+                value = (row.get(numeric_col) or "").strip()
+                if value and not _is_float(value):
+                    issues.append(ValidationIssue(row_number, rid, numeric_col, "must be numeric when filled"))
     return ValidationResult(rows=rows, issues=issues)
 
 
@@ -476,6 +540,11 @@ def export_adjudicated_evidence(
                 "formulation_or_variable": row.get("formulation_or_variable", ""),
                 "dose_or_range": row.get("dose_or_range", ""),
                 "endpoint": row.get("endpoint", ""),
+                "numeric_effect_status": row.get("numeric_effect_status", ""),
+                "numeric_effect_metric": row.get("numeric_effect_metric", ""),
+                "numeric_effect_value": row.get("numeric_effect_value", ""),
+                "numeric_effect_variance": row.get("numeric_effect_variance", ""),
+                "numeric_effect_notes": row.get("numeric_effect_notes", ""),
                 "cell_context": row.get("cell_context", ""),
                 "limitations": row.get("limitations", ""),
                 "wetlab_use": row.get("wetlab_use", ""),
@@ -497,6 +566,16 @@ def _is_range(value: str) -> bool:
     if not (start.isdigit() and end.isdigit()):
         return False
     return int(start) < int(end)
+
+
+def _is_float(value: str) -> bool:
+    if not value:
+        return False
+    try:
+        float(value)
+    except ValueError:
+        return False
+    return True
 
 
 def _ranges_for_preview(row: dict[str, str], *, max_ranges: int) -> List[str]:

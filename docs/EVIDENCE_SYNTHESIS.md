@@ -80,7 +80,11 @@ appropriate lower tier. For explicit proportional phrases such as "2-fold
 increase" or "50% reduction", the extractor can deterministically infer a log
 response ratio `ln(ratio)` from the quote. This creates tier-2 evidence at most:
 no variance is inferred, and no raw treatment/control means are transformed
-without a future deterministic calculator plus human numeric review.
+without a future deterministic calculator plus human numeric review. The current
+S4 worksheet separates this review into `numeric_effect_status`,
+`numeric_effect_metric`, `numeric_effect_value`, optional variance, and notes,
+so a directionally supported row is not automatically a thesis-ready
+quantitative effect.
 
 ## Relation to prior art
 

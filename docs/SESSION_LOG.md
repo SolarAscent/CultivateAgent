@@ -2100,3 +2100,80 @@ log response-ratio method, recorded as `M041-M042`.
    labels.
 3. Add human numeric-review fields before any tier 1 evidence is used in thesis
    claims.
+
+---
+
+# Session 29 (Codex) — numeric effect adjudication fields
+
+Date: 2026-07-12
+Branch: `codex/numeric-adjudication-fields`
+
+## Decision
+
+Quote-level numeric verification and quote-based log fold-change inference were
+necessary but not sufficient for thesis-use evidence. A value inferred from a
+verified quote can still be misinterpreted, incomplete, variance-free, or
+context-dependent. The S4 worksheet therefore needs a separate human numeric
+review gate.
+
+Adopted rule:
+
+- Directional evidence review remains in `decision`.
+- Quantitative effect review is recorded separately in
+  `numeric_effect_status`, `numeric_effect_metric`, `numeric_effect_value`,
+  optional `numeric_effect_variance`, and `numeric_effect_notes`.
+- `supported` and `partial` numeric statuses require a metric and numeric value.
+- Legacy worksheets without these fields still validate, so old human notes are
+  not broken.
+
+## Changes Made
+
+- Added numeric-effect review columns to the H001-H014 adjudication worksheet
+  and adjudicated evidence export table.
+- Hardened worksheet validation for numeric-effect status, required metric/value
+  on supported or partial numeric effects, and numeric parsing of value and
+  variance fields.
+- Kept legacy worksheet validation compatible when numeric-effect columns are
+  absent.
+- Regenerated the committed blank H001-H014 worksheet and header-only evidence
+  table with the new columns.
+- Updated README, both workflow manuals, corpus manifest, evidence synthesis
+  notes, and AI-for-science method review.
+
+## What This Does Not Claim
+
+- No human adjudication decision was entered.
+- No numeric value was approved for thesis claims.
+- No wet-lab variable, search-space bound, or design packet was approved.
+
+## Verification
+
+- Focused adjudication test:
+  `.venv/bin/python -m pytest tests/test_evidence.py::test_adjudication_template_and_validation -q`:
+  passed.
+- Full pytest:
+  `.venv/bin/python -m pytest -q`: 65 passed, 2 skipped.
+- Secret scan for pasted-style Gemini/DeepSeek/OpenAI key patterns:
+  no hits.
+- S4 CLI checks:
+  `.venv/bin/python -m cultivate_agent.cli adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md`:
+  passed; 0/14 resolved, 0 evidence-bearing decisions, 0 validation issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+- Smoke and demo optimization:
+  smoke passed; `optimize --demo --rounds 6` passed with hypervolume rising
+  from 7.050 to 16.464.
+
+## Next 3 Steps
+
+1. Human reviewer fills H001-H014, including numeric-effect fields where a row
+   carries a quantitative claim.
+2. AI validates and exports only after human decisions exist.
+3. Extend deterministic number-aware extraction to treatment/control means only
+   after the S4 numeric review gate remains stable.

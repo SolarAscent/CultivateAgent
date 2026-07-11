@@ -309,7 +309,10 @@ Useful scripts:
   that evidence has been approved. The template command refuses to overwrite a
   worksheet that already contains decisions unless `--force` is passed; forced
   overwrites create a timestamped `.bak` copy next to the worksheet first, and
-  those local backups are ignored by git.
+  those local backups are ignored by git. The worksheet also has numeric-effect
+  review fields (`numeric_effect_status`, metric, value, variance, notes) so
+  quote-inferred tier 2 effects and future tier 1 effects require human numeric
+  review before thesis claims.
 - `cultivate adjudication-status`: summarizes worksheet progress and whether any
   evidence-bearing human decisions are ready to export.
 - `cultivate adjudication-passages`: prints short local snippets for worksheet
@@ -324,9 +327,9 @@ Run the tests: `pip install pytest && pytest -q` (offline suite).
 
 Current main-line verification after merging the Codex JATS/readiness and
 provider fail-fast branches, S4 review helpers, Claude's DeepSeek comparison
-handoff, numeric quote verification, and quote-based log fold-change inference
-for effect items: `65 passed, 2 skipped` in the isolated Codex worktree venv,
-plus `smoke`, `optimize --demo --rounds 6`,
+handoff, numeric quote verification, quote-based log fold-change inference, and
+numeric adjudication fields for effect items: `65 passed, 2 skipped` in the
+isolated Codex worktree venv, plus `smoke`, `optimize --demo --rounds 6`,
 `extraction-readiness --ids H001-H016`, `adjudication-status`,
 `adjudication-validate`, and `adjudication-export`.
 

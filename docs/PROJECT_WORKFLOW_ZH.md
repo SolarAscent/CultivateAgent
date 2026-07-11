@@ -341,6 +341,10 @@ Checklist：
 - [ ] `[HUMAN]` 添加简短 notes：formulation、dose、endpoint、caveat 或排除原因。
 - [ ] `[HUMAN]` 对会影响湿实验变量的 outcome-direction 和 dose/range 行做独立
   复核。
+- [ ] `[HUMAN]` 对定量 effect claim 填写 `numeric_effect_status`、
+  `numeric_effect_metric`、`numeric_effect_value`、可选的
+  `numeric_effect_variance` 和 `numeric_effect_notes`；direction-only 行使用
+  `not_applicable`。
 - [ ] `[AI]` 用 `cultivate adjudication-validate` 校验已填写工作表。
 - [ ] `[AI]` 只把人工标记为 `supported` 或 `partial` 的行用
   `cultivate adjudication-export` 导出到
@@ -535,9 +539,9 @@ Gate：论文 claims 可追溯到证据和结果。
 - 仓库是 CLI-first Python package。
 - Codex 的 JATS/readiness、provider fail-fast、S4 review helpers、Claude
   DeepSeek comparison handoff、effect item 数字 quote verification 和
-  quote-based log fold-change inference 合并入 `main` 后，最新 main-line
-  validation：在 Codex 独立 worktree venv 中 65 tests passed、2 个 optional
-  tests skipped。
+  quote-based log fold-change inference，以及 effect item numeric adjudication
+  fields 合并入 `main` 后，最新 main-line validation：在 Codex 独立 worktree
+  venv 中 65 tests passed、2 个 optional tests skipped。
 - Codex 现在使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`；
   Claude 使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`。
   短生命周期 feature branch 应及时合并到 `main` 并删除，避免 side branch 变成
@@ -583,7 +587,9 @@ Gate：论文 claims 可追溯到证据和结果。
   检查带有可移植 `data/papers/...` 路径的 H001-H014 人工填写工作表，但不判断证据
   是否 supported。如果工作表中已有人工 decision，template 命令默认拒绝覆盖；只有
   显式传入 `--force` 才会覆盖；强制覆盖前会在工作表旁创建带时间戳的 `.bak` 备份，
-  这些本地备份会被 git 忽略。
+  这些本地备份会被 git 忽略。工作表现在包含 `numeric_effect_status`、metric、
+  value、variance 和 notes 字段；quote 自动推断的 tier 2 数值和未来 tier 1
+  数值，在进入论文 claim 前都需要人工数字复核。
 - `cultivate adjudication-status` 会汇总 blank、resolved、evidence-bearing 和 invalid
   decisions。当前 H001-H014 状态：0/14 resolved，0 个 evidence-bearing decisions，
   0 个 validation issues。
@@ -605,6 +611,8 @@ Gate：论文 claims 可追溯到证据和结果。
   后续 numeric effect-size extraction。
 - Quote-level numeric gate 已实现：LLM 返回的 effect 或 variance 数字如果没有
   出现在已验证 quote 中，就不能把该 item 升级为 tier 1 或 tier 2 evidence。
+- S4 人工工作表现在有独立的 numeric-effect review gate；一行可以在方向上
+  supported，但定量值仍然保持 `partial`、`unsupported`、`uncertain` 或 `defer`。
 - 方法文献登记表已加入 Cochrane ratio-measure guidance 和
   Hedges/Gurevitch/Curtis response ratio，用于支撑 quote-based log
   fold-change parser。

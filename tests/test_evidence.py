@@ -322,6 +322,7 @@ def test_adjudication_template_and_validation(tmp_path):
     )
     text = worksheet.read_text(encoding="utf-8")
     assert "\tdecision\t" in text
+    assert "\tnumeric_effect_status\t" in text
     assert "\tsupported\t" not in text
     assert "\tpapers/paper-one/fulltext.txt\t" in text
 
@@ -338,6 +339,22 @@ def test_adjudication_template_and_validation(tmp_path):
     )
     assert count_evidence_rows(empty_export) == 0
 
+    legacy_header = [
+        c for c in text.splitlines()[0].split("\t")
+        if not c.startswith("numeric_effect_")
+    ]
+    legacy_row = [
+        value
+        for column, value in zip(
+            text.splitlines()[0].split("\t"),
+            text.splitlines()[1].split("\t"),
+        )
+        if not column.startswith("numeric_effect_")
+    ]
+    legacy = tmp_path / "legacy_worksheet.tsv"
+    legacy.write_text("\t".join(legacy_header) + "\n" + "\t".join(legacy_row) + "\n", encoding="utf-8")
+    assert validate_adjudication_worksheet(legacy).ok
+
     lines = text.splitlines()
     header = lines[0].split("\t")
     row = lines[1].split("\t")
@@ -346,6 +363,9 @@ def test_adjudication_template_and_validation(tmp_path):
     row[header.index("key_finding")] = "FGF2 dose supported proliferation"
     row[header.index("dose_or_range")] = "10 ng/mL"
     row[header.index("endpoint")] = "proliferation"
+    row[header.index("numeric_effect_status")] = "supported"
+    row[header.index("numeric_effect_metric")] = "log_response_ratio"
+    row[header.index("numeric_effect_value")] = "0.693147"
     row[header.index("wetlab_use")] = "range_seed"
     worksheet.write_text("\n".join([lines[0], "\t".join(row)]) + "\n", encoding="utf-8")
     result = validate_adjudication_worksheet(worksheet)
@@ -390,6 +410,9 @@ def test_adjudication_template_and_validation(tmp_path):
     row[header.index("key_finding")] = "FGF2 dose supported proliferation"
     row[header.index("dose_or_range")] = "10 ng/mL"
     row[header.index("endpoint")] = "proliferation"
+    row[header.index("numeric_effect_status")] = "supported"
+    row[header.index("numeric_effect_metric")] = "log_response_ratio"
+    row[header.index("numeric_effect_value")] = "0.693147"
     row[header.index("wetlab_use")] = "range_seed"
     worksheet.write_text("\n".join([lines[0], "\t".join(row)]) + "\n", encoding="utf-8")
     evidence = export_adjudicated_evidence(
@@ -400,12 +423,21 @@ def test_adjudication_template_and_validation(tmp_path):
     rendered = evidence.read_text(encoding="utf-8")
     assert "FGF2 dose supported proliferation" in rendered
     assert "human_reviewed" in rendered
+    assert "log_response_ratio" in rendered
+    assert "0.693147" in rendered
 
     row[header.index("decision")] = "maybe"
     worksheet.write_text("\n".join([lines[0], "\t".join(row)]) + "\n", encoding="utf-8")
     result = validate_adjudication_worksheet(worksheet)
     assert not result.ok
     assert any(i.field == "decision" for i in result.issues)
+
+    row[header.index("decision")] = "supported"
+    row[header.index("numeric_effect_value")] = "not-a-number"
+    worksheet.write_text("\n".join([lines[0], "\t".join(row)]) + "\n", encoding="utf-8")
+    result = validate_adjudication_worksheet(worksheet)
+    assert not result.ok
+    assert any(i.field == "numeric_effect_value" for i in result.issues)
 
 
 def test_adjudication_passage_preview_resolves_relative_paths(tmp_path):

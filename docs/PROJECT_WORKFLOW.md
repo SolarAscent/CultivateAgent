@@ -358,6 +358,10 @@ Checklist:
   exclusion reason.
 - [ ] `[HUMAN]` Independently check outcome-direction and dose/range rows when a
   row could affect wet-lab variables.
+- [ ] `[HUMAN]` For quantitative effect claims, fill `numeric_effect_status`,
+  `numeric_effect_metric`, `numeric_effect_value`, optional
+  `numeric_effect_variance`, and `numeric_effect_notes`; use
+  `not_applicable` for direction-only rows.
 - [ ] `[AI]` Validate the filled worksheet with
   `cultivate adjudication-validate`.
 - [ ] `[AI]` Export only `supported` and `partial` human decisions to
@@ -568,8 +572,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - Latest main-line validation after merging the Codex JATS/readiness and
   provider fail-fast branches, S4 review helpers, and Claude DeepSeek comparison
   handoff, plus numeric quote verification and quote-based log fold-change
-  inference for effect items: 65 tests passed and 2 optional tests skipped in
-  the isolated Codex worktree venv.
+  inference plus numeric adjudication fields for effect items: 65 tests passed
+  and 2 optional tests skipped in the isolated Codex worktree venv.
 - Codex now works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`;
   Claude works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`.
   Short-lived feature branches should be merged into `main` and deleted instead
@@ -617,7 +621,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   `data/papers/...` paths, without deciding evidence support. The template
   command refuses to overwrite a worksheet that already contains human decisions
   unless `--force` is passed; forced overwrites create a timestamped `.bak` copy
-  next to the worksheet first. These local backup files are ignored by git.
+  next to the worksheet first. These local backup files are ignored by git. The
+  worksheet now includes `numeric_effect_status`, metric, value, variance, and
+  notes fields so quote-inferred tier 2 values and future tier 1 values require
+  explicit human numeric review before thesis claims.
 - `cultivate adjudication-status` summarizes blank, resolved, evidence-bearing,
   and invalid worksheet decisions. Current H001-H014 status: 0/14 resolved,
   0 evidence-bearing decisions, 0 validation issues.
@@ -641,6 +648,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   work.
 - A quote-level numeric gate now prevents unquoted LLM-provided effect or
   variance numbers from upgrading an item into tier 1 or tier 2 evidence.
+- The S4 human worksheet now carries a separate numeric-effect review gate; a
+  row can be supported directionally while a quantitative value remains
+  `partial`, `unsupported`, `uncertain`, or `defer`.
 - Method-source registry now includes Cochrane ratio-measure guidance and
   Hedges/Gurevitch/Curtis response ratios for the quote-based log fold-change
   parser.

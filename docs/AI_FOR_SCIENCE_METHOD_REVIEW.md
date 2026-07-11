@@ -335,6 +335,16 @@ Implementation now available:
   (`deepseek-v4-flash` or `deepseek-v4-pro`) rather than the legacy
   `deepseek-chat` compatibility name, and any outputs still require quote
   grounding plus human review.
+- A controlled 15-paper DeepSeek comparison is now recorded in
+  `docs/MODEL_COMPARISON_DEEPSEEK.md`. The key method lesson is not "newer model
+  means more rows": the explicit `deepseek-v4-flash` run produced fewer but
+  cleaner and more critical direction-only effects than the `deepseek-chat`
+  compatibility route, while both routes failed to produce effect-size tiers.
+  Because DeepSeek documents `deepseek-chat` as a compatibility alias rather
+  than a stable current model-family name, this is a route/configuration
+  comparison, not a clean V3-vs-V4 comparison. The result points the next
+  extractor work toward numeric effect-size prompts plus quote-level number
+  verification rather than simply scaling the current direction-first prompt.
 - The latest H014 DeepSeek-compatible pilot failed at provider authentication
   with the current environment key, so it produced no extraction evidence. The
   CLI now treats total operator `call_error` as a failed extraction and avoids

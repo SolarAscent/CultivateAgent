@@ -26,6 +26,13 @@ endpoint interpretation, exclusions, and conflict resolution. Outcome-direction
 or dose/range rows that could affect wet-lab variables need independent checking
 or an explicit review waiver before S5 search-space design.
 
+2026-07-12 DeepSeek comparison follow-up: Claude's controlled comparison of the
+`deepseek-chat` compatibility route against an explicit `deepseek-v4-flash` run
+was integrated into `main`. It adds a script path for controlled model
+comparisons and maps "basic fibroblast growth factor" to FGF2 so aliases from
+live model output pool correctly. The comparison is direction-only evidence and
+does not approve FGF2 or any other component for wet-lab use.
+
 Data files:
 
 - `data/literature/bovine_corpus_manifest.tsv`
@@ -152,6 +159,10 @@ Gate 4, cost and supply sanity: **not passed**.
 
 - Cost classes and supplier/food-grade annotations are not yet filled for each
   candidate component.
+
+Gate 4 note: FGF2 alias normalization now includes "basic fibroblast growth
+factor" so evidence pooling is less brittle, but FGF2 cost and replacement
+decisions still require human-reviewed dose, endpoint, and supplier evidence.
 
 Gate 5, in-silico robustness: **not passed**.
 

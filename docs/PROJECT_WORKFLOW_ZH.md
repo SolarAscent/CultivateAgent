@@ -533,9 +533,9 @@ Gate：论文 claims 可追溯到证据和结果。
 ### 8.1 已完成的技术工作
 
 - 仓库是 CLI-first Python package。
-- Codex 的 JATS/readiness 和 provider fail-fast 分支合并入 `main` 后，最新
-  main-line validation：在 Codex 独立 worktree venv 中 62 tests passed、2 个
-  optional tests skipped。
+- Codex 的 JATS/readiness、provider fail-fast、S4 review helpers 和 Claude
+  DeepSeek comparison handoff 合并入 `main` 后，最新 main-line validation：在
+  Codex 独立 worktree venv 中 63 tests passed、2 个 optional tests skipped。
 - Codex 现在使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`；
   Claude 使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`。
   短生命周期 feature branch 应及时合并到 `main` 并删除，避免 side branch 变成
@@ -559,7 +559,10 @@ Gate：论文 claims 可追溯到证据和结果。
   extract、Auxenochlorella pyrenoidosa protein extract、copper ions。这些只是
   normalization hooks，不是湿实验批准。
 - `scripts/ingest_pdfs.py` 可以导入 loose PDF folders/lists。
-- `scripts/run_evidence_parallel.py` 可以生成 effect-item exports。
+- `scripts/run_evidence_parallel.py` 可以生成 effect-item exports，也可以用
+  `--model`、`--max-tokens`、`--items-out` 生成受控 provider/model 对比文件；
+  它会报告 tier counts，用来区分 direction-only evidence 和 quantitative
+  effect-size evidence。
 - `cultivate evidence` 会写出 raw `effect_items_<outcome>.json`。
 - `cultivate evidence-audit` 能生成保守的 wet-lab-entry report。
 - `cultivate extraction-readiness` 会在调用 LLM 前检查本地全文和 section routing
@@ -589,6 +592,10 @@ Gate：论文 claims 可追溯到证据和结果。
 - Bovine manifest v0 有 44 条记录。
 - Human review queue v0 有 30 个 open tasks。
 - AI-for-science 方法综述已存在。
+- DeepSeek compatibility route 与显式 `deepseek-v4-flash` 的 effect-extraction
+  对比已记录在 `docs/MODEL_COMPARISON_DEEPSEEK.md`；结论是显式 v4-flash run
+  更干净、更批判，但仍然是 direction-only，因此不能替代人工复核，也不能替代
+  后续 numeric effect-size extraction。
 - 方法文献登记表已覆盖 autonomous labs、scientific RAG、information extraction、
   document parsing、ETL、systematic-review tooling、human-in-the-loop 证据复核、
   AI review reporting 和 Bayesian optimization。
@@ -622,6 +629,8 @@ Gate：论文 claims 可追溯到证据和结果。
 - OpenAI raw-response debugging 遇到 insufficient quota。
 - 最新 DeepSeek-compatible H014 live pilot 已到达 provider，但当前环境 key
   认证失败；没有写入 extraction。
+- DeepSeek compatibility route 与显式 v4-flash 的对比是质量检查，不是湿实验
+  证据；两组输出都是 direction-only，必须经过人工裁决后才可能影响变量选择。
 - 当前 corpus manifest 尚未完整全文抽取。
 - GROBID service 是否可用属于外部条件；已有合法来源的 JATS/Open Access XML
   也可以直接解析。
@@ -641,8 +650,11 @@ Gate：论文 claims 可追溯到证据和结果。
 5. `[AI]` 先用 `cultivate extract --ids H014 --mode operators` 跑小规模 live
    operator-extraction pilot，检查 grounding 和 raw extraction metadata；只有
    pilot 可接受后再扩大到 `--ids H001-H014`。
-6. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
-7. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
+6. `[AI]` 在 DeepSeek 对比子集上 prototype number-aware effect extractor
+   prompt；没有 quote-level number verification 前，不要用它替换 direction-only
+   evidence。
+7. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
+8. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 
 ## 9. AI 接管协议
 

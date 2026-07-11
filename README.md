@@ -282,7 +282,12 @@ Useful scripts:
 - `scripts/ingest_pdfs.py`: ingest loose PDF folders/lists when BibTeX is not
   available.
 - `scripts/run_evidence_parallel.py`: generate corpus-wide effect-item exports
-  for synthesis and `cultivate evidence-audit`.
+  for synthesis and `cultivate evidence-audit`. It now supports controlled live
+  model comparisons with `--model`, `--max-tokens`, and `--items-out`, and
+  prints tier counts so direction-only evidence is not mistaken for extractable
+  quantitative effects. The current DeepSeek compatibility-alias vs explicit
+  v4-flash comparison is recorded in
+  [`docs/MODEL_COMPARISON_DEEPSEEK.md`](docs/MODEL_COMPARISON_DEEPSEEK.md).
 - `cultivate extraction-readiness`: checks whether local full text can support
   section-routed `context`, `medium`, `dose`, `endpoints`, and `findings`
   operators before spending LLM calls; it does not extract or approve evidence.
@@ -313,10 +318,11 @@ Useful scripts:
 Run the tests: `pip install pytest && pytest -q` (offline suite).
 
 Current main-line verification after merging the Codex JATS/readiness and
-provider fail-fast branches and S4 review helpers: `63 passed, 2 skipped` in the isolated Codex
-worktree venv, plus `smoke`, `optimize --demo --rounds 6`,
-`extraction-readiness --ids H001-H016`, `adjudication-status`, `adjudication-validate`, and
-`adjudication-export`.
+provider fail-fast branches, S4 review helpers, and Claude's DeepSeek
+comparison handoff: `63 passed, 2 skipped` in the isolated Codex worktree venv,
+plus `smoke`, `optimize --demo --rounds 6`,
+`extraction-readiness --ids H001-H016`, `adjudication-status`,
+`adjudication-validate`, and `adjudication-export`.
 
 ---
 

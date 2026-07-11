@@ -566,8 +566,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 - CLI-first Python package exists.
 - Latest main-line validation after merging the Codex JATS/readiness and
-  provider fail-fast branches: 62 tests passed and 2 optional tests skipped in
-  the isolated Codex worktree venv.
+  provider fail-fast branches, S4 review helpers, and Claude DeepSeek comparison
+  handoff: 63 tests passed and 2 optional tests skipped in the isolated Codex
+  worktree venv.
 - Codex now works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`;
   Claude works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`.
   Short-lived feature branches should be merged into `main` and deleted instead
@@ -591,7 +592,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   extract, Auxenochlorella pyrenoidosa protein extract, and copper ions. These
   are normalization hooks, not wet-lab approvals.
 - `scripts/ingest_pdfs.py` can ingest loose PDF folders/lists.
-- `scripts/run_evidence_parallel.py` can generate effect-item exports.
+- `scripts/run_evidence_parallel.py` can generate effect-item exports and
+  controlled provider/model comparison files with `--model`, `--max-tokens`,
+  and `--items-out`; it reports tier counts to distinguish direction-only
+  evidence from quantitative effect-size evidence.
 - `cultivate evidence` writes raw `effect_items_<outcome>.json`.
 - `cultivate evidence-audit` produces a conservative wet-lab-entry report.
 - `cultivate extraction-readiness` checks local full-text and section-routing
@@ -624,6 +628,11 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - Bovine manifest v0 contains 44 records.
 - Human review queue v0 contains 30 open tasks.
 - AI-for-science method review exists.
+- DeepSeek compatibility-route vs explicit v4-flash effect-extraction
+  comparison exists in `docs/MODEL_COMPARISON_DEEPSEEK.md`; it found the
+  explicit v4-flash run cleaner and more critical but still direction-only, so
+  it does not remove the need for human review or numeric effect-size extraction
+  work.
 - Method-source registry covers autonomous labs, scientific RAG, information
   extraction, document parsing, ETL, systematic-review tooling, human-in-the-loop
   evidence review, AI review reporting, and Bayesian optimization.
@@ -662,6 +671,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - The latest DeepSeek-compatible H014 live pilot reached the provider but failed
   authentication with the currently available environment key; no extraction was
   written.
+- The DeepSeek compatibility-route vs explicit v4-flash comparison is a useful
+  quality check, not wet-lab evidence: both outputs were direction-only and need
+  human adjudication before any variable is promoted.
 - Current corpus manifest is not yet fully extracted.
 - GROBID service availability is external; legally obtained JATS/Open Access XML
   can also be parsed when available.
@@ -684,8 +696,11 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    `cultivate extract --ids H014 --mode operators`, inspect grounding and raw
    extraction metadata, then scale to `--ids H001-H014` only if the pilot is
    acceptable.
-6. `[REVIEW]` Decide which variables can enter S5 search-space design.
-7. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
+6. `[AI]` Prototype a number-aware effect extractor prompt on the DeepSeek
+   comparison subset; do not replace direction-only evidence without quote-level
+   number verification.
+7. `[REVIEW]` Decide which variables can enter S5 search-space design.
+8. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 
 ## 9. AI Handoff Protocol
 

@@ -1878,3 +1878,77 @@ RobotReviewer entries.
 2. Have a human reviewer pilot 2-3 H001-H014 worksheet rows before filling the
    whole worksheet.
 3. After human edits, validate and export only supported or partial rows.
+
+---
+
+# Session 26 (Codex) — integrate Claude DeepSeek comparison handoff
+
+Date: 2026-07-12
+Branch: `codex/integrate-claude-v4-comparison`
+
+## Coordination Decision
+
+Claude had three useful commits stranded on its isolated worktree:
+
+- `scripts/run_evidence_parallel.py` gained `--model`, `--max-tokens`, and
+  `--items-out` for controlled provider/model comparisons plus tier reporting.
+- `config/ontology/growth_factors.yaml` mapped "basic fibroblast growth factor"
+  to FGF2 so live-model aliases pool correctly.
+- `docs/MODEL_COMPARISON_DEEPSEEK.md` recorded a controlled 15-paper DeepSeek
+  comparison.
+
+Codex integrated those commits into a short-lived Codex branch rather than
+editing Claude's worktree. During review, Codex corrected the model-comparison
+language: DeepSeek's official docs currently describe `deepseek-chat` as a
+compatibility name for `deepseek-v4-flash` non-thinking mode, so the report is a
+compatibility-route vs explicit `deepseek-v4-flash` comparison, not a clean
+V3-vs-V4 model-family comparison.
+
+## Changes Made
+
+- Cherry-picked Claude's three local commits into this Codex branch.
+- Added official DeepSeek model-name links to
+  `docs/MODEL_COMPARISON_DEEPSEEK.md`.
+- Updated README, `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md`,
+  `docs/BOVINE_CORPUS_MANIFEST.md`, and both workflow manuals.
+- Recorded that the comparison remains direction-only evidence and does not
+  approve wet-lab variables.
+- Updated this session log.
+
+## What This Does Not Claim
+
+- The DeepSeek comparison is not wet-lab evidence.
+- The compatibility-route output is not a validated V3 baseline.
+- Direction-only effect items are not quantitative effect sizes.
+- No human adjudication decision was entered.
+
+## Verification
+
+- `.venv/bin/python scripts/run_evidence_parallel.py --help`: passed; help
+  includes `--model`, `--max-tokens`, and `--items-out`.
+- Ontology check: "basic fibroblast growth factor", "bFGF", and "FGF-2" all
+  canonicalize to FGF2.
+- Secret scan for pasted-style Gemini/DeepSeek/OpenAI key patterns: no hits.
+- `.venv/bin/python -m pytest -q`: 63 passed, 2 skipped.
+- `.venv/bin/python -m cultivate_agent.cli smoke`: passed; ontology surface
+  terms increased from 176 to 177 after the new FGF2 alias.
+- `.venv/bin/python -m cultivate_agent.cli optimize --demo --rounds 6`: passed;
+  hypervolume rose from 7.050 to 16.464.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md`:
+  passed; 0/14 resolved, 0 evidence-bearing decisions, 0 validation issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+
+## Next 3 Steps
+
+1. Merge this branch into `main`, push, and delete it.
+2. Use `scripts/run_evidence_parallel.py --model ... --items-out ...` for future
+   controlled live comparisons.
+3. Prototype a number-aware effect extractor before claiming random-effects
+   quantitative synthesis from literature.

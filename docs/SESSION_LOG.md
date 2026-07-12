@@ -2257,3 +2257,94 @@ Adopted rule:
    group mapping are explicitly quoted.
 3. Run a small live operator extraction pilot after the provider environment is
    known to be valid.
+
+---
+
+# Session 31 (Codex) — ROM variance from quoted group statistics
+
+Date: 2026-07-12
+Branch: `codex/rom-variance-from-quote`
+
+## Decision
+
+The treatment/control mean parser created tier-2 log response ratios. The next
+safe improvement was to compute a within-study variance only when the same
+verified quote includes the additional group statistics required by the
+large-sample ROM formula.
+
+Adopted rule:
+
+- Infer `effect = ln(treatment_mean/control_mean)` from explicit group means.
+- Infer ROM sampling variance only when both treatment and control groups also
+  have SD/SE/SEM and `n` in the quote.
+- Convert SE/SEM to SD using `SD = SE * sqrt(n)`.
+- Do not infer variance from means alone, missing group sizes, CI-only text, or
+  table layouts not represented in the quote.
+- Keep S4 numeric-effect review as the thesis-use gate.
+
+The method basis is Cochrane ratio-measure guidance, Hedges/Gurevitch/Curtis
+response ratios, Friedrich/Adhikari/Beyene ratio of means, and the metafor ROM
+implementation notes.
+
+## Changes Made
+
+- Extended `evidence.effect_operator` so deterministic numeric inference can
+  carry a variance as well as an effect.
+- Added quote-only parsing for group `mean`, SD/SE/SEM, and `n`.
+- Added context fields for treatment/control SD, group sizes, and the variance
+  formula identifier `ROM_LS_Hedges1999`.
+- Added an offline test that promotes a complete quoted group-statistics item to
+  tier 1 with expected variance.
+- Added method-source record `M044`.
+- Updated README, both workflow manuals, corpus manifest, evidence synthesis,
+  AI-for-science method review, and this session log.
+
+## What This Does Not Claim
+
+- No human numeric effect was approved.
+- CI-only, p-value-only, table-only, or ambiguous multi-group evidence is not
+  parsed as variance.
+- Literature effect sizes still do not become BO training labels.
+- No wet-lab design packet or variable promotion was created.
+
+## Verification
+
+- Focused numeric tests:
+  `.venv/bin/python -m pytest tests/test_evidence.py::test_extract_effects_infers_rom_variance_from_quoted_group_stats tests/test_evidence.py::test_extract_effects_infers_log_ratio_from_treatment_control_means tests/test_evidence.py::test_extract_effects_demotes_unquoted_numbers -q`:
+  passed.
+- TSV registry structure check:
+  passed; 44 rows, 9 columns, no malformed rows.
+- Secret scan for pasted-style Gemini/DeepSeek/OpenAI key patterns:
+  no hits.
+- Full pytest:
+  `.venv/bin/python -m pytest -q` in the current managed sandbox reached 66
+  passed and 2 skipped, then failed only
+  `tests/test_pipeline.py::test_grobid_client_writes_and_parses_tei`.
+  The failure is environmental: even a minimal `urllib` POST to a local
+  `HTTPServer` fails with `RemoteDisconnected` in this sandbox.
+- Non-loopback pytest:
+  `.venv/bin/python -m pytest -q -k 'not test_grobid_client_writes_and_parses_tei'`:
+  passed; 66 passed, 2 skipped, 1 deselected.
+- S4 CLI checks:
+  `.venv/bin/python -m cultivate_agent.cli adjudication-status --out docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md`:
+  passed; 0/14 resolved, 0 evidence-bearing decisions, 0 validation issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md --fail-on-issues`:
+  passed; 14 rows, 0 issues.
+- `.venv/bin/python -m cultivate_agent.cli adjudication-export --worksheet data/literature/bovine_adjudication_H001_H014.tsv --out data/literature/bovine_evidence_table.tsv`:
+  passed; 0 adjudicated evidence rows exported.
+- `.venv/bin/python -m cultivate_agent.cli extraction-readiness --ids H001-H016 --out docs/EXTRACTION_READINESS_H001_H016.md --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv`:
+  passed; 14 ready, 0 fallback-ready, 0 partial, 2 not ready.
+- `.venv/bin/python -m cultivate_agent.cli review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md`:
+  passed; 14/16 tasks have local full-text locators.
+- Smoke and demo optimization:
+  smoke passed; `optimize --demo --rounds 6` passed with hypervolume rising
+  from 7.050 to 16.464.
+
+## Next 3 Steps
+
+1. Human reviewer still needs to adjudicate H001-H014 and verify any numeric
+   effect fields before thesis use.
+2. Extend deterministic extraction to CI-formatted and table-formatted group
+   statistics only when source text exposes all required values.
+3. Run a small live operator extraction pilot after provider credentials are
+   confirmed valid.

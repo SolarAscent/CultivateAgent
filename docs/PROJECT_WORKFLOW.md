@@ -573,8 +573,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   provider fail-fast branches, S4 review helpers, and Claude DeepSeek comparison
   handoff, plus numeric quote verification and quote-based log fold-change
   inference, numeric adjudication fields, and explicit treatment/control mean
-  log-ratio inference for effect items: 66 tests passed and 2 optional tests
-  skipped in the isolated Codex worktree venv.
+  log-ratio/variance inference for effect items: focused numeric tests pass; in
+  the current managed sandbox, the suite excluding the local-loopback GROBID mock
+  test reports 66 tests passed, 2 optional tests skipped, and 1 deselected.
 - Codex now works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`;
   Claude works from `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`.
   Short-lived feature branches should be merged into `main` and deleted instead
@@ -610,7 +611,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - Very explicit quoted treatment/control means can also be converted into
   `ln(treatment_mean/control_mean)` with endpoint/timepoint context when
   available. Dose, concentration, timepoint, and factor-name numbers are skipped
-  as response values. This remains tier 2 because no variance is inferred.
+  as response values. A ROM sampling variance is computed only when the same
+  quote explicitly reports mean, SD/SE/SEM, and sample size for both groups.
 - `cultivate evidence` writes raw `effect_items_<outcome>.json`.
 - `cultivate evidence-audit` produces a conservative wet-lab-entry report.
 - `cultivate extraction-readiness` checks local full-text and section-routing
@@ -658,7 +660,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   `partial`, `unsupported`, `uncertain`, or `defer`.
 - Method-source registry now includes Cochrane ratio-measure guidance and
   Hedges/Gurevitch/Curtis response ratios plus Friedrich/Adhikari/Beyene ratio
-  of means for deterministic quote-level log-ratio extraction.
+  of means and the metafor ROM implementation notes for deterministic
+  quote-level log-ratio and variance extraction.
 - Method-source registry covers autonomous labs, scientific RAG, information
   extraction, document parsing, ETL, systematic-review tooling, human-in-the-loop
   evidence review, AI review reporting, and Bayesian optimization.
@@ -684,6 +687,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - Fresh worktrees do not automatically contain ignored local paper assets
   (`data/papers/`). Extraction-readiness verification needs those assets copied
   or regenerated locally.
+- Current managed Codex sandbox cannot complete local `urllib` POST calls to a
+  temporary `HTTPServer`, even with command escalation. This blocks
+  `tests/test_pipeline.py::test_grobid_client_writes_and_parses_tei` in this
+  environment but does not affect the non-loopback suite or CLI smoke checks.
 - Once a reviewer starts filling `data/literature/bovine_adjudication_H001_H014.tsv`,
   do not regenerate it with `adjudication-template` unless a reviewed copy has
   been saved and `--force` is intentionally used. Forced overwrites create a
@@ -722,10 +729,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    `cultivate extract --ids H014 --mode operators`, inspect grounding and raw
    extraction metadata, then scale to `--ids H001-H014` only if the pilot is
    acceptable.
-6. `[AI]` Extend deterministic number-aware extraction from treatment/control
-   means to sample size, SD/SE, confidence intervals, and variance only when
-   all required values are explicitly quoted and human numeric review remains
-   in the loop.
+6. `[AI]` Extend deterministic number-aware extraction to confidence intervals,
+   table-formatted group statistics, and more notation variants only when all
+   required values are explicitly quoted and human numeric review remains in the
+   loop.
 7. `[REVIEW]` Decide which variables can enter S5 search-space design.
 8. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 

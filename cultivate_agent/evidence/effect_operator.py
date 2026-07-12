@@ -144,7 +144,7 @@ def extract_effects(
                 variance = None
             if inferred.effect is not None:
                 effect = inferred.effect
-                variance = None
+                variance = inferred.variance
                 context.update(inferred.context)
         else:
             effect = None
@@ -212,6 +212,7 @@ _PERCENT_RE = re.compile(
 @dataclass
 class _NumericInference:
     effect: Optional[float] = None
+    variance: Optional[float] = None
     context: dict[str, str] = field(default_factory=dict)
 
 
@@ -229,13 +230,13 @@ def _infer_log_response_ratio(
     """
     fold = _infer_fold_ratio(quote, direction)
     if fold is not None and fold > 0:
-        return _NumericInference(math.log(fold), {
+        return _NumericInference(effect=math.log(fold), context={
             "effect_metric": "log_response_ratio",
             "effect_inference_source": "explicit_fold_or_percent",
         })
     percent = _infer_percent_ratio(quote, direction)
     if percent is not None and percent > 0:
-        return _NumericInference(math.log(percent), {
+        return _NumericInference(effect=math.log(percent), context={
             "effect_metric": "log_response_ratio",
             "effect_inference_source": "explicit_fold_or_percent",
         })
@@ -308,9 +309,27 @@ _TIMEPOINT_RE = re.compile(
     r"\b(?:at|after|for)\s+(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>h|hr|hrs|hours?|d|days?)\b",
     flags=re.IGNORECASE,
 )
+_GROUP_STATS_RE = re.compile(
+    r"(?P<label>[^.;,]{0,80}?)\bmean\s*=?\s*(?P<mean>[-+]?(?:\d+(?:\.\d*)?|\.\d+))"
+    r"\s*,?\s*(?P<stat_label>sd|s\.d\.|standard deviation|se|s\.e\.|sem|s\.e\.m\.|standard error)"
+    r"\s*=?\s*(?P<stat>[-+]?(?:\d+(?:\.\d*)?|\.\d+))"
+    r"\s*,?\s*n\s*=?\s*(?P<n>\d+)",
+    flags=re.IGNORECASE,
+)
 
 
 def _infer_raw_mean_ratio(quote: str, component: str, outcome: str) -> _NumericInference:
+    stats = _labelled_group_stats(quote, component)
+    treatment_stats = [group for group in stats if group["label"] == "treatment"]
+    control_stats = [group for group in stats if group["label"] == "control"]
+    if len(treatment_stats) == 1 and len(control_stats) == 1:
+        return _infer_raw_mean_ratio_from_stats(
+            treatment_stats[0],
+            control_stats[0],
+            quote,
+            outcome,
+        )
+
     observations = _labelled_numeric_observations(quote, component)
     treatment = [obs for obs in observations if obs["label"] == "treatment"]
     control = [obs for obs in observations if obs["label"] == "control"]
@@ -333,7 +352,77 @@ def _infer_raw_mean_ratio(quote: str, component: str, outcome: str) -> _NumericI
     timepoint = _extract_timepoint(quote)
     if timepoint:
         context["effect_timepoint"] = timepoint
-    return _NumericInference(math.log(treatment_value / control_value), context)
+    return _NumericInference(effect=math.log(treatment_value / control_value), context=context)
+
+
+def _infer_raw_mean_ratio_from_stats(
+    treatment: dict[str, float | int | str],
+    control: dict[str, float | int | str],
+    quote: str,
+    outcome: str,
+) -> _NumericInference:
+    treatment_mean = float(treatment["mean"])
+    control_mean = float(control["mean"])
+    treatment_sd = float(treatment["sd"])
+    control_sd = float(control["sd"])
+    treatment_n = int(treatment["n"])
+    control_n = int(control["n"])
+    if min(treatment_mean, control_mean, treatment_sd, control_sd) <= 0:
+        return _NumericInference()
+    if treatment_n <= 1 or control_n <= 1:
+        return _NumericInference()
+
+    effect = math.log(treatment_mean / control_mean)
+    variance = (
+        (treatment_sd ** 2) / (treatment_n * treatment_mean ** 2)
+        + (control_sd ** 2) / (control_n * control_mean ** 2)
+    )
+    context = {
+        "effect_metric": "log_response_ratio",
+        "effect_inference_source": "treatment_control_mean_sd_n",
+        "treatment_mean": _format_effect_number(treatment_mean),
+        "control_mean": _format_effect_number(control_mean),
+        "treatment_sd": _format_effect_number(treatment_sd),
+        "control_sd": _format_effect_number(control_sd),
+        "treatment_n": str(treatment_n),
+        "control_n": str(control_n),
+        "variance_formula": "ROM_LS_Hedges1999",
+    }
+    if outcome:
+        context["effect_endpoint"] = outcome
+    timepoint = _extract_timepoint(quote)
+    if timepoint:
+        context["effect_timepoint"] = timepoint
+    return _NumericInference(effect=effect, variance=variance, context=context)
+
+
+def _labelled_group_stats(quote: str, component: str) -> list[dict[str, float | int | str]]:
+    groups: list[dict[str, float | int | str]] = []
+    component_terms = _component_terms(component)
+    for match in _GROUP_STATS_RE.finditer(quote):
+        label_text = match.group("label").lower()
+        has_control = any(word in label_text for word in _CONTROL_WORDS)
+        has_component = any(term and term in label_text for term in component_terms)
+        has_treatment = has_component or any(word in label_text for word in _TREATMENT_WORDS)
+        if has_control == has_treatment:
+            continue
+        mean = _safe_positive_float(match.group("mean"))
+        stat = _safe_positive_float(match.group("stat"))
+        try:
+            n = int(match.group("n"))
+        except (TypeError, ValueError):
+            continue
+        if mean is None or stat is None or n <= 1:
+            continue
+        stat_label = match.group("stat_label").lower().replace(".", "")
+        sd = stat * math.sqrt(n) if stat_label in {"se", "sem", "standard error"} else stat
+        groups.append({
+            "label": "control" if has_control else "treatment",
+            "mean": mean,
+            "sd": sd,
+            "n": n,
+        })
+    return groups
 
 
 def _labelled_numeric_observations(quote: str, component: str) -> list[dict[str, float | str]]:

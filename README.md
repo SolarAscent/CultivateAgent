@@ -292,7 +292,9 @@ Useful scripts:
   only when the verified quote contains the supporting number; otherwise the
   item is automatically downgraded to a lower evidence tier. Explicit
   quote-backed fold/percent changes and very explicit treatment/control means
-  are converted to log response ratios, but no variance is inferred.
+  are converted to log response ratios. A ROM sampling variance is computed
+  only when the same verified quote also reports SD/SE/SEM and sample size for
+  both treatment and control groups.
 - `cultivate extraction-readiness`: checks whether local full text can support
   section-routed `context`, `medium`, `dose`, `endpoints`, and `findings`
   operators before spending LLM calls; it does not extract or approve evidence.
@@ -327,11 +329,14 @@ Run the tests: `pip install pytest && pytest -q` (offline suite).
 
 Current main-line verification after merging the Codex JATS/readiness and
 provider fail-fast branches, S4 review helpers, Claude's DeepSeek comparison
-handoff, numeric quote verification, quote-based log ratio inference, and
-numeric adjudication fields for effect items: `66 passed, 2 skipped` in the
-isolated Codex worktree venv, plus `smoke`, `optimize --demo --rounds 6`,
-`extraction-readiness --ids H001-H016`, `adjudication-status`,
-`adjudication-validate`, and `adjudication-export`.
+handoff, numeric quote verification, quote-based log ratio inference, ROM
+variance inference from quoted group statistics, and numeric adjudication fields
+for effect items: focused numeric tests pass, and the managed-sandbox suite
+excluding the local-loopback GROBID mock test reports `66 passed, 2 skipped,
+1 deselected`. The excluded test currently fails because this environment cannot
+complete even a minimal `urllib` POST to a local `HTTPServer`; `smoke`,
+`optimize --demo --rounds 6`, `extraction-readiness --ids H001-H016`,
+`adjudication-status`, `adjudication-validate`, and `adjudication-export` pass.
 
 ---
 

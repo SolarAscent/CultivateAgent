@@ -205,6 +205,34 @@ def test_extract_effects_infers_log_ratio_from_treatment_control_means():
     assert by_component["Insulin"].effect is None
 
 
+def test_extract_effects_infers_rom_variance_from_quoted_group_stats():
+    from cultivate_agent.evidence import extract_effects
+    from cultivate_agent.llm import get_client
+    from cultivate_agent.schema.paper import PaperRef
+
+    text = (
+        "FGF2-treated cultures had mean 2.0, SD 0.4, n=4; control cultures had "
+        "mean 1.0, SD 0.2, n=4 after 72 h."
+    )
+    payload = json.dumps({"evidence": [
+        {"component": "FGF2", "direction": 1, "effect": None, "variance": None, "context": {},
+         "quote": "FGF2-treated cultures had mean 2.0, SD 0.4, n=4; control cultures had mean 1.0, SD 0.2, n=4 after 72 h"},
+    ]})
+    client = get_client("mock", "m", responses=[payload])
+    items = extract_effects(client, PaperRef(paper_id="p1", title="t"), text, "proliferation")
+
+    item = items[0]
+    assert item.tier == 1
+    assert item.effect == pytest.approx(math.log(2.0))
+    assert item.variance == pytest.approx(0.02)
+    assert item.context["effect_inference_source"] == "treatment_control_mean_sd_n"
+    assert item.context["variance_formula"] == "ROM_LS_Hedges1999"
+    assert item.context["treatment_sd"] == "0.4"
+    assert item.context["control_sd"] == "0.2"
+    assert item.context["treatment_n"] == "4"
+    assert item.context["control_n"] == "4"
+
+
 def test_evidence_audit_blocks_until_human_review_and_filters_process_items(tmp_path):
     from cultivate_agent.evidence import EvidenceItem, audit_effect_items, write_evidence_audit_markdown
 

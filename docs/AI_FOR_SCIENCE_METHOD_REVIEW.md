@@ -191,7 +191,8 @@ Project implication:
   `not_applicable` for numeric effect status.
 - Deterministic log-ratio extraction from fold/percent phrases or explicit
   treatment/control means is only a candidate numeric aid. It creates tier-2
-  evidence unless a verified variance is available and still needs the S4
+  evidence unless the same verified quote contains group SD/SE/SEM and sample
+  size values needed for ROM sampling variance. It still needs the S4
   numeric-effect fields before thesis use.
 - A blank worksheet with a passing validator means only that the form is
   structurally valid. It is not evidence approval.

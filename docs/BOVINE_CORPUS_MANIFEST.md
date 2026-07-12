@@ -154,8 +154,9 @@ Gate 2, extraction reliability: **not passed**.
   and H015-H016 remain missing because R024 is not ingested locally.
 - The effect extractor can now infer tier-2 log response ratios from explicit
   fold/percent phrases or explicit treatment/control means in verified quotes.
-  It still does not infer variance, and all numeric uses remain subject to the
-  S4 numeric-effect review fields.
+  It computes ROM sampling variance only when the same verified quote also
+  reports group SD/SE/SEM and sample sizes. All numeric uses remain subject to
+  the S4 numeric-effect review fields.
 
 Gate 3, biological plausibility: **not passed**.
 

@@ -540,9 +540,10 @@ Gate：论文 claims 可追溯到证据和结果。
 - Codex 的 JATS/readiness、provider fail-fast、S4 review helpers、Claude
   DeepSeek comparison handoff、effect item 数字 quote verification 和
   quote-based log fold-change inference、effect item numeric adjudication
-  fields，以及明确 treatment/control means 的 log-ratio inference 合并入 `main`
-  后，最新 main-line validation：在 Codex 独立 worktree venv 中 66 tests
-  passed、2 个 optional tests skipped。
+  fields，以及明确 treatment/control means 的 log-ratio/variance inference 合并入
+  `main` 后，最新 main-line validation：focused numeric tests 通过；当前 managed
+  sandbox 中排除 local-loopback GROBID mock test 后，66 tests passed、2 个
+  optional tests skipped、1 个 deselected。
 - Codex 现在使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-codex`；
   Claude 使用 `/Users/tianyangsong/Desktop/Research/CultivateAgent-claude`。
   短生命周期 feature branch 应及时合并到 `main` 并删除，避免 side branch 变成
@@ -577,8 +578,9 @@ Gate：论文 claims 可追溯到证据和结果。
   `ln(ratio)`；因为不会推断 variance，所以这最多仍是 tier 2。
 - 明确写在 quote 中的 treatment/control means 也可以转换成
   `ln(treatment_mean/control_mean)`，并在可用时记录 endpoint/timepoint context。
-  剂量、浓度、timepoint 和因子名里的数字不会被当作 response value；因为不会推断
-  variance，所以这最多仍是 tier 2。
+  剂量、浓度、timepoint 和因子名里的数字不会被当作 response value。只有同一条
+  quote 同时明确给出两组 mean、SD/SE/SEM 和 sample size 时，才会计算 ROM
+  sampling variance。
 - `cultivate evidence` 会写出 raw `effect_items_<outcome>.json`。
 - `cultivate evidence-audit` 能生成保守的 wet-lab-entry report。
 - `cultivate extraction-readiness` 会在调用 LLM 前检查本地全文和 section routing
@@ -620,7 +622,8 @@ Gate：论文 claims 可追溯到证据和结果。
   supported，但定量值仍然保持 `partial`、`unsupported`、`uncertain` 或 `defer`。
 - 方法文献登记表已加入 Cochrane ratio-measure guidance、
   Hedges/Gurevitch/Curtis response ratio，以及 Friedrich/Adhikari/Beyene
-  ratio of means，用于支撑保守的 quote-level log-ratio extraction。
+  ratio of means 和 metafor ROM implementation notes，用于支撑保守的
+  quote-level log-ratio 和 variance extraction。
 - 方法文献登记表已覆盖 autonomous labs、scientific RAG、information extraction、
   document parsing、ETL、systematic-review tooling、human-in-the-loop 证据复核、
   AI review reporting 和 Bayesian optimization。
@@ -645,6 +648,10 @@ Gate：论文 claims 可追溯到证据和结果。
 
 - 新 worktree 不会自动带有 ignored 的本地 paper assets（`data/papers/`）。
   运行 extraction-readiness 前需要本地复制或重新生成这些材料。
+- 当前 managed Codex sandbox 不能完成对临时 `HTTPServer` 的本地 `urllib` POST，
+  即使 command escalation 后也一样。因此
+  `tests/test_pipeline.py::test_grobid_client_writes_and_parses_tei` 在此环境
+  受阻，但非 loopback test suite 和 CLI smoke checks 不受影响。
 - 一旦 reviewer 开始填写 `data/literature/bovine_adjudication_H001_H014.tsv`，
   不要再直接运行 `adjudication-template` 覆盖；除非已经保存人工版本，并且有意使用
   `--force`。强制覆盖会创建带时间戳的 `.bak`，但这只是兜底保护，不是常规复核流程，
@@ -675,9 +682,9 @@ Gate：论文 claims 可追溯到证据和结果。
 5. `[AI]` 先用 `cultivate extract --ids H014 --mode operators` 跑小规模 live
    operator-extraction pilot，检查 grounding 和 raw extraction metadata；只有
    pilot 可接受后再扩大到 `--ids H001-H014`。
-6. `[AI]` 继续把 deterministic number-aware extraction 从 treatment/control
-   means 扩展到 sample size、SD/SE、confidence intervals 和 variance；前提是所需
-   数值都明确出现在 quote 中，并且保留人工数字复核。
+6. `[AI]` 继续把 deterministic number-aware extraction 扩展到 confidence
+   intervals、表格化 group statistics 和更多 notation variants；前提是所需数值都
+   明确出现在 quote 中，并且保留人工数字复核。
 7. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 8. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 

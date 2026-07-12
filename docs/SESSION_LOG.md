@@ -2413,3 +2413,83 @@ Adopted rule:
 2. Human reviewer completes H001-H014 adjudication.
 3. Re-run a one-paper live operator pilot only after provider credentials are
    valid, then scale if grounding and non-missing gates pass.
+
+---
+
+# Session 33 (Codex) — separate field and evidence coverage diagnostics
+
+Date: 2026-07-13
+Branch: `codex/eval-field-coverage`
+
+## Start-State Assessment
+
+Before choosing work, the evidence-based baseline was unchanged from the prior
+audit: software infrastructure about 72%, literature/evidence work about 43%,
+wet-lab-entry readiness about 24%, and the full workflow through paper results
+about 29% (reasonable range 25-33%). The strict corpus-ID fix improved metric
+integrity but did not pass a scientific gate, so it did not justify increasing
+the full-workflow percentage.
+
+The highest-value non-human task was to prevent 4/4 paper-ID coverage from being
+misread as extraction completeness. H001-H014 adjudication remains human-only
+and was recorded rather than simulated.
+
+## Decision
+
+Extraction evaluation must report four distinct layers:
+
+- paper-ID alignment;
+- presence of predictions for populated gold field cells;
+- evidence attachment for non-bibliographic B-M predicted fields;
+- grounding of attached evidence.
+
+A zero denominator is reported as `None`; an empty substantive extraction must
+never appear to have perfect evidence coverage.
+
+## Changes Made
+
+- Added gold-field presence and substantive evidence-attachment counters to
+  `EvalReport`.
+- Excluded Block A bibliographic prefill from substantive-field counts.
+- Counted attached evidence flagged `UNVERIFIED` separately from attachment.
+- Updated the report generator and tests.
+- Updated README, both workflow manuals, collaboration protocol, evaluation
+  report, and this session log.
+- The committed live benchmark is now explicit: 4/4 paper IDs, but only 8/45
+  populated gold field cells, zero B-M substantive fields, and therefore no
+  evidence-attachment denominator or grounding result.
+
+## What This Does Not Claim
+
+- Evidence attachment is not evidence grounding or scientific correctness.
+- Gold-field presence is not exact-value accuracy; P/R/F1 remains separate.
+- The live benchmark still fails Gate 2.
+- No human evidence or wet-lab condition was approved.
+
+## Completion Impact
+
+This change increases auditability and reduces future rework risk, but it does
+not pass extraction reliability, human adjudication, or wet-lab gates. The
+rounded full-workflow estimate therefore remains 29%; software infrastructure
+may be described as about 73% only after regression verification succeeds.
+
+## Verification
+
+- Focused coverage tests: 4 passed.
+- Non-loopback suite:
+  `.venv/bin/python -m pytest -q -k 'not test_grobid_client_writes_and_parses_tei'`:
+  69 passed, 2 skipped, 1 deselected. The deselection is the previously recorded
+  managed-sandbox local-HTTP limitation.
+- Offline report generation: passed; mock fixture reported 38/45 gold-field
+  presence, 30 substantive fields, and 5/30 evidence attachment, demonstrating
+  that attachment and grounding expose different failure modes.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+- `git diff --check` passed; secret scan found no pasted-style API keys.
+
+## Next 3 Steps
+
+1. Add a gate-oriented report that evaluates the predefined decision-critical
+   fields rather than treating every A-M field as equally important.
+2. Human reviewer completes H001-H014 adjudication; AI validates and exports it.
+3. Re-run H014 live extraction only after provider credentials are valid.

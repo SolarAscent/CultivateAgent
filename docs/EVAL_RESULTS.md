@@ -8,6 +8,10 @@ Evaluated provider profile: `openai:gpt-5.4`
 - Prediction coverage: 4/4 (1.0)
 - Missing prediction IDs: none
 - Unexpected prediction IDs: none
+- Gold-field presence: 8/45 (0.1778)
+- Substantive B-M fields: 0
+- Evidence attachment: 0/0 (None)
+- Attached evidence flagged unverified: 0
 - Mean grounding rate: None
 - Overall: {'tp': 8, 'fp': 8, 'fn': 39, 'precision': 0.5, 'recall': 0.1702, 'f1': 0.254}
 
@@ -58,3 +62,7 @@ Evaluated provider profile: `openai:gpt-5.4`
   evaluation instead of being silently overwritten. This run had complete 4/4
   paper-ID coverage; its poor field coverage and absent grounding remain the
   substantive failure.
+- Field-cell diagnostics confirm that the four returned records were
+  bibliographic shells: only 8/45 populated gold field cells were present and
+  no B-M substantive field was extracted. Evidence attachment is `None`, not
+  100%, because there were zero substantive predicted fields.

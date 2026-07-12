@@ -84,6 +84,11 @@ class EvalReport:
     matched_paper_ids: List[str] = field(default_factory=list)
     missing_prediction_ids: List[str] = field(default_factory=list)
     unexpected_prediction_ids: List[str] = field(default_factory=list)
+    gold_populated_field_cells: int = 0
+    predicted_gold_field_cells: int = 0
+    substantive_predicted_field_cells: int = 0
+    evidence_attached_field_cells: int = 0
+    unverified_evidence_field_cells: int = 0
 
     def overall(self) -> Dict[str, float]:
         tp = sum(s.tp for s in self.per_field.values())
@@ -105,6 +110,25 @@ class EvalReport:
             "coverage": round(matched / expected, 4) if expected else 1.0,
             "missing_prediction_ids": list(self.missing_prediction_ids),
             "unexpected_prediction_ids": list(self.unexpected_prediction_ids),
+        }
+
+    def coverage(self) -> Dict[str, object]:
+        gold_total = self.gold_populated_field_cells
+        substantive_total = self.substantive_predicted_field_cells
+        return {
+            "gold_populated_field_cells": gold_total,
+            "predicted_gold_field_cells": self.predicted_gold_field_cells,
+            "gold_field_presence_rate": (
+                round(self.predicted_gold_field_cells / gold_total, 4)
+                if gold_total else None
+            ),
+            "substantive_predicted_field_cells": substantive_total,
+            "evidence_attached_field_cells": self.evidence_attached_field_cells,
+            "evidence_attachment_rate": (
+                round(self.evidence_attached_field_cells / substantive_total, 4)
+                if substantive_total else None
+            ),
+            "unverified_evidence_field_cells": self.unverified_evidence_field_cells,
         }
 
     def to_rows(self) -> List[dict]:
@@ -133,6 +157,17 @@ def evaluate_extraction(pred: PaperExtraction, gold: PaperExtraction, report: Op
     for key, gold_val in _iter_fields(gold):
         gset = _to_set(gold_val)
         pset = _to_set(pred_fields.get(key))
+        if gset:
+            report.gold_populated_field_cells += 1
+            if pset:
+                report.predicted_gold_field_cells += 1
+        if not key.startswith("A.") and pset:
+            report.substantive_predicted_field_cells += 1
+            evidence = pred.evidence.get(key)
+            if evidence is not None:
+                report.evidence_attached_field_cells += 1
+                if "UNVERIFIED" in (evidence.location or ""):
+                    report.unverified_evidence_field_cells += 1
         if not gset and not pset:
             continue  # neither reported -> not scored (as in ReactionSeek)
         report.per_field.setdefault(key, FieldScore()).add(pset, gset)

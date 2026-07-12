@@ -37,6 +37,10 @@ Every AI agent must do this before editing:
 - [ ] Run `git log --oneline --decorate -8`.
 - [ ] Identify untracked files and treat them as someone else's work unless
   there is direct evidence they are yours.
+- [ ] Estimate current completion separately for software infrastructure,
+  wet-lab-entry readiness, and the complete paper workflow. State the evidence,
+  denominator, and uncertainty; do not turn module counts into scientific
+  completion.
 - [ ] Decide the most valuable next task and record the decision in
   `docs/SESSION_LOG.md` before or with the implementation commit.
 

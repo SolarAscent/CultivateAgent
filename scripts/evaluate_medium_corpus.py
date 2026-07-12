@@ -510,6 +510,7 @@ def write_reports(
     report = evaluate_corpus(predictions[provider], golds)
     rows = report.to_rows()
     alignment = report.alignment()
+    coverage = report.coverage()
     agreement_fields = ["B.main_track", "E.serum_free_status", "J.has_extractable_quant_data", "M.recommended_action"]
     live_labels = {s.label for s in live_specs or []}
     if agreement_scope == "live":
@@ -536,6 +537,12 @@ def write_reports(
         f"- Prediction coverage: {alignment['matched']}/{alignment['expected']} ({alignment['coverage']})\n"
         f"- Missing prediction IDs: {alignment['missing_prediction_ids'] or 'none'}\n"
         f"- Unexpected prediction IDs: {alignment['unexpected_prediction_ids'] or 'none'}\n"
+        f"- Gold-field presence: {coverage['predicted_gold_field_cells']}/"
+        f"{coverage['gold_populated_field_cells']} ({coverage['gold_field_presence_rate']})\n"
+        f"- Substantive B-M fields: {coverage['substantive_predicted_field_cells']}\n"
+        f"- Evidence attachment: {coverage['evidence_attached_field_cells']}/"
+        f"{coverage['substantive_predicted_field_cells']} ({coverage['evidence_attachment_rate']})\n"
+        f"- Attached evidence flagged unverified: {coverage['unverified_evidence_field_cells']}\n"
         f"- Mean grounding rate: {report.mean_grounding()}\n"
         f"- Overall: {report.overall()}\n\n"
         "## Per-Field Scores\n\n"

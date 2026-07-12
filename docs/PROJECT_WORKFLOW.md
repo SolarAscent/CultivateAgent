@@ -297,6 +297,9 @@ Checklist:
 - [x] `[AI]` Evaluate corpora with strict paper-ID alignment: score every gold
   record, count missing predictions as false negatives, report unexpected IDs,
   and reject duplicate IDs.
+- [x] `[AI]` Report gold-field presence and evidence attachment separately from
+  paper-ID coverage and quote grounding; a bibliographic shell is not a
+  substantive extraction.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,
@@ -754,6 +757,10 @@ Any AI agent taking over must:
 9. Identify untracked files and avoid overwriting them.
 10. Work only in that agent's own worktree.
 11. Continue from the next failed gate in Section 8.3.
+12. Before choosing work, estimate current completion under three explicit
+    denominators: software infrastructure, wet-lab-entry readiness, and the full
+    paper workflow. Record the evidence and avoid increasing the estimate when
+    a change improves auditability but does not pass a scientific gate.
 
 Recommended handoff prompt:
 

@@ -283,6 +283,8 @@ Checklist：
 - [ ] `[AI]` 记录 extraction coverage、non-missing fields 和 grounding rate。
 - [x] `[AI]` 使用严格 paper-ID alignment 评估 corpus：每个 gold record 都必须
   计分，缺失预测记为 false negatives，额外 ID 单独报告，重复 ID 直接失败。
+- [x] `[AI]` 将 gold-field presence 和 evidence attachment 与 paper-ID coverage、
+  quote grounding 分开报告；只有书目信息的空壳记录不算实质抽取。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、
@@ -705,6 +707,8 @@ Gate：论文 claims 可追溯到证据和结果。
 9. 识别 untracked files，避免覆盖。
 10. 只在该 agent 自己的 worktree 中工作。
 11. 从第 8.3 节的下一个未通过 gate 继续。
+12. 决定任务前，分别估算软件基础设施、湿实验入口准备度和完整论文流程的完成度；
+    记录计算证据。若改动只提高可审计性而没有通过科学 gate，不提高完成度估计。
 
 推荐接管 prompt：
 

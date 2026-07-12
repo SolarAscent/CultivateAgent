@@ -226,7 +226,10 @@ python scripts/evaluate_medium_corpus.py \
 If a provider is unavailable, the agreement report records the failure instead
 of fabricating a comparison. Corpus evaluation is ID-strict: every gold paper
 is scored, missing predictions count as false negatives, unexpected IDs are
-reported, and duplicate gold or prediction IDs fail the run.
+reported, and duplicate gold or prediction IDs fail the run. The report also
+separates paper-ID coverage, gold-field presence, B-M substantive-field count,
+evidence attachment, and grounding; none of these metrics substitutes for the
+others.
 
 ---
 

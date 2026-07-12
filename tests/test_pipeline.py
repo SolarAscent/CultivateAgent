@@ -655,6 +655,15 @@ def test_extraction_eval_corpus_counts_missing_and_unexpected_records():
         "missing_prediction_ids": ["b"],
         "unexpected_prediction_ids": ["extra"],
     }
+    assert report.coverage() == {
+        "gold_populated_field_cells": 2,
+        "predicted_gold_field_cells": 1,
+        "gold_field_presence_rate": 0.5,
+        "substantive_predicted_field_cells": 1,
+        "evidence_attached_field_cells": 0,
+        "evidence_attachment_rate": 0.0,
+        "unverified_evidence_field_cells": 0,
+    }
 
 
 def test_extraction_eval_corpus_rejects_duplicate_ids():
@@ -670,6 +679,33 @@ def test_extraction_eval_corpus_rejects_duplicate_ids():
     duplicate_gold = [PaperExtraction(paper_id="g"), PaperExtraction(paper_id="g")]
     with pytest.raises(ValueError, match="duplicate gold paper_id.*g"):
         evaluate_corpus([], duplicate_gold)
+
+
+def test_extraction_eval_reports_substantive_evidence_attachment():
+    from cultivate_agent.evaluate import evaluate_corpus
+    from cultivate_agent.schema.evidence import Evidence
+    from cultivate_agent.schema.extraction import FastTriage, MediumInfo, PaperExtraction
+
+    gold = PaperExtraction(paper_id="p")
+    gold.fast_triage = FastTriage(main_track="medium")
+    gold.medium_info = MediumInfo(serum_free_status="serum-free")
+    pred = PaperExtraction(paper_id="p")
+    pred.fast_triage = FastTriage(main_track="medium")
+    pred.medium_info = MediumInfo(serum_free_status="serum-free")
+    pred.evidence = {
+        "B.main_track": Evidence(quote="This study optimizes the culture medium."),
+        "E.serum_free_status": Evidence(
+            quote="Cells were maintained in serum-free medium.",
+            location="Results [UNVERIFIED: quote not found in source]",
+        ),
+    }
+
+    coverage = evaluate_corpus([pred], [gold]).coverage()
+
+    assert coverage["gold_field_presence_rate"] == 1.0
+    assert coverage["substantive_predicted_field_cells"] == 2
+    assert coverage["evidence_attachment_rate"] == 1.0
+    assert coverage["unverified_evidence_field_cells"] == 1
 
 
 def test_bibtex_parsing(tmp_path):

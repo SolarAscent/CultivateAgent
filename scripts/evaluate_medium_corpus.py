@@ -509,6 +509,7 @@ def write_reports(
 
     report = evaluate_corpus(predictions[provider], golds)
     rows = report.to_rows()
+    alignment = report.alignment()
     agreement_fields = ["B.main_track", "E.serum_free_status", "J.has_extractable_quant_data", "M.recommended_action"]
     live_labels = {s.label for s in live_specs or []}
     if agreement_scope == "live":
@@ -532,6 +533,9 @@ def write_reports(
         "When `--live-provider provider:model` is supplied, the same fixture texts are extracted through the real provider client and scored here.\n\n"
         f"Evaluated provider profile: `{provider}`\n\n"
         f"- Papers: {report.n_papers}\n"
+        f"- Prediction coverage: {alignment['matched']}/{alignment['expected']} ({alignment['coverage']})\n"
+        f"- Missing prediction IDs: {alignment['missing_prediction_ids'] or 'none'}\n"
+        f"- Unexpected prediction IDs: {alignment['unexpected_prediction_ids'] or 'none'}\n"
         f"- Mean grounding rate: {report.mean_grounding()}\n"
         f"- Overall: {report.overall()}\n\n"
         "## Per-Field Scores\n\n"

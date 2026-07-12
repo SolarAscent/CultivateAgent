@@ -5,6 +5,9 @@ Status: offline hand-annotated fixture over four real medium papers. This is a s
 Evaluated provider profile: `openai:gpt-5.4`
 
 - Papers: 4
+- Prediction coverage: 4/4 (1.0)
+- Missing prediction IDs: none
+- Unexpected prediction IDs: none
 - Mean grounding rate: None
 - Overall: {'tp': 8, 'fp': 8, 'fn': 39, 'precision': 0.5, 'recall': 0.1702, 'f1': 0.254}
 
@@ -50,3 +53,8 @@ Evaluated provider profile: `openai:gpt-5.4`
 - Medium fields are the most stable when the source explicitly names serum-free status or a component. Growth-factor and extract names still need synonym canonicalization before scoring.
 - Quantitative fields are brittle: `partial` versus `yes` often depends on whether the paper has machine-readable tables, not only whether the abstract mentions numbers.
 - Grounding failures are correctly counted when a provider supplies a plausible but absent quote.
+- Corpus alignment is now strict: a missing paper-level prediction is scored as
+  false negatives, unexpected IDs are reported, and duplicate IDs fail the
+  evaluation instead of being silently overwritten. This run had complete 4/4
+  paper-ID coverage; its poor field coverage and absent grounding remain the
+  substantive failure.

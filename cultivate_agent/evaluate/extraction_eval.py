@@ -79,6 +79,11 @@ class EvalReport:
     per_field: Dict[str, FieldScore] = field(default_factory=dict)
     n_papers: int = 0
     grounding_rates: List[float] = field(default_factory=list)
+    expected_paper_ids: List[str] = field(default_factory=list)
+    predicted_paper_ids: List[str] = field(default_factory=list)
+    matched_paper_ids: List[str] = field(default_factory=list)
+    missing_prediction_ids: List[str] = field(default_factory=list)
+    unexpected_prediction_ids: List[str] = field(default_factory=list)
 
     def overall(self) -> Dict[str, float]:
         tp = sum(s.tp for s in self.per_field.values())
@@ -89,6 +94,18 @@ class EvalReport:
 
     def mean_grounding(self) -> Optional[float]:
         return round(sum(self.grounding_rates) / len(self.grounding_rates), 3) if self.grounding_rates else None
+
+    def alignment(self) -> Dict[str, object]:
+        expected = len(self.expected_paper_ids)
+        matched = len(self.matched_paper_ids)
+        return {
+            "expected": expected,
+            "predicted": len(self.predicted_paper_ids),
+            "matched": matched,
+            "coverage": round(matched / expected, 4) if expected else 1.0,
+            "missing_prediction_ids": list(self.missing_prediction_ids),
+            "unexpected_prediction_ids": list(self.unexpected_prediction_ids),
+        }
 
     def to_rows(self) -> List[dict]:
         rows = []
@@ -128,11 +145,45 @@ def evaluate_extraction(pred: PaperExtraction, gold: PaperExtraction, report: Op
 
 
 def evaluate_corpus(preds: Sequence[PaperExtraction], golds: Sequence[PaperExtraction]) -> EvalReport:
-    """Evaluate matched lists of predictions and gold records (aligned by paper_id)."""
-    gold_by_id = {g.paper_id: g for g in golds}
-    report = EvalReport()
-    for pred in preds:
-        gold = gold_by_id.get(pred.paper_id)
-        if gold is not None:
-            evaluate_extraction(pred, gold, report)
+    """Evaluate a corpus with strict paper-ID alignment.
+
+    Every gold record is scored. A missing prediction is represented by an
+    empty extraction so its populated gold fields become false negatives.
+    Unexpected predictions are reported but cannot be scored without gold.
+    Duplicate IDs are rejected because silently keeping one record would make
+    the benchmark dependent on input order.
+    """
+    gold_by_id = _unique_by_paper_id(golds, label="gold")
+    pred_by_id = _unique_by_paper_id(preds, label="prediction")
+    expected_ids = list(gold_by_id)
+    predicted_ids = list(pred_by_id)
+    matched_ids = [paper_id for paper_id in expected_ids if paper_id in pred_by_id]
+    missing_ids = [paper_id for paper_id in expected_ids if paper_id not in pred_by_id]
+    unexpected_ids = [paper_id for paper_id in predicted_ids if paper_id not in gold_by_id]
+    report = EvalReport(
+        expected_paper_ids=expected_ids,
+        predicted_paper_ids=predicted_ids,
+        matched_paper_ids=matched_ids,
+        missing_prediction_ids=missing_ids,
+        unexpected_prediction_ids=unexpected_ids,
+    )
+    for paper_id, gold in gold_by_id.items():
+        pred = pred_by_id.get(paper_id) or PaperExtraction(paper_id=paper_id)
+        evaluate_extraction(pred, gold, report)
     return report
+
+
+def _unique_by_paper_id(
+    records: Sequence[PaperExtraction], *, label: str
+) -> Dict[str, PaperExtraction]:
+    by_id: Dict[str, PaperExtraction] = {}
+    duplicates: Set[str] = set()
+    for record in records:
+        if record.paper_id in by_id:
+            duplicates.add(record.paper_id)
+        else:
+            by_id[record.paper_id] = record
+    if duplicates:
+        duplicate_list = ", ".join(sorted(duplicates))
+        raise ValueError(f"duplicate {label} paper_id(s): {duplicate_list}")
+    return by_id

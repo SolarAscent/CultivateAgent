@@ -629,6 +629,49 @@ def test_extraction_eval_prf():
     assert overall["tp"] == 2 and overall["fp"] == 1 and overall["fn"] == 1
 
 
+def test_extraction_eval_corpus_counts_missing_and_unexpected_records():
+    from cultivate_agent.evaluate import evaluate_corpus
+    from cultivate_agent.schema.extraction import MediumInfo, PaperExtraction
+
+    gold_a = PaperExtraction(paper_id="a")
+    gold_a.medium_info = MediumInfo(serum_free_status="serum-free")
+    gold_b = PaperExtraction(paper_id="b")
+    gold_b.medium_info = MediumInfo(growth_factors=["FGF2"])
+    pred_a = PaperExtraction(paper_id="a")
+    pred_a.medium_info = MediumInfo(serum_free_status="serum-free")
+    pred_extra = PaperExtraction(paper_id="extra")
+
+    report = evaluate_corpus([pred_a, pred_extra], [gold_a, gold_b])
+
+    assert report.n_papers == 2
+    assert report.overall() == {
+        "tp": 1, "fp": 0, "fn": 1, "precision": 1.0, "recall": 0.5, "f1": 0.6667
+    }
+    assert report.alignment() == {
+        "expected": 2,
+        "predicted": 2,
+        "matched": 1,
+        "coverage": 0.5,
+        "missing_prediction_ids": ["b"],
+        "unexpected_prediction_ids": ["extra"],
+    }
+
+
+def test_extraction_eval_corpus_rejects_duplicate_ids():
+    import pytest
+
+    from cultivate_agent.evaluate import evaluate_corpus
+    from cultivate_agent.schema.extraction import PaperExtraction
+
+    duplicate_predictions = [PaperExtraction(paper_id="p"), PaperExtraction(paper_id="p")]
+    with pytest.raises(ValueError, match="duplicate prediction paper_id.*p"):
+        evaluate_corpus(duplicate_predictions, [PaperExtraction(paper_id="p")])
+
+    duplicate_gold = [PaperExtraction(paper_id="g"), PaperExtraction(paper_id="g")]
+    with pytest.raises(ValueError, match="duplicate gold paper_id.*g"):
+        evaluate_corpus([], duplicate_gold)
+
+
 def test_bibtex_parsing(tmp_path):
     from cultivate_agent.ingest import parse_bibtex
 

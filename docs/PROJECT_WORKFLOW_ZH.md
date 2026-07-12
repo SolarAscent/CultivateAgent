@@ -281,6 +281,8 @@ Checklist：
 - [ ] `[AI]` 导出 screening、component、evidence、extraction tables。
 - [ ] `[AI]` 在提出湿实验变量前运行 `cultivate evidence-audit`。
 - [ ] `[AI]` 记录 extraction coverage、non-missing fields 和 grounding rate。
+- [x] `[AI]` 使用严格 paper-ID alignment 评估 corpus：每个 gold record 都必须
+  计分，缺失预测记为 false negatives，额外 ID 单独报告，重复 ID 直接失败。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、

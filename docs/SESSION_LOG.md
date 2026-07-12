@@ -2348,3 +2348,68 @@ implementation notes.
    statistics only when source text exposes all required values.
 3. Run a small live operator extraction pilot after provider credentials are
    confirmed valid.
+
+---
+
+# Session 32 (Codex) — strict corpus alignment for extraction evaluation
+
+Date: 2026-07-13
+Branch: `codex/eval-corpus-alignment`
+
+## Decision
+
+T1/T2 evaluation previously iterated only over returned predictions. A gold
+paper with no prediction was therefore omitted from both the paper count and
+field recall, and duplicate IDs were silently collapsed by dictionary
+construction. This could make an incomplete provider run look better than it
+was. Corpus alignment must be auditable before further live model comparisons.
+
+Adopted rule:
+
+- Score every gold paper exactly once.
+- Treat a missing paper-level prediction as an empty extraction so populated
+  gold fields become false negatives.
+- Report expected, predicted, matched, missing, and unexpected paper IDs.
+- Reject duplicate IDs on either side instead of choosing one by input order.
+- Do not score an unexpected prediction without a gold record.
+
+## Changes Made
+
+- Added alignment metadata and coverage reporting to `EvalReport`.
+- Hardened `evaluate_corpus` with strict ID alignment and duplicate detection.
+- Added regression tests for missing, unexpected, and duplicate records.
+- Updated the evaluation report generator and recorded 4/4 ID coverage for the
+  existing live benchmark. Its F1 of 0.254 and missing grounding remain
+  unchanged and still fail the extraction-reliability gate.
+- Updated README and both workflow manuals.
+
+## What This Does Not Claim
+
+- The four-paper fixture is not a complete full-text production benchmark.
+- Complete paper-ID coverage does not imply adequate field coverage.
+- The live OpenAI/Anthropic run remains too sparse for valid model agreement.
+- No human adjudication, wet-lab variable, or design packet was approved.
+
+## Verification
+
+- Focused evaluation tests:
+  `.venv/bin/python -m pytest tests/test_pipeline.py::test_extraction_eval_prf tests/test_pipeline.py::test_extraction_eval_corpus_counts_missing_and_unexpected_records tests/test_pipeline.py::test_extraction_eval_corpus_rejects_duplicate_ids -q`:
+  passed; 3 passed.
+- Offline report-generation check in `/tmp`:
+  passed; mock benchmark reported 4/4 matched, no missing IDs, and no unexpected
+  IDs without changing the committed live-provider result.
+- Non-loopback pytest:
+  `.venv/bin/python -m pytest -q -k 'not test_grobid_client_writes_and_parses_tei'`:
+  passed; 68 passed, 2 skipped, 1 deselected. The deselected local-HTTP test is
+  the previously documented managed-sandbox limitation.
+- CLI smoke and optimization demo:
+  passed; smoke completed and hypervolume rose from 7.050 to 16.464.
+- `git diff --check` passed; secret scan found no pasted-style API keys.
+
+## Next 3 Steps
+
+1. Add explicit field-support and evidence-coverage diagnostics so a paper-level
+   record containing only bibliographic prefill cannot look extraction-complete.
+2. Human reviewer completes H001-H014 adjudication.
+3. Re-run a one-paper live operator pilot only after provider credentials are
+   valid, then scale if grounding and non-missing gates pass.

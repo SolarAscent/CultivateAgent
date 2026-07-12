@@ -294,6 +294,9 @@ Checklist:
 - [ ] `[AI]` Export screening, component, evidence, and extraction tables.
 - [ ] `[AI]` Run `cultivate evidence-audit` before proposing wet-lab variables.
 - [ ] `[AI]` Record extraction coverage, non-missing fields, and grounding rate.
+- [x] `[AI]` Evaluate corpora with strict paper-ID alignment: score every gold
+  record, count missing predictions as false negatives, report unexpected IDs,
+  and reject duplicate IDs.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,

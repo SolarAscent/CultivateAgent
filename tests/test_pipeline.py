@@ -437,7 +437,9 @@ def test_structured_paper_from_jats_xml_routes_nested_sections():
     assert any("Materials and Methods" in s.title for s in paper.sections)
     assert any("Selection of the Components" in s.title for s in paper.sections)
     assert paper.section_passages(["materials and methods", "results"])
-    assert paper.tables and "10 ng/mL bFGF" in (paper.tables[0].caption or "")
+    assert paper.tables and "Media compositions" in (paper.tables[0].caption or "")
+    assert paper.tables[0].cells[0].text == "DMEM and 10 ng/mL bFGF"
+    assert paper.tables[0].cells[0].cell_id == "T1.R1.C1"
     assert paper.figures and "Growth curve" in (paper.figures[0].caption or "")
 
 

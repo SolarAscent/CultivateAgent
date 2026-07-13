@@ -22,6 +22,7 @@ from .structured_paper import (
     PaperParagraph,
     PaperSection,
     PaperTable,
+    PaperTableCell,
     StructuredPaper,
     structured_paper_from_grobid_tei_path,
     structured_paper_from_grobid_tei_xml,
@@ -37,7 +38,7 @@ __all__ = [
     # paper
     "PaperRef", "PaperMetadata", "PaperPaths", "IngestStatus", "slugify",
     # structured paper
-    "PaperParagraph", "PaperSection", "PaperTable", "PaperFigure",
+    "PaperParagraph", "PaperSection", "PaperTable", "PaperTableCell", "PaperFigure",
     "StructuredPaper", "structured_paper_from_text",
     "structured_paper_from_grobid_tei_xml", "structured_paper_from_grobid_tei_path",
 ]

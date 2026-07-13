@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -22,11 +23,41 @@ class PaperSection(BaseModel):
     paragraphs: List[PaperParagraph] = Field(default_factory=list)
 
 
+class PaperTableCell(BaseModel):
+    """One source cell with a stable pointer into a structured table."""
+
+    cell_id: str
+    row_index: int
+    column_index: int
+    text: str
+    is_header: bool = False
+    row_span: int = 1
+    column_span: int = 1
+    scope: Optional[str] = None
+
+
 class PaperTable(BaseModel):
     table_id: str
+    source_table_id: Optional[str] = None
     caption: Optional[str] = None
+    footnotes: List[str] = Field(default_factory=list)
+    cells: List[PaperTableCell] = Field(default_factory=list)
+    row_count: int = 0
+    column_count: int = 0
+    source_sha256: Optional[str] = None
     rows_or_csv_path: Optional[str] = None
     page: Optional[int] = None
+
+    def cell(self, cell_id: str) -> Optional[PaperTableCell]:
+        """Resolve a model-returned pointer without reading a numeric value."""
+        return next((cell for cell in self.cells if cell.cell_id == cell_id), None)
+
+    def as_text(self) -> str:
+        """Serialize source cells for extraction while preserving their pointers."""
+        parts = [self.caption] if self.caption else []
+        parts.extend(f"[{cell.cell_id}] {cell.text}" for cell in self.cells if cell.text)
+        parts.extend(f"[footnote] {footnote}" for footnote in self.footnotes)
+        return "\n".join(parts)
 
 
 class PaperFigure(BaseModel):
@@ -54,8 +85,9 @@ class StructuredPaper(BaseModel):
             parts.append(section.title)
             parts.extend(p.text for p in section.paragraphs)
         for table in self.tables:
-            if table.caption:
-                parts.append(f"{table.table_id}: {table.caption}")
+            table_text = table.as_text()
+            if table_text:
+                parts.append(f"{table.table_id}: {table_text}")
         for figure in self.figures:
             if figure.caption:
                 parts.append(f"{figure.figure_id}: {figure.caption}")
@@ -261,22 +293,110 @@ def _figure_caption(fig: ET.Element) -> str:
     return " ".join(dict.fromkeys(p for p in parts if p))
 
 
-def _collect_figures_and_tables(root: ET.Element) -> tuple[List[PaperFigure], List[PaperTable]]:
+def _element_id(elem: ET.Element) -> Optional[str]:
+    return elem.get("id") or elem.get("{http://www.w3.org/XML/1998/namespace}id")
+
+
+def _positive_span(raw: Optional[str]) -> int:
+    try:
+        value = int(raw or "1")
+    except ValueError:
+        return 1
+    return max(1, value)
+
+
+def _jats_table_cells(table_id: str, table: Optional[ET.Element]) -> tuple[List[PaperTableCell], int, int]:
+    if table is None:
+        return [], 0, 0
+
+    cells: List[PaperTableCell] = []
+    occupied: set[tuple[int, int]] = set()
+    row_count = 0
+    column_count = 0
+    for row_index, row in enumerate(_descendants_named(table, "tr")):
+        row_count = row_index + 1
+        column_index = 0
+        for source_cell in list(row):
+            cell_type = _local_name(source_cell.tag)
+            if cell_type not in {"th", "td"}:
+                continue
+            while (row_index, column_index) in occupied:
+                column_index += 1
+            row_span = _positive_span(source_cell.get("rowspan"))
+            column_span = _positive_span(source_cell.get("colspan"))
+            cell_id = f"{table_id}.R{row_index + 1}.C{column_index + 1}"
+            cells.append(PaperTableCell(
+                cell_id=cell_id,
+                row_index=row_index,
+                column_index=column_index,
+                text=_text_content(source_cell),
+                is_header=cell_type == "th",
+                row_span=row_span,
+                column_span=column_span,
+                scope=source_cell.get("scope"),
+            ))
+            for covered_row in range(row_index + 1, row_index + row_span):
+                for covered_column in range(column_index, column_index + column_span):
+                    occupied.add((covered_row, covered_column))
+            column_index += column_span
+            column_count = max(column_count, column_index)
+        while (row_index, column_index) in occupied:
+            column_index += 1
+        column_count = max(column_count, column_index)
+    return cells, row_count, column_count
+
+
+def _jats_table_footnotes(table_wrap: ET.Element) -> List[str]:
+    footnotes: List[str] = []
+    for foot in _descendants_named(table_wrap, "table-wrap-foot"):
+        notes = _descendants_named(foot, "fn")
+        candidates = notes or _descendants_named(foot, "p")
+        for note in candidates:
+            text = _text_content(note)
+            if text and text not in footnotes:
+                footnotes.append(text)
+    return footnotes
+
+
+def _collect_figures_and_tables(
+    root: ET.Element,
+    *,
+    source_sha256: Optional[str] = None,
+) -> tuple[List[PaperFigure], List[PaperTable]]:
     figures: List[PaperFigure] = []
     tables: List[PaperTable] = []
     for fig in _descendants_named(root, "figure"):
         fig_type = (fig.get("type") or "").lower()
         caption = _figure_caption(fig) or None
         if fig_type == "table":
-            tables.append(PaperTable(table_id=f"T{len(tables) + 1}", caption=caption))
+            tables.append(PaperTable(
+                table_id=f"T{len(tables) + 1}",
+                source_table_id=_element_id(fig),
+                caption=caption,
+                source_sha256=source_sha256,
+            ))
         else:
             figures.append(PaperFigure(figure_id=f"F{len(figures) + 1}", caption=caption))
     for fig in _descendants_named(root, "fig"):
         caption = _figure_caption(fig) or None
         figures.append(PaperFigure(figure_id=f"F{len(figures) + 1}", caption=caption))
     for table_wrap in _descendants_named(root, "table-wrap"):
+        table_id = f"T{len(tables) + 1}"
         caption = _jats_table_caption(table_wrap) or None
-        tables.append(PaperTable(table_id=f"T{len(tables) + 1}", caption=caption))
+        cells, row_count, column_count = _jats_table_cells(
+            table_id,
+            _first_descendant(table_wrap, "table"),
+        )
+        tables.append(PaperTable(
+            table_id=table_id,
+            source_table_id=_element_id(table_wrap),
+            caption=caption,
+            footnotes=_jats_table_footnotes(table_wrap),
+            cells=cells,
+            row_count=row_count,
+            column_count=column_count,
+            source_sha256=source_sha256,
+        ))
     return figures, tables
 
 
@@ -286,9 +406,6 @@ def _jats_table_caption(table_wrap: ET.Element) -> str:
         text = _text_content(_first_child(table_wrap, name))
         if text:
             parts.append(text)
-    table_text = _text_content(_first_child(table_wrap, "table"))
-    if table_text:
-        parts.append(table_text)
     return " ".join(dict.fromkeys(p for p in parts if p))
 
 
@@ -315,7 +432,8 @@ def structured_paper_from_grobid_tei_xml(
     parsed_title = title or _grobid_title(root)
     abstract = _grobid_abstract(root)
     sections = _collect_body_sections(root)
-    figures, tables = _collect_figures_and_tables(root)
+    source_sha256 = hashlib.sha256(xml_text.encode("utf-8")).hexdigest()
+    figures, tables = _collect_figures_and_tables(root, source_sha256=source_sha256)
     return StructuredPaper(
         paper_id=paper_id,
         title=parsed_title,

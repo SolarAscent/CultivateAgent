@@ -11,6 +11,10 @@ The extractor now has a structured-paper layer: plain text can be converted into
 section/paragraph objects, and extraction can route medium fields toward
 Methods/media/cell-culture sections before prompting. It can also parse GROBID
 TEI XML and JATS/Open Access article XML into the same structured-paper object.
+For JATS tables, the structured layer preserves stable cell pointers, header
+flags, row/column spans, footnotes, and a source-content hash; numeric values
+remain source cells and are not transcribed by an LLM. Treatment/control role
+labeling and deterministic tier-1 conversion are separate downstream steps.
 When a GROBID service is running, `cultivate ingest --grobid-tei` can submit PDFs
 to `processFulltextDocument`, save the returned TEI as `fulltext.xml`, and let
 `cultivate extract` use that structured file automatically.

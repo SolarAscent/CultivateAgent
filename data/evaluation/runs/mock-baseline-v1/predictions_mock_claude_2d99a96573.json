@@ -1,0 +1,619 @@
+[
+  {
+    "basic_info": {
+      "article_type": null,
+      "authors": null,
+      "doi": null,
+      "journal": null,
+      "paper_id": "stout2022_beefy9",
+      "title": "Simple and effective serum-free medium for sustained expansion of bovine satellite cells for cell cultured meat",
+      "year": null
+    },
+    "cell_info": {
+      "cell_isolation_method": null,
+      "cell_source": null,
+      "cell_type": null,
+      "culture_stage": null,
+      "differentiation_conditions_summary": null,
+      "expansion_conditions_summary": null,
+      "immortalization_status": null,
+      "passage_info": null,
+      "primary_or_cell_line": null,
+      "species_detail": null,
+      "tissue_of_origin": null
+    },
+    "evidence": {
+      "E.growth_factors": {
+        "confidence": "high",
+        "is_inference": false,
+        "location": "fixture excerpt",
+        "quote": "recombinant albumin",
+        "source": "abstract"
+      }
+    },
+    "extraction_meta": {
+      "passes": [
+        {
+          "blocks": [
+            "B",
+            "E",
+            "J",
+            "M"
+          ],
+          "evidence_total": 1,
+          "evidence_verified": 1,
+          "grounding_rate": 1.0,
+          "model": "mock_claude"
+        }
+      ]
+    },
+    "fast_triage": {
+      "is_core_for_modeling": null,
+      "is_core_for_review": null,
+      "main_track": "medium",
+      "overall_priority_note": null,
+      "species": [
+        "bovine"
+      ],
+      "subtrack": null,
+      "target_product_type": null
+    },
+    "final_judgment": {
+      "data_extraction_usefulness": null,
+      "one_paragraph_reader_summary": null,
+      "recommended_action": "must_extract_now",
+      "research_usefulness": null,
+      "review_usefulness": null
+    },
+    "findings_limitations": {
+      "authors_reported_limitations": null,
+      "core_findings": null,
+      "cost_constraints": null,
+      "food_translation_constraints": null,
+      "hidden_or_practical_limitations": null,
+      "scalability_constraints": null
+    },
+    "measurements": {
+      "differentiation_metrics": null,
+      "food_relevant_metrics": null,
+      "main_readouts": null,
+      "maturation_metrics": null,
+      "omics_or_systems_data": null,
+      "proliferation_metrics": null,
+      "scaffold_performance_metrics": null,
+      "texture_or_quality_metrics": null
+    },
+    "medium_info": {
+      "basal_medium": null,
+      "conditioned_medium_or_recycling": null,
+      "cost_reduction_relevance": null,
+      "growth_factors": [
+        "albumin"
+      ],
+      "hydrolysates_or_extracts": null,
+      "medium_optimization_strategy": null,
+      "medium_type": null,
+      "serum_free_status": "serum-free",
+      "serum_usage": null,
+      "small_molecules": null
+    },
+    "paper_id": "stout2022_beefy9",
+    "process_info": {
+      "bioreactor_type": null,
+      "culture_format": null,
+      "manufacturing_relevance_note": null,
+      "process_control_variables": null,
+      "process_mode": null,
+      "scale_level": null,
+      "scale_up_relevance": null
+    },
+    "quant_data": {
+      "experimental_comparison_groups": null,
+      "extractable_variables": null,
+      "has_extractable_quant_data": "partial",
+      "key_numeric_results": null,
+      "modeling_value_score": null,
+      "sample_size_or_replicate_info": null,
+      "statistical_strength_note": null,
+      "units_reported": null
+    },
+    "research_objective": {
+      "claimed_novelty": null,
+      "problem_statement": null,
+      "proposed_solution": null,
+      "technical_bottleneck_targeted": null
+    },
+    "review_synthesis": {
+      "best_fit_big_category": null,
+      "best_fit_small_category": null,
+      "candidate_for_scoring_framework": null,
+      "does_it_represent_a_major_direction": null,
+      "is_it_incremental_or_direction_setting": null,
+      "representative_paper_flag": null,
+      "why_it_belongs_here": null
+    },
+    "scaffold_info": {
+      "edibility_status": null,
+      "fabrication_method": null,
+      "material_origin": null,
+      "material_type": null,
+      "mechanical_or_microstructure_features": null,
+      "microcarrier_usage": null,
+      "scaffold_role": null,
+      "scaffold_used": null,
+      "structure_features": null
+    },
+    "tissue_info": {
+      "alignment_or_texture_strategy": null,
+      "co_culture_or_assembly_strategy": null,
+      "fat_integration_strategy": null,
+      "muscle_formation_strategy": null,
+      "post_processing_if_any": null,
+      "structured_product_goal": null
+    },
+    "triage_category": null
+  },
+  {
+    "basic_info": {
+      "article_type": null,
+      "authors": null,
+      "doi": null,
+      "journal": null,
+      "paper_id": "messmer2022_differentiation",
+      "title": "A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation",
+      "year": null
+    },
+    "cell_info": {
+      "cell_isolation_method": null,
+      "cell_source": null,
+      "cell_type": null,
+      "culture_stage": null,
+      "differentiation_conditions_summary": null,
+      "expansion_conditions_summary": null,
+      "immortalization_status": null,
+      "passage_info": null,
+      "primary_or_cell_line": null,
+      "species_detail": null,
+      "tissue_of_origin": null
+    },
+    "evidence": {
+      "E.serum_free_status": {
+        "confidence": "high",
+        "is_inference": false,
+        "location": "fixture excerpt",
+        "quote": "serum-free media formulation",
+        "source": "abstract"
+      }
+    },
+    "extraction_meta": {
+      "passes": [
+        {
+          "blocks": [
+            "B",
+            "E",
+            "J",
+            "M"
+          ],
+          "evidence_total": 1,
+          "evidence_verified": 1,
+          "grounding_rate": 1.0,
+          "model": "mock_claude"
+        }
+      ]
+    },
+    "fast_triage": {
+      "is_core_for_modeling": null,
+      "is_core_for_review": null,
+      "main_track": "medium",
+      "overall_priority_note": null,
+      "species": [
+        "bovine"
+      ],
+      "subtrack": null,
+      "target_product_type": null
+    },
+    "final_judgment": {
+      "data_extraction_usefulness": null,
+      "one_paragraph_reader_summary": null,
+      "recommended_action": "keep_for_review_synthesis",
+      "research_usefulness": null,
+      "review_usefulness": null
+    },
+    "findings_limitations": {
+      "authors_reported_limitations": null,
+      "core_findings": null,
+      "cost_constraints": null,
+      "food_translation_constraints": null,
+      "hidden_or_practical_limitations": null,
+      "scalability_constraints": null
+    },
+    "measurements": {
+      "differentiation_metrics": null,
+      "food_relevant_metrics": null,
+      "main_readouts": null,
+      "maturation_metrics": null,
+      "omics_or_systems_data": null,
+      "proliferation_metrics": null,
+      "scaffold_performance_metrics": null,
+      "texture_or_quality_metrics": null
+    },
+    "medium_info": {
+      "basal_medium": null,
+      "conditioned_medium_or_recycling": null,
+      "cost_reduction_relevance": null,
+      "growth_factors": null,
+      "hydrolysates_or_extracts": null,
+      "medium_optimization_strategy": null,
+      "medium_type": null,
+      "serum_free_status": "serum-free",
+      "serum_usage": null,
+      "small_molecules": null
+    },
+    "paper_id": "messmer2022_differentiation",
+    "process_info": {
+      "bioreactor_type": null,
+      "culture_format": null,
+      "manufacturing_relevance_note": null,
+      "process_control_variables": null,
+      "process_mode": null,
+      "scale_level": null,
+      "scale_up_relevance": null
+    },
+    "quant_data": {
+      "experimental_comparison_groups": null,
+      "extractable_variables": null,
+      "has_extractable_quant_data": "no",
+      "key_numeric_results": null,
+      "modeling_value_score": null,
+      "sample_size_or_replicate_info": null,
+      "statistical_strength_note": null,
+      "units_reported": null
+    },
+    "research_objective": {
+      "claimed_novelty": null,
+      "problem_statement": null,
+      "proposed_solution": null,
+      "technical_bottleneck_targeted": null
+    },
+    "review_synthesis": {
+      "best_fit_big_category": null,
+      "best_fit_small_category": null,
+      "candidate_for_scoring_framework": null,
+      "does_it_represent_a_major_direction": null,
+      "is_it_incremental_or_direction_setting": null,
+      "representative_paper_flag": null,
+      "why_it_belongs_here": null
+    },
+    "scaffold_info": {
+      "edibility_status": null,
+      "fabrication_method": null,
+      "material_origin": null,
+      "material_type": null,
+      "mechanical_or_microstructure_features": null,
+      "microcarrier_usage": null,
+      "scaffold_role": null,
+      "scaffold_used": null,
+      "structure_features": null
+    },
+    "tissue_info": {
+      "alignment_or_texture_strategy": null,
+      "co_culture_or_assembly_strategy": null,
+      "fat_integration_strategy": null,
+      "muscle_formation_strategy": null,
+      "post_processing_if_any": null,
+      "structured_product_goal": null
+    },
+    "triage_category": null
+  },
+  {
+    "basic_info": {
+      "article_type": null,
+      "authors": null,
+      "doi": null,
+      "journal": null,
+      "paper_id": "oneill2022_spent_media",
+      "title": "Spent media analysis suggests cultivated meat media will require species and cell type optimization",
+      "year": null
+    },
+    "cell_info": {
+      "cell_isolation_method": null,
+      "cell_source": null,
+      "cell_type": null,
+      "culture_stage": null,
+      "differentiation_conditions_summary": null,
+      "expansion_conditions_summary": null,
+      "immortalization_status": null,
+      "passage_info": null,
+      "primary_or_cell_line": null,
+      "species_detail": null,
+      "tissue_of_origin": null
+    },
+    "evidence": {
+      "E.medium_optimization_strategy": {
+        "confidence": "high",
+        "is_inference": false,
+        "location": "fixture excerpt",
+        "quote": "Spent media analysis suggests",
+        "source": "abstract"
+      }
+    },
+    "extraction_meta": {
+      "passes": [
+        {
+          "blocks": [
+            "B",
+            "E",
+            "J",
+            "M"
+          ],
+          "evidence_total": 1,
+          "evidence_verified": 1,
+          "grounding_rate": 1.0,
+          "model": "mock_claude"
+        }
+      ]
+    },
+    "fast_triage": {
+      "is_core_for_modeling": null,
+      "is_core_for_review": null,
+      "main_track": "medium",
+      "overall_priority_note": null,
+      "species": [
+        "bovine",
+        "chicken",
+        "fish"
+      ],
+      "subtrack": null,
+      "target_product_type": null
+    },
+    "final_judgment": {
+      "data_extraction_usefulness": null,
+      "one_paragraph_reader_summary": null,
+      "recommended_action": "keep_for_review_synthesis",
+      "research_usefulness": null,
+      "review_usefulness": null
+    },
+    "findings_limitations": {
+      "authors_reported_limitations": null,
+      "core_findings": null,
+      "cost_constraints": null,
+      "food_translation_constraints": null,
+      "hidden_or_practical_limitations": null,
+      "scalability_constraints": null
+    },
+    "measurements": {
+      "differentiation_metrics": null,
+      "food_relevant_metrics": null,
+      "main_readouts": null,
+      "maturation_metrics": null,
+      "omics_or_systems_data": null,
+      "proliferation_metrics": null,
+      "scaffold_performance_metrics": null,
+      "texture_or_quality_metrics": null
+    },
+    "medium_info": {
+      "basal_medium": null,
+      "conditioned_medium_or_recycling": null,
+      "cost_reduction_relevance": null,
+      "growth_factors": null,
+      "hydrolysates_or_extracts": null,
+      "medium_optimization_strategy": null,
+      "medium_type": null,
+      "serum_free_status": "unclear",
+      "serum_usage": null,
+      "small_molecules": null
+    },
+    "paper_id": "oneill2022_spent_media",
+    "process_info": {
+      "bioreactor_type": null,
+      "culture_format": null,
+      "manufacturing_relevance_note": null,
+      "process_control_variables": null,
+      "process_mode": null,
+      "scale_level": null,
+      "scale_up_relevance": null
+    },
+    "quant_data": {
+      "experimental_comparison_groups": null,
+      "extractable_variables": null,
+      "has_extractable_quant_data": "yes",
+      "key_numeric_results": null,
+      "modeling_value_score": null,
+      "sample_size_or_replicate_info": null,
+      "statistical_strength_note": null,
+      "units_reported": null
+    },
+    "research_objective": {
+      "claimed_novelty": null,
+      "problem_statement": null,
+      "proposed_solution": null,
+      "technical_bottleneck_targeted": null
+    },
+    "review_synthesis": {
+      "best_fit_big_category": null,
+      "best_fit_small_category": null,
+      "candidate_for_scoring_framework": null,
+      "does_it_represent_a_major_direction": null,
+      "is_it_incremental_or_direction_setting": null,
+      "representative_paper_flag": null,
+      "why_it_belongs_here": null
+    },
+    "scaffold_info": {
+      "edibility_status": null,
+      "fabrication_method": null,
+      "material_origin": null,
+      "material_type": null,
+      "mechanical_or_microstructure_features": null,
+      "microcarrier_usage": null,
+      "scaffold_role": null,
+      "scaffold_used": null,
+      "structure_features": null
+    },
+    "tissue_info": {
+      "alignment_or_texture_strategy": null,
+      "co_culture_or_assembly_strategy": null,
+      "fat_integration_strategy": null,
+      "muscle_formation_strategy": null,
+      "post_processing_if_any": null,
+      "structured_product_goal": null
+    },
+    "triage_category": null
+  },
+  {
+    "basic_info": {
+      "article_type": null,
+      "authors": null,
+      "doi": null,
+      "journal": null,
+      "paper_id": "kolkmann2023_microalga",
+      "title": "Development of serum-free and grain-derived-nutrient-free medium using microalga-derived nutrients and mammalian cell-secreted growth factors for sustainable cultured meat production",
+      "year": null
+    },
+    "cell_info": {
+      "cell_isolation_method": null,
+      "cell_source": null,
+      "cell_type": [
+        "myoblasts"
+      ],
+      "culture_stage": null,
+      "differentiation_conditions_summary": null,
+      "expansion_conditions_summary": null,
+      "immortalization_status": null,
+      "passage_info": null,
+      "primary_or_cell_line": null,
+      "species_detail": null,
+      "tissue_of_origin": null
+    },
+    "evidence": {
+      "E.hydrolysates_or_extracts": {
+        "confidence": "low",
+        "is_inference": false,
+        "location": "fixture excerpt [UNVERIFIED: quote not found in source]",
+        "quote": "microalga-derived nutrients",
+        "source": "abstract"
+      }
+    },
+    "extraction_meta": {
+      "passes": [
+        {
+          "blocks": [
+            "B",
+            "D",
+            "E",
+            "J",
+            "M"
+          ],
+          "evidence_total": 1,
+          "evidence_verified": 0,
+          "grounding_rate": 0.0,
+          "model": "mock_claude"
+        }
+      ]
+    },
+    "fast_triage": {
+      "is_core_for_modeling": null,
+      "is_core_for_review": null,
+      "main_track": "medium",
+      "overall_priority_note": null,
+      "species": [
+        "bovine"
+      ],
+      "subtrack": null,
+      "target_product_type": null
+    },
+    "final_judgment": {
+      "data_extraction_usefulness": null,
+      "one_paragraph_reader_summary": null,
+      "recommended_action": "must_extract_now",
+      "research_usefulness": null,
+      "review_usefulness": null
+    },
+    "findings_limitations": {
+      "authors_reported_limitations": null,
+      "core_findings": null,
+      "cost_constraints": null,
+      "food_translation_constraints": null,
+      "hidden_or_practical_limitations": null,
+      "scalability_constraints": null
+    },
+    "measurements": {
+      "differentiation_metrics": null,
+      "food_relevant_metrics": null,
+      "main_readouts": null,
+      "maturation_metrics": null,
+      "omics_or_systems_data": null,
+      "proliferation_metrics": null,
+      "scaffold_performance_metrics": null,
+      "texture_or_quality_metrics": null
+    },
+    "medium_info": {
+      "basal_medium": null,
+      "conditioned_medium_or_recycling": null,
+      "cost_reduction_relevance": null,
+      "growth_factors": null,
+      "hydrolysates_or_extracts": [
+        "microalga-derived nutrients"
+      ],
+      "medium_optimization_strategy": null,
+      "medium_type": null,
+      "serum_free_status": "serum-free",
+      "serum_usage": null,
+      "small_molecules": null
+    },
+    "paper_id": "kolkmann2023_microalga",
+    "process_info": {
+      "bioreactor_type": null,
+      "culture_format": null,
+      "manufacturing_relevance_note": null,
+      "process_control_variables": null,
+      "process_mode": null,
+      "scale_level": null,
+      "scale_up_relevance": null
+    },
+    "quant_data": {
+      "experimental_comparison_groups": null,
+      "extractable_variables": null,
+      "has_extractable_quant_data": "partial",
+      "key_numeric_results": null,
+      "modeling_value_score": null,
+      "sample_size_or_replicate_info": null,
+      "statistical_strength_note": null,
+      "units_reported": null
+    },
+    "research_objective": {
+      "claimed_novelty": null,
+      "problem_statement": null,
+      "proposed_solution": null,
+      "technical_bottleneck_targeted": null
+    },
+    "review_synthesis": {
+      "best_fit_big_category": null,
+      "best_fit_small_category": null,
+      "candidate_for_scoring_framework": null,
+      "does_it_represent_a_major_direction": null,
+      "is_it_incremental_or_direction_setting": null,
+      "representative_paper_flag": null,
+      "why_it_belongs_here": null
+    },
+    "scaffold_info": {
+      "edibility_status": null,
+      "fabrication_method": null,
+      "material_origin": null,
+      "material_type": null,
+      "mechanical_or_microstructure_features": null,
+      "microcarrier_usage": null,
+      "scaffold_role": null,
+      "scaffold_used": null,
+      "structure_features": null
+    },
+    "tissue_info": {
+      "alignment_or_texture_strategy": null,
+      "co_culture_or_assembly_strategy": null,
+      "fat_integration_strategy": null,
+      "muscle_formation_strategy": null,
+      "post_processing_if_any": null,
+      "structured_product_goal": null
+    },
+    "triage_category": null
+  }
+]

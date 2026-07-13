@@ -11,6 +11,10 @@ data/**
 !data/library.example.bib
 !data/literature/
 !data/literature/*.tsv
+!data/evaluation/
+!data/evaluation/runs/
+!data/evaluation/runs/mock-baseline-v1/
+!data/evaluation/runs/mock-baseline-v1/**
 # Local backups created before forced adjudication worksheet overwrite.
 data/literature/*.tsv.bak.*
 *.sqlite

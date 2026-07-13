@@ -300,6 +300,8 @@ Checklist：
   scoring 前拒绝 drift 或 tampering。
 - [ ] `[REVIEW]` 提交 bundle 前检查 gold version、引用权限、secret scan、
   provider/model labels 和 byte-stable replay。
+- [x] `[AI]` 保留 `data/evaluation/runs/mock-baseline-v1` 作为离线格式/重放
+  exemplar；不能把 deterministic mock scores 引用为模型准确率或湿实验证据。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、

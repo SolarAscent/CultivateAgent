@@ -253,6 +253,11 @@ Replay fails on fixture drift, file tampering, unsafe filenames, or record-order
 misalignment. Review credentials, quotation rights, and gold-version approval
 before committing a bundle.
 
+The committed
+[`mock-baseline-v1`](data/evaluation/runs/mock-baseline-v1/README.md) bundle is a
+format/replay exemplar only. Its deterministic mock scores are not production
+model accuracy and are not wet-lab evidence.
+
 ---
 
 ## The extraction schema (A–M)

@@ -318,6 +318,9 @@ Checklist:
   configuration. Reject drift or tampering before scoring.
 - [ ] `[REVIEW]` Before committing a bundle, verify its gold version, quotation
   rights, secret scan, provider/model labels, and byte-stable replay.
+- [x] `[AI]` Keep `data/evaluation/runs/mock-baseline-v1` as an offline
+  format/replay exemplar. Never cite its deterministic mock scores as model
+  accuracy or wet-lab evidence.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,

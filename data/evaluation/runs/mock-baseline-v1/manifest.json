@@ -1,0 +1,34 @@
+{
+  "artifact_sha256": {
+    "gold.json": "a298f5be9956b5a8da7e5021f1b2c6e5b138712a972b4339d888ad82e1cec842",
+    "predictions_mock_claude_2d99a96573.json": "25e968e3c6d80aa5afc469d70bd3b1d7d81abad7d2e29b35d01a9f6fcc6147fc",
+    "predictions_mock_gemini_8e4958f594.json": "28c185dcf5affeb399c43d3e6f99efc032702fa7b882f3f90cb094d7a76b3c62",
+    "predictions_mock_gpt_24f92be1dd.json": "28d2719d4c0ae00ceda3c24813c77a4826b044ced2d5e1409027966571c6bbe1"
+  },
+  "fixture": "medium_corpus_v1",
+  "format_version": 1,
+  "gold_file": "gold.json",
+  "live_failures": [],
+  "live_provider_labels": [],
+  "paper_ids": [
+    "stout2022_beefy9",
+    "messmer2022_differentiation",
+    "oneill2022_spent_media",
+    "kolkmann2023_microalga"
+  ],
+  "prediction_files": {
+    "mock_claude": "predictions_mock_claude_2d99a96573.json",
+    "mock_gemini": "predictions_mock_gemini_8e4958f594.json",
+    "mock_gpt": "predictions_mock_gpt_24f92be1dd.json"
+  },
+  "report_config": {
+    "agreement_scope": "mock",
+    "scored_provider": "mock_gpt"
+  },
+  "source_sha256": {
+    "kolkmann2023_microalga": "6504c3f4df1d18fb84485c6827eb68660e2811d06bed832db368bc52e43781dc",
+    "messmer2022_differentiation": "777df60443c7c1803de4b7401a6920cf06c975cce21dc4c952dbec305afdb658",
+    "oneill2022_spent_media": "b73c6811e159baa023cd3311c80420fe80221b3a8b6dac1db5f0bae7e75a07c9",
+    "stout2022_beefy9": "924f96ddb6223969ff1444d6eb84e3bf1e1b156bdfd7b796409a42c275ae8c8c"
+  }
+}

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from pathlib import Path
 
 import pytest
 
@@ -95,3 +96,17 @@ def test_medium_eval_artifact_replay_rejects_live_options(tmp_path):
 
     with pytest.raises(ValueError, match="cannot be combined"):
         write_reports(tmp_path / "replay", artifacts_in=artifacts, live_limit=1)
+
+
+def test_committed_mock_baseline_bundle_replays(tmp_path):
+    from scripts.evaluate_medium_corpus import write_reports
+
+    repo = Path(__file__).resolve().parents[1]
+    artifacts = repo / "data/evaluation/runs/mock-baseline-v1"
+    eval_path, agreement_path = write_reports(
+        tmp_path / "replay",
+        artifacts_in=artifacts,
+    )
+
+    assert "Evaluated provider profile: `mock_gpt`" in eval_path.read_text(encoding="utf-8")
+    assert "Agreement scope: `mock`" in agreement_path.read_text(encoding="utf-8")

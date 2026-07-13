@@ -2860,3 +2860,90 @@ unrevalidated, and no scientific gate passed.
    production T1 claim; future live runs must write bundles.
 3. Let Claude finish the independent effect-operator work, then rebase and
    inspect its commit before touching overlapping evidence code.
+
+---
+
+# Session 38 (Codex) — committed offline evaluation exemplar
+
+Date: 2026-07-13
+Branch: `codex/mock-eval-bundle`
+
+## Start-State Assessment
+
+The session began at approximately 79% software infrastructure, 43%
+literature/evidence work, 24% wet-lab-entry readiness, and 29% for the complete
+workflow through paper results. Artifact serialization and replay existed, but
+the repository had no reviewed bundle demonstrating clean-checkout replay.
+
+The highest-value non-human task was to commit a deterministic offline exemplar
+without confusing mock profiles with real model quality. Claude had no
+uncommitted changes and was one commit behind; this work stayed in the evaluation
+data/test lane.
+
+## Decision
+
+- Commit one small `mock-baseline-v1` bundle generated entirely offline.
+- Keep generated reports in `/tmp`; do not overwrite the historical live failure
+  report with favorable mock scores.
+- Include exact gold and all three mock prediction profiles plus manifest hashes.
+- Add a bundle README that prohibits scientific-accuracy and wet-lab use.
+- Add a repository-level test so future fixture/schema edits must either preserve
+  replay or intentionally version the bundle.
+- Do not claim the gold is human-revalidated for the new stage/type fields.
+
+## Changes Made
+
+- Added `data/evaluation/runs/mock-baseline-v1` with gold, three deterministic
+  prediction files, manifest, and usage/limitations README.
+- Added a narrow `.gitignore` exception for this reviewed exemplar only; all
+  other run-specific data remain ignored.
+- Added a clean-checkout replay test.
+- Updated README, both workflow manuals, and this session log.
+
+## Content Review
+
+- Bundle size is approximately 78 KB excluding its README.
+- It contains four structured fixture records and short evidence quotes, not
+  paper full text; 22 quote fields were found and the longest is 52 characters.
+- Provider labels are explicitly `mock_gpt`, `mock_claude`, and `mock_gemini`.
+- No live-provider output, credentials, or user API keys are present.
+- Manifest contains source and artifact SHA-256 values and the original
+  `mock_gpt`/`mock` report configuration.
+- Byte-stable replay was confirmed before commit.
+
+## What This Does Not Claim
+
+- Mock scores estimate GPT, Claude, Gemini, or production extraction accuracy.
+- The fixture gold is production-grade or newly human-adjudicated.
+- The bundle contributes approved bovine evidence or passes Gate 2.
+- Any wet-lab readiness or paper-result milestone advanced.
+
+## Verification
+
+- Artifact tests: 6 passed, including clean-checkout replay of the committed
+  bundle.
+- Non-loopback suite:
+  `.venv/bin/python -m pytest -q -k 'not test_grobid_client_writes_and_parses_tei'`:
+  86 passed, 2 skipped, 1 deselected. The deselection is the known local-HTTP
+  environment limitation.
+- Byte comparison passed for fresh generation versus provider-free replay.
+- Bundle scan: no pasted-style API key; 22 quote fields, maximum 52 characters.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+- `git diff --check` passed.
+
+## Completion Impact
+
+Software infrastructure rises conservatively from about 79% to about 80%
+because a clean checkout now contains a tested replay exemplar. Literature and
+evidence remains about 43%, wet-lab entry about 24%, and the complete workflow
+about 29% because the exemplar is synthetic and no scientific gate passed.
+
+## Next 3 Steps
+
+1. Human or independent reviewers version and re-adjudicate the four-paper gold,
+   especially `culture_stage` and `medium_type`, without overwriting v1.
+2. Run the next real H014 provider pilot with `--artifacts-out`; inspect all Gate
+   2 fields before expanding to H001-H014.
+3. Convert accepted H001-H014 decisions into the evidence table, then run
+   robustness and cost/supply gates before any wet-lab packet.

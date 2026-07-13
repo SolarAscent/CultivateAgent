@@ -302,6 +302,14 @@ Checklist：
   provider/model labels 和 byte-stable replay。
 - [x] `[AI]` 保留 `data/evaluation/runs/mock-baseline-v1` 作为离线格式/重放
   exemplar；不能把 deterministic mock scores 引用为模型准确率或湿实验证据。
+- [x] `[AI]` 为 R015、R016、R017、R023 生成 `medium-fulltext-v1`，覆盖全部
+  380 个 paper x A-M field cells，包含 source/schema hashes、两个独立 reviewer
+  slot 和最终 adjudication。
+- [ ] `[HUMAN]` Reviewer 1 不查看 reviewer 2 独立完成；reviewer 2 独立完成；
+  两者分别使用独立的 `reviewer_blank.tsv` 实例；合并进 controlled master 后，
+  最后裁决全部 disagreement 和 unresolved field。
+- [ ] `[REVIEW]` 运行 `prepare_medium_gold_review.py validate --require-ready`；
+  只有 380/380 adjudicated 且 0 issues 后才能跑 production T1 scoring。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、
@@ -332,6 +340,15 @@ python scripts/evaluate_medium_corpus.py --provider mock_gpt --agreement-scope m
   --artifacts-out data/evaluation/runs/mock-baseline-v1 --out-dir /tmp/mock-baseline-v1
 python scripts/evaluate_medium_corpus.py \
   --artifacts-in data/evaluation/runs/mock-baseline-v1 --out-dir /tmp/mock-baseline-v1-replay
+python scripts/prepare_medium_gold_review.py validate \
+  --manifest data/evaluation/gold/medium-fulltext-v1/manifest.json \
+  --worksheet data/evaluation/gold/medium-fulltext-v1/review.tsv \
+  --out docs/FULLTEXT_GOLD_VALIDATION_MEDIUM_V1.md
+# 两份独立 reviewer 文件完成后：
+python scripts/prepare_medium_gold_review.py merge \
+  --master data/evaluation/gold/medium-fulltext-v1/review.tsv \
+  --reviewer-1 /path/to/reviewer_1.tsv --reviewer-2 /path/to/reviewer_2.tsv \
+  --out data/evaluation/gold/medium-fulltext-v1/review.tsv
 ```
 
 Gate：

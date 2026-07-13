@@ -2947,3 +2947,119 @@ about 29% because the exemplar is synthetic and no scientific gate passed.
    2 fields before expanding to H001-H014.
 3. Convert accepted H001-H014 decisions into the evidence table, then run
    robustness and cost/supply gates before any wet-lab packet.
+
+---
+
+# Session 39 (Codex) — full-text dual-review T1 gold workflow
+
+Date: 2026-07-13
+Branch: `codex/fulltext-gold-review`
+
+## Start-State Assessment
+
+The session began at approximately 80% software infrastructure, 43%
+literature/evidence work, 24% wet-lab-entry readiness, and 29% for the complete
+workflow. The committed mock bundle proved replayability, but production T1 was
+still blocked because the four-paper excerpt fixture was neither full-text nor
+versioned dual-human gold.
+
+The highest-value AI task was to prepare a real full-text gold workflow while
+leaving all scientific annotation blank for humans. Human annotation itself was
+recorded as the gate rather than simulated.
+
+## Corpus Decision
+
+Selected four independent, locally available bovine papers:
+
+- R015: Beefy-9/B8 sustained serum-free expansion anchor.
+- R016: chemically defined primary bovine satellite-cell expansion medium.
+- R017: commercial serum-free primary bovine myoblast benchmark.
+- R023: media-composition effects on bovine satellite-cell proliferation.
+
+This avoids treating multiple H tasks from one paper as independent papers and
+keeps the production gold aligned with the bovine expansion-medium target.
+Official title/year/DOI/URL come from `bovine_corpus_manifest.tsv`; local
+metadata is not trusted when truncated.
+
+## Method Decision
+
+Following Cochrane Chapter 5 duplicate-extraction guidance:
+
+- Every paper x A-M field cell has reviewer 1, reviewer 2, and final adjudication
+  decision/value/evidence/location/reviewer/date columns.
+- Reviewers work independently; AI cannot fill either review slot.
+- Allowed decisions are `reported`, `not_reported`, `not_applicable`,
+  `uncertain`, and `defer`.
+- `reported` values use typed JSON and require reviewer/date, exact source quote,
+  and location. Pydantic validates the field type.
+- Source full-text and schema SHA-256 values prevent silent drift.
+- The benchmark is READY only when all 380 rows are adjudicated with zero
+  validation issues.
+
+## Changes Made
+
+- Added `cultivate_agent.evaluate.gold_review` generator, validator, result
+  model, and Markdown status output.
+- Added `scripts/prepare_medium_gold_review.py create|merge|validate`.
+- Added an isolated single-reviewer template and `merge` command so reviewer 2
+  cannot see reviewer 1 values before both are returned.
+- Added six tests for blank-template status, valid typed/grounded extraction,
+  invalid type/quote/non-reported values, source drift, blind-sheet merge, and
+  prevention of adjudication-only READY bypass.
+- Generated `data/evaluation/gold/medium-fulltext-v1/manifest.json` and blank
+  `review.tsv`, plus human instructions and a narrow `.gitignore` exception.
+- Generated `docs/FULLTEXT_GOLD_VALIDATION_MEDIUM_V1.md`.
+- Updated README, both workflow manuals, method review, bovine manifest,
+  evaluation report, and this session log.
+
+## Current Human Gate
+
+- Rows/expected: 380/380.
+- Reviewer 1 completed: 0/380.
+- Reviewer 2 completed: 0/380.
+- Final adjudication completed: 0/380.
+- Structural/hash validation issues: 0.
+- Status: `NOT READY`.
+
+No gold value was AI-generated or inferred.
+
+## What This Does Not Claim
+
+- Production T1 evaluation is complete.
+- The old excerpt fixture is production gold.
+- A structurally valid blank worksheet is evidence.
+- H001-H014 evidence adjudication or wet-lab readiness advanced.
+
+## Verification
+
+- Gold-review tests: 6 passed.
+- Non-loopback suite:
+  `.venv/bin/python -m pytest -q -k 'not test_grobid_client_writes_and_parses_tei'`:
+  92 passed, 2 skipped, 1 deselected. The deselection is the known local-HTTP
+  environment limitation.
+- Current `validate --require-ready` exited 1 as designed: 380/380 structural
+  rows, 0/380 in every review/adjudication stage, 0 validation issues,
+  `NOT READY`.
+- Gold package size: approximately 432 KB; full text is not committed.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+- `git diff --check` passed; no pasted-style API key was found.
+
+## Completion Impact
+
+Software infrastructure rises conservatively from about 80% to about 82%.
+Literature/evidence preparation rises from about 43% to about 45% because four
+real full-text sources and a controlled gold protocol are fixed, but no field is
+yet human-labelled. Wet-lab entry remains about 24%, and the complete workflow
+remains about 29% because production T1, S4, and every wet-lab/result gate remain
+unpassed.
+
+## Next 3 Steps
+
+1. `[HUMAN]` Assign two independent reviewers the isolated reviewer template;
+   AI validates each returned file and merges only after both finish.
+2. `[HUMAN]` Adjudicate all 380 rows; AI runs `--require-ready` and exports a new
+   versioned gold artifact without overwriting v1.
+3. `[AI]` Only after READY, run operator extraction on the same four full texts,
+   save an artifact bundle, and report production T1 per-field P/R/F1,
+   grounding, and Gate 2 coverage.

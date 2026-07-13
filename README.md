@@ -258,6 +258,15 @@ The committed
 format/replay exemplar only. Its deterministic mock scores are not production
 model accuracy and are not wet-lab evidence.
 
+The production T1 gold path is
+[`medium-fulltext-v1`](data/evaluation/gold/medium-fulltext-v1/README.md): four
+independent bovine medium papers and 380 A-M field cells, with separate reviewer
+1, reviewer 2, and adjudication columns in the controlled master. Reviewers use
+separate single-reviewer files generated from `reviewer_blank.tsv`, then merge
+before adjudication. It is currently blank and `NOT READY`.
+`reported` values must be typed JSON with an exact full-text quote; schema and
+source hashes are validated before scoring.
+
 ---
 
 ## The extraction schema (A–M)

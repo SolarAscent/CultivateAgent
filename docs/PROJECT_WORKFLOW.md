@@ -321,6 +321,15 @@ Checklist:
 - [x] `[AI]` Keep `data/evaluation/runs/mock-baseline-v1` as an offline
   format/replay exemplar. Never cite its deterministic mock scores as model
   accuracy or wet-lab evidence.
+- [x] `[AI]` Generate `medium-fulltext-v1` over R015, R016, R017, and R023 with
+  all 380 paper x A-M field cells, source/schema hashes, and two independent
+  reviewer slots plus final adjudication.
+- [ ] `[HUMAN]` Complete reviewer 1 without seeing reviewer 2; complete reviewer
+  2 independently using separate copies of `reviewer_blank.tsv`; merge both into
+  the controlled master, then adjudicate every disagreement and unresolved field.
+- [ ] `[REVIEW]` Run `prepare_medium_gold_review.py validate --require-ready`.
+  Do not run production T1 scoring until it reports 380/380 adjudicated and zero
+  issues.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,
@@ -351,6 +360,15 @@ python scripts/evaluate_medium_corpus.py --provider mock_gpt --agreement-scope m
   --artifacts-out data/evaluation/runs/mock-baseline-v1 --out-dir /tmp/mock-baseline-v1
 python scripts/evaluate_medium_corpus.py \
   --artifacts-in data/evaluation/runs/mock-baseline-v1 --out-dir /tmp/mock-baseline-v1-replay
+python scripts/prepare_medium_gold_review.py validate \
+  --manifest data/evaluation/gold/medium-fulltext-v1/manifest.json \
+  --worksheet data/evaluation/gold/medium-fulltext-v1/review.tsv \
+  --out docs/FULLTEXT_GOLD_VALIDATION_MEDIUM_V1.md
+# After two independent reviewer files are complete:
+python scripts/prepare_medium_gold_review.py merge \
+  --master data/evaluation/gold/medium-fulltext-v1/review.tsv \
+  --reviewer-1 /path/to/reviewer_1.tsv --reviewer-2 /path/to/reviewer_2.tsv \
+  --out data/evaluation/gold/medium-fulltext-v1/review.tsv
 ```
 
 Gate:

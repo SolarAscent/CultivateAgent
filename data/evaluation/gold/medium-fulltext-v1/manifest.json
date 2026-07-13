@@ -1,0 +1,51 @@
+{
+  "benchmark_version": "medium-fulltext-v1",
+  "format_version": 1,
+  "papers": [
+    {
+      "doi": "10.1038/s42003-022-03423-8",
+      "paper_id": "simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli",
+      "record_id": "R015",
+      "source_chars": 55862,
+      "source_path": "data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt",
+      "source_sha256": "2caba0ae328473d43a17c330c14d467aef763c2877a74b0f465d42c6cc8831ad",
+      "title": "Simple and effective serum-free medium for sustained expansion of bovine satellite cells for cell cultured meat",
+      "url": "https://www.nature.com/articles/s42003-022-03423-8",
+      "year": "2022"
+    },
+    {
+      "doi": "10.3389/fbioe.2022.895289",
+      "paper_id": "development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov",
+      "record_id": "R016",
+      "source_chars": 62828,
+      "source_path": "data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt",
+      "source_sha256": "25fabce9211fbb531fbcc7051ccc945bc92347b70c078c8934d7f71a6ef8a17a",
+      "title": "Development of a Chemically Defined Medium for in vitro Expansion of Primary Bovine Satellite Cells",
+      "url": "https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2022.895289/full",
+      "year": "2022"
+    },
+    {
+      "doi": "10.1007/s10616-019-00361-y",
+      "paper_id": "serum-free-media-for-the-growth-of-primary-bovine-myoblasts",
+      "record_id": "R017",
+      "source_chars": 33792,
+      "source_path": "data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/fulltext.txt",
+      "source_sha256": "fd804bcf8c812094397cd2b6acfcf6853c773da6db4c51283bcb452e82494fa0",
+      "title": "Serum-free media for the growth of primary bovine myoblasts",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7002633/",
+      "year": "2020"
+    },
+    {
+      "doi": "10.3390/ani13111855",
+      "paper_id": "influence-of-media-composition-on-the-level-of-bovine-satellite-cell-proliferati",
+      "record_id": "R023",
+      "source_chars": 44630,
+      "source_path": "data/papers/influence-of-media-composition-on-the-level-of-bovine-satellite-cell-proliferati/fulltext.txt",
+      "source_sha256": "8e27c3ff5e9114a90d78fccf3de731c97942e7377ad0d4e20fc8e006b41dca7e",
+      "title": "Influence of Media Composition on the Level of Bovine Satellite Cell Proliferation",
+      "url": "https://www.mdpi.com/2076-2615/13/11/1855",
+      "year": "2023"
+    }
+  ],
+  "schema_sha256": "bc5283193d7a57e0969682b473425915ed7b826facc5bb7ff01e192990c4db72"
+}

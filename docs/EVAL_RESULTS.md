@@ -75,6 +75,12 @@ not retained, so it is a legacy diagnostic rather than a byte-replayable result.
 Future T1/T2 reports must be generated with `--artifacts-out` and replay-checked
 before a gold revision or thesis accuracy claim.
 
+A separate `medium-fulltext-v1` dual-review worksheet now covers R015, R016,
+R017, and R023 across all 380 A-M field cells. It is the intended production T1
+gold path, but currently has 0/380 reviewer-1, 0/380 reviewer-2, and 0/380 final
+adjudications. Until its validator reports READY, this legacy excerpt result must
+not be upgraded into a production accuracy claim.
+
 ## Corpus
 
 - Stout et al., Communications Biology 5, 466 (2022). Sources: https://www.nature.com/articles/s42003-022-03423-8, https://pubmed.ncbi.nlm.nih.gov/35654948/

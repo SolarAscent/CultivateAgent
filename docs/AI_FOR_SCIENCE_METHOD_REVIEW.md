@@ -225,6 +225,14 @@ Project implication:
   replayable bundle. This implements the provenance and version-control side of
   the Cochrane/PRISMA-trAIce reporting rule: a report should be reproducible from
   its exact inputs rather than reconstructed from prose or provider memory.
+- The production gold preparation now uses two independent reviewer columns and
+  a separate adjudication column for every paper x A-M field cell. `reported`
+  values are JSON-type checked and require exact full-text quotes; source and
+  schema hashes prevent silent drift. This operationalizes Cochrane's duplicate
+  extraction rule without allowing AI to stand in for either reviewer.
+  Blindness is implemented with a single-reviewer template: each reviewer works
+  in an isolated file that contains no other reviewer columns. A deterministic
+  merge step creates the controlled master only after both reviews return.
 
 ## 3. Adopted Algorithm Roadmap
 

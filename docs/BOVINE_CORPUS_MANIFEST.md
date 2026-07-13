@@ -174,6 +174,12 @@ Gate 2, extraction reliability: **not passed**.
   containing exact gold, all provider predictions, source hashes, paper order,
   failures, and report configuration. No bundle can be reconstructed for the
   historical live report because its raw predictions were not retained.
+- R015, R016, R017, and R023 now form the blank `medium-fulltext-v1` production
+  gold-review set. It has 380 A-M field cells and dual independent reviewer plus
+  adjudication columns. Current status is 0/380 adjudicated and `NOT READY`; no
+  values were AI-filled.
+  Independent reviewers use isolated single-reviewer worksheets and are merged
+  only before adjudication; the committed master remains blank.
 
 Gate 3, biological plausibility: **not passed**.
 

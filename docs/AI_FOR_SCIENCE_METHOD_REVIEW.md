@@ -242,6 +242,10 @@ Project implication:
   When one decision class makes kappa undefined, the report keeps it `None`
   rather than converting perfect raw agreement into kappa 1.0; progression then
   requires exact agreement 1.0 plus an explicit prevalence note.
+- Field-aware lexical passage locators reduce navigation time but remain review
+  aids. They verify source hashes, preserve raw character ranges, do not write
+  decisions, prioritize specific terms over generic percentages, and explicitly
+  treat no-hit as inconclusive.
 
 ## 3. Adopted Algorithm Roadmap
 

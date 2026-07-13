@@ -217,3 +217,33 @@ def test_gold_review_supports_manifest_controlled_field_subset(tmp_path):
             worksheet_path=tmp_path / "bad/review.tsv",
             field_paths=["Z.not_a_field"],
         )
+
+
+def test_gold_review_passages_locate_without_mutating_worksheet(tmp_path):
+    from cultivate_agent.evaluate.gold_review import create_gold_review, gold_review_passages
+
+    paper = _paper(tmp_path)
+    manifest = tmp_path / "pilot/manifest.json"
+    worksheet = tmp_path / "pilot/review.tsv"
+    create_gold_review(
+        [("R001", paper)],
+        repo_root=tmp_path,
+        benchmark_version="pilot-v1",
+        manifest_path=manifest,
+        worksheet_path=worksheet,
+        field_paths=["D.culture_stage"],
+    )
+    before = worksheet.read_bytes()
+
+    rendered = gold_review_passages(
+        manifest,
+        repo_root=tmp_path,
+        record_ids=["R001"],
+        field_paths=["D.culture_stage"],
+        max_hits=1,
+    )
+
+    assert "lexical review aid only" in rendered
+    assert "chars " in rendered
+    assert "expansion" in rendered
+    assert worksheet.read_bytes() == before

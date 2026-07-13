@@ -316,6 +316,9 @@ Checklist：
   0 issues、decision kappa >= 0.70 且状态 READY 后才扩展，否则修订说明并创建
   新 pilot version。若因只有一个 decision class 导致 kappa 不可估计，则要求
   exact agreement 1.0，并记录 prevalence limitation。
+- [x] `[AI]` 提供只读的 `prepare_medium_gold_review.py passages` field-aware
+  locator；它检查 source hash 且不修改 worksheet。Lexical no-hit 不能在未读原文时
+  被标为 `not_reported`。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、
@@ -355,6 +358,9 @@ python scripts/prepare_medium_gold_review.py merge \
   --master data/evaluation/gold/medium-fulltext-v1/review.tsv \
   --reviewer-1 /path/to/reviewer_1.tsv --reviewer-2 /path/to/reviewer_2.tsv \
   --out data/evaluation/gold/medium-fulltext-v1/review.tsv
+python scripts/prepare_medium_gold_review.py passages \
+  --manifest data/evaluation/gold/medium-pilot-v1/manifest.json \
+  --record R015 --field E.growth_factors --out /tmp/r015-growth-factor-locators.md
 ```
 
 Gate：

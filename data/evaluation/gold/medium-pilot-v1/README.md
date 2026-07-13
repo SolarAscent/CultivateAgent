@@ -31,3 +31,18 @@ new pilot version instead of overwriting v1.
 
 Merge and validate using the commands documented in
 `medium-fulltext-v1/README.md`, substituting this pilot directory.
+
+Generate local lexical passage locators for one paper/field without changing any
+worksheet value:
+
+```bash
+python scripts/prepare_medium_gold_review.py passages \
+  --manifest data/evaluation/gold/medium-pilot-v1/manifest.json \
+  --record R015 \
+  --field E.growth_factors \
+  --field J.key_numeric_results \
+  --out /tmp/medium-pilot-r015-locators.md
+```
+
+Locators are search aids, not evidence decisions. A missing lexical hit never
+means `not_reported`; the reviewer must still inspect the source.

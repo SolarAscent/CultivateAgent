@@ -3169,3 +3169,88 @@ still unpassed.
    before opening the 380-cell benchmark.
 3. `[AI]` After production gold is READY, run versioned extraction artifacts and
    replace the legacy T1 report with reproducible full-text metrics.
+
+---
+
+# Session 41 (Codex) — field-aware gold-review passage locators
+
+Date: 2026-07-13
+Branch: `codex/gold-review-locators`
+
+## Start-State Assessment
+
+The session began at approximately 84% software infrastructure, 46%
+literature/evidence preparation, 24% wet-lab-entry readiness, and 29% for the
+complete workflow. The next scientific step was human completion of the 56-cell
+pilot, but no DeepSeek environment was configured and the available OpenAI key
+had a documented quota failure. No live call was made.
+
+Following the rule to record and skip human/external blockers, the highest-value
+AI task was to reduce reviewer navigation cost without assigning any gold value.
+
+## Decision
+
+- Add a read-only `passages` subcommand over a versioned gold manifest.
+- Verify source SHA-256 before producing locators.
+- Allow record and field filters, bounded context, and bounded hit count.
+- Use field-specific lexical terms for the 28-field pilot and safe fallback terms
+  elsewhere.
+- Return raw character ranges and short whitespace-normalized snippets.
+- Never edit master/reviewer worksheets.
+- Treat no lexical hit as inconclusive, never as `not_reported`.
+- Keep generated snippets local unless quotation rights are reviewed.
+
+## Quality Correction
+
+The first real R015 smoke returned introductory lifecycle percentages for
+`J.key_numeric_results` because results were sorted by earliest character.
+Locator ranking was corrected to preserve curated term specificity:
+`doubling time`, `fold`, `passage`, and `cell count` precede generic `mean` and
+`%`. The repeated smoke then returned the Beefy-9 doubling-time passages around
+chars 22102-22463 rather than introduction statistics.
+
+## Changes Made
+
+- Added field-aware term registry, source-hash validation, filtered passage
+  rendering, raw ranges, and bounded snippets to `gold_review.py`.
+- Added `prepare_medium_gold_review.py passages` CLI.
+- Added a test proving expected hits and byte-identical worksheet preservation.
+- Updated pilot/full gold instructions, README, both workflow manuals, method
+  review, and this session log.
+
+## What This Does Not Claim
+
+- Lexical locators find every relevant table, figure, or synonym.
+- A hit supports a field value.
+- A no-hit field is not reported.
+- Human pilot work, T1, S4, or wet-lab readiness advanced.
+
+## Verification
+
+- Gold-review tests: 8 passed.
+- Real R015 smoke located the expected Beefy-9 doubling-time passages after the
+  term-priority correction; output stayed in `/tmp`.
+- Non-loopback suite:
+  `.venv/bin/python -m pytest -q -k 'not test_grobid_client_writes_and_parses_tei'`:
+  94 passed, 2 skipped, 1 deselected. The deselection is the known local-HTTP
+  environment limitation.
+- CLI `passages --help` exposed record/field/context/hit/output controls.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+- `git diff --check` passed; no pasted-style API key was found.
+
+## Completion Impact
+
+Software infrastructure rises conservatively from about 84% to about 85%.
+Literature/evidence preparation remains about 46%, wet-lab entry remains about
+24%, and the complete workflow remains about 29% because no human decision or
+scientific gate passed.
+
+## Next 3 Steps
+
+1. `[HUMAN]` Begin the two isolated 56-cell pilot reviews, using local locators
+   as navigation aids only.
+2. `[AI]` Validate each returned reviewer file, merge after both are complete,
+   and compute agreement without reading one review into the other.
+3. `[REVIEW]` Revise coding instructions if kappa is below 0.70; otherwise
+   adjudicate and open the 380-cell production set only after pilot READY.

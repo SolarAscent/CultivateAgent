@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple
@@ -39,6 +40,34 @@ COLUMNS = BASE_COLUMNS + SLOT_COLUMNS + ["notes"]
 REVIEWER_COLUMNS = BASE_COLUMNS + [
     "decision", "value_json", "quote", "location", "reviewer", "date", "notes"
 ]
+
+FIELD_SEARCH_TERMS: Dict[str, Tuple[str, ...]] = {
+    "B.species": ("bovine", "cattle"),
+    "D.cell_type": ("satellite cell", "myoblast"),
+    "D.primary_or_cell_line": ("primary", "cell line", "immortal"),
+    "D.culture_stage": ("expansion", "proliferation", "differentiation", "maturation"),
+    "D.passage_info": ("passage", "doubling", "senescence"),
+    "E.basal_medium": ("DMEM", "F-10", "basal medium", "base medium"),
+    "E.medium_type": ("expansion medium", "differentiation medium", "conditioned medium", "spent medium"),
+    "E.serum_usage": ("serum", "FBS"),
+    "E.serum_free_status": ("serum-free", "serum free", "chemically defined", "animal-free"),
+    "E.growth_factors": ("growth factor", "FGF", "IGF", "insulin", "transferrin"),
+    "E.small_molecules": ("small molecule", "inhibitor", "agonist", "antagonist"),
+    "E.hydrolysates_or_extracts": ("hydrolysate", "extract", "peptone", "lysate"),
+    "E.conditioned_medium_or_recycling": ("conditioned medium", "spent medium", "recycl"),
+    "I.main_readouts": ("measured", "assay", "analysis", "readout"),
+    "I.proliferation_metrics": ("proliferation", "cell count", "doubling time", "EdU", "Ki67", "MTS"),
+    "I.differentiation_metrics": ("differentiation", "fusion index", "MyoD", "myogenin", "MYOG"),
+    "J.has_extractable_quant_data": ("mean", "standard deviation", "significant", "fold", "%"),
+    "J.extractable_variables": ("concentration", "dose", "level", "factor"),
+    "J.key_numeric_results": ("doubling time", "fold", "passage", "cell count", "mean", "%"),
+    "J.units_reported": ("ng/mL", "µg/mL", "ug/mL", "mg/mL", "%", "hours"),
+    "J.experimental_comparison_groups": ("control", "compared", "versus", "treatment", "group"),
+    "J.sample_size_or_replicate_info": ("replicate", "independent experiment", " n =", "n="),
+    "K.core_findings": ("we found", "we show", "demonstrate", "result", "conclusion"),
+    "K.authors_reported_limitations": ("limitation", "however", "future work", "further study"),
+    "K.hidden_or_practical_limitations": ("cost", "scale", "variability", "undefined", "animal-derived"),
+}
 
 
 @dataclass(frozen=True)
@@ -454,3 +483,107 @@ def validation_markdown(result: GoldValidation) -> str:
     if not result.issues:
         lines.append("- None.")
     return "\n".join(lines) + "\n"
+
+
+def gold_review_passages(
+    manifest_path: Path,
+    *,
+    repo_root: Path,
+    record_ids: Optional[Sequence[str]] = None,
+    field_paths: Optional[Sequence[str]] = None,
+    context_chars: int = 220,
+    max_hits: int = 3,
+) -> str:
+    """Return lexical source locators without assigning any gold decision."""
+    if context_chars < 40:
+        raise ValueError("context_chars must be at least 40")
+    if max_hits < 1:
+        raise ValueError("max_hits must be at least 1")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    available_fields = manifest.get("field_paths") or [
+        f"{letter}.{name}" for letter, name, _description, _type in _schema_fields()
+    ]
+    selected_fields = list(field_paths or available_fields)
+    unknown_fields = [field for field in selected_fields if field not in available_fields]
+    if unknown_fields:
+        raise ValueError(f"field(s) outside manifest scope: {', '.join(unknown_fields)}")
+    selected_records = set(record_ids or [])
+    papers = [
+        paper for paper in (manifest.get("papers") or [])
+        if not selected_records or paper.get("record_id") in selected_records
+    ]
+    if selected_records - {str(paper.get("record_id")) for paper in papers}:
+        missing = sorted(selected_records - {str(paper.get("record_id")) for paper in papers})
+        raise ValueError(f"record(s) outside manifest: {', '.join(missing)}")
+    lines = [
+        f"# Gold Review Passage Locators: {manifest.get('benchmark_version', 'unknown')}",
+        "",
+        "Status: lexical review aid only; no field decision or evidence approval.",
+        "",
+    ]
+    for paper in papers:
+        source_path = repo_root / str(paper["source_path"])
+        payload = source_path.read_bytes()
+        if _sha256_bytes(payload) != paper.get("source_sha256"):
+            raise ValueError(f"{paper.get('record_id')}: source hash mismatch")
+        text = payload.decode("utf-8")
+        lines.extend([
+            f"## {paper.get('record_id')}: {paper.get('title')}",
+            "",
+            f"Source: `{paper.get('source_path')}`",
+            "",
+        ])
+        for field_path in selected_fields:
+            terms = _locator_terms(field_path, paper)
+            hits = _find_passage_hits(text, terms, context_chars=context_chars, max_hits=max_hits)
+            lines.append(f"### {field_path}")
+            lines.append("")
+            lines.append("Search terms: " + ", ".join(f"`{term}`" for term in terms))
+            lines.append("")
+            if not hits:
+                lines.append("- No lexical hit. This does not mean the field is not reported.")
+            else:
+                for start, end, term, snippet in hits:
+                    lines.append(f"- chars {start}-{end}, term `{term}`: {snippet}")
+            lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def _locator_terms(field_path: str, paper: Dict[str, object]) -> Tuple[str, ...]:
+    if field_path == "A.title":
+        return (str(paper.get("title") or ""),)
+    if field_path == "A.year":
+        return (str(paper.get("year") or ""),)
+    if field_path == "A.doi":
+        return (str(paper.get("doi") or ""),)
+    terms = FIELD_SEARCH_TERMS.get(field_path)
+    if terms:
+        return terms
+    fallback = field_path.split(".", 1)[1].replace("_", " ")
+    return (fallback,)
+
+
+def _find_passage_hits(
+    text: str,
+    terms: Sequence[str],
+    *,
+    context_chars: int,
+    max_hits: int,
+) -> List[Tuple[int, int, str, str]]:
+    candidates: List[Tuple[int, int, str, str]] = []
+    seen_windows = set()
+    for term in terms:
+        if not term:
+            continue
+        for match in re.finditer(re.escape(term), text, flags=re.IGNORECASE):
+            start = max(0, match.start() - context_chars // 2)
+            end = min(len(text), match.end() + context_chars // 2)
+            window_key = (start // max(context_chars, 1), end // max(context_chars, 1))
+            if window_key in seen_windows:
+                continue
+            seen_windows.add(window_key)
+            snippet = " ".join(text[start:end].split())
+            candidates.append((start, end, term, snippet))
+            if len(candidates) >= max_hits:
+                return candidates
+    return candidates

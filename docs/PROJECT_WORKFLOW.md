@@ -338,6 +338,9 @@ Checklist:
   status is READY. If kappa is undefined because only one decision class occurs,
   require exact agreement 1.0 and document the prevalence limitation; otherwise
   revise instructions and version a new pilot.
+- [x] `[AI]` Provide `prepare_medium_gold_review.py passages` as a read-only
+  field-aware locator. It verifies source hashes and never changes a worksheet;
+  lexical no-hit cannot be coded as `not_reported` without reading the source.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,
@@ -377,6 +380,9 @@ python scripts/prepare_medium_gold_review.py merge \
   --master data/evaluation/gold/medium-fulltext-v1/review.tsv \
   --reviewer-1 /path/to/reviewer_1.tsv --reviewer-2 /path/to/reviewer_2.tsv \
   --out data/evaluation/gold/medium-fulltext-v1/review.tsv
+python scripts/prepare_medium_gold_review.py passages \
+  --manifest data/evaluation/gold/medium-pilot-v1/manifest.json \
+  --record R015 --field E.growth_factors --out /tmp/r015-growth-factor-locators.md
 ```
 
 Gate:

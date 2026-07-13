@@ -272,6 +272,9 @@ Human review starts with
 28 high-risk fields (56 cells). Both reviewers must finish independently,
 decision kappa must be at least 0.70, all rows must be adjudicated, and the
 validator must report READY before scaling to the 380-cell full benchmark.
+`prepare_medium_gold_review.py passages` can generate read-only, field-aware
+local locators to reduce review time; it never assigns a decision, and no hit is
+not evidence of absence.
 
 ---
 

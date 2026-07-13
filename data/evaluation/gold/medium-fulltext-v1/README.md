@@ -54,3 +54,8 @@ python scripts/prepare_medium_gold_review.py validate \
 
 Add `--require-ready` only when checking the final adjudicated benchmark. The
 command then exits non-zero until all 380 rows are adjudicated without issues.
+
+The optional `passages` command creates local field-aware lexical locators and
+does not edit the master or reviewer files. Generated snippets are not committed
+without a separate quotation-rights review; no-hit fields still require manual
+source inspection.

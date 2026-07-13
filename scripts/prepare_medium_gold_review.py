@@ -10,6 +10,7 @@ from pathlib import Path
 from cultivate_agent.evaluate.gold_review import (
     create_gold_review,
     create_reviewer_template,
+    gold_review_passages,
     merge_independent_reviews,
     validate_gold_review,
     validation_markdown,
@@ -47,6 +48,14 @@ def main() -> int:
     merge.add_argument("--reviewer-1", type=Path, required=True)
     merge.add_argument("--reviewer-2", type=Path, required=True)
     merge.add_argument("--out", type=Path, required=True)
+    passages = sub.add_parser("passages")
+    passages.add_argument("--manifest", type=Path, required=True)
+    passages.add_argument("--repo-root", type=Path, default=Path.cwd())
+    passages.add_argument("--record", action="append", help="optional record ID filter")
+    passages.add_argument("--field", action="append", help="optional A-M field path filter")
+    passages.add_argument("--context-chars", type=int, default=220)
+    passages.add_argument("--max-hits", type=int, default=3)
+    passages.add_argument("--out", type=Path)
     args = parser.parse_args()
 
     if args.command == "create":
@@ -84,6 +93,23 @@ def main() -> int:
             args.master, args.reviewer_1, args.reviewer_2, args.out
         )
         print(f"+ wrote {output}")
+        return 0
+
+    if args.command == "passages":
+        output = gold_review_passages(
+            args.manifest,
+            repo_root=args.repo_root.resolve(),
+            record_ids=args.record,
+            field_paths=args.field,
+            context_chars=args.context_chars,
+            max_hits=args.max_hits,
+        )
+        if args.out:
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            args.out.write_text(output, encoding="utf-8")
+            print(f"+ wrote {args.out}")
+        else:
+            print(output, end="")
         return 0
 
     result = validate_gold_review(

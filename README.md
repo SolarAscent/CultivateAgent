@@ -151,6 +151,8 @@ cultivate ingest                     # build data/papers/<slug>/ folders + full 
 cultivate ingest --grobid-tei --grobid-url http://localhost:8070
 # If legally obtained JATS/Open Access XML already exists as fulltext.xml,
 # cultivate extract and extraction-readiness will auto-detect it.
+# Acquire the explicit bovine OA subset from Europe PMC with DOI/license checks:
+python scripts/ingest_europe_pmc_jats.py --max-items 9
 
 # 2. Tier papers A/B/C (evidence-backed, reproducible):
 cultivate triage

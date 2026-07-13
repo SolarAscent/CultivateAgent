@@ -9,6 +9,14 @@ from .grobid import (
     write_fulltext_tei,
 )
 from .organize import IngestResult, ingest_library, ingest_paper, iter_ingested
+from .europe_pmc import (
+    EUROPE_PMC_REST,
+    EuropePMCError,
+    JATSAcquisition,
+    acquire_europe_pmc_jats,
+    fetch_europe_pmc_jats,
+    inspect_europe_pmc_jats,
+)
 from ..schema.structured_paper import (
     structured_paper_from_grobid_tei_path,
     structured_paper_from_grobid_tei_xml,
@@ -21,4 +29,6 @@ __all__ = [
     "structured_paper_from_grobid_tei_xml", "structured_paper_from_grobid_tei_path",
     "GrobidError", "grobid_is_alive", "process_fulltext_document",
     "write_fulltext_tei", "structured_paper_from_grobid_pdf",
+    "EUROPE_PMC_REST", "EuropePMCError", "JATSAcquisition",
+    "inspect_europe_pmc_jats", "fetch_europe_pmc_jats", "acquire_europe_pmc_jats",
 ]

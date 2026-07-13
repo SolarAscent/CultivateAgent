@@ -97,6 +97,14 @@ model-returned extra fields fail closed. This removes numeric transcription
 hallucination but does not make treatment/control role labeling trustworthy;
 that semantic step remains subject to repeated-run gold evaluation and human
 numeric review.
+The committed Europe PMC acquisition audit currently covers nine explicitly
+mapped P1 primary sources. All nine JATS files pass DOI, Creative Commons
+license, hash, and parseability checks. They contain 17 tables and 1,258 cells,
+but zero cells matching the conservative SD/SEM/sample-size candidate screen.
+This is a verified negative result: the current OA JATS expansion improves
+structured source coverage but does not itself create any tier-1 effects.
+Reproduce it with `python scripts/ingest_europe_pmc_jats.py --max-items 9`; the
+source mapping and current report are under `data/literature/`.
 The current S4 worksheet separates this review into `numeric_effect_status`,
 `numeric_effect_metric`, `numeric_effect_value`, optional variance, and notes,
 so a directionally supported row is not automatically a thesis-ready

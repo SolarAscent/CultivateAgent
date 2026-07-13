@@ -708,6 +708,64 @@ def test_extraction_eval_reports_substantive_evidence_attachment():
     assert coverage["unverified_evidence_field_cells"] == 1
 
 
+def test_extraction_eval_decision_critical_gate_is_conservative():
+    from cultivate_agent.evaluate import evaluate_corpus
+    from cultivate_agent.schema.extraction import (
+        CellInfo,
+        FastTriage,
+        Measurements,
+        MediumInfo,
+        PaperExtraction,
+        QuantData,
+    )
+
+    gold = PaperExtraction(paper_id="p")
+    gold.fast_triage = FastTriage(species=["bovine"])
+    gold.cell_info = CellInfo(
+        cell_type=["satellite cells"],
+        expansion_conditions_summary="expansion stage",
+    )
+    gold.medium_info = MediumInfo(
+        basal_medium=["DMEM/F12"],
+        serum_free_status="serum-free",
+        growth_factors=["FGF2"],
+    )
+    gold.measurements = Measurements(proliferation_metrics=["doubling time"])
+    gold.quant_data = QuantData(
+        extractable_variables=["FGF2 concentration"],
+        key_numeric_results=["40 ng/mL"],
+        units_reported=["ng/mL"],
+    )
+
+    complete = gold.model_copy(deep=True)
+    complete_gate = evaluate_corpus([complete], [gold]).critical_coverage()
+    assert complete_gate["expected"] == 8
+    assert complete_gate["predicted"] == 8
+    assert complete_gate["nonmissing_fraction"] == 1.0
+    assert complete_gate["gate_status"] == "PROVISIONAL_ONLY"
+    assert next(r for r in complete_gate["rows"] if r["concept"] == "dose_range")["basis"] == "proxy"
+
+    sparse = PaperExtraction(paper_id="p")
+    sparse.fast_triage = FastTriage(species=["bovine"])
+    sparse_gate = evaluate_corpus([sparse], [gold]).critical_coverage()
+    assert sparse_gate["predicted"] == 1
+    assert sparse_gate["gate_status"] == "FAIL"
+
+
+def test_extraction_eval_decision_critical_gate_requires_all_concepts_evaluable():
+    from cultivate_agent.evaluate import evaluate_corpus
+    from cultivate_agent.schema.extraction import FastTriage, PaperExtraction
+
+    gold = PaperExtraction(paper_id="p")
+    gold.fast_triage = FastTriage(species=["bovine"])
+    pred = gold.model_copy(deep=True)
+
+    gate = evaluate_corpus([pred], [gold]).critical_coverage()
+
+    assert gate["nonmissing_fraction"] == 1.0
+    assert gate["gate_status"] == "NOT_EVALUABLE"
+
+
 def test_bibtex_parsing(tmp_path):
     from cultivate_agent.ingest import parse_bibtex
 

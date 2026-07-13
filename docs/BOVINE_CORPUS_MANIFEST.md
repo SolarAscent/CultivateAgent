@@ -157,6 +157,11 @@ Gate 2, extraction reliability: **not passed**.
   It computes ROM sampling variance only when the same verified quote also
   reports group SD/SE/SEM and sample sizes. All numeric uses remain subject to
   the S4 numeric-effect review fields.
+- Gate 2 coverage is now evaluated per decision-critical concept rather than by
+  pooled completeness. The current four-paper live benchmark is 0/17 over
+  applicable concept-paper cells and remains `FAIL`; stage and medium type are
+  absent from the fixture gold and explicitly `NOT_EVALUABLE`. The A-M
+  `dose_range` mapping is a proxy and cannot approve wet-lab entry.
 
 Gate 3, biological plausibility: **not passed**.
 

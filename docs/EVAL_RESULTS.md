@@ -12,6 +12,8 @@ Evaluated provider profile: `openai:gpt-5.4`
 - Substantive B-M fields: 0
 - Evidence attachment: 0/0 (None)
 - Attached evidence flagged unverified: 0
+- Decision-critical coverage: 0/17 (0.0)
+- Decision-critical Gate 2 status: FAIL
 - Mean grounding rate: None
 - Overall: {'tp': 8, 'fp': 8, 'fn': 39, 'precision': 0.5, 'recall': 0.1702, 'f1': 0.254}
 
@@ -41,6 +43,22 @@ Evaluated provider profile: `openai:gpt-5.4`
 | K.core_findings | 0 | 0 | 1 | 0.0 | 0.0 | 0.0 |
 | M.recommended_action | 0 | 0 | 4 | 0.0 | 0.0 | 0.0 |
 | OVERALL | 8 | 8 | 39 | 0.5 | 0.1702 | 0.254 |
+
+## Decision-Critical Coverage
+
+| concept | basis | expected | predicted | nonmissing_fraction | status |
+| --- | --- | --- | --- | --- | --- |
+| species | direct | 4 | 0 | 0.0 | FAIL |
+| cell_type | direct | 3 | 0 | 0.0 | FAIL |
+| stage | direct | 0 | 0 | None | NOT_EVALUABLE |
+| medium_type | direct | 0 | 0 | None | NOT_EVALUABLE |
+| serum_free_status | direct | 4 | 0 | 0.0 | FAIL |
+| component_identity | direct | 2 | 0 | 0.0 | FAIL |
+| dose_range | proxy | 2 | 0 | 0.0 | FAIL |
+| endpoint | direct | 2 | 0 | 0.0 | FAIL |
+
+`dose_range` is an A-M proxy over quantitative fields. Even when all rows pass,
+a `PROVISIONAL_ONLY` result still requires dedicated dose extraction and review.
 
 ## Corpus
 

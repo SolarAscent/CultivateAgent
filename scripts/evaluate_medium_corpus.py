@@ -511,6 +511,7 @@ def write_reports(
     rows = report.to_rows()
     alignment = report.alignment()
     coverage = report.coverage()
+    critical = report.critical_coverage()
     agreement_fields = ["B.main_track", "E.serum_free_status", "J.has_extractable_quant_data", "M.recommended_action"]
     live_labels = {s.label for s in live_specs or []}
     if agreement_scope == "live":
@@ -543,10 +544,20 @@ def write_reports(
         f"- Evidence attachment: {coverage['evidence_attached_field_cells']}/"
         f"{coverage['substantive_predicted_field_cells']} ({coverage['evidence_attachment_rate']})\n"
         f"- Attached evidence flagged unverified: {coverage['unverified_evidence_field_cells']}\n"
+        f"- Decision-critical coverage: {critical['predicted']}/{critical['expected']} "
+        f"({critical['nonmissing_fraction']})\n"
+        f"- Decision-critical Gate 2 status: {critical['gate_status']}\n"
         f"- Mean grounding rate: {report.mean_grounding()}\n"
         f"- Overall: {report.overall()}\n\n"
         "## Per-Field Scores\n\n"
         + markdown_table(rows, ["field", "tp", "fp", "fn", "precision", "recall", "f1"])
+        + "\n\n## Decision-Critical Coverage\n\n"
+        + markdown_table(
+            critical["rows"],
+            ["concept", "basis", "expected", "predicted", "nonmissing_fraction", "status"],
+        )
+        + "\n\n`dose_range` is an A-M proxy over quantitative fields. Even when all rows pass, "
+        "a `PROVISIONAL_ONLY` result still requires dedicated dose extraction and review.\n"
         + "\n\n## Corpus\n\n"
         + "\n".join(
             f"- {p.reference}. Sources: " + ", ".join(p.sources)

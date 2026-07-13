@@ -177,6 +177,15 @@ support the same operational boundary: AI can rank records, surface snippets,
 and propose structured candidates, while humans remain responsible for
 scientific inclusion, support labels, and stop/go decisions.
 
+Cochrane Handbook Chapter 5 further requires the collection form to be
+predefined and piloted and treats intervention details, outcomes, metrics,
+timepoints, group results, and missing information as distinct data items. The
+Gate 2 implementation therefore evaluates each decision-critical concept
+separately. A high pooled fraction cannot compensate for an endpoint or dose
+concept below threshold. Because A-M has no dedicated component-dose field,
+its `dose_range` diagnostic is explicitly a proxy and cannot independently
+produce a final Gate 2 pass.
+
 Project implication:
 
 - `cultivate review-packet` and `cultivate adjudication-passages` are review

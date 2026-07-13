@@ -300,6 +300,10 @@ Checklist:
 - [x] `[AI]` Report gold-field presence and evidence attachment separately from
   paper-ID coverage and quote grounding; a bibliographic shell is not a
   substantive extraction.
+- [x] `[AI]` Evaluate all eight Gate 2 concepts separately at the 0.75
+  non-missing threshold. Do not let pooled coverage offset a failed concept;
+  keep A-M `dose_range` results provisional until dedicated dose extraction is
+  reviewed.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,
@@ -681,6 +685,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | Corpus manifest | Partial | Useful bovine set exists, but P1 human review and full-text coverage are incomplete |
 | Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
 | Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 are ready for section-routed operators; H015-H016 need R024 |
+| Gate 2 critical-field coverage | `FAIL`: 0/17 applicable concept-paper cells in the committed live benchmark | Paper IDs were returned, but no B-M critical content was extracted; stage and medium type fixture gold are not evaluable |
 | Critical human review | 16/16 open | H001-H014 worksheet and evidence-table export path exist, but no human decisions have been entered |
 | H001-H014 adjudication status | 0/14 resolved, 0 evidence-bearing | Status report confirms the worksheet is structurally valid but still awaiting human decisions |
 | Adjudicated evidence table | 0 rows | Header-only export from the blank worksheet; not evidence approval |

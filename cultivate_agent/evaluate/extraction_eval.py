@@ -22,6 +22,38 @@ from ..schema.extraction import _BLOCK_ATTR  # block letter -> attr name
 
 _WS = re.compile(r"\s+")
 
+# Gate 2 concepts from docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md. Some
+# concepts span several A-M fields. dose_range remains a proxy because the A-M
+# schema has no dedicated component-dose structure; a proxy can diagnose a
+# failure but cannot by itself approve wet-lab entry.
+DECISION_CRITICAL_FIELD_GROUPS: Dict[str, Dict[str, object]] = {
+    "species": {"paths": ("B.species",), "basis": "direct"},
+    "cell_type": {"paths": ("D.cell_type",), "basis": "direct"},
+    "stage": {
+        "paths": ("D.expansion_conditions_summary", "D.differentiation_conditions_summary"),
+        "basis": "direct",
+    },
+    "medium_type": {"paths": ("E.basal_medium",), "basis": "direct"},
+    "serum_free_status": {"paths": ("E.serum_free_status",), "basis": "direct"},
+    "component_identity": {
+        "paths": (
+            "E.growth_factors",
+            "E.small_molecules",
+            "E.hydrolysates_or_extracts",
+            "E.conditioned_medium_or_recycling",
+        ),
+        "basis": "direct",
+    },
+    "dose_range": {
+        "paths": ("J.extractable_variables", "J.key_numeric_results", "J.units_reported"),
+        "basis": "proxy",
+    },
+    "endpoint": {
+        "paths": ("I.main_readouts", "I.proliferation_metrics", "I.differentiation_metrics"),
+        "basis": "direct",
+    },
+}
+
 
 def normalize_value(text: str) -> str:
     s = _WS.sub(" ", str(text).strip().lower())
@@ -89,6 +121,8 @@ class EvalReport:
     substantive_predicted_field_cells: int = 0
     evidence_attached_field_cells: int = 0
     unverified_evidence_field_cells: int = 0
+    critical_expected_cells: Dict[str, int] = field(default_factory=dict)
+    critical_predicted_cells: Dict[str, int] = field(default_factory=dict)
 
     def overall(self) -> Dict[str, float]:
         tp = sum(s.tp for s in self.per_field.values())
@@ -131,6 +165,49 @@ class EvalReport:
             "unverified_evidence_field_cells": self.unverified_evidence_field_cells,
         }
 
+    def critical_coverage(self, *, threshold: float = 0.75) -> Dict[str, object]:
+        rows = []
+        total_expected = 0
+        total_predicted = 0
+        proxy_evaluated = False
+        for concept, spec in DECISION_CRITICAL_FIELD_GROUPS.items():
+            expected = self.critical_expected_cells.get(concept, 0)
+            predicted = self.critical_predicted_cells.get(concept, 0)
+            rate = round(predicted / expected, 4) if expected else None
+            basis = str(spec["basis"])
+            if basis == "proxy" and expected:
+                proxy_evaluated = True
+            status = "NOT_EVALUABLE" if rate is None else ("PASS" if rate >= threshold else "FAIL")
+            rows.append({
+                "concept": concept,
+                "basis": basis,
+                "expected": expected,
+                "predicted": predicted,
+                "nonmissing_fraction": rate,
+                "status": status,
+            })
+            total_expected += expected
+            total_predicted += predicted
+        overall_rate = round(total_predicted / total_expected, 4) if total_expected else None
+        if overall_rate is None:
+            gate_status = "NOT_EVALUABLE"
+        elif overall_rate < threshold or any(row["status"] == "FAIL" for row in rows):
+            gate_status = "FAIL"
+        elif any(row["status"] == "NOT_EVALUABLE" for row in rows):
+            gate_status = "NOT_EVALUABLE"
+        elif proxy_evaluated:
+            gate_status = "PROVISIONAL_ONLY"
+        else:
+            gate_status = "PASS"
+        return {
+            "threshold": threshold,
+            "expected": total_expected,
+            "predicted": total_predicted,
+            "nonmissing_fraction": overall_rate,
+            "gate_status": gate_status,
+            "rows": rows,
+        }
+
     def to_rows(self) -> List[dict]:
         rows = []
         for name, s in sorted(self.per_field.items()):
@@ -154,7 +231,16 @@ def evaluate_extraction(pred: PaperExtraction, gold: PaperExtraction, report: Op
     """Accumulate TP/FP/FN for one predicted vs gold record."""
     report = report or EvalReport()
     pred_fields = dict(_iter_fields(pred))
-    for key, gold_val in _iter_fields(gold):
+    gold_fields = dict(_iter_fields(gold))
+    for concept, spec in DECISION_CRITICAL_FIELD_GROUPS.items():
+        paths = spec["paths"]
+        gold_present = any(_to_set(gold_fields.get(path)) for path in paths)
+        if not gold_present:
+            continue
+        report.critical_expected_cells[concept] = report.critical_expected_cells.get(concept, 0) + 1
+        if any(_to_set(pred_fields.get(path)) for path in paths):
+            report.critical_predicted_cells[concept] = report.critical_predicted_cells.get(concept, 0) + 1
+    for key, gold_val in gold_fields.items():
         gset = _to_set(gold_val)
         pset = _to_set(pred_fields.get(key))
         if gset:

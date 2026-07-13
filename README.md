@@ -229,7 +229,9 @@ is scored, missing predictions count as false negatives, unexpected IDs are
 reported, and duplicate gold or prediction IDs fail the run. The report also
 separates paper-ID coverage, gold-field presence, B-M substantive-field count,
 evidence attachment, and grounding; none of these metrics substitutes for the
-others.
+others. It also applies the pre-wet-lab Gate 2 threshold to each predefined
+decision-critical concept. Pooled coverage cannot hide a failed concept, and
+the A-M `dose_range` proxy cannot produce final approval.
 
 ---
 

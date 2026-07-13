@@ -2493,3 +2493,97 @@ may be described as about 73% only after regression verification succeeds.
    fields rather than treating every A-M field as equally important.
 2. Human reviewer completes H001-H014 adjudication; AI validates and exports it.
 3. Re-run H014 live extraction only after provider credentials are valid.
+
+---
+
+# Session 34 (Codex) — decision-critical Gate 2 coverage
+
+Date: 2026-07-13
+Branch: `codex/eval-critical-field-gate`
+
+## Start-State Assessment
+
+The evidence-based baseline at session start was: software infrastructure about
+73%, literature/evidence work about 43%, wet-lab-entry readiness about 24%, and
+the complete workflow through paper results about 29% (reasonable range
+25-33%). Gate 2, H001-H014 human adjudication, cost/supply review, robustness,
+pre-registration, wet-lab execution, and result analysis were still unpassed.
+
+The highest-value non-human task was to convert the documented Gate 2 critical
+field threshold into an executable, conservative acceptance result. This makes
+future H014 live pilots decisional rather than merely descriptive.
+
+## Literature Check And Decision
+
+Cochrane Handbook Chapter 5 was verified against both the official Cochrane
+chapter and the Wiley chapter record. It supports predefined and pilot-tested
+structured forms, explicit outcome/intervention data items, transparent missing
+information, and independent checking of decision-critical outcome data. Added
+method record `M045` documents the source and project use.
+
+Adopted rules:
+
+- Evaluate species, cell type, stage, medium type, serum-free status, component
+  identity, dose/range, and endpoint separately at non-missing >= 0.75.
+- Any concept below threshold makes Gate 2 `FAIL`; pooled coverage cannot offset
+  it.
+- A concept absent from gold is `NOT_EVALUABLE`, never an automatic pass.
+- A-M `dose_range` is a J-block proxy. Complete proxy coverage can produce at
+  most `PROVISIONAL_ONLY` until the dedicated dose operator and human review
+  confirm component-dose pairs.
+- Final Gate 2 approval still also requires grounding >= 0.95 and agreement or
+  human adjudication; this coverage status is necessary but not sufficient.
+
+## Changes Made
+
+- Added eight decision-critical concept groups and threshold evaluation to
+  `EvalReport`.
+- Added `FAIL`, `NOT_EVALUABLE`, `PROVISIONAL_ONLY`, and conservative `PASS`
+  states.
+- Added per-concept tables to `scripts/evaluate_medium_corpus.py`.
+- Added tests for sparse failure, complete proxy coverage, and incomplete gold.
+- Updated the committed live report: 0/17 applicable critical cells, Gate 2
+  `FAIL`; stage and medium type are not evaluable in the current fixture.
+- Updated README, both workflow manuals, wet-lab decision record, method review,
+  bovine manifest, method registry, and this session log.
+
+## What This Does Not Claim
+
+- The current fixture is not sufficient to validate all eight concepts.
+- A coverage pass would not prove value correctness, grounding, agreement, or
+  human approval.
+- No current live provider passes Gate 2.
+- No wet-lab variable or experiment was approved.
+
+## Verification
+
+- Focused Gate tests: 4 passed.
+- Non-loopback suite:
+  `.venv/bin/python -m pytest -q -k 'not test_grobid_client_writes_and_parses_tei'`:
+  71 passed, 2 skipped, 1 deselected. The deselection is the known managed
+  environment local-HTTP limitation.
+- Offline mock report generation passed. It demonstrated why per-concept gating
+  is required: pooled critical coverage was 16/17 (0.9412), but endpoint was
+  1/2 (0.5), stage and medium type were not evaluable, and the result correctly
+  remained `FAIL`.
+- Method registry validation passed: 45 data rows, 9 columns, no malformed row.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+- `git diff --check` passed; secret scan found no pasted-style API keys.
+
+## Completion Impact
+
+Software infrastructure rises conservatively from about 73% to about 74%
+because Gate 2 is now executable and tested. Literature/evidence work remains
+about 43%, wet-lab-entry readiness remains about 24%, and the complete paper
+workflow remains about 29%: the current real benchmark failed, no human row was
+adjudicated, and no scientific gate passed.
+
+## Next 3 Steps
+
+1. Make the dedicated operator extraction emit a direct component-dose coverage
+   report so `dose_range` no longer depends on the A-M proxy.
+2. Human reviewer completes H001-H014; AI validates and exports without changing
+   scientific decisions.
+3. Run H014 live operator extraction only after provider credentials are valid,
+   and require all Gate 2 metrics before scaling.

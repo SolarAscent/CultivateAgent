@@ -285,6 +285,9 @@ Checklist：
   计分，缺失预测记为 false negatives，额外 ID 单独报告，重复 ID 直接失败。
 - [x] `[AI]` 将 gold-field presence 和 evidence attachment 与 paper-ID coverage、
   quote grounding 分开报告；只有书目信息的空壳记录不算实质抽取。
+- [x] `[AI]` 按 0.75 non-missing 阈值分别评估八个 Gate 2 概念；总体覆盖率
+  不能抵消某个概念失败，A-M `dose_range` 结果在专用 dose extraction 经复核前
+  只能是 provisional。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、
@@ -641,6 +644,7 @@ Gate：论文 claims 可追溯到证据和结果。
 | Corpus manifest | Partial | 已有可用 bovine set，但 P1 人工复核和全文覆盖不完整 |
 | Proliferation evidence audit | `NO-GO` | 当前 extracted evidence 不能支持湿实验入口 |
 | Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 可跑 section-routed operators；H015-H016 需要 R024 |
+| Gate 2 关键字段覆盖 | `FAIL`：当前 committed live benchmark 为 0/17 applicable concept-paper cells | 返回了 paper IDs，但没有 B-M 关键内容；fixture gold 的 stage、medium type 不可评估 |
 | Critical human review | 16/16 open | H001-H014 工作表和证据表导出路径已存在，但尚无人工 decision |
 | H001-H014 adjudication status | 0/14 resolved, 0 evidence-bearing | 状态报告确认工作表结构有效，但仍等待人工 decision |
 | 已裁决证据表 | 0 行 | 来自空白工作表的仅表头导出；不是证据批准 |

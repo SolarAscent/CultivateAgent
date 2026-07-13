@@ -138,6 +138,17 @@ For decision-critical fields, the extraction layer must meet:
 The current live OpenAI/Anthropic run does not meet this gate because coverage
 was too sparse; it is useful as a failure diagnosis, not as design evidence.
 
+Operationalization: each of the eight concepts is evaluated separately at the
+0.75 non-missing threshold. A pooled average never compensates for a failed
+concept. `species`, `cell_type`, `stage`, `medium_type`,
+`serum_free_status`, `component_identity`, and `endpoint` map to direct A-M
+fields or field groups. `dose_range` is only a proxy over J-block quantitative
+fields because A-M has no dedicated component-dose structure; even complete
+proxy coverage yields `PROVISIONAL_ONLY` until the dedicated dose operator and
+human review confirm it. Missing gold coverage yields `NOT_EVALUABLE`, not a
+pass. This follows Cochrane Handbook Chapter 5 guidance to predefine and pilot
+distinct data items and expose missing decision-critical outcome information.
+
 ### Gate 3: Biological Plausibility
 
 Every proposed medium variable must be assigned one mechanism class:

@@ -203,6 +203,13 @@ _FOLD_RE = re.compile(
     r"(?P<value>\d+(?:\.\d+)?)\s*(?:-| )?(?:fold|x|\u00d7)\b",
     flags=re.IGNORECASE,
 )
+# "2.2 \u00b1 0.4-fold": the point estimate is 2.2, not the dispersion 0.4. Capture the
+# leading value so the bare _FOLD_RE below does not latch onto the error bar.
+_FOLD_DISPERSION_RE = re.compile(
+    r"(?P<value>\d+(?:\.\d+)?)\s*(?:\u00b1|\+/-|\+/\u2212)\s*\d+(?:\.\d+)?"
+    r"\s*(?:-| )?(?:fold|x|\u00d7)\b",
+    flags=re.IGNORECASE,
+)
 _PERCENT_RE = re.compile(
     r"(?P<value>\d+(?:\.\d+)?)\s*%\s*(?:change|increase|decrease|reduction|improvement|higher|lower|more|less)?",
     flags=re.IGNORECASE,
@@ -247,7 +254,24 @@ def _infer_log_response_ratio(
 
 
 def _infer_fold_ratio(quote: str, direction: Optional[int]) -> Optional[float]:
+    # "N ± M-fold": take the point estimate N, never the dispersion M.
+    # "fold"/"x"/"×" denotes a ratio, so (unlike a percentage) it is almost never a
+    # concentration; the model's global direction is an acceptable fallback. The
+    # only observed failure was grabbing the dispersion in "N ± M-fold".
+    disp = _FOLD_DISPERSION_RE.search(quote)
+    if disp is not None:
+        fold = _safe_positive_float(disp.group("value"))
+        if fold is not None and fold > 0:
+            polarity = _local_polarity(quote, disp.start(), disp.end(), direction)
+            if polarity > 0:
+                return fold
+            if polarity < 0:
+                return 1.0 / fold
+            return None
     for match in _FOLD_RE.finditer(quote):
+        # Skip a number that is itself the dispersion in "N ± M-fold".
+        if _preceded_by_dispersion(quote, match.start()):
+            continue
         fold = _safe_positive_float(match.group("value"))
         if fold is None or fold <= 0:
             continue
@@ -259,12 +283,33 @@ def _infer_fold_ratio(quote: str, direction: Optional[int]) -> Optional[float]:
     return None
 
 
+def _preceded_by_dispersion(quote: str, start: int) -> bool:
+    """True if the number at ``start`` is the error term after ``±`` / ``+/-``."""
+    prefix = quote[max(0, start - 4):start]
+    return any(sym in prefix for sym in ("±", "+/-", "+/−"))
+
+
+_CONCENTRATION_CONTEXT = (
+    "fbs", "serum", "medium", "media", "glucose", "glutamax", "glutamine",
+    "albumin", "bsa", "hydrolysate", "extract", "dmso", "co2", "o2", "dmem",
+    "supplement", "v/v", "w/v", "psfc",
+)
+
+
 def _infer_percent_ratio(quote: str, direction: Optional[int]) -> Optional[float]:
     for match in _PERCENT_RE.finditer(quote):
         pct = _safe_positive_float(match.group("value"))
         if pct is None:
             continue
-        polarity = _local_polarity(quote, match.start(), match.end(), direction)
+        # "30% FBS" / "20% FBS-PSFC" are concentrations, not "+30% responses":
+        # if a reagent/medium word follows the percentage, it is composition.
+        tail = quote[match.end(): match.end() + 14].lower()
+        if any(word in tail for word in _CONCENTRATION_CONTEXT):
+            continue
+        # Require an explicit change word next to the number (strict); do not fall
+        # back to the model's global direction, which would turn any leftover
+        # composition percentage into a fabricated effect magnitude.
+        polarity = _local_polarity(quote, match.start(), match.end(), direction, strict=True)
         if polarity > 0:
             return 1.0 + pct / 100.0
         if polarity < 0 and pct < 100.0:
@@ -272,7 +317,16 @@ def _infer_percent_ratio(quote: str, direction: Optional[int]) -> Optional[float
     return None
 
 
-def _local_polarity(quote: str, start: int, end: int, direction: Optional[int]) -> int:
+def _local_polarity(
+    quote: str, start: int, end: int, direction: Optional[int], *, strict: bool = False
+) -> int:
+    """Polarity of the change described next to a number.
+
+    With ``strict=True`` an explicit increase/decrease word must appear next to
+    the number; the model's global ``direction`` is NOT used as a fallback. This
+    is what separates "increased 30%" (a real effect) from "30% FBS" (a
+    concentration), so magnitude inference does not fabricate effect sizes.
+    """
     window = quote[max(0, start - 48): min(len(quote), end + 48)].lower()
     has_pos = any(word in window for word in _POSITIVE_WORDS)
     has_neg = any(word in window for word in _NEGATIVE_WORDS)
@@ -280,6 +334,8 @@ def _local_polarity(quote: str, start: int, end: int, direction: Optional[int]) 
         return 1
     if has_neg and not has_pos:
         return -1
+    if strict:
+        return 0
     if direction is not None:
         return int(math.copysign(1, direction)) if direction != 0 else 0
     return 0

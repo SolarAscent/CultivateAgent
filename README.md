@@ -58,12 +58,11 @@ Gate 1 is executable rather than inferred from row count:
 python scripts/audit_bovine_corpus.py --require-pass
 ```
 
-The committed audit is currently `FAIL`: 32 design-included peer-reviewed
-sources fall three short of the 35-source minimum, and none of the 11 P1 core
-records has an explicit human-verified review status. Required metadata is now
-complete after four DOI records were independently verified and repaired. See
+The committed audit is currently `FAIL`: all six numerical checks and required
+metadata pass for 35 design-included peer-reviewed sources, but none of the 14
+P1 core/core-context records has an explicit human-verified review status. See
 [`docs/BOVINE_CORPUS_GATE1_AUDIT.md`](docs/BOVINE_CORPUS_GATE1_AUDIT.md); a
-nonzero exit is expected until both coverage and human-curation checks pass.
+nonzero exit is expected until human curation passes.
 For the end-to-end project operating manual, including developer orientation,
 human/AI/lab checklists, gates, handoff rules, and current status, see
 [`docs/PROJECT_WORKFLOW.md`](docs/PROJECT_WORKFLOW.md) or the Chinese version

@@ -3333,3 +3333,105 @@ about 29% because no scientific gate or human review item passed.
    then rerun the audit without counting deferred records.
 3. `[HUMAN]` Complete the isolated 56-cell dual-review pilot; AI then validates
    agreement before production extraction evaluation.
+
+---
+
+# Session 43 (Codex) — close numerical corpus coverage without counting deferrals
+
+Date: 2026-07-13
+Branch: `codex/corpus-gate-coverage`
+
+## Start-State Assessment
+
+The session began at approximately 86% software infrastructure, 46%
+literature/evidence preparation, 24% wet-lab-entry readiness, and 29% for the
+complete workflow. Gate 1 had 32/35 design-included peer-reviewed sources and
+0/11 human-verified P1 records. Human review remained blocked at 0/56 pilot
+cells and 0/14 H001-H014 decisions. Claude's worktree had no new commit and was
+six commits behind `main`.
+
+The human blockers were recorded and skipped. The highest-value independent
+task was to close the three-source numerical gap with relevant, non-duplicate
+evidence while preserving the human-curation failure.
+
+## Literature Search And Decisions
+
+Three primary studies were added after title, DOI, publication type, species,
+stage, and scope were checked against Crossref plus PubMed and publisher or
+institutional records:
+
+- R045, Dolgin et al., Food Research International 2025,
+  `10.1016/j.foodres.2024.115633`: VN40 microbial lysate at 40 ug/mL for
+  serum-free iBSC expansion. It is `core_context`, not unrestricted direct
+  evidence, because immortalized-to-primary transfer is unresolved.
+- R046, Kim et al., iScience 2025, `10.1016/j.isci.2025.113242`:
+  Pichia-derived bovine and porcine recombinant albumin in primary bMuSCs.
+  Europe PMC full text confirmed 800-11,200 ug/mL short-term dose comparisons,
+  longer passage experiments, Pax7, proliferation, and differentiation checks.
+- R047, Skrivergaard et al., Food Research International 2023,
+  `10.1016/j.foodres.2023.113217`: bull-calf versus dairy-cow primary satellite
+  cells under in-house serum-free medium versus 10% FBS. It informs donor
+  blocking and biological variance; an undisclosed formulation cannot become an
+  actionable ingredient recommendation.
+
+The Glycyrrhiza/licochalcone study (`10.1038/s41598-025-98386-1`) was explicitly
+excluded from this expansion because bovine and porcine effects were negligible
+and the positive result was chicken-specific. This prevents a cross-species
+positive finding from being used to pad bovine coverage.
+
+## Changes Made
+
+- Added R045-R047 to the corpus manifest with bounded inclusion rationales and
+  unresolved review statuses.
+- Added H031-H033 to the human review queue for cell-line transferability,
+  albumin dose/source, donor variance, and formulation-disclosure checks.
+- Regenerated the Markdown Gate 1 report and row-level issue TSV.
+- Extended the audit with duplicate record-ID and normalized included-DOI
+  checks, plus a regression test, so repeated citations cannot pad coverage.
+- Updated README, both workflow manuals, the wet-lab-entry decision record,
+  corpus summary, and this session log.
+
+## Current Result
+
+All numerical and metadata checks now pass: 35 peer-reviewed sources, 18
+reviews, 17 primary papers, 13 bovine primary papers, 17 dose-bearing primary
+papers, and 8 serum-free bovine primary papers. Gate 1 remains `FAIL` because
+0/14 P1 core/core-context records are human verified. The review queue now has
+33 open tasks.
+
+## What This Does Not Claim
+
+- The three new papers have passed full-text human adjudication.
+- Immortalized iBSC results transfer directly to primary bovine cells.
+- R047 discloses an actionable serum-free formulation.
+- Numerical corpus coverage permits wet-lab entry or compensates for Gate 2.
+
+## Verification
+
+- Corpus audit tests: 3 passed, including deferred-row exclusion and duplicate
+  record-ID/DOI rejection.
+- `audit_bovine_corpus.py --require-pass` regenerated both reports and returned
+  1 because human curation remains incomplete.
+- Non-loopback suite: 97 passed, 2 skipped, 1 deselected. The deselection is the
+  known local HTTP/GROBID environment limitation.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+- TSV width/identifier checks, `git diff --check`, and the repository
+  secret-pattern scan passed.
+
+## Completion Impact
+
+Software infrastructure remains about 86%. Literature/evidence preparation
+rises conservatively from about 46% to 47% because the numerical and metadata
+portion of Gate 1 is now satisfied with verified records, but the gate remains
+failed. Wet-lab entry remains about 24%, and the complete workflow remains about
+29% because no human decision or scientific gate passed.
+
+## Next 3 Steps
+
+1. `[HUMAN]` Confirm the 14 P1 manifest decisions, using H031-H033 to preserve
+   the new evidence boundaries.
+2. `[AI]` Obtain lawful full text for R045 where available and prepare locators
+   for R045-R047 without assigning evidence decisions.
+3. `[HUMAN]` Complete the isolated 56-cell dual-review pilot; AI validates and
+   computes agreement only after both reviewer files are returned.

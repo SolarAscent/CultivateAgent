@@ -4,34 +4,36 @@ Status: **FAIL**
 
 Numerical coverage and metadata checks apply only to design-included
 manifest decisions; deferred records cannot satisfy corpus thresholds.
-P1 core records additionally require
+P1 core/core-context records additionally require
 explicit human curation status.
 
 ## Metrics
 
 | Metric | Value |
 |---|---:|
-| peer_reviewed_sources | 32 |
+| peer_reviewed_sources | 35 |
 | reviews | 18 |
-| primary_papers | 14 |
-| bovine_primary | 10 |
-| dose_primary | 14 |
-| serum_free_bovine_primary | 5 |
-| included_rows | 36 |
-| p1_core_rows | 11 |
+| primary_papers | 17 |
+| bovine_primary | 13 |
+| dose_primary | 17 |
+| serum_free_bovine_primary | 8 |
+| included_rows | 39 |
+| p1_core_rows | 14 |
 | p1_core_human_verified | 0 |
 
 ## Checks
 
 | Check | Result |
 |---|---|
-| peer_reviewed_range | FAIL |
+| peer_reviewed_range | PASS |
 | reviews_min | PASS |
 | primary_min | PASS |
 | bovine_primary_min | PASS |
 | dose_primary_min | PASS |
 | serum_free_bovine_primary_min | PASS |
 | included_metadata_complete | PASS |
+| unique_record_ids | PASS |
+| unique_included_dois | PASS |
 | p1_core_human_curated | FAIL |
 
 ## Issues
@@ -47,3 +49,6 @@ explicit human curation status.
 - `R023` [human_curation_pending]: fulltext_ingested_for_review_packet
 - `R024` [human_curation_pending]: needs_institutional_or_human_full_text
 - `R029` [human_curation_pending]: needs_full_text_check
+- `R045` [human_curation_pending]: needs_full_text_check
+- `R046` [human_curation_pending]: fulltext_available_needs_human_review
+- `R047` [human_curation_pending]: fulltext_available_needs_human_review

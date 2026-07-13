@@ -668,13 +668,16 @@ Gate：论文 claims 可追溯到证据和结果。
 ### 8.2 已完成的文献和计划工作
 
 - 第一阶段 wet-lab-facing target 已记录。
-- Bovine manifest v0 有 44 条记录。
-- 可执行 Gate 1 审计只统计设计纳入记录：32 篇同行评审来源、18 篇综述、14 篇
-  原始研究、10 篇 bovine primary、14 篇含剂量的 primary，以及 5 篇 bovine
-  serum-free primary。五项分类门槛和必需 metadata 均通过；但总数比 35 篇下限少
-  3 篇，且 11 条 P1 core 中 0 条具有明确 human-verified 状态，因此 Gate 1 仍为
-  `FAIL`。此前缺失的 4 个 DOI 均经 Crossref 和第二个书目或出版社来源核对后补齐。
-- Human review queue v0 有 30 个 open tasks。
+- Bovine manifest 有 47 条记录。
+- 可执行 Gate 1 审计只统计设计纳入记录：35 篇同行评审来源、18 篇综述、17 篇
+  原始研究、13 篇 bovine primary、17 篇含剂量的 primary，以及 8 篇 bovine
+  serum-free primary。六项数量门槛和必需 metadata 均通过；但 14 条 P1
+  core/core-context 中 0 条具有明确 human-verified 状态，因此 Gate 1 仍为
+  `FAIL`。
+- R045-R047 分别补充 microbial lysate 血清替代、Pichia 来源重组白蛋白，以及
+  无血清条件下 donor variance 的边界明确证据。题名和 DOI 均由 Crossref 加
+  PubMed 或出版社记录核对；它们均不视为已裁决证据。
+- Human review queue 有 33 个 open tasks。
 - AI-for-science 方法综述已存在。
 - DeepSeek compatibility route 与显式 `deepseek-v4-flash` 的 effect-extraction
   对比已记录在 `docs/MODEL_COMPARISON_DEEPSEEK.md`；结论是显式 v4-flash run
@@ -698,7 +701,7 @@ Gate：论文 claims 可追溯到证据和结果。
 
 | Gate | 当前结果 | 含义 |
 |---|---|---|
-| Corpus Gate 1 | `FAIL`；5/6 数量检查和 metadata 通过 | 纳入同行评审来源 32/35；P1 core 人工确认 0/11 |
+| Corpus Gate 1 | `FAIL`；6/6 数量检查和 metadata 通过 | 纳入同行评审来源 35/35；P1 core/core-context 人工确认 0/14 |
 | Proliferation evidence audit | `NO-GO` | 当前 extracted evidence 不能支持湿实验入口 |
 | Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 可跑 section-routed operators；H015-H016 需要 R024 |
 | Gate 2 关键字段覆盖 | `FAIL`：当前 committed live benchmark 为 0/17 applicable concept-paper cells | 返回了 paper IDs，但没有 B-M 关键内容；fixture gold 的 stage、medium type 不可评估 |
@@ -738,8 +741,8 @@ Gate：论文 claims 可追溯到证据和结果。
 
 ### 8.5 近期下一步
 
-1. `[HUMAN]` 确认或修正 11 条 P1 core 的 manifest decision；AI 可继续筛选至少
-   3 篇新的、不重复的纳入文献，且不能用 defer 记录充数。
+1. `[HUMAN]` 确认或修正 14 条 P1 core/core-context 的 manifest decision，特别
+   检查 R045 的 immortalized-cell 外推限制和 R047 的配方公开程度。
 2. `[HUMAN]` 用当前 locator packet 和 `data/literature/bovine_adjudication_H001_H014.tsv`
    复核 H001-H014。
 3. `[HUMAN]` 提供 R024 主文全文，或确认 R024 暂时 defer。

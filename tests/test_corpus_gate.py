@@ -95,3 +95,21 @@ def test_corpus_gate_exposes_numeric_metadata_and_human_failures(tmp_path):
     assert result.checks["p1_core_human_curated"] is False
     assert any(issue.category == "missing_metadata" for issue in result.issues)
     assert any(issue.category == "human_curation_pending" for issue in result.issues)
+
+
+def test_corpus_gate_rejects_duplicate_record_ids_and_included_dois(tmp_path):
+    from cultivate_agent.evaluate import audit_corpus_manifest
+
+    first = _row(1, source_type="primary")
+    second = _row(2, source_type="primary")
+    second["record_id"] = first["record_id"]
+    second["doi"] = first["doi"].upper()
+    manifest = tmp_path / "manifest.tsv"
+    _write(manifest, [first, second])
+
+    result = audit_corpus_manifest(manifest)
+
+    assert result.checks["unique_record_ids"] is False
+    assert result.checks["unique_included_dois"] is False
+    assert any(issue.category == "duplicate_record_id" for issue in result.issues)
+    assert any(issue.category == "duplicate_doi" for issue in result.issues)

@@ -714,16 +714,18 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 ### 8.2 Completed Literature And Planning Work
 
 - First wet-lab-facing target is documented.
-- Bovine manifest v0 contains 44 records.
-- The executable Gate 1 audit counts only design-included records: 32
-  peer-reviewed records, 18 reviews, 14 primary papers, 10 bovine primary
-  papers, 14 dose-bearing primary papers, and 5 serum-free bovine primary
-  papers. Five category thresholds and required metadata pass. Gate 1 remains
-  `FAIL` because the corpus is three papers below the 35-source minimum and 0/11
-  P1 core records have an explicit human-verified status. Four previously
-  missing DOI values were verified against Crossref and a second bibliographic
-  or publisher source before being added.
-- Human review queue v0 contains 30 open tasks.
+- Bovine manifest contains 47 records.
+- The executable Gate 1 audit counts only design-included records: 35
+  peer-reviewed records, 18 reviews, 17 primary papers, 13 bovine primary
+  papers, 17 dose-bearing primary papers, and 8 serum-free bovine primary
+  papers. All six numerical thresholds and required metadata pass. Gate 1
+  remains `FAIL` because 0/14 P1 core/core-context records have an explicit
+  human-verified status.
+- R045-R047 add directly bounded evidence on microbial lysate serum replacement,
+  Pichia-derived recombinant albumin, and donor variance under serum-free
+  culture. Titles and DOI metadata were checked against Crossref plus PubMed or
+  publisher records; none is treated as adjudicated evidence.
+- Human review queue contains 33 open tasks.
 - AI-for-science method review exists.
 - DeepSeek compatibility-route vs explicit v4-flash effect-extraction
   comparison exists in `docs/MODEL_COMPARISON_DEEPSEEK.md`; it found the
@@ -749,7 +751,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 | Gate | Current result | Meaning |
 |---|---|---|
-| Corpus Gate 1 | `FAIL`; 5/6 numerical checks and metadata pass | 32/35 included peer-reviewed sources; 0/11 P1 core rows are human verified |
+| Corpus Gate 1 | `FAIL`; 6/6 numerical checks and metadata pass | 35/35 included peer-reviewed sources; 0/14 P1 core/core-context rows are human verified |
 | Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
 | Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 are ready for section-routed operators; H015-H016 need R024 |
 | Gate 2 critical-field coverage | `FAIL`: 0/17 applicable concept-paper cells in the committed live benchmark | Paper IDs were returned, but no B-M critical content was extracted; stage and medium type fixture gold are not evaluable |
@@ -796,8 +798,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 ### 8.5 Immediate Next Actions
 
-1. `[HUMAN]` Confirm or correct the 11 P1 core manifest decisions; AI can add at
-   least three newly screened, non-duplicate sources without counting deferrals.
+1. `[HUMAN]` Confirm or correct the 14 P1 core/core-context manifest decisions,
+   including the cell-line limit for R045 and formulation availability for R047.
 2. `[HUMAN]` Adjudicate H001-H014 using the current
    locator packet and `data/literature/bovine_adjudication_H001_H014.tsv`.
 3. `[HUMAN]` Provide R024 main full text, or confirm it should remain deferred.

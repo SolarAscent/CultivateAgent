@@ -48,9 +48,9 @@ First wet-lab-facing target:
 
 ## Manifest Summary
 
-The v0 manifest contains 44 records:
+The manifest contains 47 records:
 
-- 10 core records and 1 core-context record relevant to the first bovine
+- 11 core records and 3 core-context records relevant to the first bovine
   expansion-medium scope.
 - 21 context records covering reviews, safety, cost, systems biology, or
   optimization methods.
@@ -76,10 +76,17 @@ The highest-priority direct wet-lab sources are:
   composition.
 - Amirvaresi et al. 2025, plant/insect protein isolate alternatives for bovine
   satellite-cell serum-free media.
+- Dolgin et al. 2025, microbial lysate replacement for serum-free long-term
+  expansion of immortalized bovine satellite cells; transfer to primary cells
+  remains unverified.
+- Kim et al. 2025, Pichia-derived bovine recombinant albumin for primary bMuSC
+  proliferation and differentiation retention.
+- Skrivergaard et al. 2023, donor-dependent bovine satellite-cell performance
+  under an in-house serum-free medium versus 10% FBS.
 
 ## Human Review Queue
 
-The human review queue contains 30 open review tasks. It is intentionally
+The human review queue contains 33 open review tasks. It is intentionally
 smaller than the manifest: it focuses on decision-critical evidence that could
 change the first wet-lab batch.
 
@@ -97,19 +104,18 @@ Top review topics:
 
 ## Current Gate Status
 
-Gate 1, corpus coverage: **FAIL for the current executable audit; partially met
-for manifest v0, not yet passed for wet-lab entry**.
+Gate 1, corpus coverage: **FAIL for the current executable audit; numerical,
+metadata, and identifier-integrity checks pass, but human curation does not**.
 
 Run `python scripts/audit_bovine_corpus.py --require-pass`. The generated
 [`BOVINE_CORPUS_GATE1_AUDIT.md`](BOVINE_CORPUS_GATE1_AUDIT.md) and
 `data/literature/bovine_corpus_gate1_issues.tsv` currently show:
 
-- 32 design-included peer-reviewed records, 18 reviews, 14 primary papers, 10
-  bovine primary papers, 14 dose-bearing primary papers, and 5 serum-free
-  bovine primary papers; all category minima pass, but total coverage is 3 below
-  the 35-source minimum;
+- 35 design-included peer-reviewed records, 18 reviews, 17 primary papers, 13
+  bovine primary papers, 17 dose-bearing primary papers, and 8 serum-free
+  bovine primary papers; all six numerical thresholds pass;
 - required included-record metadata passes after DOI repair; and
-- 0/11 P1 core rows have an explicit human-verified status.
+- 0/14 P1 core/core-context rows have an explicit human-verified status.
 
 The audit deliberately prevents numerical coverage from being mistaken for a
 curated, approved corpus.
@@ -125,6 +131,23 @@ and CiNii/Crossref (`10.1016/j.animal.2024.101242`), `R037` uses
 [PubMed](https://pubmed.ncbi.nlm.nih.gov/37306528/) and Crossref/Wiley
 (`10.1111/1541-4337.13193`).
 
+The three coverage additions were also title- and DOI-matched against Crossref
+and independent records:
+
+- R045: [PubMed](https://pubmed.ncbi.nlm.nih.gov/39849780/) and
+  [Elsevier](https://www.sciencedirect.com/science/article/pii/S0963996924017046),
+  DOI `10.1016/j.foodres.2024.115633`.
+- R046: [PubMed](https://pubmed.ncbi.nlm.nih.gov/40837224/),
+  [Elsevier](https://www.sciencedirect.com/science/article/pii/S2589004225015032),
+  and Europe PMC full-text XML, DOI `10.1016/j.isci.2025.113242`.
+- R047: [PubMed](https://pubmed.ncbi.nlm.nih.gov/37803537/) and the
+  [Aarhus University manuscript](https://pure.au.dk/ws/files/358533912/1-s2.0-S0963996923007627-main.pdf),
+  DOI `10.1016/j.foodres.2023.113217`.
+
+The Glycyrrhiza/licochalcone paper (`10.1038/s41598-025-98386-1`) was screened
+but not added: its bovine and porcine effects were negligible and its positive
+result was chicken-specific, so it does not close a bovine medium evidence gap.
+
 - The manifest has more than 35 candidate records.
 - It includes more than 8 review/context papers.
 - It includes more than 12 primary culture/media/process papers.
@@ -137,7 +160,7 @@ and CiNii/Crossref (`10.1016/j.animal.2024.101242`), `R037` uses
 Why this is still not a pass:
 
 - Several records are not yet full-text extracted.
-- Some DOI and quantitative fields need confirmation from full text.
+- Quantitative fields and source applicability still need full-text confirmation.
 - Background gray literature must not count as peer-reviewed wet-lab evidence.
 - Human review is still open for all top evidence tasks.
 

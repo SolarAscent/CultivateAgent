@@ -63,6 +63,14 @@ def audit_corpus_manifest(path: Path) -> CorpusGateResult:
         if row.get("priority") == "P1" and row.get("decision") in {"core", "core_context"}
     ]
     issues: List[CorpusIssue] = []
+    for record_id in _duplicate_values(rows, "record_id"):
+        issues.append(CorpusIssue(record_id, "duplicate_record_id", record_id))
+    for doi in _duplicate_values(included, "doi", ignored={"none", "unknown", "na", "nr"}):
+        duplicate_ids = ", ".join(
+            row.get("record_id", "") for row in included
+            if (row.get("doi") or "").strip().lower() == doi
+        )
+        issues.append(CorpusIssue(duplicate_ids, "duplicate_doi", doi))
     for row in included:
         missing = [field for field in REQUIRED_INCLUDED_FIELDS if _missing(row.get(field))]
         if missing:
@@ -103,6 +111,8 @@ def audit_corpus_manifest(path: Path) -> CorpusGateResult:
             >= THRESHOLDS["serum_free_bovine_primary_min"]
         ),
         "included_metadata_complete": not any(i.category == "missing_metadata" for i in issues),
+        "unique_record_ids": not any(i.category == "duplicate_record_id" for i in issues),
+        "unique_included_dois": not any(i.category == "duplicate_doi" for i in issues),
         "p1_core_human_curated": metrics["p1_core_human_verified"] == metrics["p1_core_rows"],
     }
     return CorpusGateResult(rows=len(rows), metrics=metrics, checks=checks, issues=issues)
@@ -116,6 +126,18 @@ def _missing(value: object) -> bool:
     return str(value or "").strip().lower() in {"", "unknown", "nr", "na", "unc"}
 
 
+def _duplicate_values(
+    rows: Sequence[Dict[str, str]], field: str, *, ignored: set[str] | None = None
+) -> List[str]:
+    ignored = ignored or set()
+    counts: Dict[str, int] = {}
+    for row in rows:
+        value = (row.get(field) or "").strip().lower()
+        if value and value not in ignored:
+            counts[value] = counts.get(value, 0) + 1
+    return sorted(value for value, count in counts.items() if count > 1)
+
+
 def corpus_gate_markdown(result: CorpusGateResult) -> str:
     lines = [
         "# Bovine Corpus Gate 1 Audit",
@@ -124,7 +146,7 @@ def corpus_gate_markdown(result: CorpusGateResult) -> str:
         "",
         "Numerical coverage and metadata checks apply only to design-included",
         "manifest decisions; deferred records cannot satisfy corpus thresholds.",
-        "P1 core records additionally require",
+        "P1 core/core-context records additionally require",
         "explicit human curation status.",
         "",
         "## Metrics",

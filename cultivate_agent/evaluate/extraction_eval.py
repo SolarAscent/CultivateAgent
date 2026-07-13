@@ -123,6 +123,7 @@ class EvalReport:
     unverified_evidence_field_cells: int = 0
     critical_expected_cells: Dict[str, int] = field(default_factory=dict)
     critical_predicted_cells: Dict[str, int] = field(default_factory=dict)
+    critical_direct_predicted_cells: Dict[str, int] = field(default_factory=dict)
 
     def overall(self) -> Dict[str, float]:
         tp = sum(s.tp for s in self.per_field.values())
@@ -173,8 +174,11 @@ class EvalReport:
         for concept, spec in DECISION_CRITICAL_FIELD_GROUPS.items():
             expected = self.critical_expected_cells.get(concept, 0)
             predicted = self.critical_predicted_cells.get(concept, 0)
+            direct_predicted = self.critical_direct_predicted_cells.get(concept, 0)
             rate = round(predicted / expected, 4) if expected else None
             basis = str(spec["basis"])
+            if concept == "dose_range" and expected and direct_predicted == expected:
+                basis = "direct_operator"
             if basis == "proxy" and expected:
                 proxy_evaluated = True
             status = "NOT_EVALUABLE" if rate is None else ("PASS" if rate >= threshold else "FAIL")
@@ -183,6 +187,7 @@ class EvalReport:
                 "basis": basis,
                 "expected": expected,
                 "predicted": predicted,
+                "direct_predicted": direct_predicted,
                 "nonmissing_fraction": rate,
                 "status": status,
             })
@@ -238,8 +243,18 @@ def evaluate_extraction(pred: PaperExtraction, gold: PaperExtraction, report: Op
         if not gold_present:
             continue
         report.critical_expected_cells[concept] = report.critical_expected_cells.get(concept, 0) + 1
-        if any(_to_set(pred_fields.get(path)) for path in paths):
+        direct_present = concept != "dose_range" or _has_grounded_dose_record(pred)
+        predicted_present = direct_present if concept == "dose_range" else any(
+            _to_set(pred_fields.get(path)) for path in paths
+        )
+        if concept == "dose_range" and not predicted_present:
+            predicted_present = any(_to_set(pred_fields.get(path)) for path in paths)
+        if predicted_present:
             report.critical_predicted_cells[concept] = report.critical_predicted_cells.get(concept, 0) + 1
+        if predicted_present and direct_present:
+            report.critical_direct_predicted_cells[concept] = (
+                report.critical_direct_predicted_cells.get(concept, 0) + 1
+            )
     for key, gold_val in gold_fields.items():
         gset = _to_set(gold_val)
         pset = _to_set(pred_fields.get(key))
@@ -308,3 +323,8 @@ def _unique_by_paper_id(
         duplicate_list = ", ".join(sorted(duplicates))
         raise ValueError(f"duplicate {label} paper_id(s): {duplicate_list}")
     return by_id
+
+
+def _has_grounded_dose_record(extraction: PaperExtraction) -> bool:
+    records = (extraction.extraction_meta or {}).get("dose_records") or []
+    return any(isinstance(record, dict) and record.get("grounded") is True for record in records)

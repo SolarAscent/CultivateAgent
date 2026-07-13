@@ -231,7 +231,10 @@ separates paper-ID coverage, gold-field presence, B-M substantive-field count,
 evidence attachment, and grounding; none of these metrics substitutes for the
 others. It also applies the pre-wet-lab Gate 2 threshold to each predefined
 decision-critical concept. Pooled coverage cannot hide a failed concept, and
-the A-M `dose_range` proxy cannot produce final approval.
+the A-M `dose_range` proxy cannot produce final approval. Operator-mode dose
+extraction can additionally emit grounded component-dose records linking one
+component, dose/range, unit, comparison group, endpoint, and same-quote
+evidence; only locally verified records count as direct Gate 2 dose coverage.
 
 ---
 

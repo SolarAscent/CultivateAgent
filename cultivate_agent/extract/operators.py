@@ -18,10 +18,13 @@ instead of a single opaque low score.
 
 from __future__ import annotations
 
+import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple, Union
+
+from pydantic import BaseModel, Field
 
 from ..llm.base import LLMClient, LLMError, extract_json
 from ..schema.evidence import Confidence, Evidence
@@ -36,6 +39,18 @@ class ExtractionOperator:
     fields: List[str]                 # "<LETTER>.<field>", disjoint across operators
     section_hints: List[str]          # section-title substrings to route context
     guidance: str = ""                # short operator-specific heuristic
+
+
+class ComponentDoseRecord(BaseModel):
+    """A component-dose relation supported by one verbatim source quote."""
+
+    component: str
+    dose_or_range: str
+    unit: Optional[str] = None
+    comparison_group: Optional[str] = None
+    endpoint: Optional[str] = None
+    evidence: Evidence
+    grounded: bool = Field(False, description="Set only by local quote verification.")
 
 
 # Field ownership is DISJOINT so operators never conflict on merge.
@@ -103,6 +118,25 @@ _OP_SYSTEM = (
 
 def build_operator_prompt(op: ExtractionOperator, ref: PaperRef, text: str) -> str:
     field_lines = "\n".join(_field_line(k) for k in op.fields)
+    dose_shape = ""
+    dose_instruction = ""
+    if op.name == "dose":
+        dose_shape = """,
+  "dose_records": [
+    {
+      "component": "<component exactly as reported>",
+      "dose_or_range": "<number/range plus unit exactly as reported>",
+      "unit": "<unit or null>",
+      "comparison_group": "<group or null>",
+      "endpoint": "<measured endpoint or null>",
+      "evidence": {"quote": "<one verbatim quote containing component and dose>", "location": "<section>", "confidence": "low|medium|high"}
+    }
+  ]
+"""
+        dose_instruction = (
+            "Only emit a dose_record when the SAME quote explicitly contains both the "
+            "component and its dose/range. Do not pair values across separate passages."
+        )
     return f"""PAPER: {ref.title or ref.paper_id}
 
 Operator: {op.name}. {op.guidance}
@@ -113,8 +147,10 @@ Extract ONLY these fields (nothing else):
 Return STRICT JSON in exactly this shape:
 {{
   "fields": {{ "<LETTER>.<field>": <value or "NR">, ... }},
-  "evidence": {{ "<LETTER>.<field>": {{"quote": "<verbatim>", "location": "<section>", "confidence": "low|medium|high"}}, ... }}
+  "evidence": {{ "<LETTER>.<field>": {{"quote": "<verbatim>", "location": "<section>", "confidence": "low|medium|high"}}, ... }}{dose_shape}
 }}
+
+{dose_instruction}
 
 TEXT:
 '''{text}'''
@@ -153,6 +189,7 @@ class OperatorResult:
     n_requested: int = 0
     n_filled: int = 0
     n_grounded: int = 0
+    dose_records: List[ComponentDoseRecord] = field(default_factory=list)
     error: Optional[str] = None
 
     @property
@@ -166,6 +203,25 @@ class OperatorResult:
 
 def _is_null(v) -> bool:
     return v is None or (isinstance(v, str) and v.strip() in {"", "NR", "NA", "UNC"})
+
+
+def _normalized_span(value: str) -> str:
+    return " ".join((value or "").lower().split())
+
+
+def _dose_record_supported(record: ComponentDoseRecord, source: str) -> bool:
+    quote = _normalized_span(record.evidence.quote)
+    component = _normalized_span(record.component)
+    dose = _normalized_span(record.dose_or_range)
+    if not component or not dose or not re.search(r"\d", dose):
+        return False
+    if component not in quote or dose not in quote:
+        return False
+    if record.unit:
+        unit = _normalized_span(record.unit)
+        if unit and unit not in quote and unit not in dose:
+            return False
+    return record.evidence.verify_against(source)
 
 
 def run_operator(client: LLMClient, op: ExtractionOperator, ref: PaperRef,
@@ -211,6 +267,32 @@ def run_operator(client: LLMClient, op: ExtractionOperator, ref: PaperRef,
                 res.n_grounded += 1
             res.evidence[key] = evobj
 
+    if op.name == "dose" and isinstance(payload, dict):
+        raw_records = payload.get("dose_records") or []
+        if isinstance(raw_records, list):
+            for raw_record in raw_records:
+                if not isinstance(raw_record, dict):
+                    continue
+                try:
+                    record = ComponentDoseRecord.model_validate(raw_record)
+                except Exception:  # noqa: BLE001
+                    continue
+                record.grounded = (
+                    _dose_record_supported(record, source_for_verify)
+                    if verify_evidence else False
+                )
+                if not record.grounded:
+                    record.evidence.confidence = Confidence.low
+                    reason = (
+                        "component-dose relation not supported by quote"
+                        if verify_evidence else "component-dose verification disabled"
+                    )
+                    record.evidence.location = (
+                        (record.evidence.location or "")
+                        + f" [UNVERIFIED: {reason}]"
+                    )
+                res.dose_records.append(record)
+
     if res.n_filled == 0:
         res.status = "empty"
     return res
@@ -251,6 +333,7 @@ class OperatorExtractor:
         per_block: Dict[str, dict] = defaultdict(dict)
         op_meta: List[dict] = []
         total_filled = total_grounded = 0
+        dose_records: List[dict] = []
 
         for op in self.operators:
             r = run_operator(self.client, op, ref, paper, max_chars=self.max_chars,
@@ -261,9 +344,13 @@ class OperatorExtractor:
             ext.evidence.update(r.evidence)
             total_filled += r.n_filled
             total_grounded += r.n_grounded
+            dose_records.extend(record.model_dump(mode="json") for record in r.dose_records)
             op_meta.append({"operator": r.name, "status": r.status, "coverage": r.coverage,
                             "grounding": r.grounding, "n_filled": r.n_filled,
-                            "n_requested": r.n_requested, "error": r.error})
+                            "n_requested": r.n_requested,
+                            "dose_records": len(r.dose_records),
+                            "grounded_dose_records": sum(x.grounded for x in r.dose_records),
+                            "error": r.error})
 
         # Merge operator field values into their blocks (validators normalize vocab).
         for letter, vals in per_block.items():
@@ -275,6 +362,7 @@ class OperatorExtractor:
             "mode": "operators",
             "source": paper.source,
             "operators": op_meta,
+            "dose_records": dose_records,
             "n_filled": total_filled,
             "grounding_rate": round(total_grounded / total_filled, 3) if total_filled else None,
             "extracted_at": datetime.now(timezone.utc).isoformat(),

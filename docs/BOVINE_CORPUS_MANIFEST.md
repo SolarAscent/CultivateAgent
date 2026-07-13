@@ -162,6 +162,10 @@ Gate 2, extraction reliability: **not passed**.
   applicable concept-paper cells and remains `FAIL`; stage and medium type are
   absent from the fixture gold and explicitly `NOT_EVALUABLE`. The A-M
   `dose_range` mapping is a proxy and cannot approve wet-lab entry.
+- Future operator runs may replace that proxy per paper with a grounded
+  component-dose record. The record keeps component, dose/range, unit,
+  comparison group, endpoint, and one quote together; no current committed live
+  extraction contains such a reviewed record, so Gate 2 remains `FAIL`.
 
 Gate 3, biological plausibility: **not passed**.
 

@@ -46,19 +46,22 @@ Evaluated provider profile: `openai:gpt-5.4`
 
 ## Decision-Critical Coverage
 
-| concept | basis | expected | predicted | nonmissing_fraction | status |
-| --- | --- | --- | --- | --- | --- |
-| species | direct | 4 | 0 | 0.0 | FAIL |
-| cell_type | direct | 3 | 0 | 0.0 | FAIL |
-| stage | direct | 0 | 0 | None | NOT_EVALUABLE |
-| medium_type | direct | 0 | 0 | None | NOT_EVALUABLE |
-| serum_free_status | direct | 4 | 0 | 0.0 | FAIL |
-| component_identity | direct | 2 | 0 | 0.0 | FAIL |
-| dose_range | proxy | 2 | 0 | 0.0 | FAIL |
-| endpoint | direct | 2 | 0 | 0.0 | FAIL |
+| concept | basis | expected | predicted | direct_predicted | nonmissing_fraction | status |
+| --- | --- | --- | --- | --- | --- | --- |
+| species | direct | 4 | 0 | 0 | 0.0 | FAIL |
+| cell_type | direct | 3 | 0 | 0 | 0.0 | FAIL |
+| stage | direct | 0 | 0 | 0 | None | NOT_EVALUABLE |
+| medium_type | direct | 0 | 0 | 0 | None | NOT_EVALUABLE |
+| serum_free_status | direct | 4 | 0 | 0 | 0.0 | FAIL |
+| component_identity | direct | 2 | 0 | 0 | 0.0 | FAIL |
+| dose_range | proxy | 2 | 0 | 0 | 0.0 | FAIL |
+| endpoint | direct | 2 | 0 | 0 | 0.0 | FAIL |
 
 `dose_range` is an A-M proxy over quantitative fields. Even when all rows pass,
 a `PROVISIONAL_ONLY` result still requires dedicated dose extraction and review.
+When every applicable paper instead has at least one locally grounded operator
+`dose_record`, the row basis becomes `direct_operator`; unverified records never
+contribute to `direct_predicted`.
 
 ## Corpus
 

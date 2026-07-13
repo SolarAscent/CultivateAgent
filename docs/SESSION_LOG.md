@@ -2587,3 +2587,93 @@ adjudicated, and no scientific gate passed.
    scientific decisions.
 3. Run H014 live operator extraction only after provider credentials are valid,
    and require all Gate 2 metrics before scaling.
+
+---
+
+# Session 35 (Codex) — grounded component-dose operator records
+
+Date: 2026-07-13
+Branch: `codex/operator-dose-records`
+
+## Start-State Assessment
+
+The session began at approximately 74% software infrastructure, 43%
+literature/evidence work, 24% wet-lab-entry readiness, and 29% for the complete
+workflow through paper results (reasonable range 25-33%). The previous Gate 2
+implementation exposed `dose_range` as the sole A-M proxy. No real benchmark,
+human adjudication, wet-lab gate, or result-analysis gate had passed.
+
+The highest-value non-human task was therefore to make the existing dedicated
+dose operator emit auditable component-dose relations. This removes a technical
+precondition for a future direct Gate 2 decision without fabricating evidence or
+cross-pairing independent lists.
+
+## Decision And Method Basis
+
+The implementation follows the already registered DocETL-style method decision:
+keep document extraction modular, schema-bound, and independently verifiable.
+It also follows Cochrane Chapter 5's requirement to keep intervention, outcome,
+group, and numerical result data explicit rather than relying on ambiguous
+summaries.
+
+Adopted rules:
+
+- A dose record links component, dose/range, optional unit, comparison group,
+  endpoint, and one evidence object.
+- One quote must contain both the reported component string and reported numeric
+  dose/range. A separately supplied unit must occur in the quote or dose string.
+- The quote must verify against the local source text.
+- If evidence verification is disabled, a dose record remains ungrounded and
+  cannot count as direct coverage.
+- Invalid records remain visible as `grounded=false` with an `UNVERIFIED`
+  locator, but cannot count as direct Gate 2 coverage.
+- Flat J-block fields remain backward compatible and remain proxy evidence.
+- Direct operator coverage does not replace S4 human numeric adjudication.
+
+## Changes Made
+
+- Added typed `ComponentDoseRecord` support to the dose operator.
+- Extended the dose prompt with an optional relation-level output schema and an
+  explicit same-quote rule.
+- Added local component, numeric-dose, unit, and full-text verification.
+- Stored all records and grounded counts in extraction metadata.
+- Extended Gate 2 reporting with `direct_predicted`; complete grounded records
+  can change dose basis from `proxy` to `direct_operator`.
+- Added positive, mismatched-component, verification-disabled, and Gate-upgrade
+  tests.
+- Updated README, both workflow manuals, wet-lab decision record, evidence and
+  method reviews, bovine manifest, evaluation report, and this session log.
+
+## What This Does Not Claim
+
+- No current live extraction has produced a reviewed direct dose record.
+- String verification does not prove biological interpretation or group mapping.
+- A direct technical Gate result still requires grounding, agreement or human
+  adjudication, and all other wet-lab gates.
+- Literature doses remain priors/search-space evidence, never BO labels.
+
+## Verification
+
+- Focused operator/Gate tests: 4 passed.
+- Non-loopback suite:
+  `.venv/bin/python -m pytest -q -k 'not test_grobid_client_writes_and_parses_tei'`:
+  73 passed, 2 skipped, 1 deselected. The deselection is the known local-HTTP
+  managed-environment limitation.
+- Offline evaluation report generation passed.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+
+## Completion Impact
+
+Software infrastructure rises conservatively from about 74% to about 75% after
+verification. Literature/evidence remains about 43%, wet-lab-entry readiness
+remains about 24%, and the full workflow remains about 29%, because no real
+extraction or scientific gate passed.
+
+## Next 3 Steps
+
+1. Add direct stage and medium-type operator coverage so the current fixture and
+   future pilots can evaluate all eight Gate 2 concepts without missing gold.
+2. Human reviewer completes H001-H014; AI validates and exports the worksheet.
+3. Run H014 live operator extraction after provider credentials are valid and
+   inspect direct dose records before any scale-up.

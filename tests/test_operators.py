@@ -28,8 +28,27 @@ def _handler(msgs):
                            "evidence": {"E.basal_medium": {"quote": "Basal medium was DMEM/F12",
                                                            "location": "Methods", "confidence": "high"}}})
     if "Operator: dose" in u:
-        return json.dumps({"fields": {"J.has_extractable_quant_data": "yes"},
-                           "evidence": {}})
+        return json.dumps({
+            "fields": {
+                "J.has_extractable_quant_data": "yes",
+                "J.extractable_variables": ["FGF2 concentration"],
+                "J.key_numeric_results": ["FGF2 at 20 ng/mL"],
+                "J.units_reported": ["ng/mL"],
+            },
+            "evidence": {},
+            "dose_records": [{
+                "component": "FGF2",
+                "dose_or_range": "20 ng/mL",
+                "unit": "ng/mL",
+                "comparison_group": None,
+                "endpoint": "proliferation",
+                "evidence": {
+                    "quote": "FGF2 at 20 ng/mL",
+                    "location": "Methods",
+                    "confidence": "high",
+                },
+            }],
+        })
     if "Operator: endpoints" in u:
         return json.dumps({"fields": {"I.proliferation_metrics": ["cell counting", "doubling time"]},
                            "evidence": {}})
@@ -67,6 +86,10 @@ def test_operator_extractor_merges_and_grounds():
     assert meta["mode"] == "operators"
     assert len(meta["operators"]) == 5
     assert all(o["status"] == "ok" for o in meta["operators"])
+    assert len(meta["dose_records"]) == 1
+    assert meta["dose_records"][0]["grounded"] is True
+    dose_meta = next(o for o in meta["operators"] if o["operator"] == "dose")
+    assert dose_meta["grounded_dose_records"] == 1
     # grounded evidence (verified quotes) present
     assert "E.basal_medium" in ext.evidence
     assert "B.species" in ext.evidence
@@ -112,6 +135,52 @@ def test_operator_flags_unverified_quote():
     ext = OperatorExtractor(client).extract(PaperRef(paper_id="p3", title="t"), TEXT)
     ev = ext.evidence["E.serum_free_status"]
     assert "UNVERIFIED" in (ev.location or "")
+
+
+def test_operator_rejects_unsupported_component_dose_relation():
+    from cultivate_agent.extract import OperatorExtractor
+    from cultivate_agent.llm import get_client
+    from cultivate_agent.schema.paper import PaperRef
+
+    def handler(msgs):
+        if "Operator: dose" in msgs[-1].content:
+            return json.dumps({
+                "fields": {"J.key_numeric_results": ["IGF-1 at 20 ng/mL"]},
+                "evidence": {},
+                "dose_records": [{
+                    "component": "IGF-1",
+                    "dose_or_range": "20 ng/mL",
+                    "unit": "ng/mL",
+                    "evidence": {
+                        "quote": "FGF2 at 20 ng/mL",
+                        "location": "Methods",
+                        "confidence": "high",
+                    },
+                }],
+            })
+        return _handler(msgs)
+
+    ext = OperatorExtractor(get_client("mock", "m", handler=handler)).extract(
+        PaperRef(paper_id="p-dose", title="t"), TEXT
+    )
+
+    record = ext.extraction_meta["dose_records"][0]
+    assert record["grounded"] is False
+    assert "UNVERIFIED" in (record["evidence"]["location"] or "")
+
+
+def test_operator_dose_relation_is_not_direct_when_verification_disabled():
+    from cultivate_agent.extract import OperatorExtractor
+    from cultivate_agent.llm import get_client
+    from cultivate_agent.schema.paper import PaperRef
+
+    ext = OperatorExtractor(
+        get_client("mock", "m", handler=_handler), verify_evidence=False
+    ).extract(PaperRef(paper_id="p-no-verify", title="t"), TEXT)
+
+    record = ext.extraction_meta["dose_records"][0]
+    assert record["grounded"] is False
+    assert "verification disabled" in record["evidence"]["location"]
 
 
 def test_extraction_readiness_reports_operator_context(tmp_path):

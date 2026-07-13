@@ -304,6 +304,10 @@ Checklist:
   non-missing threshold. Do not let pooled coverage offset a failed concept;
   keep A-M `dose_range` results provisional until dedicated dose extraction is
   reviewed.
+- [x] `[AI]` In operator mode, emit component-dose records only when one
+  verified quote contains both the component and dose/range. Preserve unit,
+  comparison group, and endpoint; unverified relations cannot count as direct
+  Gate 2 dose coverage.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,

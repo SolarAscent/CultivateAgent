@@ -288,6 +288,9 @@ Checklist：
 - [x] `[AI]` 按 0.75 non-missing 阈值分别评估八个 Gate 2 概念；总体覆盖率
   不能抵消某个概念失败，A-M `dose_range` 结果在专用 dose extraction 经复核前
   只能是 provisional。
+- [x] `[AI]` operator mode 仅在同一条 verified quote 同时出现 component 和
+  dose/range 时生成 component-dose record；保留 unit、comparison group、endpoint，
+  未验证关系不能算 Gate 2 direct dose coverage。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、

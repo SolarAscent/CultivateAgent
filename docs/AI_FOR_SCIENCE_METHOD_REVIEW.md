@@ -211,6 +211,11 @@ Project implication:
 - Wet-lab entry requires documentation of the AI provider/model/mode, human
   review coverage, unresolved conflicts, and whether evidence is quantitative
   or direction-only.
+- Following the existing DocETL-style operator decomposition, the dose operator
+  now emits optional component-dose relations rather than asking downstream
+  code to zip independent component and number lists. The relation is direct
+  only when a single verified quote supports both fields; otherwise it remains
+  explicitly unverified and cannot upgrade Gate 2.
 
 ## 3. Adopted Algorithm Roadmap
 

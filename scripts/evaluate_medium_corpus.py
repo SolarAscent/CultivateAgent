@@ -554,7 +554,7 @@ def write_reports(
         + "\n\n## Decision-Critical Coverage\n\n"
         + markdown_table(
             critical["rows"],
-            ["concept", "basis", "expected", "predicted", "nonmissing_fraction", "status"],
+            ["concept", "basis", "expected", "predicted", "direct_predicted", "nonmissing_fraction", "status"],
         )
         + "\n\n`dose_range` is an A-M proxy over quantitative fields. Even when all rows pass, "
         "a `PROVISIONAL_ONLY` result still requires dedicated dose extraction and review.\n"

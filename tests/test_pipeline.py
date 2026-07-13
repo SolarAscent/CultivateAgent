@@ -745,6 +745,13 @@ def test_extraction_eval_decision_critical_gate_is_conservative():
     assert complete_gate["gate_status"] == "PROVISIONAL_ONLY"
     assert next(r for r in complete_gate["rows"] if r["concept"] == "dose_range")["basis"] == "proxy"
 
+    complete.extraction_meta = {"dose_records": [{"grounded": True}]}
+    direct_gate = evaluate_corpus([complete], [gold]).critical_coverage()
+    dose_row = next(r for r in direct_gate["rows"] if r["concept"] == "dose_range")
+    assert dose_row["basis"] == "direct_operator"
+    assert dose_row["direct_predicted"] == 1
+    assert direct_gate["gate_status"] == "PASS"
+
     sparse = PaperExtraction(paper_id="p")
     sparse.fast_triage = FastTriage(species=["bovine"])
     sparse_gate = evaluate_corpus([sparse], [gold]).critical_coverage()

@@ -88,6 +88,15 @@ The current S4 worksheet separates this review into `numeric_effect_status`,
 so a directionally supported row is not automatically a thesis-ready
 quantitative effect.
 
+Operator-mode extraction also keeps component-dose relations separate from
+effect sizes. Its optional `dose_records` attach one reported component to one
+dose/range, unit, comparison group, endpoint, and same-passage evidence quote.
+The local verifier requires the quote to contain both the component string and
+numeric dose/range (plus the separate unit when supplied). These records can
+replace the A-M dose proxy for Gate 2 coverage, but they remain candidate
+extractions until S4 human numeric review and are never treated as outcome
+effects or BO labels.
+
 ## Relation to prior art
 
 The closest prior work — **Cai et al. 2023**, "Multi-objective Bayesian algorithm

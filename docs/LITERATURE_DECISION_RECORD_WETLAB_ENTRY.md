@@ -149,6 +149,14 @@ human review confirm it. Missing gold coverage yields `NOT_EVALUABLE`, not a
 pass. This follows Cochrane Handbook Chapter 5 guidance to predefine and pilot
 distinct data items and expose missing decision-critical outcome information.
 
+The operator path now emits an optional direct component-dose record. A record
+counts as direct coverage only when one locally verified quote contains both the
+reported component string and the reported numeric dose/range, with unit checks
+when a separate unit is supplied. Comparison group and endpoint remain attached
+to that relation. Flat J-block lists remain a proxy; unverified or cross-passage
+pairings cannot upgrade Gate 2. Human numeric adjudication is still required for
+thesis use.
+
 ### Gate 3: Biological Plausibility
 
 Every proposed medium variable must be assigned one mechanism class:

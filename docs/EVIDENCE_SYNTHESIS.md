@@ -87,6 +87,16 @@ Composition percentages are also excluded: a percentage followed by a reagent
 or medium term is treated as concentration, and a percentage effect requires
 explicit increase/decrease/change language. For `N +/- M-fold`, N is the point
 estimate and M is the error term, not a second effect magnitude.
+Structured JATS tables use a stricter boundary. The LLM-facing
+`TableEffectPointers` schema contains semantic roles and cell IDs but no numeric
+fields. `numeric_effect_from_table_pointers()` verifies the table ID and source
+hash, reads each pointed-to source cell deterministically, converts SEM to SD
+only after resolving sample size, and calls the shared ROM implementation.
+Missing cells, incomplete statistics, stale hashes, ambiguous numeric prose, or
+model-returned extra fields fail closed. This removes numeric transcription
+hallucination but does not make treatment/control role labeling trustworthy;
+that semantic step remains subject to repeated-run gold evaluation and human
+numeric review.
 The current S4 worksheet separates this review into `numeric_effect_status`,
 `numeric_effect_metric`, `numeric_effect_value`, optional variance, and notes,
 so a directionally supported row is not automatically a thesis-ready

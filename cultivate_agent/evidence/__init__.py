@@ -34,6 +34,17 @@ from .meta_analysis import (
     meta_analyze,
     synthesize,
 )
+from .tables import (
+    ResolvedGroupStatistics,
+    TableCellPointer,
+    TableCellRole,
+    TableEffectPointers,
+    TableNumericEffect,
+    TablePointerError,
+    numeric_effect_from_table_pointers,
+    parse_cell_number,
+    validate_table_pointers,
+)
 
 __all__ = [
     "EvidenceItem", "EvidenceSummary",
@@ -50,4 +61,7 @@ __all__ = [
     "write_adjudication_passages_markdown",
     "export_adjudicated_evidence", "count_evidence_rows",
     "write_validation_markdown",
+    "TableCellRole", "TableCellPointer", "TableEffectPointers",
+    "ResolvedGroupStatistics", "TableNumericEffect", "TablePointerError",
+    "parse_cell_number", "validate_table_pointers", "numeric_effect_from_table_pointers",
 ]

@@ -14,7 +14,11 @@ TEI XML and JATS/Open Access article XML into the same structured-paper object.
 For JATS tables, the structured layer preserves stable cell pointers, header
 flags, row/column spans, footnotes, and a source-content hash; numeric values
 remain source cells and are not transcribed by an LLM. Treatment/control role
-labeling and deterministic tier-1 conversion are separate downstream steps.
+labeling uses a pointer-only schema in `evidence/tables.py`: unknown fields and
+model-returned numeric values are rejected, then deterministic code resolves
+the cited cells, converts SEM to SD, and calls the frozen ROM effect seam.
+This mechanism is implemented, but its semantic pointer accuracy still requires
+the planned repeated-run gold evaluation before production use.
 When a GROBID service is running, `cultivate ingest --grobid-tei` can submit PDFs
 to `processFulltextDocument`, save the returned TEI as `fulltext.xml`, and let
 `cultivate extract` use that structured file automatically.

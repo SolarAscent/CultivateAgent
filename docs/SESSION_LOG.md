@@ -3254,3 +3254,82 @@ scientific gate passed.
    and compute agreement without reading one review into the other.
 3. `[REVIEW]` Revise coding instructions if kappa is below 0.70; otherwise
    adjudicate and open the 380-cell production set only after pilot READY.
+
+---
+
+# Session 42 (Codex) — executable bovine corpus Gate 1 audit
+
+Date: 2026-07-13
+Branch: `codex/corpus-gate-audit`
+
+## Start-State Assessment
+
+The session began at approximately 85% software infrastructure, 46%
+literature/evidence preparation, 24% wet-lab-entry readiness, and 29% for the
+complete workflow. Human gold review remained 0/56 for both reviewers and final
+adjudication; H001-H014 evidence adjudication remained 0/14. Claude's isolated
+worktree had no new commit and was five commits behind `main`.
+
+The human review blocker was recorded and skipped. The highest-value independent
+task was to make Gate 1 reproducible and prevent the 44-row manifest from being
+misreported as a curated corpus.
+
+## Decision And Implementation
+
+- Count peer-reviewed records only when their decision is design-included;
+  deferred records cannot satisfy coverage.
+- Check required metadata for the same design-included set.
+- Require explicit human verification for every P1 core record.
+- Generate both a Markdown decision report and a row-level TSV issue list.
+- Make `--require-pass` return nonzero while any Gate 1 condition fails.
+- Add synthetic PASS and multi-cause FAIL tests without inventing corpus data.
+
+## Current Result
+
+The first implementation counted deferred sources and produced an optimistic 40
+peer-reviewed sources. Review caught this before merge: only design-included
+records now count. The corrected result is 32 peer-reviewed sources, 18 reviews,
+14 primary papers, 10 bovine primary papers, 14 dose-bearing primary papers, and
+5 serum-free bovine primary papers. Overall Gate 1 is `FAIL`: total coverage is
+3 below minimum and 0/11 P1 core rows are human verified.
+
+Four missing DOI values were independently title-matched against Crossref and a
+publisher or bibliographic source, then added to the manifest: R008
+`10.1016/j.foodres.2025.117016`, R013 `10.1016/j.animal.2024.101242`, R037
+`10.1016/j.crfs.2024.100943`, and R038 `10.1111/1541-4337.13193`. Required
+metadata now passes; the row-level report contains 11 human-curation issues.
+
+## What This Does Not Claim
+
+- Numerical coverage proves relevance, full-text availability, or evidence
+  quality.
+- Missing DOI always means a DOI exists; a reviewer must verify it.
+- The audit replaces dual review, evidence adjudication, Gate 2, or wet-lab
+  approval.
+
+## Verification
+
+- Corpus audit tests: 2 passed, including explicit proof that 34 deferred rows
+  cannot make one included source pass the 35-source threshold.
+- `audit_bovine_corpus.py --require-pass` wrote both reports and returned 1 for
+  the documented Gate 1 failure.
+- Non-loopback suite: 96 passed, 2 skipped, 1 deselected. The deselection is the
+  known local HTTP/GROBID environment limitation.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+- `git diff --check` and the repository secret-pattern scan passed.
+
+## Completion Impact
+
+Software infrastructure rises conservatively from about 85% to about 86% after
+merge because Gate 1 becomes executable and tested. Literature/evidence remains
+about 46%, wet-lab entry remains about 24%, and the complete workflow remains
+about 29% because no scientific gate or human review item passed.
+
+## Next 3 Steps
+
+1. `[HUMAN]` Review the 11 P1 manifest decisions.
+2. `[AI]` Screen at least three additional non-duplicate peer-reviewed sources,
+   then rerun the audit without counting deferred records.
+3. `[HUMAN]` Complete the isolated 56-cell dual-review pilot; AI then validates
+   agreement before production extraction evaluation.

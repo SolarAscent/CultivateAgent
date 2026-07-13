@@ -52,6 +52,18 @@ For the first wet-lab-facing target and entry criteria, see
 [`docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md`](docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md).
 The current bovine-focused corpus manifest and human review queue are summarized
 in [`docs/BOVINE_CORPUS_MANIFEST.md`](docs/BOVINE_CORPUS_MANIFEST.md).
+Gate 1 is executable rather than inferred from row count:
+
+```bash
+python scripts/audit_bovine_corpus.py --require-pass
+```
+
+The committed audit is currently `FAIL`: 32 design-included peer-reviewed
+sources fall three short of the 35-source minimum, and none of the 11 P1 core
+records has an explicit human-verified review status. Required metadata is now
+complete after four DOI records were independently verified and repaired. See
+[`docs/BOVINE_CORPUS_GATE1_AUDIT.md`](docs/BOVINE_CORPUS_GATE1_AUDIT.md); a
+nonzero exit is expected until both coverage and human-curation checks pass.
 For the end-to-end project operating manual, including developer orientation,
 human/AI/lab checklists, gates, handoff rules, and current status, see
 [`docs/PROJECT_WORKFLOW.md`](docs/PROJECT_WORKFLOW.md) or the Chinese version

@@ -122,6 +122,14 @@ Minimum corpus before the first experimental design:
 Each included source must have DOI/URL, species, cell type, stage, medium type,
 and reason for inclusion/exclusion recorded.
 
+Operational audit: run `python scripts/audit_bovine_corpus.py --require-pass`.
+Numerical coverage and required-metadata checks count only design-included
+decisions; deferred records cannot satisfy the corpus threshold. Every P1 core
+record must also carry an explicit human-verified status. The current report has
+32/35 included peer-reviewed sources and 0/11 human-verified P1 core rows, so it
+fails overall. All category-specific minima and required metadata pass. Row
+count alone therefore cannot satisfy Gate 1.
+
 ### Gate 2: Extraction Reliability
 
 For decision-critical fields, the extraction layer must meet:

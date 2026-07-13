@@ -166,6 +166,7 @@ Artifact registry:
 | Chronological log | `docs/SESSION_LOG.md` | `[AI]` | Each substantial work session |
 | Target decision | `docs/LITERATURE_DECISION_RECORD_WETLAB_ENTRY.md` | `[HUMAN]` + `[AI]` | Target or scope change |
 | Corpus manifest | `data/literature/bovine_corpus_manifest.tsv` | `[AI]` + `[REVIEW]` | Source status change |
+| Gate 1 corpus audit | `docs/BOVINE_CORPUS_GATE1_AUDIT.md`, `data/literature/bovine_corpus_gate1_issues.tsv` | `[AI]` + `[REVIEW]` | Manifest or review-status change |
 | Human review queue | `data/literature/bovine_human_review_queue.tsv` | `[HUMAN]` + `[AI]` | Evidence adjudication update |
 | Corpus summary | `docs/BOVINE_CORPUS_MANIFEST.md` | `[AI]` | Manifest or gate change |
 | Method-source registry | `data/literature/ai_for_science_method_sources.tsv` | `[AI]` + `[REVIEW]` | Algorithm or pipeline decision |
@@ -261,6 +262,7 @@ Goal: create a traceable literature set before extraction and experiment design.
 Checklist:
 
 - [x] `[AI]` Create the bovine-focused corpus manifest.
+- [x] `[AI]` Make Gate 1 counts, required metadata, and P1 human-curation status executable with `python scripts/audit_bovine_corpus.py --require-pass`.
 - [x] `[AI]` Classify records as `core`, `core_context`, `context`, `defer`, or
   `background`.
 - [x] `[AI]` Create a human review queue.
@@ -713,6 +715,14 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 - First wet-lab-facing target is documented.
 - Bovine manifest v0 contains 44 records.
+- The executable Gate 1 audit counts only design-included records: 32
+  peer-reviewed records, 18 reviews, 14 primary papers, 10 bovine primary
+  papers, 14 dose-bearing primary papers, and 5 serum-free bovine primary
+  papers. Five category thresholds and required metadata pass. Gate 1 remains
+  `FAIL` because the corpus is three papers below the 35-source minimum and 0/11
+  P1 core records have an explicit human-verified status. Four previously
+  missing DOI values were verified against Crossref and a second bibliographic
+  or publisher source before being added.
 - Human review queue v0 contains 30 open tasks.
 - AI-for-science method review exists.
 - DeepSeek compatibility-route vs explicit v4-flash effect-extraction
@@ -739,7 +749,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 | Gate | Current result | Meaning |
 |---|---|---|
-| Corpus manifest | Partial | Useful bovine set exists, but P1 human review and full-text coverage are incomplete |
+| Corpus Gate 1 | `FAIL`; 5/6 numerical checks and metadata pass | 32/35 included peer-reviewed sources; 0/11 P1 core rows are human verified |
 | Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
 | Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 are ready for section-routed operators; H015-H016 need R024 |
 | Gate 2 critical-field coverage | `FAIL`: 0/17 applicable concept-paper cells in the committed live benchmark | Paper IDs were returned, but no B-M critical content was extracted; stage and medium type fixture gold are not evaluable |
@@ -786,23 +796,25 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 ### 8.5 Immediate Next Actions
 
-1. `[HUMAN]` Adjudicate H001-H014 using the current
+1. `[HUMAN]` Confirm or correct the 11 P1 core manifest decisions; AI can add at
+   least three newly screened, non-duplicate sources without counting deferrals.
+2. `[HUMAN]` Adjudicate H001-H014 using the current
    locator packet and `data/literature/bovine_adjudication_H001_H014.tsv`.
-2. `[HUMAN]` Provide R024 main full text, or confirm it should remain deferred.
-3. `[AI]` Regenerate `docs/HUMAN_REVIEW_PACKET_H001_H016.md` after R024 is
+3. `[HUMAN]` Provide R024 main full text, or confirm it should remain deferred.
+4. `[AI]` Regenerate `docs/HUMAN_REVIEW_PACKET_H001_H016.md` after R024 is
    available.
-4. `[AI]` Validate the filled worksheet and run `cultivate adjudication-export`
+5. `[AI]` Validate the filled worksheet and run `cultivate adjudication-export`
    to refresh `data/literature/bovine_evidence_table.tsv`.
-5. `[AI]` Run a small live operator-extraction pilot with
+6. `[AI]` Run a small live operator-extraction pilot with
    `cultivate extract --ids H014 --mode operators`, inspect grounding and raw
    extraction metadata, then scale to `--ids H001-H014` only if the pilot is
    acceptable.
-6. `[AI]` Extend deterministic number-aware extraction to confidence intervals,
+7. `[AI]` Extend deterministic number-aware extraction to confidence intervals,
    table-formatted group statistics, and more notation variants only when all
    required values are explicitly quoted and human numeric review remains in the
    loop.
-7. `[REVIEW]` Decide which variables can enter S5 search-space design.
-8. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
+8. `[REVIEW]` Decide which variables can enter S5 search-space design.
+9. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 
 ## 9. AI Handoff Protocol
 

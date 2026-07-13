@@ -97,8 +97,33 @@ Top review topics:
 
 ## Current Gate Status
 
-Gate 1, corpus coverage: **partially met for manifest v0, not yet passed for
-wet-lab entry**.
+Gate 1, corpus coverage: **FAIL for the current executable audit; partially met
+for manifest v0, not yet passed for wet-lab entry**.
+
+Run `python scripts/audit_bovine_corpus.py --require-pass`. The generated
+[`BOVINE_CORPUS_GATE1_AUDIT.md`](BOVINE_CORPUS_GATE1_AUDIT.md) and
+`data/literature/bovine_corpus_gate1_issues.tsv` currently show:
+
+- 32 design-included peer-reviewed records, 18 reviews, 14 primary papers, 10
+  bovine primary papers, 14 dose-bearing primary papers, and 5 serum-free
+  bovine primary papers; all category minima pass, but total coverage is 3 below
+  the 35-source minimum;
+- required included-record metadata passes after DOI repair; and
+- 0/11 P1 core rows have an explicit human-verified status.
+
+The audit deliberately prevents numerical coverage from being mistaken for a
+curated, approved corpus.
+
+The repaired DOI values were title-matched against Crossref plus a second
+source: `R008` uses [Elsevier Food Research International](https://www.sciencedirect.com/science/article/abs/pii/S0963996925013547)
+(`10.1016/j.foodres.2025.117016`), `R013` uses
+[Elsevier](https://www.sciencedirect.com/science/article/pii/S1751731124001733)
+and CiNii/Crossref (`10.1016/j.animal.2024.101242`), `R037` uses
+[DOAJ](https://doaj.org/article/176ca50990c04eb28919217b940b2c25) and
+[PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC11696856/)
+(`10.1016/j.crfs.2024.100943`), and `R038` uses
+[PubMed](https://pubmed.ncbi.nlm.nih.gov/37306528/) and Crossref/Wiley
+(`10.1111/1541-4337.13193`).
 
 - The manifest has more than 35 candidate records.
 - It includes more than 8 review/context papers.

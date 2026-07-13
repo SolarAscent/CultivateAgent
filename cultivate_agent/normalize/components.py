@@ -22,6 +22,16 @@ import yaml
 # Strip trailing/parenthetical qualifiers so verbose LLM component names pool.
 _QUALIFIER_RE = re.compile(r"\s*\([^)]*\)")
 _DOSE_TAIL_RE = re.compile(r"\s+at\s+[\d.].*$", re.IGNORECASE)
+# Strip a LEADING concentration/dose token ("5% FBS-PSFC" -> "FBS-PSFC",
+# "5 ng/mL bFGF" -> "bFGF") so the same component stops splitting by dose. The
+# trailing "\s+" ensures a component name follows, so bare numbers, "2i", "5-HT",
+# "18-crown-6", "M199", "3T3" are never touched.
+_DOSE_PREFIX_RE = re.compile(
+    r"^\d+(?:\.\d+)?\s*"
+    r"(?:%|x|×|ng/ml|ug/ml|µg/ml|mg/ml|g/l|mg/l|mm|um|µm|nm|pm|u/ml|iu/ml|units?/ml)"
+    r"\s+",
+    re.IGNORECASE,
+)
 
 
 @dataclass
@@ -92,7 +102,7 @@ class ComponentNormalizer:
         # "copper ions (5 uM)" -> "copper ions". This lets verbose LLM names
         # canonicalize (if the base is in the ontology) and, failing that, still
         # pool across papers by returning the stripped base as the canonical key.
-        stripped = _DOSE_TAIL_RE.sub("", _QUALIFIER_RE.sub("", raw)).strip()
+        stripped = _DOSE_PREFIX_RE.sub("", _DOSE_TAIL_RE.sub("", _QUALIFIER_RE.sub("", raw))).strip()
         if stripped and stripped.lower() != key:
             hit = self._lookup.get(stripped.lower())
             if hit:

@@ -182,3 +182,75 @@ Codex feature branch and vanished from the tree when Codex switched branches).
 
 Commit-message coordination (Section 4) and file ownership (Section 3) still
 apply; worktrees remove the *filesystem* collision, not the need to communicate.
+
+## 8. DeepSeek Delegation And API Safety (2026-07-13)
+
+Codex and Claude own task decomposition, scientific decisions, deterministic
+validation, and final acceptance. DeepSeek is a low-cost worker for narrow,
+schema-constrained tasks only. Delegate when the expected instruction and
+review cost is lower than doing the task directly.
+
+### 8.1 Hard Numeric Boundary
+
+For table extraction, DeepSeek returns **cell pointers, never transcribed
+numbers**. Its output may identify `table_id`, `cell_id`, semantic role
+(`treatment_mean`, `control_sd`, `sample_size`, and similar labels), group,
+outcome, and confidence. It must not return a numeric value copied or inferred
+from the table.
+
+The deterministic Codex-side parser reads the value from the identified cell,
+resolves headers and footnotes, converts SEM to SD, and records cell provenance
+plus the source hash. Responses containing numeric-value fields fail schema
+validation. This boundary is structural: model self-review is not evidence that
+a number is supported.
+
+### 8.2 Capability Gate
+
+- Extend the existing dual-review and field-aware gold locators; do not create
+  a separate 30-row annotation set.
+- Run each fixed test input multiple times with `temperature=0`. Report exact
+  pointer agreement and run-to-run variance; one passing run is insufficient.
+- Relevance screening is gated primarily on recall (target at least 95%).
+- Alias discovery is also a high-recall candidate-generation task. Codex or
+  Claude reviews precision and approves ontology changes.
+- Table pointer quality is measured separately for cell selection and semantic
+  group/role matching. Unsupported numeric output must remain structurally
+  impossible.
+- Promote a task type only after it passes the gold test and a small shadow run.
+  Regressions or unstable repeated runs route the task back to Codex or Claude.
+
+### 8.3 Allowed Delegation
+
+Good DeepSeek tasks include paragraph relevance screening, table/page
+candidate location, cell-role pointer labeling, metadata format checks, alias
+candidate generation, and failure categorization. Keep each request to one
+operator, one table, or a small passage set with a strict JSON schema.
+
+Do not delegate final inclusion/exclusion, biological scope decisions,
+treatment-control adjudication when headers are ambiguous, evidence-tier
+approval, effect-size policy, literature conflict resolution, wet-lab design,
+or manuscript conclusions.
+
+### 8.4 Runtime Controls
+
+- API keys are loaded from environment variables only and never written to
+  prompts, source files, reports, checkpoints, or logs.
+- Every job sets hard per-run limits for requests, tokens, retries, wall time,
+  and estimated spend. Hitting a limit stops cleanly rather than retrying
+  indefinitely.
+- Batch jobs write atomic checkpoints keyed by source hash, prompt/schema
+  version, provider, and model. Completed items are resumable and are not billed
+  twice after interruption.
+- Deterministic validators are the primary interceptor. Codex/Claude perform
+  risk-based sampling and inspect every exception. DeepSeek self-checks may be
+  retained as diagnostics but never increase trust or reduce required review.
+
+### 8.5 Current Table-Path Ownership
+
+The stable numeric seam landed on `main` in commit `0305ea1`:
+`numeric_effect_from_group_stats(...)` in
+`cultivate_agent/evidence/effect_operator.py`. Codex owns structured table
+ingestion, `PaperTable`, table-cell provenance, pointer resolution, and the
+table gold tests. Claude owns normalization, alias convergence, synthesis, and
+tier-1 audit, and does not edit Codex's table-ingestion files. Neither agent
+changes the frozen seam silently.

@@ -1,0 +1,59 @@
+{
+  "benchmark_version": "medium-pilot-v1",
+  "field_paths": [
+    "A.title",
+    "A.year",
+    "A.doi",
+    "B.species",
+    "D.cell_type",
+    "D.primary_or_cell_line",
+    "D.culture_stage",
+    "D.passage_info",
+    "E.basal_medium",
+    "E.medium_type",
+    "E.serum_usage",
+    "E.serum_free_status",
+    "E.growth_factors",
+    "E.small_molecules",
+    "E.hydrolysates_or_extracts",
+    "E.conditioned_medium_or_recycling",
+    "I.main_readouts",
+    "I.proliferation_metrics",
+    "I.differentiation_metrics",
+    "J.has_extractable_quant_data",
+    "J.extractable_variables",
+    "J.key_numeric_results",
+    "J.units_reported",
+    "J.experimental_comparison_groups",
+    "J.sample_size_or_replicate_info",
+    "K.core_findings",
+    "K.authors_reported_limitations",
+    "K.hidden_or_practical_limitations"
+  ],
+  "format_version": 1,
+  "papers": [
+    {
+      "doi": "10.1038/s42003-022-03423-8",
+      "paper_id": "simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli",
+      "record_id": "R015",
+      "source_chars": 55862,
+      "source_path": "data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt",
+      "source_sha256": "2caba0ae328473d43a17c330c14d467aef763c2877a74b0f465d42c6cc8831ad",
+      "title": "Simple and effective serum-free medium for sustained expansion of bovine satellite cells for cell cultured meat",
+      "url": "https://www.nature.com/articles/s42003-022-03423-8",
+      "year": "2022"
+    },
+    {
+      "doi": "10.3389/fbioe.2022.895289",
+      "paper_id": "development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov",
+      "record_id": "R016",
+      "source_chars": 62828,
+      "source_path": "data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt",
+      "source_sha256": "25fabce9211fbb531fbcc7051ccc945bc92347b70c078c8934d7f71a6ef8a17a",
+      "title": "Development of a Chemically Defined Medium for in vitro Expansion of Primary Bovine Satellite Cells",
+      "url": "https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2022.895289/full",
+      "year": "2022"
+    }
+  ],
+  "schema_sha256": "bc5283193d7a57e0969682b473425915ed7b826facc5bb7ff01e192990c4db72"
+}

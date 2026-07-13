@@ -310,6 +310,12 @@ Checklist：
   最后裁决全部 disagreement 和 unresolved field。
 - [ ] `[REVIEW]` 运行 `prepare_medium_gold_review.py validate --require-ready`；
   只有 380/380 adjudicated 且 0 issues 后才能跑 production T1 scoring。
+- [x] `[AI]` 为 R015/R016 和 28 个高风险字段准备 `medium-pilot-v1`
+  （56 cells），使用 manifest-controlled field scope、盲法 merge 和同一 validator。
+- [ ] `[HUMAN]` 先完成并裁决 56-cell pilot；只有两位 reviewer 均 56/56、
+  0 issues、decision kappa >= 0.70 且状态 READY 后才扩展，否则修订说明并创建
+  新 pilot version。若因只有一个 decision class 导致 kappa 不可估计，则要求
+  exact agreement 1.0，并记录 prevalence limitation。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、

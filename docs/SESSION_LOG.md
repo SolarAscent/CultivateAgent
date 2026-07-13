@@ -3063,3 +3063,109 @@ unpassed.
 3. `[AI]` Only after READY, run operator extraction on the same four full texts,
    save an artifact bundle, and report production T1 per-field P/R/F1,
    grounding, and Gate 2 coverage.
+
+---
+
+# Session 40 (Codex) — blind two-paper gold calibration pilot
+
+Date: 2026-07-13
+Branch: `codex/gold-review-pilot`
+
+## Start-State Assessment
+
+The session began at approximately 82% software infrastructure, 45%
+literature/evidence preparation, 24% wet-lab-entry readiness, and 29% for the
+complete workflow. The 380-cell production gold gate existed, but asking two
+reviewers to complete all fields before testing the coding form created a high
+risk of systematic disagreement and rework.
+
+The highest-value task was to implement the Cochrane requirement to pilot the
+collection form: a smaller, manifest-controlled field scope using the same
+source hashes, blind-review files, merge, typing, grounding, and adjudication
+rules.
+
+## Pilot Decision
+
+- Papers: R015 and R016, two distinct core bovine expansion-medium studies.
+- Scope: 28 high-risk fields, 56 paper x field cells.
+- Fields cover identity/DOI, species/cell/stage/passage, eight medium fields,
+  three endpoint fields, six quantitative fields, and three findings/limitations
+  fields.
+- Reviewer files remain isolated and are merged only after both return.
+- Validator reports double-review coverage, decision exact agreement, Cohen's
+  kappa, both-reported coverage, and reported-value exact agreement.
+- Progression requires both reviewers 56/56, zero validation issues, decision
+  kappa >= 0.70, all disagreements adjudicated, 56/56 final adjudication, and
+  READY status.
+- Reported-value agreement is diagnostic; no unsupported universal threshold is
+  imposed. List order is canonicalized before comparison; every substantive
+  mismatch is adjudicated directly.
+- If kappa is below 0.70, revise coding instructions and create a new pilot
+  version rather than overwriting v1.
+- If kappa is undefined because only one decision class occurs, do not coerce it
+  to 1.0; require exact agreement 1.0 and document the prevalence limitation.
+
+## Changes Made
+
+- Added optional manifest-backed `field_paths` to gold generator/validator.
+- Added CLI `--field` support with duplicate/unknown-field rejection.
+- Added reviewer agreement metrics to validation output.
+- Added a subset-scope test and expanded merge assertions for agreement metrics.
+- Generated `data/evaluation/gold/medium-pilot-v1` with manifest, controlled
+  master, isolated reviewer template, and limitations/progression README.
+- Generated `docs/FULLTEXT_GOLD_VALIDATION_MEDIUM_PILOT_V1.md` and refreshed the
+  full benchmark validation report with agreement metrics.
+- Updated README, both workflow manuals, method review, bovine manifest, and
+  this session log.
+
+## Current Human Gate
+
+- Pilot rows/expected: 56/56.
+- Reviewer 1 completed: 0/56.
+- Reviewer 2 completed: 0/56.
+- Double-reviewed: 0/56.
+- Decision kappa: not estimable.
+- Final adjudication: 0/56.
+- Validation issues: 0.
+- Status: `NOT READY`.
+
+No reviewer or adjudication value was AI-filled.
+
+## What This Does Not Claim
+
+- The pilot form has been calibrated; humans have not started it.
+- Kappa can be interpreted before all 56 rows are independently reviewed.
+- Pilot READY substitutes for completing the 380-cell production gold.
+- T1, S4, or any wet-lab gate passed.
+
+## Verification
+
+- Gold-review tests: 7 passed.
+- Non-loopback suite:
+  `.venv/bin/python -m pytest -q -k 'not test_grobid_client_writes_and_parses_tei'`:
+  93 passed, 2 skipped, 1 deselected. The deselection is the known local-HTTP
+  environment limitation.
+- Pilot `validate --require-ready` exited 1 as designed: 56/56 structural rows,
+  zero completed reviews, kappa not estimable, zero issues, `NOT READY`.
+- Full benchmark validation remains 380/380 structural rows and `NOT READY`.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+- `git diff --check` passed; no pasted-style API key was found.
+
+## Completion Impact
+
+Software infrastructure rises conservatively from about 82% to about 84%.
+Literature/evidence preparation rises from about 45% to about 46% because the
+human calibration sequence and agreement metrics are now fixed, but no review
+decision exists. Wet-lab entry remains about 24%, and the complete workflow
+remains about 29% because production T1 and all downstream scientific gates are
+still unpassed.
+
+## Next 3 Steps
+
+1. `[HUMAN]` Two reviewers independently complete the 56-cell pilot using
+   isolated files; AI validates each and merges only after both are returned.
+2. `[REVIEW]` Adjudicate pilot disagreements and require kappa >= 0.70 plus READY
+   before opening the 380-cell benchmark.
+3. `[AI]` After production gold is READY, run versioned extraction artifacts and
+   replace the legacy T1 report with reproducible full-text metrics.

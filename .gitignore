@@ -18,6 +18,8 @@ data/**
 !data/evaluation/gold/
 !data/evaluation/gold/medium-fulltext-v1/
 !data/evaluation/gold/medium-fulltext-v1/**
+!data/evaluation/gold/medium-pilot-v1/
+!data/evaluation/gold/medium-pilot-v1/**
 # Local backups created before forced adjudication worksheet overwrite.
 data/literature/*.tsv.bak.*
 *.sqlite

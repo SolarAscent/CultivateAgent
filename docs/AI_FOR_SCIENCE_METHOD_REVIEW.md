@@ -233,6 +233,15 @@ Project implication:
   Blindness is implemented with a single-reviewer template: each reviewer works
   in an isolated file that contains no other reviewer columns. A deterministic
   merge step creates the controlled master only after both reviews return.
+  A two-paper, 28-field pilot operationalizes the Handbook requirement to pilot
+  the form before launch. Decision exact agreement and Cohen's kappa are reported
+  over double-reviewed rows; kappa >= 0.70 is required before scaling, while
+  value disagreements remain field-level adjudication items rather than being
+  hidden in one pooled score. JSON list order is canonicalized before exact
+  comparison because A-M list fields are order-insensitive.
+  When one decision class makes kappa undefined, the report keeps it `None`
+  rather than converting perfect raw agreement into kappa 1.0; progression then
+  requires exact agreement 1.0 plus an explicit prevalence note.
 
 ## 3. Adopted Algorithm Roadmap
 

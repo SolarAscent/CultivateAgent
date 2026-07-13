@@ -330,6 +330,14 @@ Checklist:
 - [ ] `[REVIEW]` Run `prepare_medium_gold_review.py validate --require-ready`.
   Do not run production T1 scoring until it reports 380/380 adjudicated and zero
   issues.
+- [x] `[AI]` Prepare `medium-pilot-v1` over R015/R016 and 28 high-risk fields
+  (56 cells), with manifest-controlled field scope and the same blind merge and
+  validation rules.
+- [ ] `[HUMAN]` Complete and adjudicate the 56-cell pilot first. Scale only when
+  both reviewers are 56/56, issues are zero, decision kappa >= 0.70, and pilot
+  status is READY. If kappa is undefined because only one decision class occurs,
+  require exact agreement 1.0 and document the prevalence limitation; otherwise
+  revise instructions and version a new pilot.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,

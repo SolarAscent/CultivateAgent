@@ -154,12 +154,15 @@ def test_independent_reviewer_sheets_merge_into_master(tmp_path):
     reviewer_1.write_bytes(blank.read_bytes())
     reviewer_2.write_bytes(blank.read_bytes())
 
-    for path, reviewer in ((reviewer_1, "reviewer-a"), (reviewer_2, "reviewer-b")):
+    for path, reviewer, value in (
+        (reviewer_1, "reviewer-a", '["expansion", "differentiation"]'),
+        (reviewer_2, "reviewer-b", '["differentiation", "expansion"]'),
+    ):
         fieldnames, rows = _read_rows(path)
         row = next(r for r in rows if r["block"] == "D" and r["field"] == "culture_stage")
         row.update({
             "decision": "reported",
-            "value_json": '["expansion"]',
+            "value_json": value,
             "quote": "satellite cells were maintained in expansion medium",
             "location": "Methods",
             "reviewer": reviewer,
@@ -172,4 +175,45 @@ def test_independent_reviewer_sheets_merge_into_master(tmp_path):
 
     assert result.reviewer_1_completed == 1
     assert result.reviewer_2_completed == 1
+    assert result.double_reviewed == 1
+    assert result.decision_exact_rate == 1.0
+    assert result.decision_kappa is None  # one decision class makes kappa undefined
+    assert result.reported_pairs == 1
+    assert result.value_exact_rate == 1.0
     assert result.issues == []
+
+
+def test_gold_review_supports_manifest_controlled_field_subset(tmp_path):
+    import pytest
+
+    from cultivate_agent.evaluate.gold_review import create_gold_review, validate_gold_review
+
+    paper = _paper(tmp_path)
+    manifest = tmp_path / "pilot/manifest.json"
+    worksheet = tmp_path / "pilot/review.tsv"
+    fields = ["B.species", "D.cell_type", "E.medium_type"]
+    create_gold_review(
+        [("R001", paper)],
+        repo_root=tmp_path,
+        benchmark_version="pilot-v1",
+        manifest_path=manifest,
+        worksheet_path=worksheet,
+        field_paths=fields,
+    )
+
+    payload = json.loads(manifest.read_text(encoding="utf-8"))
+    result = validate_gold_review(manifest, worksheet, repo_root=tmp_path)
+
+    assert payload["field_paths"] == fields
+    assert result.rows == result.expected_rows == 3
+    assert result.issues == []
+
+    with pytest.raises(ValueError, match="unknown field path"):
+        create_gold_review(
+            [("R001", paper)],
+            repo_root=tmp_path,
+            benchmark_version="bad-v1",
+            manifest_path=tmp_path / "bad/manifest.json",
+            worksheet_path=tmp_path / "bad/review.tsv",
+            field_paths=["Z.not_a_field"],
+        )

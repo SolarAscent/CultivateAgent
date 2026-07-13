@@ -62,6 +62,11 @@ class GoldValidation:
     reviewer_2_completed: int
     adjudicated_completed: int
     issues: List[str]
+    double_reviewed: int = 0
+    decision_exact_rate: Optional[float] = None
+    decision_kappa: Optional[float] = None
+    reported_pairs: int = 0
+    value_exact_rate: Optional[float] = None
 
     @property
     def ready(self) -> bool:
@@ -87,6 +92,20 @@ def _schema_fields() -> List[Tuple[str, str, str, str]]:
     return rows
 
 
+def _selected_schema_fields(field_paths: Optional[Sequence[str]]) -> List[Tuple[str, str, str, str]]:
+    fields = _schema_fields()
+    if not field_paths:
+        return fields
+    requested = list(field_paths)
+    if len(requested) != len(set(requested)):
+        raise ValueError("field scope contains duplicate paths")
+    by_path = {f"{row[0]}.{row[1]}": row for row in fields}
+    unknown = [path for path in requested if path not in by_path]
+    if unknown:
+        raise ValueError(f"unknown field path(s): {', '.join(unknown)}")
+    return [by_path[path] for path in requested]
+
+
 def _schema_sha256() -> str:
     payload = json.dumps(_schema_fields(), ensure_ascii=False, separators=(",", ":"))
     return _sha256_bytes(payload.encode("utf-8"))
@@ -100,6 +119,7 @@ def create_gold_review(
     manifest_path: Path,
     worksheet_path: Path,
     bibliography: Optional[Dict[str, Dict[str, str]]] = None,
+    field_paths: Optional[Sequence[str]] = None,
 ) -> Tuple[Path, Path]:
     """Create a manifest and blank A-M dual-review worksheet."""
     sources: List[GoldSource] = []
@@ -132,10 +152,12 @@ def create_gold_review(
         seen_records.add(record_id)
         seen_papers.add(paper_id)
 
+    selected_fields = _selected_schema_fields(field_paths)
     manifest = {
         "format_version": FORMAT_VERSION,
         "benchmark_version": benchmark_version,
         "schema_sha256": _schema_sha256(),
+        "field_paths": [f"{letter}.{name}" for letter, name, _d, _t in selected_fields],
         "papers": [source.__dict__ for source in sources],
     }
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
@@ -149,7 +171,7 @@ def create_gold_review(
         writer = csv.DictWriter(handle, fieldnames=COLUMNS, delimiter="\t", lineterminator="\n")
         writer.writeheader()
         for source in sources:
-            for letter, field_name, description, value_type in _schema_fields():
+            for letter, field_name, description, value_type in selected_fields:
                 row = {column: "" for column in COLUMNS}
                 row.update({
                     "benchmark_version": benchmark_version,
@@ -256,6 +278,11 @@ def validate_gold_review(
     if manifest.get("schema_sha256") != _schema_sha256():
         issues.append("schema hash mismatch; version the benchmark before changing fields")
     papers = manifest.get("papers") or []
+    try:
+        selected_fields = _selected_schema_fields(manifest.get("field_paths"))
+    except ValueError as exc:
+        issues.append(str(exc))
+        selected_fields = []
     sources: Dict[str, str] = {}
     for paper in papers:
         paper_id = str(paper.get("paper_id") or "")
@@ -277,7 +304,7 @@ def validate_gold_review(
     expected_keys = {
         (str(paper.get("paper_id") or ""), letter, field_name)
         for paper in papers
-        for letter, field_name, _description, _value_type in _schema_fields()
+        for letter, field_name, _description, _value_type in selected_fields
     }
     seen: Dict[Tuple[str, str, str], int] = {}
     completed = {slot: 0 for slot in REVIEW_SLOTS}
@@ -302,6 +329,33 @@ def validate_gold_review(
     missing = sorted(expected_keys - set(seen))
     if missing:
         issues.append(f"worksheet missing {len(missing)} field cell(s)")
+    double_rows = [
+        row for row in rows
+        if (row.get("reviewer_1_decision") or "").strip() in DECISIONS
+        and (row.get("reviewer_2_decision") or "").strip() in DECISIONS
+    ]
+    decisions_1 = [row["reviewer_1_decision"].strip() for row in double_rows]
+    decisions_2 = [row["reviewer_2_decision"].strip() for row in double_rows]
+    decision_exact = (
+        sum(a == b for a, b in zip(decisions_1, decisions_2)) / len(double_rows)
+        if double_rows else None
+    )
+    reported_pairs = [
+        row for row in double_rows
+        if row["reviewer_1_decision"].strip() == "reported"
+        and row["reviewer_2_decision"].strip() == "reported"
+    ]
+    value_exact = None
+    if reported_pairs:
+        matches = 0
+        for row in reported_pairs:
+            try:
+                left = _canonical_value_json(row["reviewer_1_value_json"])
+                right = _canonical_value_json(row["reviewer_2_value_json"])
+                matches += left == right
+            except Exception:  # invalid JSON is already reported by slot validation
+                pass
+        value_exact = matches / len(reported_pairs)
     return GoldValidation(
         rows=len(rows),
         expected_rows=len(expected_keys),
@@ -309,7 +363,31 @@ def validate_gold_review(
         reviewer_2_completed=completed["reviewer_2"],
         adjudicated_completed=completed["adjudicated"],
         issues=issues,
+        double_reviewed=len(double_rows),
+        decision_exact_rate=round(decision_exact, 4) if decision_exact is not None else None,
+        decision_kappa=_cohen_kappa(decisions_1, decisions_2),
+        reported_pairs=len(reported_pairs),
+        value_exact_rate=round(value_exact, 4) if value_exact is not None else None,
     )
+
+
+def _cohen_kappa(left: Sequence[str], right: Sequence[str]) -> Optional[float]:
+    if not left:
+        return None
+    observed = sum(a == b for a, b in zip(left, right)) / len(left)
+    labels = set(left) | set(right)
+    expected = sum(
+        (left.count(label) / len(left)) * (right.count(label) / len(right))
+        for label in labels
+    )
+    return round((observed - expected) / (1 - expected), 4) if expected < 1 else None
+
+
+def _canonical_value_json(payload: str) -> str:
+    value = json.loads(payload)
+    if isinstance(value, list):
+        value = sorted(value, key=lambda item: json.dumps(item, sort_keys=True))
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
 def _validate_slot(
@@ -362,6 +440,11 @@ def validation_markdown(result: GoldValidation) -> str:
         f"| Reviewer 1 completed | {result.reviewer_1_completed} |",
         f"| Reviewer 2 completed | {result.reviewer_2_completed} |",
         f"| Adjudicated completed | {result.adjudicated_completed} |",
+        f"| Double-reviewed rows | {result.double_reviewed} |",
+        f"| Decision exact agreement | {result.decision_exact_rate} |",
+        f"| Decision Cohen kappa | {result.decision_kappa} |",
+        f"| Both-reported rows | {result.reported_pairs} |",
+        f"| Reported-value exact agreement | {result.value_exact_rate} |",
         f"| Validation issues | {len(result.issues)} |",
         "",
         "## Issues",

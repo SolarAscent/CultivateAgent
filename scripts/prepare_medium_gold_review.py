@@ -22,6 +22,11 @@ def main() -> int:
     create = sub.add_parser("create")
     create.add_argument("--paper", action="append", required=True, metavar="RECORD_ID=PATH")
     create.add_argument("--version", required=True)
+    create.add_argument(
+        "--field",
+        action="append",
+        help="optional A-M field path; repeat to create a controlled pilot subset",
+    )
     create.add_argument("--manifest", type=Path, required=True)
     create.add_argument("--worksheet", type=Path, required=True)
     create.add_argument("--reviewer-template", type=Path)
@@ -65,6 +70,7 @@ def main() -> int:
             manifest_path=args.manifest,
             worksheet_path=args.worksheet,
             bibliography=bibliography,
+            field_paths=args.field,
         )
         print(f"+ wrote {manifest}")
         print(f"+ wrote {worksheet}")

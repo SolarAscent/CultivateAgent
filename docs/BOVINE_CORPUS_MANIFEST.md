@@ -180,6 +180,9 @@ Gate 2, extraction reliability: **not passed**.
   values were AI-filled.
   Independent reviewers use isolated single-reviewer worksheets and are merged
   only before adjudication; the committed master remains blank.
+- Before the 380-cell set, `medium-pilot-v1` uses R015/R016 and 56 high-risk
+  field cells to calibrate instructions. Current status is 0/56 for both
+  reviewers and adjudication, with agreement not yet estimable.
 
 Gate 3, biological plausibility: **not passed**.
 

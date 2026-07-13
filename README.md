@@ -267,6 +267,12 @@ before adjudication. It is currently blank and `NOT READY`.
 `reported` values must be typed JSON with an exact full-text quote; schema and
 source hashes are validated before scoring.
 
+Human review starts with
+[`medium-pilot-v1`](data/evaluation/gold/medium-pilot-v1/README.md): R015/R016 and
+28 high-risk fields (56 cells). Both reviewers must finish independently,
+decision kappa must be at least 0.70, all rows must be adjudicated, and the
+validator must report READY before scaling to the 380-cell full benchmark.
+
 ---
 
 ## The extraction schema (A–M)

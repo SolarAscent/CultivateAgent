@@ -2759,3 +2759,104 @@ workflow about 29%.
    scientific decisions.
 3. Run H014 live operator extraction after provider credentials are valid and
    require direct stage/type/dose plus the other Gate 2 concepts.
+
+---
+
+# Session 37 (Codex) — replayable T1/T2 evaluation artifacts
+
+Date: 2026-07-13
+Branch: `codex/eval-artifact-replay`
+
+## Start-State Assessment
+
+The session began at approximately 76% software infrastructure, 43%
+literature/evidence work, 24% wet-lab-entry readiness, and 29% for the complete
+workflow through paper results (reasonable range 25-33%). Direct stage, medium
+type, and dose extraction paths existed, but the historical T1/T2 report could
+not be reproduced because exact live predictions were not retained.
+
+Claude was concurrently editing `evidence/effect_operator.py`; this session used
+only the independent evaluation-script lane and did not touch Claude's file or
+worktree.
+
+During push, Claude landed `a60cf42` on `main`. It rejects reagent/medium
+concentration percentages as effects, requires explicit change language for
+percentage effects, and parses `N +/- M-fold` using N rather than the error term.
+This evaluation commit was rebased cleanly onto it, and the shared behavior was
+added to README, both workflow manuals, evidence synthesis, and this log.
+
+## Decision And Method Basis
+
+Cochrane Chapter 5 and PRISMA-trAIce require transparent data collection,
+automation reporting, verification, and updateability. A prose report is not
+sufficient evidence of a model benchmark. The exact gold, predictions, source
+version, provider set, failures, and report configuration must travel together.
+
+Adopted rules:
+
+- `--artifacts-out` writes exact gold and every available provider prediction.
+- The manifest records ordered paper IDs, source-excerpt SHA-256 values,
+  per-file checksums, live-provider labels and failures, and original scored
+  provider/agreement scope.
+- `--artifacts-in` performs no provider call and restores the original report
+  configuration unless the caller explicitly requests another analysis.
+- Replay rejects source drift, artifact tampering, unsafe filenames, duplicate
+  or unavailable papers, and prediction/gold order misalignment.
+- Bundle reports must be byte-stable on replay.
+- Before committing a real bundle, a reviewer must check credentials, quote
+  rights, provider/model labels, and gold-version approval.
+
+## Changes Made
+
+- Added deterministic artifact serialization and SHA-256 manifests to
+  `scripts/evaluate_medium_corpus.py`.
+- Added artifact loading, validation, provider-free replay, and CLI flags.
+- Added round-trip, fixture-drift, artifact-tamper, and conflicting-option tests.
+- Updated README, both workflow manuals, collaboration protocol, method review,
+  bovine manifest, legacy evaluation/agreement reports, and this session log.
+- Did not fabricate a bundle for the historical live report; its raw predictions
+  are unavailable and the report remains explicitly legacy/non-replayable.
+
+## What This Does Not Claim
+
+- The four-paper gold is now human-revalidated or production-grade.
+- The historical OpenAI/Anthropic run can be reconstructed.
+- Checksums authenticate an author; they detect drift/tampering but are not a
+  cryptographic signature.
+- Any extraction or wet-lab gate passed.
+
+## Verification
+
+- Artifact tests: 5 passed, covering byte-stable replay, fixture source drift,
+  artifact-file tampering, semantic prediction-order drift with a valid updated
+  checksum, and replay/live-option conflicts.
+- CLI round-trip produced byte-identical `EVAL_RESULTS.md` and
+  `MODEL_AGREEMENT.md` while the replay command omitted provider/scope and
+  restored them from the manifest.
+- Combined Claude/Codex focused tests: 12 passed
+  (`test_effect_magnitude.py` plus `test_eval_artifacts.py`).
+- Non-loopback suite after rebase:
+  `.venv/bin/python -m pytest -q -k 'not test_grobid_client_writes_and_parses_tei'`:
+  85 passed, 2 skipped, 1 deselected. The deselection is the known local-HTTP
+  environment limitation.
+- CLI help exposed both artifact options with the expected semantics.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+- `git diff --check` passed; secret scan found no pasted-style API keys.
+
+## Completion Impact
+
+Software infrastructure rises conservatively from about 76% to about 79%
+because T1/T2 runs can now be preserved and reproduced without provider calls.
+Literature/evidence remains about 43%, wet-lab entry about 24%, and the complete
+workflow about 29%: the historical benchmark remains legacy, gold remains
+unrevalidated, and no scientific gate passed.
+
+## Next 3 Steps
+
+1. Generate and review a committed offline mock-baseline bundle as a format
+   exemplar, without presenting mock scores as scientific accuracy.
+2. Human reviewer versions and re-adjudicates the four-paper gold before any
+   production T1 claim; future live runs must write bundles.
+3. Let Claude finish the independent effect-operator work, then rebase and
+   inspect its commit before touching overlapping evidence code.

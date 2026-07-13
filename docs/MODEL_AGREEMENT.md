@@ -2,6 +2,11 @@
 
 Status: offline cross-provider simulation (`mock_gpt`, `mock_claude`, `mock_gemini`). Requested live providers: openai:gpt-5.4, anthropic:claude-opus-4-6.
 
+Reproducibility note: this historical live comparison predates artifact bundles;
+its raw provider predictions were not retained. Treat it as a failure diagnosis,
+not a replayable agreement result. Future comparisons must use
+`--artifacts-out` and pass byte-stable replay before interpretation.
+
 Agreement scope: `live`
 
 Compared providers: `anthropic:claude-opus-4-6`, `openai:gpt-5.4`

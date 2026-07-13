@@ -70,6 +70,11 @@ so those gold cells are not backfilled here; their `NOT_EVALUABLE` status is
 preserved rather than retroactively changing the
 published denominator.
 
+This report predates artifact-bundle support and its raw live predictions were
+not retained, so it is a legacy diagnostic rather than a byte-replayable result.
+Future T1/T2 reports must be generated with `--artifacts-out` and replay-checked
+before a gold revision or thesis accuracy claim.
+
 ## Corpus
 
 - Stout et al., Communications Biology 5, 466 (2022). Sources: https://www.nature.com/articles/s42003-022-03423-8, https://pubmed.ncbi.nlm.nih.gov/35654948/

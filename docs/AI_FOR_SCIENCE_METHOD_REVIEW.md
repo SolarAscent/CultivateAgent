@@ -220,6 +220,11 @@ Project implication:
   `medium_type` fields. This follows the same schema-reduction principle while
   avoiding semantic inference from broad condition summaries. Existing fixture
   gold is not silently rewritten; a versioned human re-adjudication is required.
+- T1/T2 evaluation can now persist gold, provider predictions, source hashes,
+  artifact checksums, paper order, failures, and report configuration as one
+  replayable bundle. This implements the provenance and version-control side of
+  the Cochrane/PRISMA-trAIce reporting rule: a report should be reproducible from
+  its exact inputs rather than reconstructed from prose or provider memory.
 
 ## 3. Adopted Algorithm Roadmap
 

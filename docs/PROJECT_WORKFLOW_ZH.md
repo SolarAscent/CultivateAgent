@@ -295,6 +295,11 @@ Checklist：
   `D.culture_stage`、`E.medium_type`；不能由 endpoint 或成分列表推断。
 - [ ] `[HUMAN]` 修改冻结的四篇 benchmark 前，先版本化并重新裁决 stage/type
   gold，同时保留每份报告使用的 raw predictions。
+- [x] `[AI]` 支持可重放 T1/T2 bundle：保存 exact gold、全部 provider
+  predictions、source hashes、文件 checksums、paper order、失败记录和报告配置；
+  scoring 前拒绝 drift 或 tampering。
+- [ ] `[REVIEW]` 提交 bundle 前检查 gold version、引用权限、secret scan、
+  provider/model labels 和 byte-stable replay。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、
@@ -321,6 +326,10 @@ cultivate extract --ids H014 --mode operators --provider openai --model deepseek
 cultivate extract --ids H001-H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate export
 cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md
+python scripts/evaluate_medium_corpus.py --provider mock_gpt --agreement-scope mock \
+  --artifacts-out data/evaluation/runs/mock-baseline-v1 --out-dir /tmp/mock-baseline-v1
+python scripts/evaluate_medium_corpus.py \
+  --artifacts-in data/evaluation/runs/mock-baseline-v1 --out-dir /tmp/mock-baseline-v1-replay
 ```
 
 Gate：
@@ -595,6 +604,9 @@ Gate：论文 claims 可追溯到证据和结果。
   剂量、浓度、timepoint 和因子名里的数字不会被当作 response value。只有同一条
   quote 同时明确给出两组 mean、SD/SE/SEM 和 sample size 时，才会计算 ROM
   sampling variance。
+- 百分比 effect inference 必须有明确 increase/decrease/change 语义；百分比后接
+  reagent 或 medium 名称时按浓度排除。`N +/- M-fold` 只把 N 当 point estimate，
+  M 是 error term；这些规则已有回归测试，仍需 S4 复核。
 - `cultivate evidence` 会写出 raw `effect_items_<outcome>.json`。
 - `cultivate evidence-audit` 能生成保守的 wet-lab-entry report。
 - `cultivate extraction-readiness` 会在调用 LLM 前检查本地全文和 section routing

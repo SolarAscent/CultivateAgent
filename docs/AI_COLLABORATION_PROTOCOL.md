@@ -127,6 +127,9 @@ At the end of a work session:
   - next 3 steps.
 - [ ] Update `README.md` and both project workflow manuals when behavior,
   process, or project status changes.
+- [ ] For T1/T2 evaluation, preserve or replay an artifact bundle containing the
+  exact gold and provider predictions. Do not revise benchmark gold when the raw
+  predictions behind the current report are unavailable.
 - [ ] Commit only your owned changes.
 - [ ] Push.
 - [ ] Leave any untracked files owned by another agent untouched.

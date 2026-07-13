@@ -83,6 +83,10 @@ quote. This creates tier-2 evidence unless the same verified quote also reports
 SD/SE/SEM and sample size for both treatment and control groups; only then is a
 large-sample ROM variance computed. Dose or timepoint numbers are ignored as
 response values, and any quantitative use still requires human numeric review.
+Composition percentages are also excluded: a percentage followed by a reagent
+or medium term is treated as concentration, and a percentage effect requires
+explicit increase/decrease/change language. For `N +/- M-fold`, N is the point
+estimate and M is the error term, not a second effect magnitude.
 The current S4 worksheet separates this review into `numeric_effect_status`,
 `numeric_effect_metric`, `numeric_effect_value`, optional variance, and notes,
 so a directionally supported row is not automatically a thesis-ready

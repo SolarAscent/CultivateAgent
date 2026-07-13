@@ -170,6 +170,10 @@ Gate 2, extraction reliability: **not passed**.
   Current H001-H014 sources are not thereby adjudicated, and the four-paper eval
   fixture remains frozen until raw predictions and revised human gold can be
   versioned together.
+- Evaluation tooling can now write and byte-replay a checksummed artifact bundle
+  containing exact gold, all provider predictions, source hashes, paper order,
+  failures, and report configuration. No bundle can be reconstructed for the
+  historical live report because its raw predictions were not retained.
 
 Gate 3, biological plausibility: **not passed**.
 

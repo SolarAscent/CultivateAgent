@@ -11,6 +11,9 @@ outputs produced by ``cultivate extract --provider ...``.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
@@ -47,6 +50,9 @@ class ProviderSpec:
     def label(self) -> str:
         safe_model = self.model.replace("/", "_").replace(":", "_")
         return f"{self.provider}:{safe_model}"
+
+
+ARTIFACT_FORMAT_VERSION = 1
 
 
 def _set_field(ext: PaperExtraction, path: str, value: object) -> None:
@@ -481,27 +487,198 @@ def markdown_table(rows: Iterable[Dict[str, object]], columns: Sequence[str]) ->
     return "\n".join(lines)
 
 
+def _source_sha256(paper: PaperFixture) -> str:
+    return hashlib.sha256(paper.source_text.encode("utf-8")).hexdigest()
+
+
+def _artifact_prediction_filename(label: str) -> str:
+    safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", label).strip("._") or "provider"
+    suffix = hashlib.sha256(label.encode("utf-8")).hexdigest()[:10]
+    return f"predictions_{safe}_{suffix}.json"
+
+
+def _write_json(path: Path, payload: object) -> None:
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def write_artifact_bundle(
+    artifact_dir: Path,
+    papers: Sequence[PaperFixture],
+    golds: Sequence[PaperExtraction],
+    predictions: Dict[str, List[PaperExtraction]],
+    *,
+    live_labels: Sequence[str],
+    live_failures: Sequence[str],
+    scored_provider: str,
+    agreement_scope: str,
+) -> Path:
+    """Persist exact benchmark inputs and outputs for deterministic replay."""
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    gold_file = "gold.json"
+    _write_json(artifact_dir / gold_file, [x.model_dump(mode="json") for x in golds])
+    prediction_files: Dict[str, str] = {}
+    for label, records in sorted(predictions.items()):
+        filename = _artifact_prediction_filename(label)
+        prediction_files[label] = filename
+        _write_json(
+            artifact_dir / filename,
+            [x.model_dump(mode="json") for x in records],
+        )
+    artifact_files = [gold_file, *prediction_files.values()]
+    manifest = {
+        "format_version": ARTIFACT_FORMAT_VERSION,
+        "fixture": "medium_corpus_v1",
+        "paper_ids": [paper.paper_id for paper in papers],
+        "source_sha256": {paper.paper_id: _source_sha256(paper) for paper in papers},
+        "gold_file": gold_file,
+        "prediction_files": prediction_files,
+        "artifact_sha256": {
+            filename: _file_sha256(artifact_dir / filename)
+            for filename in sorted(artifact_files)
+        },
+        "live_provider_labels": sorted(live_labels),
+        "live_failures": list(live_failures),
+        "report_config": {
+            "scored_provider": scored_provider,
+            "agreement_scope": agreement_scope,
+        },
+    }
+    manifest_path = artifact_dir / "manifest.json"
+    _write_json(manifest_path, manifest)
+    return manifest_path
+
+
+def load_artifact_bundle(
+    artifact_dir: Path,
+    available_papers: Sequence[PaperFixture],
+) -> Tuple[
+    List[PaperFixture],
+    List[PaperExtraction],
+    Dict[str, List[PaperExtraction]],
+    List[str],
+    List[str],
+    Dict[str, str],
+]:
+    """Load a benchmark bundle and reject fixture drift or unsafe file names."""
+    manifest_path = artifact_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("format_version") != ARTIFACT_FORMAT_VERSION:
+        raise ValueError(
+            f"unsupported artifact format_version: {manifest.get('format_version')!r}"
+        )
+    paper_by_id = {paper.paper_id: paper for paper in available_papers}
+    paper_ids = manifest.get("paper_ids") or []
+    if len(paper_ids) != len(set(paper_ids)):
+        raise ValueError("artifact manifest contains duplicate paper_ids")
+    missing = [paper_id for paper_id in paper_ids if paper_id not in paper_by_id]
+    if missing:
+        raise ValueError(f"artifact fixture paper(s) unavailable: {', '.join(missing)}")
+    papers = [paper_by_id[paper_id] for paper_id in paper_ids]
+    expected_hashes = manifest.get("source_sha256") or {}
+    drifted = [
+        paper.paper_id for paper in papers
+        if expected_hashes.get(paper.paper_id) != _source_sha256(paper)
+    ]
+    if drifted:
+        raise ValueError(f"artifact fixture source hash mismatch: {', '.join(drifted)}")
+
+    expected_artifact_hashes = manifest.get("artifact_sha256") or {}
+
+    def artifact_file(name: object) -> Path:
+        if not isinstance(name, str) or Path(name).name != name:
+            raise ValueError(f"unsafe artifact file name: {name!r}")
+        path = artifact_dir / name
+        expected_hash = expected_artifact_hashes.get(name)
+        if not isinstance(expected_hash, str) or _file_sha256(path) != expected_hash:
+            raise ValueError(f"artifact file hash mismatch: {name}")
+        return path
+
+    gold_payload = json.loads(artifact_file(manifest.get("gold_file")).read_text(encoding="utf-8"))
+    golds = [PaperExtraction.model_validate(item) for item in gold_payload]
+    predictions: Dict[str, List[PaperExtraction]] = {}
+    for label, filename in (manifest.get("prediction_files") or {}).items():
+        payload = json.loads(artifact_file(filename).read_text(encoding="utf-8"))
+        predictions[label] = [PaperExtraction.model_validate(item) for item in payload]
+    if [record.paper_id for record in golds] != paper_ids:
+        raise ValueError("artifact gold paper order does not match manifest")
+    misaligned = [
+        label for label, records in predictions.items()
+        if [record.paper_id for record in records] != paper_ids
+    ]
+    if misaligned:
+        raise ValueError(
+            "artifact prediction paper order does not match manifest: "
+            + ", ".join(sorted(misaligned))
+        )
+    live_labels = list(manifest.get("live_provider_labels") or [])
+    live_failures = list(manifest.get("live_failures") or [])
+    report_config = manifest.get("report_config") or {}
+    if not isinstance(report_config.get("scored_provider"), str) or not isinstance(
+        report_config.get("agreement_scope"), str
+    ):
+        raise ValueError("artifact manifest has invalid report_config")
+    return papers, golds, predictions, live_labels, live_failures, report_config
+
+
 def write_reports(
     out_dir: Path,
-    provider: str = "mock_gpt",
+    provider: Optional[str] = None,
     *,
     live_specs: Optional[Sequence[ProviderSpec]] = None,
     live_limit: Optional[int] = None,
-    agreement_scope: str = "all",
+    agreement_scope: Optional[str] = None,
+    artifacts_out: Optional[Path] = None,
+    artifacts_in: Optional[Path] = None,
 ) -> Tuple[Path, Path]:
-    papers = _fixtures()
-    if live_limit:
-        papers = papers[:live_limit]
-    golds = _gold_values(papers)
-    provider_names = sorted(papers[0].provider_fields)
-    predictions = {name: _values_for_provider(papers, name) for name in provider_names}
-    live_failures: List[str] = []
-    for spec in live_specs or []:
-        exts, err = run_live_provider(papers, spec, limit=live_limit)
-        if err:
-            live_failures.append(err)
-        elif exts:
-            predictions[spec.label] = exts
+    if artifacts_in and (live_specs or live_limit or artifacts_out):
+        raise ValueError(
+            "artifacts_in cannot be combined with live providers, live_limit, or artifacts_out"
+        )
+    all_papers = _fixtures()
+    if artifacts_in:
+        (
+            papers,
+            golds,
+            predictions,
+            requested_live_labels,
+            live_failures,
+            original_config,
+        ) = load_artifact_bundle(artifacts_in, all_papers)
+        provider = provider or original_config["scored_provider"]
+        agreement_scope = agreement_scope or original_config["agreement_scope"]
+    else:
+        provider = provider or "mock_gpt"
+        agreement_scope = agreement_scope or "all"
+        papers = all_papers[:live_limit] if live_limit else all_papers
+        golds = _gold_values(papers)
+        provider_names = sorted(papers[0].provider_fields)
+        predictions = {name: _values_for_provider(papers, name) for name in provider_names}
+        live_failures = []
+        requested_live_labels = [spec.label for spec in live_specs or []]
+        for spec in live_specs or []:
+            exts, err = run_live_provider(papers, spec, limit=live_limit)
+            if err:
+                live_failures.append(err)
+            elif exts:
+                predictions[spec.label] = exts
+        if artifacts_out:
+            write_artifact_bundle(
+                artifacts_out,
+                papers,
+                golds,
+                predictions,
+                live_labels=requested_live_labels,
+                live_failures=live_failures,
+                scored_provider=provider,
+                agreement_scope=agreement_scope,
+            )
 
     if provider not in predictions:
         available = ", ".join(sorted(predictions))
@@ -513,7 +690,7 @@ def write_reports(
     coverage = report.coverage()
     critical = report.critical_coverage()
     agreement_fields = ["B.main_track", "E.serum_free_status", "J.has_extractable_quant_data", "M.recommended_action"]
-    live_labels = {s.label for s in live_specs or []}
+    live_labels = set(requested_live_labels)
     if agreement_scope == "live":
         agreement_predictions = {k: v for k, v in predictions.items() if k in live_labels}
     elif agreement_scope == "mock":
@@ -572,9 +749,9 @@ def write_reports(
     )
 
     status = "offline cross-provider simulation (`mock_gpt`, `mock_claude`, `mock_gemini`)."
-    if live_specs:
-        live_labels = ", ".join(s.label for s in live_specs)
-        status += f" Requested live providers: {live_labels}."
+    if requested_live_labels:
+        labels_text = ", ".join(requested_live_labels)
+        status += f" Requested live providers: {labels_text}."
         if live_failures:
             status += " Some live providers failed or were skipped; see below."
     agreement_path.write_text(
@@ -607,7 +784,10 @@ def write_reports(
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", default="docs", help="directory for markdown reports")
-    parser.add_argument("--provider", default="mock_gpt", help="fixture provider profile to score")
+    parser.add_argument(
+        "--provider",
+        help="provider profile to score; defaults to mock_gpt or the artifact bundle's original provider",
+    )
     parser.add_argument(
         "--live-provider",
         action="append",
@@ -617,10 +797,19 @@ def main() -> int:
     )
     parser.add_argument("--live-limit", type=int, help="limit fixture papers for live provider runs")
     parser.add_argument(
+        "--artifacts-out",
+        type=Path,
+        help="write a replayable bundle containing gold, predictions, source hashes, and run metadata",
+    )
+    parser.add_argument(
+        "--artifacts-in",
+        type=Path,
+        help="replay a prior artifact bundle without provider calls; fixture hashes must match",
+    )
+    parser.add_argument(
         "--agreement-scope",
         choices=["all", "mock", "live"],
-        default="all",
-        help="which provider set to use for agreement metrics",
+        help="provider set for agreement; defaults to all or the artifact bundle's original scope",
     )
     args = parser.parse_args()
 
@@ -631,6 +820,8 @@ def main() -> int:
         live_specs=live_specs,
         live_limit=args.live_limit,
         agreement_scope=args.agreement_scope,
+        artifacts_out=args.artifacts_out,
+        artifacts_in=args.artifacts_in,
     )
     print(f"+ wrote {eval_path}")
     print(f"+ wrote {agreement_path}")

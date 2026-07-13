@@ -220,7 +220,14 @@ python scripts/evaluate_medium_corpus.py \
   --live-provider openai:gpt-5.4 \
   --live-provider anthropic:claude-opus-4-6 \
   --live-provider gemini:gemini-3.1-pro \
-  --provider openai:gpt-5.4
+  --provider openai:gpt-5.4 \
+  --agreement-scope live \
+  --artifacts-out data/evaluation/runs/live-pilot-v1
+
+# Deterministic replay restores the original provider and agreement scope.
+python scripts/evaluate_medium_corpus.py \
+  --artifacts-in data/evaluation/runs/live-pilot-v1 \
+  --out-dir /tmp/live-pilot-v1-replay
 ```
 
 If a provider is unavailable, the agreement report records the failure instead
@@ -238,6 +245,13 @@ evidence; only locally verified records count as direct Gate 2 dose coverage.
 The context and medium operators also own explicit `D.culture_stage` and
 `E.medium_type` fields. These remove summary-field proxies for future runs, but
 do not retroactively fill or alter the frozen four-paper benchmark gold.
+
+An evaluation artifact bundle contains exact gold records, every provider's
+predictions, paper order, source-excerpt SHA-256 values, artifact checksums,
+requested live-provider labels/failures, and the original report configuration.
+Replay fails on fixture drift, file tampering, unsafe filenames, or record-order
+misalignment. Review credentials, quotation rights, and gold-version approval
+before committing a bundle.
 
 ---
 
@@ -308,6 +322,9 @@ Useful scripts:
   are converted to log response ratios. A ROM sampling variance is computed
   only when the same verified quote also reports SD/SE/SEM and sample size for
   both treatment and control groups.
+  Reagent/medium concentration percentages are excluded from effect inference;
+  percentage effects require explicit change language, and `N +/- M-fold` uses
+  N as the point estimate rather than reading the error term M as an effect.
 - `cultivate extraction-readiness`: checks whether local full text can support
   section-routed `context`, `medium`, `dose`, `endpoints`, and `findings`
   operators before spending LLM calls; it does not extract or approve evidence.

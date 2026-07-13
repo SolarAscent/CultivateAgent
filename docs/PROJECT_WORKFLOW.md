@@ -313,6 +313,11 @@ Checklist:
   endpoint or ingredient list.
 - [ ] `[HUMAN]` Version and re-adjudicate stage/type gold before changing the
   frozen four-paper benchmark; preserve the raw predictions used by each report.
+- [x] `[AI]` Support replayable T1/T2 bundles containing exact gold, all provider
+  predictions, source hashes, file checksums, paper order, failures, and report
+  configuration. Reject drift or tampering before scoring.
+- [ ] `[REVIEW]` Before committing a bundle, verify its gold version, quotation
+  rights, secret scan, provider/model labels, and byte-stable replay.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,
@@ -339,6 +344,10 @@ cultivate extract --ids H014 --mode operators --provider openai --model deepseek
 cultivate extract --ids H001-H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate export
 cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLIFERATION.md
+python scripts/evaluate_medium_corpus.py --provider mock_gpt --agreement-scope mock \
+  --artifacts-out data/evaluation/runs/mock-baseline-v1 --out-dir /tmp/mock-baseline-v1
+python scripts/evaluate_medium_corpus.py \
+  --artifacts-in data/evaluation/runs/mock-baseline-v1 --out-dir /tmp/mock-baseline-v1-replay
 ```
 
 Gate:
@@ -632,6 +641,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   available. Dose, concentration, timepoint, and factor-name numbers are skipped
   as response values. A ROM sampling variance is computed only when the same
   quote explicitly reports mean, SD/SE/SEM, and sample size for both groups.
+- Percentage effect inference requires explicit increase/decrease/change
+  language and rejects percentages followed by reagent or medium terms as
+  concentrations. For `N +/- M-fold`, only N is the point estimate; M is an
+  error term. These exclusions are regression-tested and remain subject to S4.
 - `cultivate evidence` writes raw `effect_items_<outcome>.json`.
 - `cultivate evidence-audit` produces a conservative wet-lab-entry report.
 - `cultivate extraction-readiness` checks local full-text and section-routing

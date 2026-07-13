@@ -3435,3 +3435,97 @@ failed. Wet-lab entry remains about 24%, and the complete workflow remains about
    for R045-R047 without assigning evidence decisions.
 3. `[HUMAN]` Complete the isolated 56-cell dual-review pilot; AI validates and
    computes agreement only after both reviewer files are returned.
+
+---
+
+# Session 44 (Codex) — lawful full text and review locators for R045-R047
+
+Date: 2026-07-13
+Branch: `codex/new-source-review-packet`
+
+## Start-State Assessment
+
+The session began at approximately 86% software infrastructure, 47%
+literature/evidence preparation, 24% wet-lab-entry readiness, and 29% for the
+complete workflow. Gate 1 numerical, metadata, and identifier checks passed,
+but P1 human curation remained 0/14. The dual-review pilot remained 0/56 and
+Claude's worktree had no new commit and was seven commits behind `main`.
+
+The human blockers were recorded and skipped. The highest-value independent
+task was to move R045-R047 from manifest-only records to lawful, hash-anchored
+full-text review inputs without assigning evidence decisions.
+
+## Source And Rights Decisions
+
+- R045 already existed in the owner's ignored local Zotero assets. Its metadata
+  was completed locally with the verified DOI and journal; the PDF and extracted
+  text remain ignored and are not redistributed.
+- R046 was ingested from Europe PMC `PMC12362010` JATS. The article declares CC
+  BY-NC-ND 4.0. JATS parsing produced 54,032 characters, 29 sections, one table,
+  and five figure captions.
+- R047 was ingested from the Aarhus University institutional manuscript. The
+  PDF identifies itself as CC BY 4.0; local extraction produced 71,675
+  characters.
+- Raw PDFs/XML/full text remain under ignored `data/papers/`. Committed reports
+  contain paths, source status, short metadata, hashes, and character ranges but
+  no long copyrighted excerpts.
+
+## Engineering Corrections
+
+- Review-packet and extraction-readiness headings were hard-coded to H001-H016.
+  Both now derive labels from the actual requested task IDs, so H031-H033 reports
+  cannot carry a contradictory title.
+- Review packets now record the SHA-256 of each local `fulltext.txt`; a reviewer
+  can detect source replacement before trusting character ranges.
+- Tests cover the dynamic single-task title and source-hash rendering.
+
+## Generated Artifacts
+
+- `docs/HUMAN_REVIEW_PACKET_H031_H033.md`: 3/3 tasks have local, SHA-256-bound
+  passage locators. It does not contain AI decisions.
+- Regenerated `docs/HUMAN_REVIEW_PACKET_H001_H016.md` under the same integrity
+  rule: 14 available sources now carry hashes and the 2 missing R024 tasks remain
+  explicitly `MISSING`.
+- `docs/EXTRACTION_READINESS_H031_H033.md` and matching TSV: 3/3 tasks are
+  directly operator-ready, with no fallback or missing source.
+- Manifest statuses for R045-R047 are now
+  `fulltext_ingested_for_review_packet`; Gate 1 still fails human curation.
+
+## What This Does Not Claim
+
+- Locator hits support the requested scientific claims.
+- Operator readiness is extraction accuracy or Gate 2 success.
+- CC/Open Access status permits copying entire articles into committed reports.
+- Any R045-R047 evidence has been human approved.
+
+## Verification
+
+- Review-packet/readiness focused tests: 2 passed.
+- Non-loopback suite: 97 passed, 2 skipped, 1 deselected. The deselection is the
+  known local HTTP/GROBID environment limitation.
+- Repeated H031-H033 generation remained 3/3 locator-ready and 3/3 directly
+  operator-ready; the TSV has 18 columns on all 16 rows.
+- All 3 new and 14 existing available-source locator entries contain a
+  64-character source SHA-256; the 2 missing-source entries say `MISSING`.
+- `audit_bovine_corpus.py --require-pass` returned 1 for the documented 0/14
+  human-curation failure.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+- `git diff --check` and the repository secret-pattern scan passed.
+
+## Completion Impact
+
+Software infrastructure rises conservatively from about 86% to 87% because
+review packets are source-hash anchored and correctly labeled for arbitrary ID
+ranges. Literature/evidence preparation rises from about 47% to 48% because all
+three new P1 sources now have reviewable local full text and routing reports.
+Wet-lab entry remains about 24%, and the complete workflow remains about 29%
+because no human decision or scientific gate passed.
+
+## Next 3 Steps
+
+1. `[HUMAN]` Review H031-H033 using the hash-bound locator packet, preserving
+   the immortalized-cell and undisclosed-formulation limits.
+2. `[HUMAN]` Complete the isolated 56-cell dual-review pilot.
+3. `[AI]` After reviewer files return, validate them without cross-exposure and
+   compute agreement; do not scale production evaluation before pilot READY.

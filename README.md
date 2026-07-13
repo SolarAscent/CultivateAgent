@@ -154,6 +154,10 @@ cultivate extract --tier A --mode operators
 # Before spending LLM calls, audit whether local full text supports operator routing:
 cultivate extraction-readiness --ids H001-H016
 # Current H001-H016 preflight: 14 direct-ready, 0 fallback-ready, 2 missing R024 tasks.
+# Newly added H031-H033 sources are separately 3/3 direct-ready:
+cultivate extraction-readiness --ids H031-H033 \
+  --out docs/EXTRACTION_READINESS_H031_H033.md \
+  --tsv data/literature/bovine_extraction_readiness_H031_H033.tsv
 # For a controlled live pilot, target review IDs/source IDs instead of the whole tier:
 cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
 # If every operator fails at the provider-call layer, the command exits nonzero
@@ -172,6 +176,8 @@ cultivate evidence-audit --outcome proliferation --out docs/EVIDENCE_AUDIT_PROLI
 # Build character-range locators for the first human review gate:
 cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016.md
 # Current committed packet covers 14/16 tasks; H015-H016 still need R024 main full text.
+# R045-R047 are available in a separate hash-anchored packet with no AI decisions:
+cultivate review-packet --ids H031-H033 --out docs/HUMAN_REVIEW_PACKET_H031_H033.md
 # Create and check the human-fillable adjudication worksheet for ready tasks:
 cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
 cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv

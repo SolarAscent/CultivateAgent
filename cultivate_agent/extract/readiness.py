@@ -15,6 +15,7 @@ from typing import Iterable, List
 
 from ..evidence.review_packet import (
     _best_paper_match,
+    _review_id_label,
     load_manifest,
     load_review_tasks,
 )
@@ -239,8 +240,9 @@ def write_extraction_readiness_markdown(rows: List[PaperReadiness], path: str | 
     ready = sum(1 for r in rows if r.status == "ready_for_operator_extraction")
     fallback = sum(1 for r in rows if r.status == "ready_with_fulltext_fallback")
     partial = sum(1 for r in rows if r.status == "partial_operator_ready")
+    packet_label = _review_id_label(row.review_id for row in rows)
     lines = [
-        "# Extraction Readiness: H001-H016",
+        f"# Extraction Readiness: {packet_label}",
         "",
         "Status: offline section-routing preflight; not an extraction result and not evidence adjudication.",
         "",

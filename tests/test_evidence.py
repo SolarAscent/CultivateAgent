@@ -324,12 +324,15 @@ def test_review_packet_builds_locators_without_adjudicating(tmp_path):
     assert packet[0].status == "ready_for_human_review"
     assert packet[0].fulltext_path.startswith("papers/")
     assert not packet[0].fulltext_path.startswith("/")
+    assert len(packet[0].source_sha256) == 64
     assert packet[0].hits
     assert packet[0].hits[0].start < packet[0].hits[0].end
     assert packet[0].hits[0].fulltext_path == packet[0].fulltext_path
 
     out = write_review_packet_markdown(packet, tmp_path / "packet.md")
     rendered = out.read_text(encoding="utf-8")
+    assert "# Human Review Packet: H001" in rendered
+    assert packet[0].source_sha256 in rendered
     assert "candidate passage locators" in rendered
     assert "decision: supported" not in rendered.lower()  # no AI adjudication label
 

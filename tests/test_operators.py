@@ -252,7 +252,9 @@ def test_extraction_readiness_reports_operator_context(tmp_path):
 
     md = write_extraction_readiness_markdown(rows, tmp_path / "readiness.md")
     tsv = write_extraction_readiness_tsv(rows, tmp_path / "readiness.tsv")
-    assert "Ready for operator extraction" in md.read_text(encoding="utf-8")
+    rendered = md.read_text(encoding="utf-8")
+    assert "# Extraction Readiness: H001" in rendered
+    assert "Ready for operator extraction" in rendered
     assert "ready_for_operator_extraction" in tsv.read_text(encoding="utf-8")
 
 

@@ -8,6 +8,7 @@ paper excerpts in committed docs.
 from __future__ import annotations
 
 import csv
+import hashlib
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -78,6 +79,7 @@ class ReviewPacketItem:
     paper_id: str = ""
     title: str = ""
     fulltext_path: str = ""
+    source_sha256: str = ""
     status: str = "missing_source"
     query_terms: List[str] = field(default_factory=list)
     hits: List[PassageHit] = field(default_factory=list)
@@ -157,6 +159,7 @@ def build_review_packet(
         if not text.strip():
             item.status = "missing_fulltext"
         else:
+            item.source_sha256 = hashlib.sha256(paths.fulltext.read_bytes()).hexdigest()
             item.status = "ready_for_human_review"
             item.hits = rank_passages(text, terms, meta, paths, top_k=top_k, path_base=display_base)
         out.append(item)
@@ -210,8 +213,9 @@ def write_review_packet_markdown(items: List[ReviewPacketItem], path: str | Path
     out = Path(path)
     out.parent.mkdir(parents=True, exist_ok=True)
     ready = sum(1 for i in items if i.status == "ready_for_human_review")
+    packet_label = _review_id_label(item.task.review_id for item in items)
     lines = [
-        "# Human Review Packet: H001-H016",
+        f"# Human Review Packet: {packet_label}",
         "",
         "Status: candidate passage locators for human adjudication; not an AI decision.",
         "",
@@ -244,6 +248,7 @@ def write_review_packet_markdown(items: List[ReviewPacketItem], path: str | Path
             f"- Suggested action: {task.suggested_action}",
             f"- Local paper: `{item.paper_id or 'MISSING'}`",
             f"- Full text: `{item.fulltext_path or 'MISSING'}`",
+            f"- Source SHA-256: `{item.source_sha256 or 'MISSING'}`",
             f"- Query terms: {', '.join(item.query_terms[:24])}",
             "",
             "| Rank | Score | Character Range | Matched Terms |",
@@ -260,6 +265,23 @@ def write_review_packet_markdown(items: List[ReviewPacketItem], path: str | Path
         lines.append("")
     out.write_text("\n".join(lines), encoding="utf-8")
     return out
+
+
+def _review_id_label(review_ids: Iterable[str]) -> str:
+    ids = [review_id for review_id in review_ids if review_id]
+    if not ids:
+        return "No Tasks"
+    if len(ids) == 1:
+        return ids[0]
+    numeric = []
+    for review_id in ids:
+        match = re.fullmatch(r"H(\d+)", review_id)
+        if not match:
+            return ", ".join(ids)
+        numeric.append(int(match.group(1)))
+    if numeric == list(range(numeric[0], numeric[-1] + 1)):
+        return f"{ids[0]}-{ids[-1]}"
+    return ", ".join(ids)
 
 
 def _best_paper_match(

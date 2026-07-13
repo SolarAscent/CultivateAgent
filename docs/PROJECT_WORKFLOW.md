@@ -172,9 +172,9 @@ Artifact registry:
 | Method-source registry | `data/literature/ai_for_science_method_sources.tsv` | `[AI]` + `[REVIEW]` | Algorithm or pipeline decision |
 | Method review | `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md` | `[AI]` + `[REVIEW]` | Method decision |
 | Extraction reports | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | Evaluation run |
-| Extraction readiness report | `docs/EXTRACTION_READINESS_H001_H016.md`, `data/literature/bovine_extraction_readiness_H001_H016.tsv` | `[AI]` + `[REVIEW]` | Before live operator extraction |
+| Extraction readiness report | `docs/EXTRACTION_READINESS_H001_H016.md`, `docs/EXTRACTION_READINESS_H031_H033.md`, matching TSV files | `[AI]` + `[REVIEW]` | Before live operator extraction |
 | Evidence audit | `docs/EVIDENCE_AUDIT_PROLIFERATION.md` | `[AI]` + `[REVIEW]` | Evidence export or gate update |
-| Review packet | `docs/HUMAN_REVIEW_PACKET_H001_H016.md` | `[AI]` + `[HUMAN]` | Source availability or review queue update |
+| Review packet | `docs/HUMAN_REVIEW_PACKET_H001_H016.md`, `docs/HUMAN_REVIEW_PACKET_H031_H033.md` | `[AI]` + `[HUMAN]` | Source availability or review queue update |
 | Human adjudication worksheet | `data/literature/bovine_adjudication_H001_H014.tsv` | `[HUMAN]` + `[AI]` | Before and after human evidence review |
 | Worksheet validation report | `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` | `[AI]` + `[REVIEW]` | After worksheet creation or edits |
 | Worksheet status report | `docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md` | `[AI]` + `[REVIEW]` | After worksheet creation or edits |
@@ -345,6 +345,9 @@ Checklist:
   lexical no-hit cannot be coded as `not_reported` without reading the source.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
+- [x] `[AI]` Ingest lawful R045-R047 full text and generate the H031-H033
+  hash-anchored review packet plus readiness report. All 3 tasks are directly
+  operator-ready; this is source navigation, not evidence approval.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,
   source record IDs, or paper IDs select an explicit paper set.
 - [x] `[AI]` Treat total provider-call failure as extraction failure; do not
@@ -365,6 +368,10 @@ cultivate triage
 cultivate extraction-readiness --ids H001-H016 \
   --out docs/EXTRACTION_READINESS_H001_H016.md \
   --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv
+cultivate extraction-readiness --ids H031-H033 \
+  --out docs/EXTRACTION_READINESS_H031_H033.md \
+  --tsv data/literature/bovine_extraction_readiness_H031_H033.tsv
+cultivate review-packet --ids H031-H033 --out docs/HUMAN_REVIEW_PACKET_H031_H033.md
 cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate extract --ids H001-H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate export
@@ -759,6 +766,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | H001-H014 adjudication status | 0/14 resolved, 0 evidence-bearing | Status report confirms the worksheet is structurally valid but still awaiting human decisions |
 | Adjudicated evidence table | 0 rows | Header-only export from the blank worksheet; not evidence approval |
 | Review-packet coverage | 14/16 with local locators | H001-H014 are ready for efficient human review |
+| New-source review packet | 3/3 with SHA-256-bound local locators | H031-H033 cover R045-R047; all decisions remain open |
+| New-source extraction readiness | 3/3 direct-ready | R046 uses Europe PMC JATS; R045/R047 route from lawful local/open PDFs |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
 

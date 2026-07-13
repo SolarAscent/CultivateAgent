@@ -144,6 +144,14 @@ and independent records:
   [Aarhus University manuscript](https://pure.au.dk/ws/files/358533912/1-s2.0-S0963996923007627-main.pdf),
   DOI `10.1016/j.foodres.2023.113217`.
 
+Lawful local full text is now available for all three additions. R045 came from
+the owner's Zotero library; R046 uses Europe PMC open-access JATS under CC
+BY-NC-ND 4.0; R047 uses the Aarhus institutional manuscript marked CC BY 4.0.
+[`HUMAN_REVIEW_PACKET_H031_H033.md`](HUMAN_REVIEW_PACKET_H031_H033.md) binds
+each locator set to the local full-text SHA-256, and
+[`EXTRACTION_READINESS_H031_H033.md`](EXTRACTION_READINESS_H031_H033.md)
+reports 3/3 directly operator-ready. Neither artifact adjudicates evidence.
+
 The Glycyrrhiza/licochalcone paper (`10.1038/s41598-025-98386-1`) was screened
 but not added: its bovine and porcine effects were negligible and its positive
 result was chicken-specific, so it does not close a bovine medium evidence gap.
@@ -276,6 +284,7 @@ Gate 6, pre-registration readiness: **not passed**.
    extraction outputs.
 6. Extract exact component tables, dose ranges, endpoints, and evidence quotes
    for audit candidates.
-7. Fill the 30 human review tasks, starting with `H001-H016`.
+7. Fill the 33 human review tasks, starting with `H001-H016`, then use the
+   separate H031-H033 packet for the newly added sources.
 8. Promote only reviewed and grounded variables into a bounded search space.
 9. Generate a first wet-lab design packet only after Gates 1-6 pass.

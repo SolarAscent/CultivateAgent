@@ -26,6 +26,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Extract exact formulation, dose levels, passage counts, doubling times, and myogenic marker results.
 - Local paper: `simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli`
 - Full text: `data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
+- Source SHA-256: `2caba0ae328473d43a17c330c14d467aef763c2877a74b0f465d42c6cc8831ad`
 - Query terms: beefy-9, expansion, benchmark, proliferation_endpoint, doubling_time, passages, full, support, beefy-9/b8, plus, recombinant, albumin, positive, serum-free, bovine, anchor, exact, doubling-time/passaging, claims, recorded, extract, formulation, dose, levels
 
 | Rank | Score | Character Range | Matched Terms |
@@ -45,6 +46,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Record exact tested FGF2 range and classify safe/reduced/removal levels.
 - Local paper: `simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli`
 - Full text: `data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
+- Source SHA-256: `2caba0ae328473d43a17c330c14d467aef763c2877a74b0f465d42c6cc8831ad`
 - Query terms: fgf2, reduction, beefy-9, fgf2_dose_range, growth_effect, morphology, concentrations, were, tested, preserved, short-term, long-term, growth, suffer, exact, range, classify, safe/reduced/removal, levels., simple, effective, serum-free, medium, sustained
 
 | Rank | Score | Character Range | Matched Terms |
@@ -64,6 +66,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Extract albumin source, g/L or mg/mL, and cost-performance notes.
 - Local paper: `simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli`
 - Full text: `data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.txt`
+- Source SHA-256: `2caba0ae328473d43a17c330c14d467aef763c2877a74b0f465d42c6cc8831ad`
 - Query terms: albumin, dose, cost, tradeoff, albumin_concentration, albumin_type, recombinant, concentration, source, were, beefy-9/beefy-9+, cost/performance, change, extract, g/l, mg/ml, cost-performance, notes., simple, effective, serum-free, medium, sustained, expansion
 
 | Rank | Score | Character Range | Matched Terms |
@@ -83,6 +86,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Extract full component table, supplements, attachment conditions, and endpoint values.
 - Local paper: `development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov`
 - Full text: `data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt`
+- Source SHA-256: `25fabce9211fbb531fbcc7051ccc945bc92347b70c078c8934d7f71a6ef8a17a`
 - Query terms: chemically, defined, bovine, medium, formulation, component_list, dose_range, animal_free_status, components, concentrations, made, kolkmann, animal-free, effective, primary, satellite, cell, expansion, extract, full, component, table, supplements, attachment
 
 | Rank | Score | Character Range | Matched Terms |
@@ -102,6 +106,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Record markers, assay timing, and comparison condition.
 - Local paper: `development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov`
 - Full text: `data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/fulltext.txt`
+- Source SHA-256: `25fabce9211fbb531fbcc7051ccc945bc92347b70c078c8934d7f71a6ef8a17a`
 - Query terms: differentiation, capacity, expansion, myogenic_identity, differentiation_capacity, cells, expanded, chemically, defined, medium, retain, marker/assay, proves, markers, assay, timing, comparison, condition., development, vitro, primary, bovine, satellite, serum-free
 
 | Rank | Score | Character Range | Matched Terms |
@@ -121,6 +126,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Record media names, 6-day proliferation data, morphology notes, and limitations.
 - Local paper: `serum-free-media-for-the-growth-of-primary-bovine-myoblasts`
 - Full text: `data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/fulltext.txt`
+- Source SHA-256: `fd804bcf8c812094397cd2b6acfcf6853c773da6db4c51283bcb452e82494fa0`
 - Query terms: commercial, sfm, benchmark, negative_evidence, serum_free_status, chemically, defined, serum-free, media, supported, primary, bovine, myoblast, growth, they, compare, serum-containing, medium, names, 6-day, proliferation, data, morphology, notes
 
 | Rank | Score | Character Range | Matched Terms |
@@ -140,6 +146,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Extract IGF1R/TFRC/LPAR1-related ligands, markers, and whether expansion formulation should avoid differentiation induction.
 - Local paper: `a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate`
 - Full text: `data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/fulltext.txt`
+- Source SHA-256: `793d4561289421161a64e029e2b3503804b28fc8f1d7d9766860b268d5a77544`
 - Query terms: serum-free, differentiation, guardrail, differentiation_endpoint, ligand_list, ligands/receptors, enabled, myogenic, plausible, expansion-stage, risks, constraints, extract, igf1r/tfrc/lpar1-related, ligands, markers, whether, expansion, formulation, avoid, induction., media, cultured, meat
 
 | Rank | Score | Character Range | Matched Terms |
@@ -159,6 +166,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Extract bovine-relevant spent-media findings and any reusable assay recommendations.
 - Local paper: `spent-media-analysis-suggests-cultivated-meat-media-will-require-species-and-cel`
 - Full text: `data/papers/spent-media-analysis-suggests-cultivated-meat-media-will-require-species-and-cel/fulltext.txt`
+- Source SHA-256: `2a0b8024867784b0def0d71f1c92a44365fa21f5af0d1a159406b5cd72d18739`
 - Query terms: species, cell-type, dependence, cell_type_specificity, spent_media_features, consumed, nutrients/metabolites, differed, species/cell, type, findings, justify, avoiding, cross-species, transfer, extract, bovine-relevant, spent-media, reusable, assay, recommendations., spent, media, analysis
 
 | Rank | Score | Character Range | Matched Terms |
@@ -178,6 +186,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Extract CVE dose, conditioned medium fraction, growth effect, and reproducibility caveats.
 - Local paper: `development-of-serum-free-and-grain-derived-nutrient-free-medium-using-microalga`
 - Full text: `data/papers/development-of-serum-free-and-grain-derived-nutrient-free-medium-using-microalga/fulltext.txt`
+- Source SHA-256: `6568319895f8ad2a1aefd225a5fd433231e9a237d574be697f729a405ad64751`
 - Query terms: microalga/conditioned, medium, variable, composition_disclosure, algae_extract_dose, conditioned_medium, microalga-derived, nutrient, conditioned-medium, system, decomposed, controllable, reproducible, variables, first-round, testing, extract, cve, dose, conditioned, fraction, growth, effect, reproducibility
 
 | Rank | Score | Character Range | Matched Terms |
@@ -197,6 +206,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Extract factor list, low/high levels, optimal recipe, response metrics, and validation data.
 - Local paper: `a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells`
 - Full text: `data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
+- Source SHA-256: `1fc65fdb5dc5eb0cd18a1a51096a983400ca66d4ff06a8bd0dc01c733847bb16`
 - Query terms: doe/rsm, bovine, sfm, formulation, doe_factors, optimized_levels, endpoint, factors, levels, were, screened, optimized, seed, search, space, extract, factor, list, low/high, optimal, recipe, response, metrics, validation
 
 | Rank | Score | Character Range | Matched Terms |
@@ -216,6 +226,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Record long-term assay length, live assays, transcriptomics summary, and warnings.
 - Local paper: `a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells`
 - Full text: `data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/fulltext.txt`
+- Source SHA-256: `1fc65fdb5dc5eb0cd18a1a51096a983400ca66d4ff06a8bd0dc01c733847bb16`
 - Query terms: long-term, transcriptomic, validation, long_term_performance, identity_markers, doe/rsm, formulation, preserve, proliferative, attributes, myogenic, identity, longer, culture, assay, length, live, assays, transcriptomics, summary, warnings., simple, robust, serum-free
 
 | Rank | Score | Character Range | Matched Terms |
@@ -235,6 +246,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Extract substitute identity, dose, performance relative to albumin, and food-grade status.
 - Local paper: `low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med`
 - Full text: `data/papers/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med/fulltext.txt`
+- Source SHA-256: `ae70adf2819b5b58cd0b0ee3cb8232751e20f1a553e010db40e07dd0e97f1bb9`
 - Query terms: albumin, replacement, candidates, albumin_substitute, food_grade, dose_range, low-cost, food-grade, alternatives, serum, worked, b8/b9, bovine, muscle, stem, cells, concentration, extract, substitute, identity, dose, performance, relative, status.
 
 | Rank | Score | Character Range | Matched Terms |
@@ -254,6 +266,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Assign mechanism class and note unknown composition risk.
 - Local paper: `low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med`
 - Full text: `data/papers/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med/fulltext.txt`
+- Source SHA-256: `ae70adf2819b5b58cd0b0ee3cb8232751e20f1a553e010db40e07dd0e97f1bb9`
 - Query terms: stabilizer, mechanism, mechanism_class, safety, reproducibility, albumin, substitute, acting, carrier/stabilizer, nutrient, undefined, bioactive, mixture, assign, class, note, unknown, composition, risk., low-cost, food-grade, alternatives, serum, albumins
 
 | Rank | Score | Character Range | Matched Terms |
@@ -273,6 +286,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Extract DOE design, factor levels, interaction terms, and effect direction.
 - Local paper: `influence-of-media-composition-on-the-level-of-bovine-satellite-cell-proliferati`
 - Full text: `data/papers/influence-of-media-composition-on-the-level-of-bovine-satellite-cell-proliferati/fulltext.txt`
+- Source SHA-256: `8e27c3ff5e9114a90d78fccf3de731c97942e7377ad0d4e20fc8e006b41dca7e`
 - Query terms: bfgf/media, composition, interactions, bfgf_dose, interaction_effects, doe_model, media, components, interacted, bfgf, bovine, satellite, proliferation, were, tested, levels, extract, doe, design, factor, interaction, terms, effect, direction.
 
 | Rank | Score | Character Range | Matched Terms |
@@ -292,6 +306,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Extract isolate source, dose, performance, and animal-origin classification.
 - Local paper: `MISSING`
 - Full text: `MISSING`
+- Source SHA-256: `MISSING`
 - Query terms: plant/insect, protein, isolate, status, animal_origin_status, protein_isolate_dose, performance, plant, insect, isolates, improved, bovine, satellite-cell, proliferation, violate, animal-component-free, preference, extract, source, dose, animal-origin, classification., sustainable, alternatives
 
 | Rank | Score | Character Range | Matched Terms |
@@ -307,6 +322,7 @@ The packet avoids embedding long source excerpts; record the final human decisio
 - Suggested action: Record composition data, certificate/spec needs, and batch-risk notes.
 - Local paper: `MISSING`
 - Full text: `MISSING`
+- Source SHA-256: `MISSING`
 - Query terms: undefined, supplement, risk, composition_disclosure, batch_variability, protein, isolates, sufficiently, characterized, reproducible, medium, optimization, composition, data, certificate/spec, needs, batch-risk, notes., sustainable, alternatives, fetal, bovine, serum, evaluating
 
 | Rank | Score | Character Range | Matched Terms |

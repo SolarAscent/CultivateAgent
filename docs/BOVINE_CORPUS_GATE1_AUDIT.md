@@ -49,6 +49,6 @@ explicit human curation status.
 - `R023` [human_curation_pending]: fulltext_ingested_for_review_packet
 - `R024` [human_curation_pending]: needs_institutional_or_human_full_text
 - `R029` [human_curation_pending]: needs_full_text_check
-- `R045` [human_curation_pending]: needs_full_text_check
-- `R046` [human_curation_pending]: fulltext_available_needs_human_review
-- `R047` [human_curation_pending]: fulltext_available_needs_human_review
+- `R045` [human_curation_pending]: fulltext_ingested_for_review_packet
+- `R046` [human_curation_pending]: fulltext_ingested_for_review_packet
+- `R047` [human_curation_pending]: fulltext_ingested_for_review_packet

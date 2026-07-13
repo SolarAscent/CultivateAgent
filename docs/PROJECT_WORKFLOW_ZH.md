@@ -164,9 +164,9 @@ CultivateAgent/
 | 方法文献登记表 | `data/literature/ai_for_science_method_sources.tsv` | `[AI]` + `[REVIEW]` | 算法或 pipeline 决策 |
 | 方法综述 | `docs/AI_FOR_SCIENCE_METHOD_REVIEW.md` | `[AI]` + `[REVIEW]` | 方法决策 |
 | 抽取评估 | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | Evaluation run 后 |
-| 抽取就绪度报告 | `docs/EXTRACTION_READINESS_H001_H016.md`, `data/literature/bovine_extraction_readiness_H001_H016.tsv` | `[AI]` + `[REVIEW]` | live operator extraction 前 |
+| 抽取就绪度报告 | `docs/EXTRACTION_READINESS_H001_H016.md`, `docs/EXTRACTION_READINESS_H031_H033.md` 及对应 TSV | `[AI]` + `[REVIEW]` | live operator extraction 前 |
 | 证据审计 | `docs/EVIDENCE_AUDIT_PROLIFERATION.md` | `[AI]` + `[REVIEW]` | Evidence export 或 gate 更新 |
-| 复核定位包 | `docs/HUMAN_REVIEW_PACKET_H001_H016.md` | `[AI]` + `[HUMAN]` | source 可用性或 review queue 更新 |
+| 复核定位包 | `docs/HUMAN_REVIEW_PACKET_H001_H016.md`, `docs/HUMAN_REVIEW_PACKET_H031_H033.md` | `[AI]` + `[HUMAN]` | source 可用性或 review queue 更新 |
 | 人工裁决工作表 | `data/literature/bovine_adjudication_H001_H014.tsv` | `[HUMAN]` + `[AI]` | 人工证据复核前后 |
 | 工作表校验报告 | `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` | `[AI]` + `[REVIEW]` | 工作表创建或编辑后 |
 | 工作表状态报告 | `docs/HUMAN_ADJUDICATION_STATUS_H001_H014.md` | `[AI]` + `[REVIEW]` | 工作表创建或编辑后 |
@@ -323,6 +323,9 @@ Checklist：
   被标为 `not_reported`。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
+- [x] `[AI]` 合法导入 R045-R047 全文，并生成带 SHA-256 的 H031-H033 review
+  packet 和 readiness 报告。3 项均 direct operator-ready；这只是原文导航，
+  不是证据批准。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、
   source record IDs 或 paper IDs 精确选择 paper set。
 - [x] `[AI]` 把全 operator provider-call failure 视为抽取失败；当所有
@@ -343,6 +346,10 @@ cultivate triage
 cultivate extraction-readiness --ids H001-H016 \
   --out docs/EXTRACTION_READINESS_H001_H016.md \
   --tsv data/literature/bovine_extraction_readiness_H001_H016.tsv
+cultivate extraction-readiness --ids H031-H033 \
+  --out docs/EXTRACTION_READINESS_H031_H033.md \
+  --tsv data/literature/bovine_extraction_readiness_H031_H033.tsv
+cultivate review-packet --ids H031-H033 --out docs/HUMAN_REVIEW_PACKET_H031_H033.md
 cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate extract --ids H001-H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate export
@@ -709,6 +716,8 @@ Gate：论文 claims 可追溯到证据和结果。
 | H001-H014 adjudication status | 0/14 resolved, 0 evidence-bearing | 状态报告确认工作表结构有效，但仍等待人工 decision |
 | 已裁决证据表 | 0 行 | 来自空白工作表的仅表头导出；不是证据批准 |
 | Review-packet 覆盖 | 14/16 有本地 locators | H001-H014 可进入高效人工复核 |
+| 新来源 review packet | 3/3 有 SHA-256 绑定的本地 locators | H031-H033 对应 R045-R047；decision 全部保持 open |
+| 新来源 extraction readiness | 3/3 direct-ready | R046 使用 Europe PMC JATS；R045/R047 来自合法本地或开放 PDF |
 | 缺失 review-packet source | 2/16 | H015-H016 对应 R024，需要机构访问或人工提供主文全文 |
 | Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
 

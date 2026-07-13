@@ -139,6 +139,22 @@ def beta_binomial_direction(directions: List[int], prior: Tuple[float, float] = 
 # --------------------------------------------------------------------------- #
 # Orchestration                                                              #
 # --------------------------------------------------------------------------- #
+def _direction_conflict(directions: List[int]) -> Optional[Tuple[int, int]]:
+    """Return (helps, hurts) when direction votes conflict enough to be context-dependent.
+
+    Same criterion as the direction-only path: at least 3 signed studies and the
+    minority direction is at least 30% of them. Applied in the random-effects branch
+    too, so a component with a clear tier-1 magnitude but a split of direction-only
+    studies is still flagged for direct testing rather than blindly trusted.
+    """
+    helps = len([d for d in directions if d > 0])
+    hurts = len([d for d in directions if d < 0])
+    signed = helps + hurts
+    if signed >= 3 and min(helps, hurts) / signed >= 0.3:
+        return helps, hurts
+    return None
+
+
 def meta_analyze(items: List[EvidenceItem], *, high_i2: float = 0.5) -> EvidenceSummary:
     """Synthesize a list of evidence items for ONE (component, outcome, context)."""
     if not items:
@@ -175,6 +191,13 @@ def meta_analyze(items: List[EvidenceItem], *, high_i2: float = 0.5) -> Evidence
         summ.context_dependent = i2 >= high_i2
         if summ.context_dependent:
             summ.note = f"High heterogeneity (I^2={i2:.0%}); effect is context-dependent — test directly."
+        conflict = _direction_conflict(directions)
+        if conflict:
+            helps, hurts = conflict
+            summ.context_dependent = True
+            extra = (f"Direction evidence conflicts ({helps} help / {hurts} hurt across "
+                     f"{helps + hurts} signed studies); context-dependent — test directly.")
+            summ.note = f"{summ.note} {extra}".strip()
     elif len(continuous) == 1:
         pooled, var = continuous[0]
         se = math.sqrt(max(var, 1e-12))

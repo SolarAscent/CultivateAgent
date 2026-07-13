@@ -63,6 +63,13 @@ When every applicable paper instead has at least one locally grounded operator
 `dose_record`, the row basis becomes `direct_operator`; unverified records never
 contribute to `direct_predicted`.
 
+The schema and operators now have dedicated `D.culture_stage` and
+`E.medium_type` fields for future runs. This report remains tied to the prior
+frozen fixture and historical live run. Its raw predictions were not versioned,
+so those gold cells are not backfilled here; their `NOT_EVALUABLE` status is
+preserved rather than retroactively changing the
+published denominator.
+
 ## Corpus
 
 - Stout et al., Communications Biology 5, 466 (2022). Sources: https://www.nature.com/articles/s42003-022-03423-8, https://pubmed.ncbi.nlm.nih.gov/35654948/

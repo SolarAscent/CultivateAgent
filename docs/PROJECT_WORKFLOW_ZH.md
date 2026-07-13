@@ -291,6 +291,10 @@ Checklist：
 - [x] `[AI]` operator mode 仅在同一条 verified quote 同时出现 component 和
   dose/range 时生成 component-dose record；保留 unit、comparison group、endpoint，
   未验证关系不能算 Gate 2 direct dose coverage。
+- [x] `[AI]` 将明确报告的 culture stage 和 medium role/type 抽取到专用
+  `D.culture_stage`、`E.medium_type`；不能由 endpoint 或成分列表推断。
+- [ ] `[HUMAN]` 修改冻结的四篇 benchmark 前，先版本化并重新裁决 stage/type
+  gold，同时保留每份报告使用的 raw predictions。
 - [x] `[AI]` 在 live operator extraction 前运行 `cultivate extraction-readiness`，
   区分 source missing 和 section routing weak。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、

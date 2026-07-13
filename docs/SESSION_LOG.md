@@ -2677,3 +2677,85 @@ extraction or scientific gate passed.
 2. Human reviewer completes H001-H014; AI validates and exports the worksheet.
 3. Run H014 live operator extraction after provider credentials are valid and
    inspect direct dose records before any scale-up.
+
+---
+
+# Session 36 (Codex) — direct stage and medium-type fields
+
+Date: 2026-07-13
+Branch: `codex/operator-stage-medium-type`
+
+## Start-State Assessment
+
+The evidence-based baseline was about 75% software infrastructure, 43%
+literature/evidence work, 24% wet-lab-entry readiness, and 29% for the complete
+workflow through paper results (reasonable range 25-33%). Direct dose records
+were implemented, but the frozen evaluation fixture still had no evaluable
+stage or medium-type gold cells. No scientific or wet-lab gate had newly passed.
+
+The initial idea was to add source-supported stage/type labels to the four-paper
+fixture. Audit showed that this would retroactively change a report whose raw
+live predictions were not versioned. The safer high-value task was to add narrow
+direct schema/operator fields while keeping the historical benchmark frozen.
+
+## Decision And Method Basis
+
+Following the registered SchemaRAG/DocETL schema-reduction decision and
+Cochrane's predefined-data-item guidance:
+
+- Add `D.culture_stage` for explicitly reported isolation, expansion or
+  proliferation, differentiation, and maturation stages.
+- Add `E.medium_type` for explicitly reported formulation roles such as
+  expansion, differentiation, conditioned, or spent medium.
+- Give the context and medium operators disjoint ownership of the fields.
+- Do not infer stage from an endpoint alone or medium type from ingredients.
+- Map Gate 2 directly to these fields rather than broad condition summaries or
+  basal-medium names.
+- Do not backfill the frozen gold fixture without versioned raw predictions and
+  human or independent re-adjudication.
+
+## Changes Made
+
+- Added optional typed fields to Blocks D and E; old extraction JSON remains
+  compatible.
+- Extended the focused context and medium operator prompts and field ownership.
+- Replaced Gate 2 stage/medium-type mappings with the dedicated fields.
+- Added grounded mock extraction and synthetic Gate tests for both concepts.
+- Updated README, both workflow manuals, wet-lab decision record, method review,
+  bovine manifest, evaluation report, and this session log.
+
+## What This Does Not Claim
+
+- The existing four-paper fixture now covers stage or medium type; it does not.
+- H001-H014 have been re-extracted or adjudicated; they have not.
+- A field value is valid without a supporting quote and later human review.
+- The historical live benchmark can be recomputed without its raw predictions.
+
+## Completion Impact
+
+This closes another technical schema gap but does not pass a scientific gate.
+Software infrastructure may rise from about 75% to about 76% after verification;
+literature/evidence remains about 43%, wet-lab entry about 24%, and the full
+workflow about 29%.
+
+## Verification
+
+- Focused schema/operator/Gate tests: 3 passed.
+- Non-loopback suite:
+  `.venv/bin/python -m pytest -q -k 'not test_grobid_client_writes_and_parses_tei'`:
+  73 passed, 2 skipped, 1 deselected. The deselection is the known local-HTTP
+  environment limitation.
+- Offline evaluation report generation passed and preserved stage/medium-type
+  `NOT_EVALUABLE` for the unchanged fixture.
+- CLI smoke passed.
+- Optimization demo passed; hypervolume rose from 7.050 to 16.464.
+- `git diff --check` passed; secret scan found no pasted-style API keys.
+
+## Next 3 Steps
+
+1. Persist versioned gold, source excerpts, provider predictions, and run
+   metadata so T1/T2 reports become exactly reproducible before gold revision.
+2. Human reviewer completes H001-H014; AI validates and exports without changing
+   scientific decisions.
+3. Run H014 live operator extraction after provider credentials are valid and
+   require direct stage/type/dose plus the other Gate 2 concepts.

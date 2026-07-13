@@ -142,8 +142,11 @@ Operationalization: each of the eight concepts is evaluated separately at the
 0.75 non-missing threshold. A pooled average never compensates for a failed
 concept. `species`, `cell_type`, `stage`, `medium_type`,
 `serum_free_status`, `component_identity`, and `endpoint` map to direct A-M
-fields or field groups. `dose_range` is only a proxy over J-block quantitative
-fields because A-M has no dedicated component-dose structure; even complete
+fields or field groups. Future operator runs use dedicated `D.culture_stage`
+and `E.medium_type` fields; the frozen fixture predates them and remains
+explicitly not evaluable for those concepts. `dose_range` is only a proxy over
+J-block quantitative fields because A-M has no dedicated component-dose
+structure; even complete
 proxy coverage yields `PROVISIONAL_ONLY` until the dedicated dose operator and
 human review confirm it. Missing gold coverage yields `NOT_EVALUABLE`, not a
 pass. This follows Cochrane Handbook Chapter 5 guidance to predefine and pilot

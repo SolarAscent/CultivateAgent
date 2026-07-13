@@ -19,14 +19,24 @@ def _handler(msgs):
     u = msgs[-1].content
     if "Operator: context" in u:
         return json.dumps({"fields": {"B.main_track": "medium", "B.species": ["bovine"],
-                                      "D.cell_type": ["satellite cells"]},
-                           "evidence": {"B.species": {"quote": "bovine satellite cells",
-                                                      "location": "Methods", "confidence": "high"}}})
+                                      "D.cell_type": ["satellite cells"],
+                                      "D.culture_stage": ["expansion"]},
+                           "evidence": {
+                               "B.species": {"quote": "bovine satellite cells",
+                                             "location": "Methods", "confidence": "high"},
+                               "D.culture_stage": {"quote": "satellite cells expanded serum-free",
+                                                   "location": "Methods", "confidence": "high"},
+                           }})
     if "Operator: medium" in u:
         return json.dumps({"fields": {"E.basal_medium": ["DMEM/F12"], "E.serum_free_status": "serum-free",
+                                      "E.medium_type": ["serum-free medium"],
                                       "E.growth_factors": ["FGF2", "recombinant albumin"]},
-                           "evidence": {"E.basal_medium": {"quote": "Basal medium was DMEM/F12",
-                                                           "location": "Methods", "confidence": "high"}}})
+                           "evidence": {
+                               "E.basal_medium": {"quote": "Basal medium was DMEM/F12",
+                                                  "location": "Methods", "confidence": "high"},
+                               "E.medium_type": {"quote": "serum-free medium",
+                                                 "location": "Abstract", "confidence": "high"},
+                           }})
     if "Operator: dose" in u:
         return json.dumps({
             "fields": {
@@ -78,7 +88,9 @@ def test_operator_extractor_merges_and_grounds():
 
     assert ext.medium_info.serum_free_status == "serum-free"
     assert ext.medium_info.basal_medium == ["DMEM/F12"]
+    assert ext.medium_info.medium_type == ["serum-free medium"]
     assert ext.fast_triage.species == ["bovine"]
+    assert ext.cell_info.culture_stage == ["expansion"]
     assert ext.quant_data.has_extractable_quant_data == "yes"
     assert ext.final_judgment.recommended_action == "must_extract_now"
 

@@ -58,17 +58,18 @@ OPERATORS: List[ExtractionOperator] = [
     ExtractionOperator(
         name="context",
         fields=["B.main_track", "B.species", "B.target_product_type",
-                "D.cell_type", "D.primary_or_cell_line", "D.tissue_of_origin", "D.species_detail"],
+                "D.cell_type", "D.primary_or_cell_line", "D.tissue_of_origin", "D.species_detail",
+                "D.culture_stage"],
         section_hints=["abstract", "introduction", "methods", "materials and methods", "cell culture"],
-        guidance="Identify species, cell identity, and the dominant contribution lane. Sub-headings often name species/cell type.",
+        guidance="Identify species, cell identity, explicit culture stage, and the dominant contribution lane. Do not infer stage from an endpoint alone.",
     ),
     ExtractionOperator(
         name="medium",
-        fields=["E.basal_medium", "E.serum_usage", "E.serum_free_status", "E.growth_factors",
+        fields=["E.basal_medium", "E.medium_type", "E.serum_usage", "E.serum_free_status", "E.growth_factors",
                 "E.small_molecules", "E.hydrolysates_or_extracts", "E.conditioned_medium_or_recycling",
                 "E.medium_optimization_strategy"],
         section_hints=["methods", "materials and methods", "media formulation", "cell culture", "experimental", "results"],
-        guidance="Priority operator. Separate basal medium from supplements. Do not overclaim 'chemically defined'. Capture named growth factors and small molecules.",
+        guidance="Priority operator. Separate basal medium, explicit formulation role/type, and supplements. Do not infer medium type from ingredients or overclaim 'chemically defined'.",
     ),
     ExtractionOperator(
         name="dose",

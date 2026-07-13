@@ -216,6 +216,10 @@ Project implication:
   code to zip independent component and number lists. The relation is direct
   only when a single verified quote supports both fields; otherwise it remains
   explicitly unverified and cannot upgrade Gate 2.
+- The context and medium operators now own narrow `culture_stage` and
+  `medium_type` fields. This follows the same schema-reduction principle while
+  avoiding semantic inference from broad condition summaries. Existing fixture
+  gold is not silently rewritten; a versioned human re-adjudication is required.
 
 ## 3. Adopted Algorithm Roadmap
 

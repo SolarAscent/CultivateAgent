@@ -235,6 +235,9 @@ the A-M `dose_range` proxy cannot produce final approval. Operator-mode dose
 extraction can additionally emit grounded component-dose records linking one
 component, dose/range, unit, comparison group, endpoint, and same-quote
 evidence; only locally verified records count as direct Gate 2 dose coverage.
+The context and medium operators also own explicit `D.culture_stage` and
+`E.medium_type` fields. These remove summary-field proxies for future runs, but
+do not retroactively fill or alter the frozen four-paper benchmark gold.
 
 ---
 

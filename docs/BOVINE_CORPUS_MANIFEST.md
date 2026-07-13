@@ -166,6 +166,10 @@ Gate 2, extraction reliability: **not passed**.
   component-dose record. The record keeps component, dose/range, unit,
   comparison group, endpoint, and one quote together; no current committed live
   extraction contains such a reviewed record, so Gate 2 remains `FAIL`.
+- Future operator runs can directly populate culture stage and medium type.
+  Current H001-H014 sources are not thereby adjudicated, and the four-paper eval
+  fixture remains frozen until raw predictions and revised human gold can be
+  versioned together.
 
 Gate 3, biological plausibility: **not passed**.
 

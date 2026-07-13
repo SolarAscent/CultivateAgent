@@ -723,10 +723,12 @@ def test_extraction_eval_decision_critical_gate_is_conservative():
     gold.fast_triage = FastTriage(species=["bovine"])
     gold.cell_info = CellInfo(
         cell_type=["satellite cells"],
+        culture_stage=["expansion"],
         expansion_conditions_summary="expansion stage",
     )
     gold.medium_info = MediumInfo(
         basal_medium=["DMEM/F12"],
+        medium_type=["expansion medium"],
         serum_free_status="serum-free",
         growth_factors=["FGF2"],
     )

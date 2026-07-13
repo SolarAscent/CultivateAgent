@@ -308,6 +308,11 @@ Checklist:
   verified quote contains both the component and dose/range. Preserve unit,
   comparison group, and endpoint; unverified relations cannot count as direct
   Gate 2 dose coverage.
+- [x] `[AI]` Extract explicit culture stage and medium role/type into dedicated
+  `D.culture_stage` and `E.medium_type` fields. Do not infer either from an
+  endpoint or ingredient list.
+- [ ] `[HUMAN]` Version and re-adjudicate stage/type gold before changing the
+  frozen four-paper benchmark; preserve the raw predictions used by each report.
 - [x] `[AI]` Run `cultivate extraction-readiness` before live operator
   extraction to separate missing sources from weak section routing.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,

@@ -30,10 +30,10 @@ DECISION_CRITICAL_FIELD_GROUPS: Dict[str, Dict[str, object]] = {
     "species": {"paths": ("B.species",), "basis": "direct"},
     "cell_type": {"paths": ("D.cell_type",), "basis": "direct"},
     "stage": {
-        "paths": ("D.expansion_conditions_summary", "D.differentiation_conditions_summary"),
+        "paths": ("D.culture_stage",),
         "basis": "direct",
     },
-    "medium_type": {"paths": ("E.basal_medium",), "basis": "direct"},
+    "medium_type": {"paths": ("E.medium_type",), "basis": "direct"},
     "serum_free_status": {"paths": ("E.serum_free_status",), "basis": "direct"},
     "component_identity": {
         "paths": (

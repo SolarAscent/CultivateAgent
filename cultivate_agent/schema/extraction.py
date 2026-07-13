@@ -153,6 +153,10 @@ class CellInfo(SchemaBlock):
     immortalization_status: Optional[str] = Field(None, description="Absent / present / conditional / unclear.")
     tissue_of_origin: Optional[str] = Field(None, description="Anatomical source: skeletal muscle, subcutaneous adipose, fin...")
     species_detail: Optional[str] = Field(None, description="Granular taxonomic / breed / source detail if relevant.")
+    culture_stage: Optional[List[str]] = Field(
+        None,
+        description="Explicit experimental stage(s): isolation, expansion/proliferation, differentiation, or maturation; require source evidence.",
+    )
     passage_info: Optional[str] = Field(None, description="Passage number, doubling history, senescence note, expansion window.")
     cell_isolation_method: Optional[str] = Field(None, description="Isolation/enrichment: enzymatic digestion, pre-plating, FACS, MACS, explant.")
     expansion_conditions_summary: Optional[str] = Field(None, description="Dense description of proliferation-stage culture (medium, substrate, serum, O2, timing).")
@@ -164,6 +168,10 @@ class CellInfo(SchemaBlock):
 # --------------------------------------------------------------------------- #
 class MediumInfo(SchemaBlock):
     basal_medium: Optional[List[str]] = Field(None, description="Base platform(s): DMEM, DMEM/F12, Ham's F-10, custom defined base.")
+    medium_type: Optional[List[str]] = Field(
+        None,
+        description="Explicit formulation role/type, e.g. expansion medium, differentiation medium, conditioned medium, or spent medium.",
+    )
     serum_usage: Optional[str] = Field(None, description="Serum used at any stage? If stage-specific, say where and at what level.")
     serum_free_status: Optional[str] = Field(None, description="Strongest label the data justify; do not overclaim 'chemically defined'.")
     growth_factors: Optional[List[str]] = Field(None, description="Named protein supplements: FGF2, IGF-1, insulin, transferrin, TGF-beta inhibitors...")

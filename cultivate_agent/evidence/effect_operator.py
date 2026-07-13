@@ -452,6 +452,35 @@ def _infer_raw_mean_ratio_from_stats(
     return _NumericInference(effect=effect, variance=variance, context=context)
 
 
+def numeric_effect_from_group_stats(
+    treatment: dict,
+    control: dict,
+    *,
+    outcome: str = "",
+    timepoint: str = "",
+) -> _NumericInference:
+    """Stable public seam for table-derived (structured) group statistics.
+
+    ``treatment`` and ``control`` are ``{"mean": float, "sd": float, "n": int}``
+    dicts, with the SD already converted from SEM upstream. Returns a
+    :class:`_NumericInference` carrying a log-response-ratio ``effect`` and the
+    ratio-of-means (Hedges-Gurevitch-Curtis 1999) ``variance`` when the stats are
+    valid, or an empty inference otherwise.
+
+    This is the frozen interface the table-extraction path (``evidence/tables.py``)
+    feeds into: the variance formula and its guards (positive means/SD, n > 1) live
+    here, so the extraction side never recomputes them and the two sides cannot
+    drift. Malformed input returns an empty inference rather than raising.
+    """
+    try:
+        inferred = _infer_raw_mean_ratio_from_stats(dict(treatment), dict(control), "", outcome)
+    except (KeyError, TypeError, ValueError):
+        return _NumericInference()
+    if timepoint and inferred.effect is not None:
+        inferred.context.setdefault("effect_timepoint", str(timepoint))
+    return inferred
+
+
 def _labelled_group_stats(quote: str, component: str) -> list[dict[str, float | int | str]]:
     groups: list[dict[str, float | int | str]] = []
     component_terms = _component_terms(component)

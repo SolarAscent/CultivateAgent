@@ -12,3 +12,8 @@ This artifact is a bounded candidate-generation result over R018 and R045.
 
 These pointers require deterministic source revalidation and expert review.
 They are not biological evidence and cannot establish an evidence tier.
+
+Post-run source inspection found that this `stat-only-block-v1` prefilter also
+admitted RNA/protein quality-control statistics, a reporting checklist, and a
+metabolite AUC table. This artifact is retained as an audit trail and must not
+be used as the current candidate set; `deepseek-locator-shadow-v2` supersedes it.

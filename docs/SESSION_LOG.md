@@ -3721,3 +3721,53 @@ adjudicate biology, or replace the held dual-blind quantitative pilot.
 - The committed shadow artifact passed schema, count, source-pointer, and hash
   validation and contains no source-text field. The repository secret scan had
   no DeepSeek or Gemini key match.
+
+---
+
+# Session 49 (Codex) — locator shadow audit revokes bulk delegation
+
+Date: 2026-07-15
+Branch: `codex/locator-context-prefilter`
+
+## Trigger And Source Audit
+
+Source-level inspection of all 18 v1 selected pointers found systematic
+off-target blocks: RNA alignment and protein-count quality control, a reporting
+checklist, and a metabolite AUC table. The v1 deterministic prefilter required
+only SD/SEM/sample-size syntax, so repeated model agreement did not establish
+task validity. The v1 artifact is retained as `superseded_audit_only`.
+
+## Correction
+
+- Added selector `stat-context-block-v2`, which requires both a statistical
+  signal and a medium/outcome/figure/error-policy context signal.
+- The pool decreased from 24 to 17 blocks and still covered all 12 frozen
+  R018/R045 quantitative-pilot locators. A unit test prevents re-admitting
+  context-free RNA alignment statistics.
+- Added a held-out evaluation gate to the shadow CLI. Stable output is now
+  suppressed unless the deterministic prefilter covers every held-out locator
+  and model recall is at least 0.95.
+
+## Live Result And Decision
+
+- The v2 run used six schema-valid requests, three repeats, temperature 0,
+  thinking disabled, no retries, atomic checkpoints, and 10,212 reported
+  tokens. Run-to-run selection consistency was 1.0.
+- DeepSeek selected 10/12 held-out silver locators (recall 0.8333), missing
+  Q005 and Q009. The committed v2 manifest is
+  `failed_held_out_recall_no_output`, contains zero candidate pointers, and
+  records `deployment_gate_pass=false`.
+- Bulk quantitative-block localization is not delegated to DeepSeek. Q005 and
+  Q009 must not be used for prompt tuning and then reused as an independent
+  test; promotion requires a new held-out set.
+
+## Verification
+
+- Locator and quantitative focused tests: 9 passed.
+- Non-loopback suite: 149 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected.
+- Rebuilt v2 input produced zero manifest-validation issues; deployment remained
+  false and the committed candidate list remained empty.
+- CLI smoke passed. The six-round optimization demo increased synthetic
+  hypervolume from 7.050 to 16.464.
+- `git diff --check` and the repository API-key pattern scan passed.

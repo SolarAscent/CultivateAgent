@@ -1,0 +1,31 @@
+{
+  "candidates": [],
+  "deployment_gate_pass": false,
+  "format_version": 1,
+  "held_out_evaluation": {
+    "gate_pass": false,
+    "missed_ids": [
+      "Q005",
+      "Q009"
+    ],
+    "prefilter_covered": 12,
+    "recall": 0.8333,
+    "selected": 10,
+    "silver_total": 12
+  },
+  "input_items": 17,
+  "limitations": [
+    "DeepSeek selected candidate pointers only; no numeric values were emitted.",
+    "Candidates are not biological evidence and cannot establish an evidence tier.",
+    "Every retained pointer requires deterministic source revalidation and expert review."
+  ],
+  "model": "deepseek-v4-flash",
+  "model_selected_items": 12,
+  "prompt_version": "quant-block-candidate-pointer-v1",
+  "repeats": 3,
+  "selected_items": 0,
+  "selection_consistency": 1.0,
+  "selector_version": "stat-context-block-v2",
+  "status": "failed_held_out_recall_no_output",
+  "total_tokens": 10212
+}

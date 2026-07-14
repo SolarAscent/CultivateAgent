@@ -5,7 +5,9 @@ import json
 
 from cultivate_agent.evaluate.deepseek_locator_probe import (
     LocatorItem,
+    evaluate_shadow_against_gold,
     load_locator_silver,
+    load_shadow_pool,
     run_shadow_localization,
     run_locator_probe,
     shadow_manifest,
@@ -92,6 +94,32 @@ def test_response_validator_rejects_extra_keys_duplicates_and_unknown_ids():
     assert validate_candidate_response('{"candidate_ids":["L999"]}', batch)[1]
 
 
+def test_shadow_pool_requires_statistical_and_biological_context(tmp_path):
+    path = tmp_path / "R018.pdf"
+    path.write_bytes(b"R018")
+    FakeFitz.documents = {
+        path.name: [[
+            "Mean proliferation in serum-free medium; error bars indicate SD, n = 4 biological replicates.",
+            "RNA alignment averaged 31 million reads (s.d. = 3.6 million).",
+            "Culture medium composition and proliferation were discussed without statistics.",
+        ]]
+    }
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps({
+        "sources": [{
+            "record_id": "R018", "pdf_path": path.name,
+            "pdf_sha256": hashlib.sha256(b"R018").hexdigest(),
+        }]
+    }))
+
+    items = load_shadow_pool(
+        manifest, repo_root=tmp_path, record_ids=["R018"], fitz_module=FakeFitz
+    )
+
+    assert len(items) == 1
+    assert items[0].block_index == 0
+
+
 def test_probe_repeats_resumes_and_gates_on_recall_not_precision(tmp_path):
     items = [
         LocatorItem(f"L{i:03d}", f"text {i}", i <= 2, "R017", 1, i, str(i) * 64)
@@ -146,5 +174,38 @@ def test_shadow_run_retains_only_unanimous_pointers(tmp_path):
     assert result.selected_ids == ("S001",)
     assert result.selection_consistency == 0.6667
     assert result.gate_pass is False
+    assert payload["candidates"] == []
+    assert validate_shadow_manifest(payload, items) == []
+
+
+def test_held_out_recall_gate_suppresses_stable_incomplete_output(tmp_path):
+    items = [
+        LocatorItem(f"S{i:03d}", f"text {i}", False, "R018", 1, i, str(i) * 64)
+        for i in range(1, 3)
+    ]
+
+    def caller(prompt, max_output_tokens):
+        return '{"candidate_ids":["S001"]}', {"total_tokens": 20}
+
+    result = run_shadow_localization(
+        items, checkpoint_dir=tmp_path / "cp", model="deepseek-v4-flash",
+        repeats=3, batch_size=2, max_requests=3, max_total_tokens=1000,
+        max_output_tokens=100, caller=caller,
+    )
+    gold = tmp_path / "gold.json"
+    gold.write_text(json.dumps({"candidates": [
+        {"candidate_id": f"Q{i:03d}", "record_id": "R018", "pdf_page": 1,
+         "block_index": i, "block_text_sha256": str(i) * 64}
+        for i in range(1, 3)
+    ]}))
+
+    held_out = evaluate_shadow_against_gold(result, gold)
+    payload = shadow_manifest(result, model="deepseek-v4-flash", held_out=held_out)
+
+    assert result.selection_consistency == 1.0
+    assert held_out.recall == 0.5
+    assert held_out.missed_ids == ("Q002",)
+    assert held_out.gate_pass is False
+    assert payload["status"] == "failed_held_out_recall_no_output"
     assert payload["candidates"] == []
     assert validate_shadow_manifest(payload, items) == []

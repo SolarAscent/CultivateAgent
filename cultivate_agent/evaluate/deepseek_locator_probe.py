@@ -17,6 +17,8 @@ from .quantitative_review import _sha256, _signals
 PROMPT_VERSION = "quant-block-candidate-pointer-v1"
 SILVER_RECORDS = {"R017", "R047"}
 STAT_SIGNALS = {"explicit_dispersion", "named_dispersion_value", "sample_size", "sd", "sem"}
+SHADOW_CONTEXT_SIGNALS = {"outcome", "medium", "figure_caption", "error_policy"}
+SHADOW_SELECTOR_VERSION = "stat-context-block-v2"
 DECOY_EXCLUDED_SIGNALS = STAT_SIGNALS | {
     "outcome", "medium", "figure_caption", "mean", "error_policy"
 }
@@ -109,6 +111,23 @@ class ShadowLocalizationResult:
             not self.issues
             and self.requests_valid == self.requests_expected
             and self.selection_consistency >= 0.95
+        )
+
+
+@dataclass(frozen=True)
+class HeldOutLocatorEvaluation:
+    silver_total: int
+    prefilter_covered: int
+    selected: int
+    recall: float
+    missed_ids: tuple[str, ...]
+
+    @property
+    def gate_pass(self) -> bool:
+        return (
+            self.silver_total > 0
+            and self.prefilter_covered == self.silver_total
+            and self.recall >= 0.95
         )
 
 
@@ -249,8 +268,12 @@ def load_shadow_pool(
             for page_index, page in enumerate(document):
                 for block_index, block in enumerate(page.get_text("blocks", sort=True)):
                     text = _normalize_block(block)
-                    signals = sorted(set(_signals(text)) & STAT_SIGNALS)
-                    if len(text) < 80 or not signals:
+                    signals = set(_signals(text))
+                    if (
+                        len(text) < 80
+                        or not signals & STAT_SIGNALS
+                        or not signals & SHADOW_CONTEXT_SIGNALS
+                    ):
                         continue
                     raw_items.append((record_id, text, page_index + 1, block_index,
                                       _sha256(text.encode("utf-8"))))
@@ -488,18 +511,71 @@ def run_shadow_localization(
     )
 
 
-def shadow_manifest(result: ShadowLocalizationResult, *, model: str) -> dict[str, object]:
-    selected = set(result.selected_ids) if result.gate_pass else set()
+def evaluate_shadow_against_gold(
+    result: ShadowLocalizationResult, gold_manifest_path: Path
+) -> HeldOutLocatorEvaluation:
+    """Measure held-out recall without exposing labels to the model prompt."""
+    records = {item.record_id for item in result.items}
+    payload = json.loads(gold_manifest_path.read_text(encoding="utf-8"))
+    silver = {
+        (
+            str(row["record_id"]), int(row["pdf_page"]), int(row["block_index"]),
+            str(row["block_text_sha256"]),
+        ): str(row["candidate_id"])
+        for row in payload.get("candidates", [])
+        if row.get("record_id") in records
+    }
+    if not silver:
+        raise ValueError("held-out manifest has no locators for shadow records")
+    pool = {
+        (item.record_id, item.pdf_page, item.block_index, item.block_text_sha256): item.item_id
+        for item in result.items
+    }
+    selected_ids = set(result.selected_ids)
+    covered = set(silver) & set(pool)
+    selected = {locator for locator in covered if pool[locator] in selected_ids}
+    missed = tuple(sorted(silver[locator] for locator in set(silver) - selected))
+    return HeldOutLocatorEvaluation(
+        silver_total=len(silver), prefilter_covered=len(covered), selected=len(selected),
+        recall=round(len(selected) / len(silver), 4), missed_ids=missed,
+    )
+
+
+def shadow_manifest(
+    result: ShadowLocalizationResult,
+    *,
+    model: str,
+    held_out: HeldOutLocatorEvaluation | None = None,
+) -> dict[str, object]:
+    deployment_pass = result.gate_pass and (held_out is None or held_out.gate_pass)
+    selected = set(result.selected_ids) if deployment_pass else set()
+    if not result.gate_pass:
+        status = "failed_unstable_no_output"
+    elif held_out is not None and not held_out.gate_pass:
+        status = "failed_held_out_recall_no_output"
+    else:
+        status = "candidate_pointers_for_expert_review"
     return {
         "format_version": 1,
-        "status": "candidate_pointers_for_expert_review" if result.gate_pass else "failed_no_output",
+        "status": status,
+        "deployment_gate_pass": deployment_pass,
         "model": model,
         "prompt_version": PROMPT_VERSION,
+        "selector_version": SHADOW_SELECTOR_VERSION,
         "repeats": result.repeats,
         "selection_consistency": result.selection_consistency,
         "total_tokens": result.total_tokens,
         "input_items": len(result.items),
+        "model_selected_items": len(result.selected_ids),
         "selected_items": len(selected),
+        "held_out_evaluation": None if held_out is None else {
+            "silver_total": held_out.silver_total,
+            "prefilter_covered": held_out.prefilter_covered,
+            "selected": held_out.selected,
+            "recall": held_out.recall,
+            "missed_ids": list(held_out.missed_ids),
+            "gate_pass": held_out.gate_pass,
+        },
         "candidates": [
             {
                 "candidate_id": item.item_id, "record_id": item.record_id,
@@ -521,11 +597,15 @@ def validate_shadow_manifest(payload: dict[str, object], items: Sequence[Locator
     issues: list[str] = []
     allowed_top = {
         "format_version", "status", "model", "prompt_version", "repeats",
-        "selection_consistency", "total_tokens", "input_items", "selected_items",
-        "candidates", "limitations",
+        "selector_version",
+        "selection_consistency", "total_tokens", "input_items", "model_selected_items",
+        "selected_items", "deployment_gate_pass", "held_out_evaluation", "candidates",
+        "limitations",
     }
     if set(payload) != allowed_top:
         issues.append("shadow manifest top-level schema mismatch")
+    if payload.get("selector_version") != SHADOW_SELECTOR_VERSION:
+        issues.append("shadow selector version mismatch")
     expected = {item.item_id: item for item in items}
     candidates = payload.get("candidates")
     if not isinstance(candidates, list):
@@ -554,6 +634,14 @@ def validate_shadow_manifest(payload: dict[str, object], items: Sequence[Locator
             issues.append(f"candidate {item.item_id} pointer metadata mismatch")
     if payload.get("input_items") != len(items) or payload.get("selected_items") != len(candidates):
         issues.append("shadow manifest counts mismatch")
+    held_out = payload.get("held_out_evaluation")
+    held_out_keys = {
+        "silver_total", "prefilter_covered", "selected", "recall", "missed_ids", "gate_pass"
+    }
+    if held_out is not None and (not isinstance(held_out, dict) or set(held_out) != held_out_keys):
+        issues.append("held-out evaluation schema mismatch")
+    if payload.get("deployment_gate_pass") is False and candidates:
+        issues.append("failed deployment gate must suppress all candidate output")
     return issues
 
 

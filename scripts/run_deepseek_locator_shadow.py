@@ -9,6 +9,7 @@ from pathlib import Path
 
 from cultivate_agent.evaluate.deepseek_locator_probe import (
     deepseek_caller,
+    evaluate_shadow_against_gold,
     load_shadow_pool,
     run_shadow_localization,
     shadow_manifest,
@@ -24,6 +25,10 @@ def main() -> int:
     )
     parser.add_argument("--repo-root", type=Path, default=Path("."))
     parser.add_argument("--records", nargs="+", default=["R018", "R045"])
+    parser.add_argument(
+        "--held-out-manifest", type=Path,
+        default=Path("data/evaluation/gold/quantitative-pilot-v1/manifest.json"),
+    )
     parser.add_argument("--model", default="deepseek-v4-flash")
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--batch-size", type=int, default=12)
@@ -44,7 +49,8 @@ def main() -> int:
         max_total_tokens=args.max_total_tokens, max_output_tokens=args.max_output_tokens,
         caller=deepseek_caller(args.model, args.timeout),
     )
-    payload = shadow_manifest(result, model=args.model)
+    held_out = evaluate_shadow_against_gold(result, args.held_out_manifest)
+    payload = shadow_manifest(result, model=args.model, held_out=held_out)
     validation_issues = validate_shadow_manifest(payload, items)
     if validation_issues:
         raise RuntimeError("; ".join(validation_issues))
@@ -55,9 +61,10 @@ def main() -> int:
     )
     print(
         f"gate_pass={result.gate_pass}; items={len(items)}; selected={len(result.selected_ids)}; "
-        f"consistency={result.selection_consistency}; tokens={result.total_tokens}"
+        f"consistency={result.selection_consistency}; held_out_recall={held_out.recall}; "
+        f"deployment_gate_pass={payload['deployment_gate_pass']}; tokens={result.total_tokens}"
     )
-    return 0 if result.gate_pass else 1
+    return 0 if payload["deployment_gate_pass"] else 1
 
 
 if __name__ == "__main__":

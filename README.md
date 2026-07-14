@@ -153,6 +153,8 @@ cultivate ingest --grobid-tei --grobid-url http://localhost:8070
 # cultivate extract and extraction-readiness will auto-detect it.
 # Acquire the explicit bovine OA subset from Europe PMC with DOI/license checks:
 python scripts/ingest_europe_pmc_jats.py --max-items 9
+# Reproduce the P1 PDF table off-ramp audit (counts/hashes only):
+python scripts/audit_bovine_pdf_tables.py --max-items 14
 
 # 2. Tier papers A/B/C (evidence-backed, reproducible):
 cultivate triage

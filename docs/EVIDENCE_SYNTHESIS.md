@@ -105,6 +105,14 @@ This is a verified negative result: the current OA JATS expansion improves
 structured source coverage but does not itself create any tier-1 effects.
 Reproduce it with `python scripts/ingest_europe_pmc_jats.py --max-items 9`; the
 source mapping and current report are under `data/literature/`.
+The follow-up P1 PDF audit reached the same boundary from the PDF side. Eleven
+available PDFs (202 pages) yielded 22 default line-strategy tables and 195
+cells, but zero statistical cells. PyMuPDF's text strategy produced 140
+statistical locator candidates inside page-wide layout regions; these include
+prose and figure captions and are not treated as table cells or effects. The
+structured-table off-ramp therefore remains `FAIL` with zero gold-verified
+tier-1 effects. See `docs/PDF_TABLE_OFFRAMP_AUDIT.md` and reproduce it with
+`python scripts/audit_bovine_pdf_tables.py --max-items 14`.
 The current S4 worksheet separates this review into `numeric_effect_status`,
 `numeric_effect_metric`, `numeric_effect_value`, optional variance, and notes,
 so a directionally supported row is not automatically a thesis-ready

@@ -17,6 +17,13 @@ from .europe_pmc import (
     fetch_europe_pmc_jats,
     inspect_europe_pmc_jats,
 )
+from .pdf_table_audit import (
+    PDFTableAudit,
+    PDFTableAuditError,
+    TableStrategyAudit,
+    audit_pdf_tables,
+    is_stat_candidate,
+)
 from ..schema.structured_paper import (
     structured_paper_from_grobid_tei_path,
     structured_paper_from_grobid_tei_xml,
@@ -31,4 +38,6 @@ __all__ = [
     "write_fulltext_tei", "structured_paper_from_grobid_pdf",
     "EUROPE_PMC_REST", "EuropePMCError", "JATSAcquisition",
     "inspect_europe_pmc_jats", "fetch_europe_pmc_jats", "acquire_europe_pmc_jats",
+    "TableStrategyAudit", "PDFTableAudit", "PDFTableAuditError",
+    "is_stat_candidate", "audit_pdf_tables",
 ]

@@ -1,0 +1,38 @@
+# Claude → Codex work sync (results only)
+
+Purpose: a short, result-level handoff so Codex knows what Claude landed and does not
+duplicate it. Not a process log. Claude owns `normalize/`, `evidence/meta_analysis.py`,
+and the synthesis side; Codex owns `ingest/`, `evidence/tables.py`, and extraction. The
+frozen seam `numeric_effect_from_group_stats` is unchanged.
+
+## Landed on main (code)
+
+- `normalize/components.py`: strip leading dose prefixes ("5% FBS-PSFC" → "FBS-PSFC",
+  "5 ng/mL bFGF" → FGF2) so dose variants pool; guarded against "2i"/"M199"/"18-crown-6".
+  Raises k before scale-up.
+- `evidence/meta_analysis.py`: the DL random-effects branch now also runs the direction
+  conflict check, so ≥2 tier-1 items can no longer mask a split of direction-only studies
+  (context_dependent stays honest). Magnitude still pooled from tier-1 only — no fake fusion.
+- `evidence/effect_operator.py` (inference guards only): reject concentrations ("30% FBS")
+  and dispersions ("2.2 ± 0.4-fold") as effect magnitudes; percentages need an explicit
+  change word. Did not touch the seam or table path.
+- End-to-end verified: JATS table → `numeric_effect_from_table_pointers` → tier-1 →
+  `meta_analyze` produces a single_study/DL summary with CI. Both halves connect.
+
+## DeepSeek delegation (my lane, low-risk, spot-checked — NOT adjudicated truth)
+
+- **Corpus relevance triage (171 → 67 core)**: `data/literature/corpus_relevance_triage.tsv`
+  (A/B/C + is_core, temp=0, per-row provenance, `quote_grounded` flag). Spot-check: all 9
+  human-adjudication papers → A; C exclusions correct. Categories reliable; quotes ~26%
+  verbatim (flagged). Use to focus extraction; not evidence.
+- **Zotero 14k funnel (in progress)**: title/abstract relevance screen of the user's
+  `CulturedMeat` export — 14,247 rows → 6,072 unique → relevance (yes/maybe/no) keeping the
+  has_pdf flag. Goal: find missing core serum-free-expansion papers + build a targeted PDF
+  acquisition list (only ~14% of refs have PDFs). Will land as
+  `data/literature/zotero_relevance_screen.tsv` once spot-checked. First-pass funnel only.
+
+## Norms in force for DeepSeek
+
+Narrow batched tasks; temperature=0; key only from `.env`; per-row provenance; deterministic
+checks; output to auditable TSVs, never the shared KB; pilot-before-scale; Claude spot-checks.
+DeepSeek returns classifications/pointers, never fabricated numbers.

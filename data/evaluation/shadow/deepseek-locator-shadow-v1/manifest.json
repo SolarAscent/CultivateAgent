@@ -1,0 +1,144 @@
+{
+  "candidates": [
+    {
+      "block_index": 3,
+      "block_text_sha256": "1d2748e3a3e05c467c126376be8dd677e875e3aa8869dfb7944de20461928386",
+      "candidate_id": "S002",
+      "pdf_page": 5,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 4,
+      "block_text_sha256": "944ef01bb2034b8a77fd22a57952fa09ad9c863bbac8f7302719cddc6d63ff55",
+      "candidate_id": "S003",
+      "pdf_page": 5,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 82,
+      "block_text_sha256": "4b7142625c352c30fd42b3f7b19700077810c057bc9b199b9074a31a8a7bf31b",
+      "candidate_id": "S004",
+      "pdf_page": 6,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 10,
+      "block_text_sha256": "dbde6359bfee1b26a32e95a55a0bba7c842e40f43292c36db9079e027866520a",
+      "candidate_id": "S006",
+      "pdf_page": 7,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 12,
+      "block_text_sha256": "4169a252ab1d04ceaff24336eb7c13534493d64545ed36fe6e60012e0b1c7c45",
+      "candidate_id": "S008",
+      "pdf_page": 11,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 14,
+      "block_text_sha256": "5fab04cf5ada1b0bb027003b92c0a44bcc14daf3101fdbf06b3d13faa98c0a13",
+      "candidate_id": "S009",
+      "pdf_page": 11,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 15,
+      "block_text_sha256": "df10293fe913c771113b16bfec367b12d25f065408c6e3889140141970554072",
+      "candidate_id": "S010",
+      "pdf_page": 11,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 1,
+      "block_text_sha256": "562c74e0122328e0be71e18dc4fa7d11c5da7afeeb0c01ce642d8a82d2565b88",
+      "candidate_id": "S013",
+      "pdf_page": 14,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 1,
+      "block_text_sha256": "8fc2ce1be56db94093744173a0d5f704eb13df7a945aa8e0ff996e6287fc18c1",
+      "candidate_id": "S014",
+      "pdf_page": 16,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 1,
+      "block_text_sha256": "97cb8a30cd4ccaa25ddea8a7f09da1807b9498f3ca149deab5b79c95b37217ee",
+      "candidate_id": "S015",
+      "pdf_page": 18,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 1,
+      "block_text_sha256": "d50f06e96022b3118fde61f1bc14ab486730bc76a422f18847c7859b2821f9e2",
+      "candidate_id": "S016",
+      "pdf_page": 19,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 1,
+      "block_text_sha256": "ecb5b373c6ff9246f6d27b47f0fa630349fbad5563c58073688f17a9c85cc5f0",
+      "candidate_id": "S017",
+      "pdf_page": 21,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 12,
+      "block_text_sha256": "8fe0f64ea1b334ffb8cbff7f670358db58b111bca0d37220bfad1478622f1416",
+      "candidate_id": "S018",
+      "pdf_page": 26,
+      "record_id": "R018"
+    },
+    {
+      "block_index": 3,
+      "block_text_sha256": "e7d709fb9f6753df2738853494b56cf0d91cf35557ad0b9226a9089fce31cf27",
+      "candidate_id": "S020",
+      "pdf_page": 14,
+      "record_id": "R045"
+    },
+    {
+      "block_index": 2,
+      "block_text_sha256": "e8e30e4c145edb0f634d4715ed9b2fb365003abc9ea6e0b76a7bc20fb02f6f2e",
+      "candidate_id": "S021",
+      "pdf_page": 15,
+      "record_id": "R045"
+    },
+    {
+      "block_index": 2,
+      "block_text_sha256": "0b7064d01a2acee52cd591e3f2f5e7974062973f140824b856c433f4d2abfdaa",
+      "candidate_id": "S022",
+      "pdf_page": 16,
+      "record_id": "R045"
+    },
+    {
+      "block_index": 3,
+      "block_text_sha256": "02cae86533bfc1ee60ab5500b9bff1580227516b0c05014d7197b259196e1f95",
+      "candidate_id": "S023",
+      "pdf_page": 17,
+      "record_id": "R045"
+    },
+    {
+      "block_index": 6,
+      "block_text_sha256": "c0347a514ea4d90d16e999adca062f80fa659bfe8a8c6fbec13c9d4c101c760e",
+      "candidate_id": "S024",
+      "pdf_page": 21,
+      "record_id": "R045"
+    }
+  ],
+  "format_version": 1,
+  "input_items": 24,
+  "limitations": [
+    "DeepSeek selected candidate pointers only; no numeric values were emitted.",
+    "Candidates are not biological evidence and cannot establish an evidence tier.",
+    "Every retained pointer requires deterministic source revalidation and expert review."
+  ],
+  "model": "deepseek-v4-flash",
+  "prompt_version": "quant-block-candidate-pointer-v1",
+  "repeats": 3,
+  "selected_items": 18,
+  "selection_consistency": 1.0,
+  "status": "candidate_pointers_for_expert_review",
+  "total_tokens": 13731
+}

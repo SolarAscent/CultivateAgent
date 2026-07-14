@@ -22,6 +22,9 @@ data/**
 !data/evaluation/gold/medium-pilot-v1/**
 !data/evaluation/gold/quantitative-pilot-v1/
 !data/evaluation/gold/quantitative-pilot-v1/**
+!data/evaluation/shadow/
+!data/evaluation/shadow/deepseek-locator-shadow-v1/
+!data/evaluation/shadow/deepseek-locator-shadow-v1/**
 # Local backups created before forced adjudication worksheet overwrite.
 data/literature/*.tsv.bak.*
 *.sqlite

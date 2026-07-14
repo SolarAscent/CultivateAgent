@@ -3673,3 +3673,51 @@ Do not delegate context-free novel-alias-to-opaque-canonical mapping to DeepSeek
 yet. A later probe should target a task better matched to a weak model, such as
 metadata-format checking or high-recall page/candidate location, with the same
 budget and deterministic-validation controls.
+
+---
+
+# Session 48 (Codex) — DeepSeek high-recall locator gate and bounded shadow
+
+Date: 2026-07-15
+Branch: `codex/deepseek-locator-probe`
+
+## Capability Gate
+
+- Reused eight frozen, hash-verified quantitative locators from open R017 and
+  R047 as silver positives; no parallel human gold set was created.
+- Added 16 deterministic same-paper decoys with no statistical, medium,
+  outcome, mean, figure-caption, or error-policy signal. DeepSeek received only
+  opaque IDs and short text blocks and could return only candidate IDs.
+- Three repeated `deepseek-v4-flash` runs at temperature 0 and with thinking
+  disabled produced recall 1.0, precision 0.889, and selection consistency 1.0.
+  Precision was reported but was not a delegation gate. Six requests used 8,820
+  reported tokens, within the fixed request/token caps.
+
+## Bounded Shadow Delegation
+
+- Because the capability gate passed, expanded only to R018 and R045. A broad
+  deterministic statistical-signal prefilter produced 24 hash-bound blocks.
+- The shadow run used three repeats, six requests, no retries, atomic
+  checkpoints, and 13,731 reported tokens. Selection consistency was 1.0; 18
+  unanimously selected pointers were retained.
+- The committed shadow manifest contains only record/page/block/text-hash
+  pointers. It contains no excerpts or numeric values and was independently
+  schema/count/pointer validated after generation.
+
+## Decision Boundary
+
+DeepSeek is now eligible for bounded high-recall block localization behind the
+same deterministic prefilter, repeated-run gate, hard budgets, and checkpoint
+controls. It is not authorized to transcribe numbers, assign evidence tiers,
+adjudicate biology, or replace the held dual-blind quantitative pilot.
+
+## Verification
+
+- Locator-focused tests: 10 passed.
+- Non-loopback suite: 147 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected.
+- Both locator CLIs and the main CLI passed help smoke tests; the offline
+  end-to-end pipeline completed normally.
+- The committed shadow artifact passed schema, count, source-pointer, and hash
+  validation and contains no source-text field. The repository secret scan had
+  no DeepSeek or Gemini key match.

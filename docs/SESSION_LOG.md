@@ -3620,3 +3620,56 @@ as reviewer B. The committed benchmark and local working files remain blank.
 Use DeepSeek only for a separate bounded candidate-generation capability probe,
 with temperature zero repeated runs, pointer/candidate outputs, hard budgets,
 atomic checkpoints, and deterministic Codex acceptance.
+
+---
+
+# Session 47 (Codex) — DeepSeek alias-mapping capability gate
+
+Date: 2026-07-15
+Branch: `codex/deepseek-alias-probe`
+
+## Task Boundary
+
+The quantitative human pilot remains on hold and DeepSeek was not used as a
+reviewer. The delegated task was limited to mapping ontology alias candidates
+to an allowed canonical vocabulary. Outputs could not modify ontology files and
+contained no numeric-value fields.
+
+## Implementation
+
+- Built category-balanced alias gold directly from unique aliases already in
+  `config/ontology/*.yaml`; no new manual answer set was created.
+- Added strict JSON validation, exact ID coverage, allowed-canonical checks,
+  `temperature=0`, non-thinking `deepseek-v4-flash`, hard request/token caps,
+  no SDK retries, and atomic hash-keyed checkpoints.
+- Required three repeats and gated delegation on minimum recall >=0.95 plus
+  canonical consistency >=0.95. DeepSeek self-review was not used.
+- Verified the current model name, non-thinking toggle, JSON mode, and endpoint
+  against official DeepSeek API documentation before the live calls.
+
+## Live Result And Decision
+
+- Canary v1: 3/3 schema-valid calls, recall 0.875 on every repeat, consistency
+  1.0, 1,530 reported tokens.
+- Recall-oriented prompt v2 kept the gold unchanged and clarified that plausible
+  formulation-family mappings should be proposed rather than suppressed.
+- Canary v2: 3/3 schema-valid calls, recall still 0.875 on every repeat,
+  consistency 1.0, 1,701 reported tokens.
+- Both versions stably returned `UNKNOWN` for the ontology mapping
+  `Beefy-9 base -> B8`. Total live use was 6 requests and 3,231 reported tokens.
+- The 48-alias expansion was not run because the canary failed the predeclared
+  recall gate. No ontology alias was added, removed, or changed.
+
+## Verification
+
+- Probe unit tests cover category balancing, strict schema rejection, checkpoint
+  resume without duplicate billing, recall, consistency, and gate behavior.
+- Raw checkpoints remain under ignored `data/evaluation/runs/`; the committed
+  report is `docs/DEEPSEEK_ALIAS_CANARY.md` and contains no key or source text.
+
+## Routing Decision
+
+Do not delegate context-free novel-alias-to-opaque-canonical mapping to DeepSeek
+yet. A later probe should target a task better matched to a weak model, such as
+metadata-format checking or high-recall page/candidate location, with the same
+budget and deterministic-validation controls.

@@ -30,6 +30,7 @@ from .quantitative_review import (
     create_quantitative_review,
     validate_quantitative_review,
 )
+from .deepseek_alias_probe import AliasProbeResult, load_alias_gold, run_alias_probe
 
 __all__ = [
     "EvalReport",
@@ -39,6 +40,7 @@ __all__ = [
     "GoldValidation",
     "QuantitativeComparison",
     "QuantitativeValidation",
+    "AliasProbeResult",
     "create_gold_review",
     "create_reviewer_template",
     "create_quantitative_review",
@@ -46,8 +48,10 @@ __all__ = [
     "audit_corpus_manifest",
     "corpus_gate_markdown",
     "gold_review_passages",
+    "load_alias_gold",
     "evaluate_corpus",
     "normalize_value",
+    "run_alias_probe",
     "merge_independent_reviews",
     "compare_quantitative_reviews",
     "validate_gold_review",

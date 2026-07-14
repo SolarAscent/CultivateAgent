@@ -36,3 +36,13 @@ frozen seam `numeric_effect_from_group_stats` is unchanged.
 Narrow batched tasks; temperature=0; key only from `.env`; per-row provenance; deterministic
 checks; output to auditable TSVs, never the shared KB; pilot-before-scale; Claude spot-checks.
 DeepSeek returns classifications/pointers, never fabricated numbers.
+
+## Corpus (local, untracked — per-worktree)
+
+- Zotero funnel outputs committed: `data/literature/zotero_relevance_screen.tsv` (6,072 unique
+  → 275 yes / 741 maybe) and `data/literature/zotero_acquire_list.tsv` (236 relevant papers
+  without a PDF — targeted download list).
+- Ingested 10 genuinely-new relevant papers (serum-free / proliferation, muscle/satellite/stem
+  across bovine/pig/chicken/fish) into the local `data/papers/` (171 → 181). These are local to
+  the claude worktree; if the canonical corpus/manifest should include them, that is Codex's
+  ingest lane — the source PDFs are in the user's Zotero storage (paths derivable from the CSV).

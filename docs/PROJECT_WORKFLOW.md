@@ -772,7 +772,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | New-source review packet | 3/3 with SHA-256-bound local locators | H031-H033 cover R045-R047; all decisions remain open |
 | New-source extraction readiness | 3/3 direct-ready | R046 uses Europe PMC JATS; R045/R047 route from lawful local/open PDFs |
 | P1 PDF structured-table off-ramp | `FAIL`; 10 identity-matched PDFs, 0 statistical line-table cells | 116 layout-text hits are locators only; use a bounded caption/prose and figure pilot |
-| DeepSeek quantitative-block delegation | `FAIL`; held-out silver recall 10/12 (0.8333) | No bulk localization; a source-disjoint 13-locator Zotero silver set is frozen but not yet exposed to a model |
+| DeepSeek quantitative-block delegation | `FAIL`; independent silver recall 10/13 (0.7692) after prior 10/12 (0.8333) | Task closed for this prompt/model; retain deterministic prefilter and route review to a stronger model |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
 

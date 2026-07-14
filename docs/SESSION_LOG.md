@@ -3774,6 +3774,57 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 51 (Codex) — independent locator held-out closes DeepSeek task
+
+Date: 2026-07-15
+Branch: `codex/zotero-heldout-run`
+
+## Frozen Test
+
+- Verified the gold manifest still came from commit `111b7c3` with SHA-256
+  `46ca3a166d54fac3aca5328c5e8d601db530c14cd1e09502556d1cd04ccf2b6c`.
+- Made no change to `quant-block-candidate-pointer-v1`,
+  `stat-context-block-v2`, the four sources, or the 13 silver locators.
+- The deterministic input pool contained 19 blocks and covered all 13 silver
+  locators before any API request.
+
+## Live Result
+
+- Ran `deepseek-v4-flash` with thinking disabled, temperature 0, no retries,
+  two batches, three repeats, six requests, atomic checkpoints, and 11,904
+  reported tokens. All responses passed the candidate-ID-only schema.
+- The same 16 blocks were selected in all three repeats, so consistency was 1.0.
+  Only 10/13 held-out locators were recovered (recall 0.7692), below the fixed
+  0.95 gate. Q009, Q011, and Q013 were missed.
+- Source inspection confirmed all three misses are explicit bovine MSC
+  growth-medium/insulin/FBS quantitative figure captions, not ambiguous
+  statistics-only blocks.
+- The deployment gate suppressed all output: the committed manifest has
+  `deployment_gate_pass=false`, status `failed_held_out_recall_no_output`, and
+  an empty candidate list.
+
+## Final Routing Decision
+
+DeepSeek quantitative-block localization is closed for this prompt/model after
+two held-out failures (10/12 and 10/13). Do not spend further calls tuning on
+the exposed misses. The deterministic context prefilter remains useful, but
+candidate review routes to Codex/Claude or a separately validated stronger
+model. This decision does not affect the held human quantitative pilot.
+
+## Verification
+
+- Non-loopback suite: 151 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected.
+- Rebuilt the 19-block pool and validated the committed manifest with zero
+  issues; deployment remained false and candidate count remained zero.
+- Checkpoint resume reproduced the same metrics and expected nonzero CLI exit
+  without another API call.
+- CLI smoke passed. The six-round optimization demo increased synthetic
+  hypervolume from 7.050 to 16.464.
+- `git diff --check` and the repository API-key pattern scan passed.
+
+---
+
 # Session 50 (Codex) — source-disjoint Zotero locator holdout frozen
 
 Date: 2026-07-15

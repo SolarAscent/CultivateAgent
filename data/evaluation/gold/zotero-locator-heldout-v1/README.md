@@ -1,6 +1,6 @@
 # Zotero Locator Held-out v1
 
-**Status: FROZEN_UNEXPOSED_SILVER — do not tune before the first recorded run.**
+**Status: FROZEN_EXPOSED_FAIL — retained for audit, not future independent tuning.**
 
 This benchmark provides a new source-disjoint silver set for the DeepSeek
 quantitative-block localization gate. It was frozen after the earlier R017,
@@ -46,6 +46,7 @@ The generator creates a temporary blank worksheet, validates every source hash
 and locator through the existing quantitative-review validator, then removes
 the worksheet because this benchmark is not a human-review packet.
 
-Freeze this commit before the first model run. Any later prompt change requires
-a different held-out source set; do not tune on misses and reuse this benchmark
-as independent evidence.
+The first unchanged-prompt run is recorded under
+`data/evaluation/shadow/deepseek-zotero-heldout-v1/` and failed recall at 10/13.
+Any later prompt change requires a different held-out source set; do not tune on
+the misses and reuse this benchmark as independent evidence.

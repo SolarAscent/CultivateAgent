@@ -718,7 +718,7 @@ Gate：论文 claims 可追溯到证据和结果。
 | Review-packet 覆盖 | 14/16 有本地 locators | H001-H014 可进入高效人工复核 |
 | 新来源 review packet | 3/3 有 SHA-256 绑定的本地 locators | H031-H033 对应 R045-R047；decision 全部保持 open |
 | 新来源 extraction readiness | 3/3 direct-ready | R046 使用 Europe PMC JATS；R045/R047 来自合法本地或开放 PDF |
-| DeepSeek 定量文本块下放 | `FAIL`；held-out silver recall 10/12（0.8333） | 不得批量下放；已冻结一套来源独立的 13-locator Zotero silver set，但尚未向模型暴露 |
+| DeepSeek 定量文本块下放 | `FAIL`；独立 silver recall 10/13（0.7692），此前为 10/12（0.8333） | 当前 prompt/model 的任务关闭；保留确定性预筛，复核转交更强模型 |
 | 缺失 review-packet source | 2/16 | H015-H016 对应 R024，需要机构访问或人工提供主文全文 |
 | Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
 

@@ -220,8 +220,10 @@ a number is supported.
   Regressions or unstable repeated runs route the task back to Codex or Claude.
 - Current measured status: context-free alias mapping failed its recall gate,
   and quantitative-block localization passed its first-source canary but failed
-  held-out R018/R045 silver recall (10/12, 0.8333). Neither task is approved for
-  bulk delegation. Do not tune on the missed held-out items and reuse them as an
+  held-out R018/R045 silver recall (10/12, 0.8333), then failed a source-disjoint
+  Zotero silver set (10/13, 0.7692). Neither task is approved for bulk
+  delegation. Quantitative-block localization is closed for this DeepSeek
+  prompt/model; do not tune on missed held-out items and reuse them as an
   independent test.
 
 ### 8.3 Allowed Delegation

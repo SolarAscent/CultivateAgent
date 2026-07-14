@@ -67,7 +67,7 @@ python scripts/audit_bovine_corpus.py --require-pass
 ```
 
 The committed audit is currently `FAIL`: all six numerical checks and required
-metadata pass for 35 design-included peer-reviewed sources, but none of the 14
+metadata pass for 39 design-included peer-reviewed sources, but none of the 18
 P1 core/core-context records has an explicit human-verified review status. See
 [`docs/BOVINE_CORPUS_GATE1_AUDIT.md`](docs/BOVINE_CORPUS_GATE1_AUDIT.md); a
 nonzero exit is expected until human curation passes.
@@ -172,6 +172,12 @@ cultivate extraction-readiness --ids H001-H016
 cultivate extraction-readiness --ids H031-H033 \
   --out docs/EXTRACTION_READINESS_H031_H033.md \
   --tsv data/literature/bovine_extraction_readiness_H031_H033.tsv
+# Identity/license-verified Zotero additions H034-H037 are 4/4 direct-ready:
+python scripts/ingest_verified_sources.py \
+  --verified-sources data/evaluation/gold/zotero-locator-heldout-v1/verified_sources.tsv
+cultivate extraction-readiness --ids H034-H037 \
+  --out docs/EXTRACTION_READINESS_H034_H037.md \
+  --tsv data/literature/bovine_extraction_readiness_H034_H037.tsv
 # For a controlled live pilot, target review IDs/source IDs instead of the whole tier:
 cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
 # If every operator fails at the provider-call layer, the command exits nonzero
@@ -192,6 +198,8 @@ cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016
 # Current committed packet covers 14/16 tasks; H015-H016 still need R024 main full text.
 # R045-R047 are available in a separate hash-anchored packet with no AI decisions:
 cultivate review-packet --ids H031-H033 --out docs/HUMAN_REVIEW_PACKET_H031_H033.md
+# R048-R051 likewise remain open human-review candidates:
+cultivate review-packet --ids H034-H037 --out docs/HUMAN_REVIEW_PACKET_H034_H037.md
 # Create and check the human-fillable adjudication worksheet for ready tasks:
 cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
 cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv

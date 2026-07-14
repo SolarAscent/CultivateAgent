@@ -348,6 +348,10 @@ Checklist:
 - [x] `[AI]` Ingest lawful R045-R047 full text and generate the H031-H033
   hash-anchored review packet plus readiness report. All 3 tasks are directly
   operator-ready; this is source navigation, not evidence approval.
+- [x] `[AI]` Promote identity/license-verified Zotero sources R048-R051 into
+  the canonical candidate corpus and H034-H037 queue. Exact metadata/full text
+  are hash-checked; 4/4 have locators and operator-ready routing, with no
+  evidence decision assigned.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,
   source record IDs, or paper IDs select an explicit paper set.
 - [x] `[AI]` Treat total provider-call failure as extraction failure; do not
@@ -372,6 +376,12 @@ cultivate extraction-readiness --ids H031-H033 \
   --out docs/EXTRACTION_READINESS_H031_H033.md \
   --tsv data/literature/bovine_extraction_readiness_H031_H033.tsv
 cultivate review-packet --ids H031-H033 --out docs/HUMAN_REVIEW_PACKET_H031_H033.md
+python scripts/ingest_verified_sources.py \
+  --verified-sources data/evaluation/gold/zotero-locator-heldout-v1/verified_sources.tsv
+cultivate extraction-readiness --ids H034-H037 \
+  --out docs/EXTRACTION_READINESS_H034_H037.md \
+  --tsv data/literature/bovine_extraction_readiness_H034_H037.tsv
+cultivate review-packet --ids H034-H037 --out docs/HUMAN_REVIEW_PACKET_H034_H037.md
 cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate extract --ids H001-H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate export
@@ -724,18 +734,18 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 ### 8.2 Completed Literature And Planning Work
 
 - First wet-lab-facing target is documented.
-- Bovine manifest contains 47 records.
-- The executable Gate 1 audit counts only design-included records: 35
-  peer-reviewed records, 18 reviews, 17 primary papers, 13 bovine primary
-  papers, 17 dose-bearing primary papers, and 8 serum-free bovine primary
+- Bovine manifest contains 51 records.
+- The executable Gate 1 audit counts only design-included records: 39
+  peer-reviewed records, 18 reviews, 21 primary papers, 17 bovine primary
+  papers, 21 dose-bearing primary papers, and 8 serum-free bovine primary
   papers. All six numerical thresholds and required metadata pass. Gate 1
-  remains `FAIL` because 0/14 P1 core/core-context records have an explicit
+  remains `FAIL` because 0/18 P1 core/core-context records have an explicit
   human-verified status.
 - R045-R047 add directly bounded evidence on microbial lysate serum replacement,
   Pichia-derived recombinant albumin, and donor variance under serum-free
   culture. Titles and DOI metadata were checked against Crossref plus PubMed or
   publisher records; none is treated as adjudicated evidence.
-- Human review queue contains 33 open tasks.
+- Human review queue contains 37 open tasks.
 - AI-for-science method review exists.
 - DeepSeek compatibility-route vs explicit v4-flash effect-extraction
   comparison exists in `docs/MODEL_COMPARISON_DEEPSEEK.md`; it found the
@@ -761,7 +771,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 | Gate | Current result | Meaning |
 |---|---|---|
-| Corpus Gate 1 | `FAIL`; 6/6 numerical checks and metadata pass | 35/35 included peer-reviewed sources; 0/14 P1 core/core-context rows are human verified |
+| Corpus Gate 1 | `FAIL`; 6/6 numerical checks and metadata pass | 39/39 included peer-reviewed sources; 0/18 P1 core/core-context rows are human verified |
 | Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
 | Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 are ready for section-routed operators; H015-H016 need R024 |
 | Gate 2 critical-field coverage | `FAIL`: 0/17 applicable concept-paper cells in the committed live benchmark | Paper IDs were returned, but no B-M critical content was extracted; stage and medium type fixture gold are not evaluable |
@@ -771,6 +781,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | Review-packet coverage | 14/16 with local locators | H001-H014 are ready for efficient human review |
 | New-source review packet | 3/3 with SHA-256-bound local locators | H031-H033 cover R045-R047; all decisions remain open |
 | New-source extraction readiness | 3/3 direct-ready | R046 uses Europe PMC JATS; R045/R047 route from lawful local/open PDFs |
+| Zotero candidate packet/readiness | 4/4 locator-ready and direct-ready | H034-H037 cover R048-R051; all decisions remain open |
 | P1 PDF structured-table off-ramp | `FAIL`; 10 identity-matched PDFs, 0 statistical line-table cells | 116 layout-text hits are locators only; use a bounded caption/prose and figure pilot |
 | DeepSeek quantitative-block delegation | `FAIL`; independent silver recall 10/13 (0.7692) after prior 10/12 (0.8333) | Task closed for this prompt/model; retain deterministic prefilter and route review to a stronger model |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
@@ -812,8 +823,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 ### 8.5 Immediate Next Actions
 
-1. `[HUMAN]` Confirm or correct the 14 P1 core/core-context manifest decisions,
-   including the cell-line limit for R045 and formulation availability for R047.
+1. `[HUMAN]` Confirm or correct the 18 P1 core/core-context manifest decisions,
+   including R045/R047 transfer limits and the new H034-H037 candidate bounds.
 2. `[HUMAN]` Adjudicate H001-H014 using the current
    locator packet and `data/literature/bovine_adjudication_H001_H014.tsv`.
 3. `[HUMAN]` Provide R024 main full text, or confirm it should remain deferred.

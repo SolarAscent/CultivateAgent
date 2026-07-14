@@ -48,9 +48,9 @@ First wet-lab-facing target:
 
 ## Manifest Summary
 
-The manifest contains 47 records:
+The manifest contains 51 records:
 
-- 11 core records and 3 core-context records relevant to the first bovine
+- 12 core records and 6 core-context records relevant to the first bovine
   expansion-medium scope.
 - 21 context records covering reviews, safety, cost, systems biology, or
   optimization methods.
@@ -83,10 +83,17 @@ The highest-priority direct wet-lab sources are:
   proliferation and differentiation retention.
 - Skrivergaard et al. 2023, donor-dependent bovine satellite-cell performance
   under an in-house serum-free medium versus 10% FBS.
+- Celebi-Birand et al. 2023, postbiotic-assisted IGF1/FGF2 reduction in primary
+  bovine satellite cells, pending composition and replicate review.
+- Yu et al. 2024, natural-product additives in Hanwoo satellite cells under
+  reduced-FBS conditions, pending separation of binding and cell outcomes.
+- Ock et al. 2023, serum and basal-medium effects under oxygen context.
+- Lee et al. 2025, insulin effects in bovine muscle satellite cells under
+  reduced-serum conditions.
 
 ## Human Review Queue
 
-The human review queue contains 33 open review tasks. It is intentionally
+The human review queue contains 37 open review tasks. It is intentionally
 smaller than the manifest: it focuses on decision-critical evidence that could
 change the first wet-lab batch.
 
@@ -111,11 +118,11 @@ Run `python scripts/audit_bovine_corpus.py --require-pass`. The generated
 [`BOVINE_CORPUS_GATE1_AUDIT.md`](BOVINE_CORPUS_GATE1_AUDIT.md) and
 `data/literature/bovine_corpus_gate1_issues.tsv` currently show:
 
-- 35 design-included peer-reviewed records, 18 reviews, 17 primary papers, 13
-  bovine primary papers, 17 dose-bearing primary papers, and 8 serum-free
+- 39 design-included peer-reviewed records, 18 reviews, 21 primary papers, 17
+  bovine primary papers, 21 dose-bearing primary papers, and 8 serum-free
   bovine primary papers; all six numerical thresholds pass;
 - required included-record metadata passes after DOI repair; and
-- 0/14 P1 core/core-context rows have an explicit human-verified status.
+- 0/18 P1 core/core-context rows have an explicit human-verified status.
 
 The audit deliberately prevents numerical coverage from being mistaken for a
 curated, approved corpus.
@@ -151,6 +158,14 @@ BY-NC-ND 4.0; R047 uses the Aarhus institutional manuscript marked CC BY 4.0.
 each locator set to the local full-text SHA-256, and
 [`EXTRACTION_READINESS_H031_H033.md`](EXTRACTION_READINESS_H031_H033.md)
 reports 3/3 directly operator-ready. Neither artifact adjudicates evidence.
+
+Four additional Zotero-held sources (R048-R051) passed local title, DOI,
+CC-BY-4.0, PDF-hash, and page-parseability checks. Exact metadata and full text
+are reproducibly rebuilt by `scripts/ingest_verified_sources.py`.
+[`HUMAN_REVIEW_PACKET_H034_H037.md`](HUMAN_REVIEW_PACKET_H034_H037.md) and
+[`EXTRACTION_READINESS_H034_H037.md`](EXTRACTION_READINESS_H034_H037.md) report
+4/4 hash-bound locator-ready and 4/4 operator-ready. All four decisions remain
+open; these artifacts do not establish quantitative support.
 
 The Glycyrrhiza/licochalcone paper (`10.1038/s41598-025-98386-1`) was screened
 but not added: its bovine and porcine effects were negligible and its positive

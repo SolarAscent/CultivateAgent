@@ -326,6 +326,9 @@ Checklist：
 - [x] `[AI]` 合法导入 R045-R047 全文，并生成带 SHA-256 的 H031-H033 review
   packet 和 readiness 报告。3 项均 direct operator-ready；这只是原文导航，
   不是证据批准。
+- [x] `[AI]` 将通过身份/许可验证的 Zotero 来源 R048-R051 纳入正式候选语料和
+  H034-H037 队列。精确 metadata/全文均经过哈希检查；4/4 有 locator 且可直接
+  operator routing，但未赋予任何 evidence decision。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、
   source record IDs 或 paper IDs 精确选择 paper set。
 - [x] `[AI]` 把全 operator provider-call failure 视为抽取失败；当所有
@@ -350,6 +353,12 @@ cultivate extraction-readiness --ids H031-H033 \
   --out docs/EXTRACTION_READINESS_H031_H033.md \
   --tsv data/literature/bovine_extraction_readiness_H031_H033.tsv
 cultivate review-packet --ids H031-H033 --out docs/HUMAN_REVIEW_PACKET_H031_H033.md
+python scripts/ingest_verified_sources.py \
+  --verified-sources data/evaluation/gold/zotero-locator-heldout-v1/verified_sources.tsv
+cultivate extraction-readiness --ids H034-H037 \
+  --out docs/EXTRACTION_READINESS_H034_H037.md \
+  --tsv data/literature/bovine_extraction_readiness_H034_H037.tsv
+cultivate review-packet --ids H034-H037 --out docs/HUMAN_REVIEW_PACKET_H034_H037.md
 cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate extract --ids H001-H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate export
@@ -675,16 +684,16 @@ Gate：论文 claims 可追溯到证据和结果。
 ### 8.2 已完成的文献和计划工作
 
 - 第一阶段 wet-lab-facing target 已记录。
-- Bovine manifest 有 47 条记录。
-- 可执行 Gate 1 审计只统计设计纳入记录：35 篇同行评审来源、18 篇综述、17 篇
-  原始研究、13 篇 bovine primary、17 篇含剂量的 primary，以及 8 篇 bovine
-  serum-free primary。六项数量门槛和必需 metadata 均通过；但 14 条 P1
+- Bovine manifest 有 51 条记录。
+- 可执行 Gate 1 审计只统计设计纳入记录：39 篇同行评审来源、18 篇综述、21 篇
+  原始研究、17 篇 bovine primary、21 篇含剂量的 primary，以及 8 篇 bovine
+  serum-free primary。六项数量门槛和必需 metadata 均通过；但 18 条 P1
   core/core-context 中 0 条具有明确 human-verified 状态，因此 Gate 1 仍为
   `FAIL`。
 - R045-R047 分别补充 microbial lysate 血清替代、Pichia 来源重组白蛋白，以及
   无血清条件下 donor variance 的边界明确证据。题名和 DOI 均由 Crossref 加
   PubMed 或出版社记录核对；它们均不视为已裁决证据。
-- Human review queue 有 33 个 open tasks。
+- Human review queue 有 37 个 open tasks。
 - AI-for-science 方法综述已存在。
 - DeepSeek compatibility route 与显式 `deepseek-v4-flash` 的 effect-extraction
   对比已记录在 `docs/MODEL_COMPARISON_DEEPSEEK.md`；结论是显式 v4-flash run
@@ -708,7 +717,7 @@ Gate：论文 claims 可追溯到证据和结果。
 
 | Gate | 当前结果 | 含义 |
 |---|---|---|
-| Corpus Gate 1 | `FAIL`；6/6 数量检查和 metadata 通过 | 纳入同行评审来源 35/35；P1 core/core-context 人工确认 0/14 |
+| Corpus Gate 1 | `FAIL`；6/6 数量检查和 metadata 通过 | 纳入同行评审来源 39/39；P1 core/core-context 人工确认 0/18 |
 | Proliferation evidence audit | `NO-GO` | 当前 extracted evidence 不能支持湿实验入口 |
 | Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 可跑 section-routed operators；H015-H016 需要 R024 |
 | Gate 2 关键字段覆盖 | `FAIL`：当前 committed live benchmark 为 0/17 applicable concept-paper cells | 返回了 paper IDs，但没有 B-M 关键内容；fixture gold 的 stage、medium type 不可评估 |
@@ -718,6 +727,7 @@ Gate：论文 claims 可追溯到证据和结果。
 | Review-packet 覆盖 | 14/16 有本地 locators | H001-H014 可进入高效人工复核 |
 | 新来源 review packet | 3/3 有 SHA-256 绑定的本地 locators | H031-H033 对应 R045-R047；decision 全部保持 open |
 | 新来源 extraction readiness | 3/3 direct-ready | R046 使用 Europe PMC JATS；R045/R047 来自合法本地或开放 PDF |
+| Zotero 候选 packet/readiness | 4/4 locator-ready 且 direct-ready | H034-H037 对应 R048-R051；decision 全部保持 open |
 | DeepSeek 定量文本块下放 | `FAIL`；独立 silver recall 10/13（0.7692），此前为 10/12（0.8333） | 当前 prompt/model 的任务关闭；保留确定性预筛，复核转交更强模型 |
 | 缺失 review-packet source | 2/16 | H015-H016 对应 R024，需要机构访问或人工提供主文全文 |
 | Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
@@ -751,8 +761,8 @@ Gate：论文 claims 可追溯到证据和结果。
 
 ### 8.5 近期下一步
 
-1. `[HUMAN]` 确认或修正 14 条 P1 core/core-context 的 manifest decision，特别
-   检查 R045 的 immortalized-cell 外推限制和 R047 的配方公开程度。
+1. `[HUMAN]` 确认或修正 18 条 P1 core/core-context 的 manifest decision，特别
+   检查 R045/R047 的外推限制和新增 H034-H037 的候选边界。
 2. `[HUMAN]` 用当前 locator packet 和 `data/literature/bovine_adjudication_H001_H014.tsv`
    复核 H001-H014。
 3. `[HUMAN]` 提供 R024 主文全文，或确认 R024 暂时 defer。

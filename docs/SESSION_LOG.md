@@ -3774,6 +3774,54 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 52 (Codex) — verified Zotero sources enter canonical review flow
+
+Date: 2026-07-15
+Branch: `codex/promote-zotero-bovine-sources`
+
+## Scope And Boundary
+
+The four bovine primary sources previously frozen as Z001-Z004 were promoted
+from evaluation-only assets into canonical candidate records R048-R051 and open
+human-review tasks H034-H037. This is corpus preparation only: no evidence was
+approved, no numeric value was transcribed by a model, and no wet-lab variable
+was promoted.
+
+## Implementation
+
+- Added `scripts/ingest_verified_sources.py`. It accepts only rows already
+  marked `identity_license_verified`, verifies the committed PDF SHA-256 before
+  extraction, and rebuilds exact title/year/DOI metadata plus plain full text.
+- Added R048-R051 with explicit transfer limits for postbiotic composition,
+  serum-containing natural-product assays, oxygen confounding, and separation
+  of insulin expansion versus differentiation outcomes.
+- Added H034-H037 with decision-focused fields and questions. All remain
+  `open`.
+- Generated hash-bound review locators and extraction-readiness artifacts. All
+  4 tasks have local full text and all 4 are directly operator-ready.
+- Refreshed Gate 1 and the English/Chinese control documents. The manifest now
+  has 51 records and the queue 37 open tasks. Gate 1 remains `FAIL` solely on
+  human curation: 0/18 P1 core/core-context rows are human verified.
+
+## Verification
+
+- Verified-source ingestion tests: 2 passed, including hash rejection and exact
+  metadata/full-text output.
+- Non-loopback suite: 153 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected.
+- Local source ingestion: 4/4 succeeded; parsed page counts are 12, 11, 16,
+  and 16, matching the frozen source registry.
+- Review packet: 4/4 hash-bound locator-ready.
+- Extraction readiness: 4 direct-ready, 0 fallback, 0 partial, 0 missing.
+- Corpus audit: all six numerical checks, metadata completeness, record-ID
+  uniqueness, and included-DOI uniqueness pass; human curation remains the
+  expected failing gate.
+- CLI smoke passed. The six-round optimization demo increased synthetic
+  hypervolume from 7.050 to 16.464.
+- Regenerating the review/readiness artifacts was byte-identical.
+
+---
+
 # Session 51 (Codex) — independent locator held-out closes DeepSeek task
 
 Date: 2026-07-15

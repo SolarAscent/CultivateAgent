@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Optional
 
-from ..schema.paper import PaperMetadata
+from ..schema.paper import PaperMetadata, slugify
 
 
 EUROPE_PMC_REST = "https://www.ebi.ac.uk/europepmc/webservices/rest"
@@ -31,6 +31,7 @@ class EuropePMCError(RuntimeError):
 class JATSAcquisition:
     pmcid: str
     doi: str
+    article_title: str
     source_url: str
     license_name: str
     license_url: str
@@ -91,6 +92,15 @@ def inspect_europe_pmc_jats(
     if expected not in dois:
         raise EuropePMCError(f"JATS DOI mismatch: expected {expected}, found {sorted(dois)}")
 
+    titles = [
+        " ".join(" ".join(element.itertext()).split())
+        for element in root.iter()
+        if _local_name(element.tag) == "article-title"
+    ]
+    article_title = next((title for title in titles if title), "")
+    if not article_title:
+        raise EuropePMCError("JATS article lacks an article title")
+
     license_elements = [element for element in root.iter() if _local_name(element.tag) == "license"]
     license_text = " ".join(
         " ".join(" ".join(element.itertext()).split()) for element in license_elements
@@ -109,6 +119,7 @@ def inspect_europe_pmc_jats(
     return JATSAcquisition(
         pmcid=normalized_pmcid,
         doi=expected,
+        article_title=article_title,
         source_url=source_url or f"{EUROPE_PMC_REST}/{normalized_pmcid}/fullTextXML",
         license_name=license_name,
         license_url=license_url,
@@ -163,6 +174,8 @@ def acquire_europe_pmc_jats(
     *,
     pmcid: str,
     expected_doi: str,
+    expected_paper_id: Optional[str] = None,
+    expected_record_id: Optional[str] = None,
     expected_license: Optional[str] = None,
     timeout: int = 30,
     force: bool = False,
@@ -192,8 +205,19 @@ def acquire_europe_pmc_jats(
             )
         if xml_path.exists() and not force:
             raise EuropePMCError(f"refusing to overwrite existing {xml_path}")
-        _atomic_write(xml_path, acquisition.xml_bytes)
         status = "downloaded"
+
+    if expected_paper_id:
+        if paper_dir.name != expected_paper_id:
+            raise EuropePMCError(
+                f"paper directory mismatch: expected {expected_paper_id}, found {paper_dir.name}"
+            )
+        source_paper_id = slugify(acquisition.article_title)
+        if source_paper_id != expected_paper_id:
+            raise EuropePMCError(
+                "JATS title identity mismatch: "
+                f"expected paper_id {expected_paper_id}, found {source_paper_id}"
+            )
 
     if expected_license and acquisition.license_name != expected_license:
         raise EuropePMCError(
@@ -202,6 +226,34 @@ def acquire_europe_pmc_jats(
 
     assets_path = paper_dir / "assets.json"
     assets = json.loads(assets_path.read_text(encoding="utf-8")) if assets_path.exists() else {}
+    allowed_ids = {None, expected_paper_id, expected_record_id}
+    if expected_paper_id and assets.get("paper_id") not in allowed_ids:
+        raise EuropePMCError(
+            f"assets paper_id mismatch: expected {expected_paper_id}, "
+            f"found {assets['paper_id']}"
+        )
+    metadata_path = paper_dir / "metadata.json"
+    metadata = None
+    if metadata_path.exists():
+        metadata = PaperMetadata.model_validate_json(metadata_path.read_text(encoding="utf-8"))
+        if expected_paper_id and metadata.ref.paper_id not in allowed_ids:
+            raise EuropePMCError(
+                f"metadata paper_id mismatch: expected {expected_paper_id}, "
+                f"found {metadata.ref.paper_id}"
+            )
+        if expected_paper_id and slugify(metadata.ref.title) != expected_paper_id:
+            raise EuropePMCError(
+                f"metadata title mismatch for {expected_paper_id}: {metadata.ref.title!r}"
+            )
+        if metadata.ref.doi and _normalize_doi(metadata.ref.doi) != acquisition.doi:
+            raise EuropePMCError(
+                f"metadata DOI mismatch: expected {acquisition.doi}, found {metadata.ref.doi}"
+            )
+
+    if status == "downloaded":
+        _atomic_write(xml_path, acquisition.xml_bytes)
+    if expected_paper_id and not assets.get("paper_id"):
+        assets["paper_id"] = expected_paper_id
     assets.update({
         "fulltext_xml": "fulltext.xml",
         "source_kind": "europe_pmc_open_access_jats",
@@ -212,9 +264,7 @@ def acquire_europe_pmc_jats(
     })
     _atomic_write(assets_path, json.dumps(assets, indent=2, ensure_ascii=False).encode("utf-8"))
 
-    metadata_path = paper_dir / "metadata.json"
-    if metadata_path.exists():
-        metadata = PaperMetadata.model_validate_json(metadata_path.read_text(encoding="utf-8"))
+    if metadata is not None:
         metadata.status.has_structured_fulltext = True
         metadata.status.structured_extractor = "europe_pmc_jats"
         metadata.ref.doi = metadata.ref.doi or acquisition.doi

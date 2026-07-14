@@ -10,6 +10,7 @@ import tempfile
 from pathlib import Path
 
 from cultivate_agent.ingest import PDFTableAuditError, audit_pdf_tables
+from cultivate_agent.schema import slugify
 
 
 FIELDS = [
@@ -29,6 +30,26 @@ def _read_sources(path: Path) -> list[dict[str, str]]:
     if len({row["record_id"] for row in rows}) != len(rows):
         raise ValueError("source manifest contains duplicate record_id values")
     return rows
+
+
+def _validate_sources_against_corpus(
+    rows: list[dict[str, str]], corpus_path: Path
+) -> None:
+    with corpus_path.open(encoding="utf-8", newline="") as handle:
+        corpus_rows = list(csv.DictReader(handle, delimiter="\t"))
+    by_record = {row["record_id"]: row for row in corpus_rows}
+    if len(by_record) != len(corpus_rows):
+        raise ValueError("corpus manifest contains duplicate record_id values")
+    for row in rows:
+        canonical = by_record.get(row["record_id"])
+        if canonical is None:
+            raise ValueError(f"{row['record_id']} is absent from the corpus manifest")
+        canonical_paper_id = slugify(canonical["title"])
+        if row["paper_id"] != canonical_paper_id:
+            raise ValueError(
+                f"{row['record_id']} paper_id disagrees with canonical title: "
+                f"{row['paper_id']} != {canonical_paper_id}"
+            )
 
 
 def _write_report(rows: list[dict[str, object]], path: Path) -> None:
@@ -83,8 +104,9 @@ def _summary_markdown(rows: list[dict[str, object]]) -> str:
         "",
         "The result triggers the planned off-ramp from structured tables to a bounded "
         "caption/prose and figure-data pilot. It does not justify scaling text extraction, "
-        "and it does not establish that all 140 locator candidates are relevant.",
-        "R023 and R046 have already been audited through JATS; R024 remains the only P1 "
+        f"and it does not establish that all {total('text_stat_cells')} locator candidates "
+        "are relevant.",
+        "R023, R029, and R046 have already been audited through JATS; R024 remains the only P1 "
         "primary record in this set without either audited JATS or a local PDF.",
         "",
         "## Per-Record Counts",
@@ -121,6 +143,10 @@ def main() -> int:
     )
     parser.add_argument("--papers-dir", type=Path, default=Path("data/papers"))
     parser.add_argument(
+        "--corpus-manifest", type=Path,
+        default=Path("data/literature/bovine_corpus_manifest.tsv"),
+    )
+    parser.add_argument(
         "--report", type=Path,
         default=Path("data/literature/bovine_pdf_table_audit.tsv"),
     )
@@ -132,6 +158,7 @@ def main() -> int:
     args = parser.parse_args()
 
     sources = _read_sources(args.manifest)
+    _validate_sources_against_corpus(sources, args.corpus_manifest)
     if args.max_items <= 0 or len(sources) > args.max_items:
         raise ValueError(f"refusing {len(sources)} items with --max-items={args.max_items}")
     report = []
@@ -166,7 +193,7 @@ def main() -> int:
                 "text_cells": result.text.cells,
                 "text_stat_cells": result.text.stat_candidate_cells,
                 "classification": result.classification,
-                "error": "",
+                "error": "-",
             })
             print(
                 f"+ {source['record_id']}: line_stats={result.lines.stat_candidate_cells}, "

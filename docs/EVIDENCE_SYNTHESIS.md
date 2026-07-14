@@ -98,16 +98,18 @@ hallucination but does not make treatment/control role labeling trustworthy;
 that semantic step remains subject to repeated-run gold evaluation and human
 numeric review.
 The committed Europe PMC acquisition audit currently covers nine explicitly
-mapped P1 primary sources. All nine JATS files pass DOI, Creative Commons
-license, hash, and parseability checks. They contain 17 tables and 1,258 cells,
+mapped P1 primary sources. The source manifest must now agree with the canonical
+corpus record, DOI, and title-derived paper directory before acquisition. All
+nine JATS files pass that identity check plus Creative Commons license, hash,
+and parseability checks. They contain 17 tables and 1,258 cells,
 but zero cells matching the conservative SD/SEM/sample-size candidate screen.
 This is a verified negative result: the current OA JATS expansion improves
 structured source coverage but does not itself create any tier-1 effects.
 Reproduce it with `python scripts/ingest_europe_pmc_jats.py --max-items 9`; the
 source mapping and current report are under `data/literature/`.
-The follow-up P1 PDF audit reached the same boundary from the PDF side. Eleven
-available PDFs (202 pages) yielded 22 default line-strategy tables and 195
-cells, but zero statistical cells. PyMuPDF's text strategy produced 140
+The follow-up P1 PDF audit reached the same boundary from the PDF side. Ten
+identity-matched PDFs (186 pages) yielded 20 default line-strategy tables and
+188 cells, but zero statistical cells. PyMuPDF's text strategy produced 116
 statistical locator candidates inside page-wide layout regions; these include
 prose and figure captions and are not treated as table cells or effects. The
 structured-table off-ramp therefore remains `FAIL` with zero gold-verified

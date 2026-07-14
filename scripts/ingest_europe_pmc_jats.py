@@ -11,7 +11,7 @@ import tempfile
 from pathlib import Path
 
 from cultivate_agent.ingest import EuropePMCError, acquire_europe_pmc_jats
-from cultivate_agent.schema import structured_paper_from_grobid_tei_path
+from cultivate_agent.schema import slugify, structured_paper_from_grobid_tei_path
 
 
 REPORT_FIELDS = [
@@ -37,6 +37,31 @@ def _read_manifest(path: Path) -> list[dict[str, str]]:
     return rows
 
 
+def _validate_manifest_against_corpus(
+    rows: list[dict[str, str]], corpus_path: Path
+) -> None:
+    with corpus_path.open(encoding="utf-8", newline="") as handle:
+        corpus_rows = list(csv.DictReader(handle, delimiter="\t"))
+    by_record = {row["record_id"]: row for row in corpus_rows}
+    if len(by_record) != len(corpus_rows):
+        raise ValueError("corpus manifest contains duplicate record_id values")
+    for row in rows:
+        canonical = by_record.get(row["record_id"])
+        if canonical is None:
+            raise ValueError(f"{row['record_id']} is absent from the corpus manifest")
+        if row["doi"].strip().lower() != canonical["doi"].strip().lower():
+            raise ValueError(
+                f"{row['record_id']} DOI disagrees with corpus manifest: "
+                f"{row['doi']} != {canonical['doi']}"
+            )
+        canonical_paper_id = slugify(canonical["title"])
+        if row["paper_id"] != canonical_paper_id:
+            raise ValueError(
+                f"{row['record_id']} paper_id disagrees with canonical title: "
+                f"{row['paper_id']} != {canonical_paper_id}"
+            )
+
+
 def _write_report(rows: list[dict[str, object]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(
@@ -58,6 +83,10 @@ def main() -> int:
     )
     parser.add_argument("--papers-dir", type=Path, default=Path("data/papers"))
     parser.add_argument(
+        "--corpus-manifest", type=Path,
+        default=Path("data/literature/bovine_corpus_manifest.tsv"),
+    )
+    parser.add_argument(
         "--report", type=Path,
         default=Path("data/literature/bovine_jats_acquisition.tsv"),
     )
@@ -68,6 +97,7 @@ def main() -> int:
     args = parser.parse_args()
 
     rows = _read_manifest(args.manifest)
+    _validate_manifest_against_corpus(rows, args.corpus_manifest)
     if args.record_id:
         requested = set(args.record_id)
         rows = [row for row in rows if row["record_id"] in requested]
@@ -87,6 +117,8 @@ def main() -> int:
                 paper_dir,
                 pmcid=row["pmcid"],
                 expected_doi=row["doi"],
+                expected_paper_id=row["paper_id"],
+                expected_record_id=row["record_id"],
                 expected_license=row["expected_license"],
                 timeout=args.timeout,
                 force=args.force,
@@ -105,7 +137,7 @@ def main() -> int:
                 "table_count": acquisition.table_count,
                 "cell_count": acquisition.cell_count,
                 "stat_candidate_cells": stat_candidates,
-                "error": "",
+                "error": "-",
             })
             print(f"+ {row['record_id']}: {status}, tables={acquisition.table_count}")
         except Exception as exc:

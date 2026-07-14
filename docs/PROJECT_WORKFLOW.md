@@ -660,6 +660,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - Operator extraction exists for smaller section-routed prompts.
 - Structured-paper schema, plain-text fallback, GROBID TEI parsing, and
   JATS/Open Access XML parsing exist.
+- Europe PMC JATS and P1 PDF audit manifests are checked against the canonical
+  corpus record and title-derived paper directory before use. This prevents a
+  valid DOI/XML source from being attached to a different local paper.
 - `cultivate ingest --grobid-tei` can call a running GROBID service and save
   `fulltext.xml`.
 - Embedding retriever exists.
@@ -768,6 +771,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | Review-packet coverage | 14/16 with local locators | H001-H014 are ready for efficient human review |
 | New-source review packet | 3/3 with SHA-256-bound local locators | H031-H033 cover R045-R047; all decisions remain open |
 | New-source extraction readiness | 3/3 direct-ready | R046 uses Europe PMC JATS; R045/R047 route from lawful local/open PDFs |
+| P1 PDF structured-table off-ramp | `FAIL`; 10 identity-matched PDFs, 0 statistical line-table cells | 116 layout-text hits are locators only; use a bounded caption/prose and figure pilot |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
 

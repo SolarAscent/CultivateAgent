@@ -15,6 +15,7 @@ def _jats(doi="10.1234/example", license_url="https://creativecommons.org/licens
 <article xmlns:xlink="http://www.w3.org/1999/xlink">
   <front><article-meta>
     <article-id pub-id-type="doi">{doi}</article-id>
+    <title-group><article-title>Example Paper</article-title></title-group>
     <permissions><license xlink:href="{license_url}"><p>Creative Commons license.</p></license></permissions>
   </article-meta></front>
   <body><table-wrap><table><tr><th>Group</th><td>2.0</td></tr></table></table-wrap></body>
@@ -26,6 +27,7 @@ def test_inspect_jats_requires_exact_doi_and_recognized_license():
         _jats(), pmcid="PMC123", expected_doi="10.1234/EXAMPLE"
     )
     assert result.doi == "10.1234/example"
+    assert result.article_title == "Example Paper"
     assert result.license_name == "CC-BY-4.0"
     assert result.table_count == 1
     assert result.cell_count == 2
@@ -58,7 +60,7 @@ def test_fetch_validates_pmcid_and_uses_bounded_injected_fetcher():
 
 
 def test_acquire_is_atomic_resumable_and_merges_provenance(tmp_path):
-    paper_dir = tmp_path / "paper"
+    paper_dir = tmp_path / "example-paper"
     paper_dir.mkdir()
     (paper_dir / "assets.json").write_text(json.dumps({"paper_id": "p1", "fulltext": "fulltext.txt"}))
     calls = 0
@@ -83,6 +85,57 @@ def test_acquire_is_atomic_resumable_and_merges_provenance(tmp_path):
     assert assets["paper_id"] == "p1"
     assert assets["source_kind"] == "europe_pmc_open_access_jats"
     assert assets["license"] == "CC-BY-4.0"
+
+
+def test_acquire_rejects_jats_title_or_existing_metadata_identity_mismatch(tmp_path):
+    wrong_dir = tmp_path / "wrong-paper"
+    with pytest.raises(EuropePMCError, match="title identity mismatch"):
+        acquire_europe_pmc_jats(
+            wrong_dir,
+            pmcid="PMC123",
+            expected_doi="10.1234/example",
+            expected_paper_id="wrong-paper",
+            fetcher=lambda *_: _jats(),
+        )
+    assert not (wrong_dir / "fulltext.xml").exists()
+
+    paper_dir = tmp_path / "example-paper"
+    paper_dir.mkdir()
+    (paper_dir / "metadata.json").write_text(json.dumps({
+        "ref": {"paper_id": "other-paper", "title": "Other Paper"},
+        "status": {},
+    }))
+    with pytest.raises(EuropePMCError, match="metadata paper_id mismatch"):
+        acquire_europe_pmc_jats(
+            paper_dir,
+            pmcid="PMC123",
+            expected_doi="10.1234/example",
+            expected_paper_id="example-paper",
+            fetcher=lambda *_: _jats(),
+        )
+
+
+def test_acquire_accepts_record_id_as_existing_local_paper_id(tmp_path):
+    paper_dir = tmp_path / "example-paper"
+    paper_dir.mkdir()
+    (paper_dir / "assets.json").write_text(json.dumps({"paper_id": "R001"}))
+    (paper_dir / "metadata.json").write_text(json.dumps({
+        "ref": {
+            "paper_id": "R001",
+            "title": "Example Paper",
+            "doi": "10.1234/example",
+        },
+        "status": {},
+    }))
+    acquire_europe_pmc_jats(
+        paper_dir,
+        pmcid="PMC123",
+        expected_doi="10.1234/example",
+        expected_paper_id="example-paper",
+        expected_record_id="R001",
+        fetcher=lambda *_: _jats(),
+    )
+    assert json.loads((paper_dir / "assets.json").read_text())["paper_id"] == "R001"
 
 
 def test_existing_mismatched_xml_fails_without_overwrite(tmp_path):

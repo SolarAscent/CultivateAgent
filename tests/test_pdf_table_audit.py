@@ -1,7 +1,12 @@
 import hashlib
 
 from cultivate_agent.ingest.pdf_table_audit import audit_pdf_tables, is_stat_candidate
-from scripts.audit_bovine_pdf_tables import _summary_markdown
+import pytest
+
+from scripts.audit_bovine_pdf_tables import (
+    _summary_markdown,
+    _validate_sources_against_corpus,
+)
 
 
 class FakeTable:
@@ -76,3 +81,18 @@ def test_summary_fails_off_ramp_without_promoting_text_candidates():
     assert "Gold-verified tier-1 effects produced by this audit: 0" in summary
     assert "locator candidates rather than table cells or effects" in summary
     assert "strategy=\"text\"" in summary
+    assert "all 3 locator candidates" in summary
+
+
+def test_pdf_sources_must_match_canonical_corpus_identity(tmp_path):
+    corpus = tmp_path / "corpus.tsv"
+    corpus.write_text(
+        "record_id\ttitle\nR1\tExample Paper\n",
+        encoding="utf-8",
+    )
+    rows = [{"record_id": "R1", "paper_id": "example-paper"}]
+    _validate_sources_against_corpus(rows, corpus)
+
+    rows[0]["paper_id"] = "different-paper"
+    with pytest.raises(ValueError, match="canonical title"):
+        _validate_sources_against_corpus(rows, corpus)

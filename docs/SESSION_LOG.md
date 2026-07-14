@@ -3529,3 +3529,56 @@ because no human decision or scientific gate passed.
 2. `[HUMAN]` Complete the isolated 56-cell dual-review pilot.
 3. `[AI]` After reviewer files return, validate them without cross-exposure and
    compute agreement; do not scale production evaluation before pilot READY.
+
+---
+
+# Session 45 (Codex) — structured-source identity repair
+
+Date: 2026-07-15
+Branch: `codex/source-identity-guard`
+
+## Trigger
+
+Preparation of the quantitative human-review pilot exposed a source identity
+conflict. Canonical `R029` is the 2018 p38-pathway paper, while the JATS and PDF
+source manifests pointed its DOI/XML at the local directory for a different 2025
+insulin paper. That directory therefore contained an insulin PDF/plain text and
+p38 JATS XML under one metadata record. No R029 candidate can be trusted from
+that mixed directory.
+
+## Changes
+
+- Added canonical corpus checks to both Europe PMC JATS acquisition and the P1
+  PDF audit. Each source `record_id`, DOI where applicable, and title-derived
+  directory must agree before any source is used.
+- Added pre-write checks for JATS article title, directory, existing local paper
+  ID, metadata title, and metadata DOI. Validation occurs before XML, assets, or
+  metadata are changed.
+- Corrected R029 to
+  `maintaining-bovine-satellite-cells-stemness-through-p38-pathway` in both
+  source manifests and reacquired its DOI-verified JATS into that directory.
+- Preserved the misattached XML under its SHA-bound quarantine filename in the
+  insulin directory, removed it from the active `fulltext.xml` path, and restored
+  the insulin metadata DOI (`10.3390/ijms26094109`). These ignored local repairs
+  must be repeated or regenerated in other worktrees that copied the old assets.
+- Regenerated both source audits. The PDF result is now 10 identity-matched PDFs,
+  186 pages, zero statistical line-table cells, and 116 layout-text locators.
+
+## Verification
+
+- Focused identity and PDF-audit tests: 14 passed.
+- Non-loopback suite: 137 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected.
+- CLI smoke passed; the synthetic optimization demo increased hypervolume from
+  7.050 to 16.464.
+- Europe PMC acquisition: 9/9 sources passed canonical identity, DOI, license,
+  hash, and parseability checks; 17 tables and 1,258 cells remain unchanged.
+- The active insulin directory has no `fulltext.xml`; the quarantined XML and
+  the correctly placed p38 XML share the expected SHA-256
+  `814e96b8ec5554cadf5157f844f22b7bc82cc32aa5c792c27acb7cbf1c03e4bc`.
+
+## Next Step
+
+Build the bounded dual-blind quantitative locator packet from identity-verified
+R018, R045, R047, and a separately verified calibration source. Do not use R029
+as the planned PDF negative example because its valid local source is JATS-only.

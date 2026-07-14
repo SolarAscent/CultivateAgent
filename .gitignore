@@ -22,6 +22,8 @@ data/**
 !data/evaluation/gold/medium-pilot-v1/**
 !data/evaluation/gold/quantitative-pilot-v1/
 !data/evaluation/gold/quantitative-pilot-v1/**
+!data/evaluation/gold/zotero-locator-heldout-v1/
+!data/evaluation/gold/zotero-locator-heldout-v1/**
 !data/evaluation/shadow/
 !data/evaluation/shadow/deepseek-locator-shadow-v1/
 !data/evaluation/shadow/deepseek-locator-shadow-v1/**

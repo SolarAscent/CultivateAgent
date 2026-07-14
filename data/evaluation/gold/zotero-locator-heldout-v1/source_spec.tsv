@@ -1,0 +1,5 @@
+record_id	target_count	doi	title	year	expected_license
+Z001	2	10.3390/su152316164	Microbiota-Derived Postbiotics Enhance the Proliferative Effects of Growth Factors on Satellite Cells in Cultivated Meat Applications	2023	CC-BY-4.0
+Z002	2	10.3390/bios14010024	Discovery of Novel Stimulators of Pax7 and/or MyoD: Enhancing the Efficacy of Cultured Meat Production through Culture Media Enrichment	2024	CC-BY-4.0
+Z003	3	10.3390/foods12071384	Effect of Serum and Oxygen on the In Vitro Culture of Hanwoo Korean Native Cattle-Derived Skeletal Myogenic Cells Used in Cellular Agriculture	2023	CC-BY-4.0
+Z004	6	10.3390/ijms26094109	The Role of Insulin in the Proliferation and Differentiation of Bovine Muscle Satellite (Stem) Cells for Cultured Meat Production	2025	CC-BY-4.0

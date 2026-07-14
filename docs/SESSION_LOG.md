@@ -3771,3 +3771,58 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 - CLI smoke passed. The six-round optimization demo increased synthetic
   hypervolume from 7.050 to 16.464.
 - `git diff --check` and the repository API-key pattern scan passed.
+
+---
+
+# Session 50 (Codex) — source-disjoint Zotero locator holdout frozen
+
+Date: 2026-07-15
+Branch: `codex/zotero-locator-heldout`
+
+## Source Funnel Audit
+
+- Claude's committed screen contains 6,072 data rows: 275 yes, 741 maybe, and
+  5,056 no. Thirty-nine yes rows report a local PDF; 236 yes rows do not.
+- The 236-row acquire list includes 22 DOIs already present in the bovine corpus,
+  so it must be corpus-deduplicated before any acquisition batch. This session
+  did not rewrite Claude's result file or download those duplicates.
+- Four direct bovine primary sources were selected only from yes/has-PDF rows
+  whose DOI is absent from the corpus. Local PDF title, DOI, CC BY statement,
+  duplicate-attachment hash agreement, and page parseability were verified.
+- Claude had independently copied the same four ignored PDFs into its own
+  worktree as part of a 10-paper local ingest, but did not build or run this
+  locator benchmark. The shared addition here is the verification/gold artifact,
+  not a second canonical corpus entry.
+
+## Frozen Held-out Set
+
+- Added a reproducible Zotero-to-local-PDF verification and quantitative-review
+  generator. It refuses corpus DOI overlap, missing or conflicting PDFs,
+  title/DOI mismatch, unsupported licenses, and missing prior screen support.
+- Reused the existing `pdf-stat-block-v1` selector rather than defining a new
+  answer generator. It froze 13 locators across Z001-Z004 with PDF/page/block,
+  bounding-box, and normalized-text hashes and no source text or numeric value.
+- Manual source inspection found all 13 blocks to be medium/additive/serum
+  condition results or figure captions. The `stat-context-block-v2` prefilter
+  covers 13/13 in a 19-block pool.
+
+## Decision Boundary
+
+The set is `FROZEN_UNEXPOSED_SILVER`. It is source-disjoint from R017, R018,
+R045, and R047 and has not been used to tune the prompt. It may be used once for
+the next repeated locator capability test. It is not human tier-1 gold and
+cannot support evidence or wet-lab decisions.
+
+## Verification
+
+- Holdout/quantitative focused tests: 5 passed.
+- Non-loopback suite: 151 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected.
+- Repeated generation produced byte-identical committed artifacts. Its temporary
+  blank worksheet validated as 13/13 rows, zero completed, and zero issues, then
+  was removed because this benchmark is not a human-review packet.
+- All 13 frozen locators are covered by the 19-block context-aware input pool;
+  no source-text or numeric-value field appears in the manifest.
+- CLI smoke passed. The six-round optimization demo increased synthetic
+  hypervolume from 7.050 to 16.464.
+- `git diff --check` and the repository API-key pattern scan passed.

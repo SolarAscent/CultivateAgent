@@ -1,0 +1,329 @@
+{
+  "benchmark_version": "zotero-locator-heldout-v1",
+  "candidates": [
+    {
+      "bbox_points": "165.694,689.009,560.392,762.170",
+      "block_index": 2,
+      "block_text_sha256": "7c5cc6e5c251881a5866a86197d882313fed9d1535c49acbc27107668eacc062",
+      "candidate_id": "Q001",
+      "doi": "10.3390/su152316164",
+      "paper_id": "microbiota-derived-postbiotics-enhance-the-proliferative-effects-of-growth-facto",
+      "pdf_page": 7,
+      "pdf_path": "data/papers/microbiota-derived-postbiotics-enhance-the-proliferative-effects-of-growth-facto/microbiota-derived-postbiotics-enhance-the-proliferative-effects-of-growth-facto.pdf",
+      "pdf_sha256": "b5d737b39e3975165e7a004141347c9823c3cb5d2b71c19ecaaf6a873aa821e4",
+      "record_id": "Z001",
+      "selection_score": 13,
+      "signals": [
+        "sem",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean",
+        "error_policy"
+      ],
+      "title": "Microbiota-Derived Postbiotics Enhance the Proliferative Effects of Growth Factors on Satellite Cells in Cultivated Meat Applications"
+    },
+    {
+      "bbox_points": "165.694,478.930,560.630,590.558",
+      "block_index": 3,
+      "block_text_sha256": "ac07721cc2a592eceeab9a8f8117fb17f15fc1e446701aa7ba7fcb443787a9ac",
+      "candidate_id": "Q002",
+      "doi": "10.3390/su152316164",
+      "paper_id": "microbiota-derived-postbiotics-enhance-the-proliferative-effects-of-growth-facto",
+      "pdf_page": 8,
+      "pdf_path": "data/papers/microbiota-derived-postbiotics-enhance-the-proliferative-effects-of-growth-facto/microbiota-derived-postbiotics-enhance-the-proliferative-effects-of-growth-facto.pdf",
+      "pdf_sha256": "b5d737b39e3975165e7a004141347c9823c3cb5d2b71c19ecaaf6a873aa821e4",
+      "record_id": "Z001",
+      "selection_score": 13,
+      "signals": [
+        "sem",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean",
+        "error_policy"
+      ],
+      "title": "Microbiota-Derived Postbiotics Enhance the Proliferative Effects of Growth Factors on Satellite Cells in Cultivated Meat Applications"
+    },
+    {
+      "bbox_points": "165.895,357.728,559.280,493.292",
+      "block_index": 6,
+      "block_text_sha256": "8c1bf6bfd831c0fabe0ae5242b05d57a71b6d8ddeedbef6d6e51fecbf9e8e4a4",
+      "candidate_id": "Q003",
+      "doi": "10.3390/bios14010024",
+      "paper_id": "discovery-of-novel-stimulators-of-pax7-andor-myod-enhancing-the-efficacy-of-cult",
+      "pdf_page": 4,
+      "pdf_path": "data/papers/discovery-of-novel-stimulators-of-pax7-andor-myod-enhancing-the-efficacy-of-cult/discovery-of-novel-stimulators-of-pax7-andor-myod-enhancing-the-efficacy-of-cult.pdf",
+      "pdf_sha256": "514c31613bb4162fa6e596c21c46746daef306fc8343cc921d6639d11a963766",
+      "record_id": "Z002",
+      "selection_score": 11,
+      "signals": [
+        "explicit_dispersion",
+        "outcome",
+        "medium"
+      ],
+      "title": "Discovery of Novel Stimulators of Pax7 and/or MyoD: Enhancing the Efficacy of Cultured Meat Production through Culture Media Enrichment"
+    },
+    {
+      "bbox_points": "166.065,295.157,560.525,607.491",
+      "block_index": 3,
+      "block_text_sha256": "8268dccd77ce763ed995a030366db7ebfc8a79df9fe22c5ab793ca2c0c89cb0c",
+      "candidate_id": "Q004",
+      "doi": "10.3390/bios14010024",
+      "paper_id": "discovery-of-novel-stimulators-of-pax7-andor-myod-enhancing-the-efficacy-of-cult",
+      "pdf_page": 5,
+      "pdf_path": "data/papers/discovery-of-novel-stimulators-of-pax7-andor-myod-enhancing-the-efficacy-of-cult/discovery-of-novel-stimulators-of-pax7-andor-myod-enhancing-the-efficacy-of-cult.pdf",
+      "pdf_sha256": "514c31613bb4162fa6e596c21c46746daef306fc8343cc921d6639d11a963766",
+      "record_id": "Z002",
+      "selection_score": 9,
+      "signals": [
+        "explicit_dispersion",
+        "outcome"
+      ],
+      "title": "Discovery of Novel Stimulators of Pax7 and/or MyoD: Enhancing the Efficacy of Cultured Meat Production through Culture Media Enrichment"
+    },
+    {
+      "bbox_points": "166.098,434.628,559.279,494.968",
+      "block_index": 3,
+      "block_text_sha256": "104cebb5c14058e55ad8ff797317edb38854f8f7f989e27178539979e9c4a0eb",
+      "candidate_id": "Q005",
+      "doi": "10.3390/foods12071384",
+      "paper_id": "effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl",
+      "pdf_page": 7,
+      "pdf_path": "data/papers/effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl/effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl.pdf",
+      "pdf_sha256": "040e54fffabc33d660705f06ab1ab0d21d3aa92a92c448e07a05738d492a3e2d",
+      "record_id": "Z003",
+      "selection_score": 12,
+      "signals": [
+        "sem",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "Effect of Serum and Oxygen on the In Vitro Culture of Hanwoo Korean Native Cattle-Derived Skeletal Myogenic Cells Used in Cellular Agriculture"
+    },
+    {
+      "bbox_points": "166.017,598.498,560.843,735.766",
+      "block_index": 6,
+      "block_text_sha256": "68842a925b99dd81feff8b63c4f6ae349bac88a1e80c969cc0728caf8a463cd2",
+      "candidate_id": "Q006",
+      "doi": "10.3390/foods12071384",
+      "paper_id": "effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl",
+      "pdf_page": 10,
+      "pdf_path": "data/papers/effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl/effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl.pdf",
+      "pdf_sha256": "040e54fffabc33d660705f06ab1ab0d21d3aa92a92c448e07a05738d492a3e2d",
+      "record_id": "Z003",
+      "selection_score": 12,
+      "signals": [
+        "sem",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "Effect of Serum and Oxygen on the In Vitro Culture of Hanwoo Korean Native Cattle-Derived Skeletal Myogenic Cells Used in Cellular Agriculture"
+    },
+    {
+      "bbox_points": "166.017,622.530,559.280,785.445",
+      "block_index": 4,
+      "block_text_sha256": "43038241d105cf18a526a6c91fdbd13298f433e3fbd4159f48eaf6b819e5b855",
+      "candidate_id": "Q007",
+      "doi": "10.3390/foods12071384",
+      "paper_id": "effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl",
+      "pdf_page": 12,
+      "pdf_path": "data/papers/effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl/effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl.pdf",
+      "pdf_sha256": "040e54fffabc33d660705f06ab1ab0d21d3aa92a92c448e07a05738d492a3e2d",
+      "record_id": "Z003",
+      "selection_score": 12,
+      "signals": [
+        "sem",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "Effect of Serum and Oxygen on the In Vitro Culture of Hanwoo Korean Native Cattle-Derived Skeletal Myogenic Cells Used in Cellular Agriculture"
+    },
+    {
+      "bbox_points": "166.017,410.843,560.400,509.625",
+      "block_index": 2,
+      "block_text_sha256": "95988de9896b485b9b4e7a16a45042d23a1ff80802d409a7f05217069b736c98",
+      "candidate_id": "Q008",
+      "doi": "10.3390/ijms26094109",
+      "paper_id": "the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa",
+      "pdf_page": 3,
+      "pdf_path": "data/papers/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa.pdf",
+      "pdf_sha256": "b7e958884eb2eebaa9b8b90d8e04d4531e53b4ef7c03949a533e9ec77699d5c6",
+      "record_id": "Z004",
+      "selection_score": 16,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "The Role of Insulin in the Proliferation and Differentiation of Bovine Muscle Satellite (Stem) Cells for Cultured Meat Production"
+    },
+    {
+      "bbox_points": "166.017,649.317,560.846,786.652",
+      "block_index": 1,
+      "block_text_sha256": "0635aab23cc73f3ca28a7ff410e4419fbfc2aa8c3bfa5ba17c152835dd87a437",
+      "candidate_id": "Q009",
+      "doi": "10.3390/ijms26094109",
+      "paper_id": "the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa",
+      "pdf_page": 4,
+      "pdf_path": "data/papers/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa.pdf",
+      "pdf_sha256": "b7e958884eb2eebaa9b8b90d8e04d4531e53b4ef7c03949a533e9ec77699d5c6",
+      "record_id": "Z004",
+      "selection_score": 16,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "The Role of Insulin in the Proliferation and Differentiation of Bovine Muscle Satellite (Stem) Cells for Cultured Meat Production"
+    },
+    {
+      "bbox_points": "166.005,74.610,561.014,446.763",
+      "block_index": 1,
+      "block_text_sha256": "84843ca8430f344d5bd19970a55a66fd045aac222d162ee9112e8a043b42a56a",
+      "candidate_id": "Q010",
+      "doi": "10.3390/ijms26094109",
+      "paper_id": "the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa",
+      "pdf_page": 5,
+      "pdf_path": "data/papers/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa.pdf",
+      "pdf_sha256": "b7e958884eb2eebaa9b8b90d8e04d4531e53b4ef7c03949a533e9ec77699d5c6",
+      "record_id": "Z004",
+      "selection_score": 11,
+      "signals": [
+        "explicit_dispersion",
+        "outcome",
+        "medium"
+      ],
+      "title": "The Role of Insulin in the Proliferation and Differentiation of Bovine Muscle Satellite (Stem) Cells for Cultured Meat Production"
+    },
+    {
+      "bbox_points": "166.098,595.398,560.844,758.378",
+      "block_index": 2,
+      "block_text_sha256": "bbd8aacb5cb91ad448feb69cdc4230b9ea703f0e3769a0edad9ebad8a21a7b91",
+      "candidate_id": "Q011",
+      "doi": "10.3390/ijms26094109",
+      "paper_id": "the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa",
+      "pdf_page": 6,
+      "pdf_path": "data/papers/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa.pdf",
+      "pdf_sha256": "b7e958884eb2eebaa9b8b90d8e04d4531e53b4ef7c03949a533e9ec77699d5c6",
+      "record_id": "Z004",
+      "selection_score": 16,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "The Role of Insulin in the Proliferation and Differentiation of Bovine Muscle Satellite (Stem) Cells for Cultured Meat Production"
+    },
+    {
+      "bbox_points": "165.975,286.582,561.019,519.391",
+      "block_index": 3,
+      "block_text_sha256": "dc164458f570d1810880c7ad5fd9db9a50793e3c5639d63943d830e9c4a6892f",
+      "candidate_id": "Q012",
+      "doi": "10.3390/ijms26094109",
+      "paper_id": "the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa",
+      "pdf_page": 7,
+      "pdf_path": "data/papers/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa.pdf",
+      "pdf_sha256": "b7e958884eb2eebaa9b8b90d8e04d4531e53b4ef7c03949a533e9ec77699d5c6",
+      "record_id": "Z004",
+      "selection_score": 11,
+      "signals": [
+        "explicit_dispersion",
+        "outcome",
+        "medium"
+      ],
+      "title": "The Role of Insulin in the Proliferation and Differentiation of Bovine Muscle Satellite (Stem) Cells for Cultured Meat Production"
+    },
+    {
+      "bbox_points": "166.098,612.108,560.849,774.957",
+      "block_index": 1,
+      "block_text_sha256": "3b09dc7ce4c233e00296558e49aedc86af12c8160b82bd6049fa61191c0b930c",
+      "candidate_id": "Q013",
+      "doi": "10.3390/ijms26094109",
+      "paper_id": "the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa",
+      "pdf_page": 8,
+      "pdf_path": "data/papers/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa.pdf",
+      "pdf_sha256": "b7e958884eb2eebaa9b8b90d8e04d4531e53b4ef7c03949a533e9ec77699d5c6",
+      "record_id": "Z004",
+      "selection_score": 16,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "The Role of Insulin in the Proliferation and Differentiation of Bovine Muscle Satellite (Stem) Cells for Cultured Meat Production"
+    }
+  ],
+  "format_version": 1,
+  "linked_fields": [
+    "J.key_numeric_results",
+    "J.experimental_comparison_groups",
+    "J.sample_size_or_replicate_info"
+  ],
+  "parent_schema_sha256": "bc5283193d7a57e0969682b473425915ed7b826facc5bb7ff01e192990c4db72",
+  "selector_version": "pdf-stat-block-v1",
+  "sources": [
+    {
+      "doi": "10.3390/su152316164",
+      "pages": 12,
+      "paper_id": "microbiota-derived-postbiotics-enhance-the-proliferative-effects-of-growth-facto",
+      "pdf_path": "data/papers/microbiota-derived-postbiotics-enhance-the-proliferative-effects-of-growth-facto/microbiota-derived-postbiotics-enhance-the-proliferative-effects-of-growth-facto.pdf",
+      "pdf_sha256": "b5d737b39e3975165e7a004141347c9823c3cb5d2b71c19ecaaf6a873aa821e4",
+      "record_id": "Z001",
+      "target_count": 2,
+      "title": "Microbiota-Derived Postbiotics Enhance the Proliferative Effects of Growth Factors on Satellite Cells in Cultivated Meat Applications",
+      "year": "2023"
+    },
+    {
+      "doi": "10.3390/bios14010024",
+      "pages": 11,
+      "paper_id": "discovery-of-novel-stimulators-of-pax7-andor-myod-enhancing-the-efficacy-of-cult",
+      "pdf_path": "data/papers/discovery-of-novel-stimulators-of-pax7-andor-myod-enhancing-the-efficacy-of-cult/discovery-of-novel-stimulators-of-pax7-andor-myod-enhancing-the-efficacy-of-cult.pdf",
+      "pdf_sha256": "514c31613bb4162fa6e596c21c46746daef306fc8343cc921d6639d11a963766",
+      "record_id": "Z002",
+      "target_count": 2,
+      "title": "Discovery of Novel Stimulators of Pax7 and/or MyoD: Enhancing the Efficacy of Cultured Meat Production through Culture Media Enrichment",
+      "year": "2024"
+    },
+    {
+      "doi": "10.3390/foods12071384",
+      "pages": 16,
+      "paper_id": "effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl",
+      "pdf_path": "data/papers/effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl/effect-of-serum-and-oxygen-on-the-in-vitro-culture-of-hanwoo-korean-native-cattl.pdf",
+      "pdf_sha256": "040e54fffabc33d660705f06ab1ab0d21d3aa92a92c448e07a05738d492a3e2d",
+      "record_id": "Z003",
+      "target_count": 3,
+      "title": "Effect of Serum and Oxygen on the In Vitro Culture of Hanwoo Korean Native Cattle-Derived Skeletal Myogenic Cells Used in Cellular Agriculture",
+      "year": "2023"
+    },
+    {
+      "doi": "10.3390/ijms26094109",
+      "pages": 16,
+      "paper_id": "the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa",
+      "pdf_path": "data/papers/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa/the-role-of-insulin-in-the-proliferation-and-differentiation-of-bovine-muscle-sa.pdf",
+      "pdf_sha256": "b7e958884eb2eebaa9b8b90d8e04d4531e53b4ef7c03949a533e9ec77699d5c6",
+      "record_id": "Z004",
+      "target_count": 6,
+      "title": "The Role of Insulin in the Proliferation and Differentiation of Bovine Muscle Satellite (Stem) Cells for Cultured Meat Production",
+      "year": "2025"
+    }
+  ]
+}

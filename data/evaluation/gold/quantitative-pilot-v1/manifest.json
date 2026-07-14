@@ -1,0 +1,488 @@
+{
+  "benchmark_version": "quantitative-pilot-v1",
+  "candidates": [
+    {
+      "bbox_points": "284.883,457.262,500.309,566.832",
+      "block_index": 11,
+      "block_text_sha256": "3cf0ce127393cfbfc71f6754219527cead3fda4a4a9d4123a52032147e04be8e",
+      "candidate_id": "Q001",
+      "doi": "10.1007/s10616-019-00361-y",
+      "paper_id": "serum-free-media-for-the-growth-of-primary-bovine-myoblasts",
+      "pdf_page": 3,
+      "pdf_path": "data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/serum-free-media-for-the-growth-of-primary-bovine-myoblasts.pdf",
+      "pdf_sha256": "98247b864a459cb28cc30e90f4dae9cfb565e4aed41094429c5ee0aee0d420c3",
+      "record_id": "R017",
+      "selection_score": 9,
+      "signals": [
+        "sd",
+        "outcome",
+        "medium",
+        "error_policy"
+      ],
+      "title": "Serum-free media for the growth of primary bovine myoblasts"
+    },
+    {
+      "bbox_points": "46.772,215.852,262.217,274.169",
+      "block_index": 2,
+      "block_text_sha256": "4181e87e80609c886a9b365d2f4a22d1ce89466484606959e308189385430b4d",
+      "candidate_id": "Q002",
+      "doi": "10.1007/s10616-019-00361-y",
+      "paper_id": "serum-free-media-for-the-growth-of-primary-bovine-myoblasts",
+      "pdf_page": 5,
+      "pdf_path": "data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/serum-free-media-for-the-growth-of-primary-bovine-myoblasts.pdf",
+      "pdf_sha256": "98247b864a459cb28cc30e90f4dae9cfb565e4aed41094429c5ee0aee0d420c3",
+      "record_id": "R017",
+      "selection_score": 12,
+      "signals": [
+        "sample_size",
+        "outcome",
+        "medium",
+        "figure_caption"
+      ],
+      "title": "Serum-free media for the growth of primary bovine myoblasts"
+    },
+    {
+      "bbox_points": "46.772,386.611,262.224,454.962",
+      "block_index": 2,
+      "block_text_sha256": "7714f542965f02fcc7012f68ff1a87efcf830086e7a39418d4d17e21211adb81",
+      "candidate_id": "Q003",
+      "doi": "10.1007/s10616-019-00361-y",
+      "paper_id": "serum-free-media-for-the-growth-of-primary-bovine-myoblasts",
+      "pdf_page": 6,
+      "pdf_path": "data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/serum-free-media-for-the-growth-of-primary-bovine-myoblasts.pdf",
+      "pdf_sha256": "98247b864a459cb28cc30e90f4dae9cfb565e4aed41094429c5ee0aee0d420c3",
+      "record_id": "R017",
+      "selection_score": 12,
+      "signals": [
+        "sample_size",
+        "outcome",
+        "medium",
+        "figure_caption"
+      ],
+      "title": "Serum-free media for the growth of primary bovine myoblasts"
+    },
+    {
+      "bbox_points": "46.772,530.682,262.200,652.670",
+      "block_index": 8,
+      "block_text_sha256": "bea7c74d4396fe156fc1abb514f45aa7da7d96c33c0c588c1cc4d00760c7234b",
+      "candidate_id": "Q004",
+      "doi": "10.1007/s10616-019-00361-y",
+      "paper_id": "serum-free-media-for-the-growth-of-primary-bovine-myoblasts",
+      "pdf_page": 7,
+      "pdf_path": "data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/serum-free-media-for-the-growth-of-primary-bovine-myoblasts.pdf",
+      "pdf_sha256": "98247b864a459cb28cc30e90f4dae9cfb565e4aed41094429c5ee0aee0d420c3",
+      "record_id": "R017",
+      "selection_score": 9,
+      "signals": [
+        "sample_size",
+        "outcome",
+        "medium"
+      ],
+      "title": "Serum-free media for the growth of primary bovine myoblasts"
+    },
+    {
+      "bbox_points": "42.520,661.853,550.874,747.109",
+      "block_index": 103,
+      "block_text_sha256": "951f2478477cdeb46d9a3da5e7fa5e74c00b2efaa6346a9d6640f047e3860cd4",
+      "candidate_id": "Q005",
+      "doi": "10.1038/s43016-021-00419-1",
+      "paper_id": "a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate",
+      "pdf_page": 3,
+      "pdf_path": "data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate.pdf",
+      "pdf_sha256": "3985c2d8263a95f57ab46afa826bdf9714eac5f155c0627d5841f73851ca76a7",
+      "record_id": "R018",
+      "selection_score": 14,
+      "signals": [
+        "sample_size",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean",
+        "error_policy"
+      ],
+      "title": "A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation"
+    },
+    {
+      "bbox_points": "303.638,126.659,554.891,244.202",
+      "block_index": 3,
+      "block_text_sha256": "1d2748e3a3e05c467c126376be8dd677e875e3aa8869dfb7944de20461928386",
+      "candidate_id": "Q006",
+      "doi": "10.1038/s43016-021-00419-1",
+      "paper_id": "a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate",
+      "pdf_page": 5,
+      "pdf_path": "data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate.pdf",
+      "pdf_sha256": "3985c2d8263a95f57ab46afa826bdf9714eac5f155c0627d5841f73851ca76a7",
+      "record_id": "R018",
+      "selection_score": 15,
+      "signals": [
+        "named_dispersion_value",
+        "sample_size",
+        "outcome",
+        "medium"
+      ],
+      "title": "A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation"
+    },
+    {
+      "bbox_points": "42.520,640.444,554.280,746.692",
+      "block_index": 82,
+      "block_text_sha256": "4b7142625c352c30fd42b3f7b19700077810c057bc9b199b9074a31a8a7bf31b",
+      "candidate_id": "Q007",
+      "doi": "10.1038/s43016-021-00419-1",
+      "paper_id": "a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate",
+      "pdf_page": 6,
+      "pdf_path": "data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate.pdf",
+      "pdf_sha256": "3985c2d8263a95f57ab46afa826bdf9714eac5f155c0627d5841f73851ca76a7",
+      "record_id": "R018",
+      "selection_score": 14,
+      "signals": [
+        "sample_size",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean",
+        "error_policy"
+      ],
+      "title": "A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation"
+    },
+    {
+      "bbox_points": "42.520,612.538,550.640,655.810",
+      "block_index": 1,
+      "block_text_sha256": "562c74e0122328e0be71e18dc4fa7d11c5da7afeeb0c01ce642d8a82d2565b88",
+      "candidate_id": "Q008",
+      "doi": "10.1038/s43016-021-00419-1",
+      "paper_id": "a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate",
+      "pdf_page": 14,
+      "pdf_path": "data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate.pdf",
+      "pdf_sha256": "3985c2d8263a95f57ab46afa826bdf9714eac5f155c0627d5841f73851ca76a7",
+      "record_id": "R018",
+      "selection_score": 17,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean",
+        "error_policy"
+      ],
+      "title": "A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation"
+    },
+    {
+      "bbox_points": "42.520,50.113,553.314,156.360",
+      "block_index": 1,
+      "block_text_sha256": "8fc2ce1be56db94093744173a0d5f704eb13df7a945aa8e0ff996e6287fc18c1",
+      "candidate_id": "Q009",
+      "doi": "10.1038/s43016-021-00419-1",
+      "paper_id": "a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate",
+      "pdf_page": 16,
+      "pdf_path": "data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate.pdf",
+      "pdf_sha256": "3985c2d8263a95f57ab46afa826bdf9714eac5f155c0627d5841f73851ca76a7",
+      "record_id": "R018",
+      "selection_score": 17,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean",
+        "error_policy"
+      ],
+      "title": "A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation"
+    },
+    {
+      "bbox_points": "42.520,50.113,551.930,124.873",
+      "block_index": 1,
+      "block_text_sha256": "97cb8a30cd4ccaa25ddea8a7f09da1807b9498f3ca149deab5b79c95b37217ee",
+      "candidate_id": "Q010",
+      "doi": "10.1038/s43016-021-00419-1",
+      "paper_id": "a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate",
+      "pdf_page": 18,
+      "pdf_path": "data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate.pdf",
+      "pdf_sha256": "3985c2d8263a95f57ab46afa826bdf9714eac5f155c0627d5841f73851ca76a7",
+      "record_id": "R018",
+      "selection_score": 16,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "error_policy"
+      ],
+      "title": "A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation"
+    },
+    {
+      "bbox_points": "42.520,506.698,541.361,581.458",
+      "block_index": 1,
+      "block_text_sha256": "d50f06e96022b3118fde61f1bc14ab486730bc76a422f18847c7859b2821f9e2",
+      "candidate_id": "Q011",
+      "doi": "10.1038/s43016-021-00419-1",
+      "paper_id": "a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate",
+      "pdf_page": 19,
+      "pdf_path": "data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate.pdf",
+      "pdf_sha256": "3985c2d8263a95f57ab46afa826bdf9714eac5f155c0627d5841f73851ca76a7",
+      "record_id": "R018",
+      "selection_score": 17,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean",
+        "error_policy"
+      ],
+      "title": "A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation"
+    },
+    {
+      "bbox_points": "42.520,50.113,552.130,114.377",
+      "block_index": 1,
+      "block_text_sha256": "ecb5b373c6ff9246f6d27b47f0fa630349fbad5563c58073688f17a9c85cc5f0",
+      "candidate_id": "Q012",
+      "doi": "10.1038/s43016-021-00419-1",
+      "paper_id": "a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate",
+      "pdf_page": 21,
+      "pdf_path": "data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate.pdf",
+      "pdf_sha256": "3985c2d8263a95f57ab46afa826bdf9714eac5f155c0627d5841f73851ca76a7",
+      "record_id": "R018",
+      "selection_score": 17,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean",
+        "error_policy"
+      ],
+      "title": "A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation"
+    },
+    {
+      "bbox_points": "79.740,530.732,530.643,712.534",
+      "block_index": 3,
+      "block_text_sha256": "e7d709fb9f6753df2738853494b56cf0d91cf35557ad0b9226a9089fce31cf27",
+      "candidate_id": "Q013",
+      "doi": "10.1016/j.foodres.2024.115633",
+      "paper_id": "microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f",
+      "pdf_page": 14,
+      "pdf_path": "data/papers/microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f/microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f.pdf",
+      "pdf_sha256": "97830f99935a05b093ab1e3d8336d194604435bc0bd426560d72e52c43a80f36",
+      "record_id": "R045",
+      "selection_score": 16,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "Microbial lysates as low-cost serum replacements in cellular agriculture media formulation"
+    },
+    {
+      "bbox_points": "35.640,71.192,546.577,702.719",
+      "block_index": 2,
+      "block_text_sha256": "e8e30e4c145edb0f634d4715ed9b2fb365003abc9ea6e0b76a7bc20fb02f6f2e",
+      "candidate_id": "Q014",
+      "doi": "10.1016/j.foodres.2024.115633",
+      "paper_id": "microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f",
+      "pdf_page": 15,
+      "pdf_path": "data/papers/microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f/microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f.pdf",
+      "pdf_sha256": "97830f99935a05b093ab1e3d8336d194604435bc0bd426560d72e52c43a80f36",
+      "record_id": "R045",
+      "selection_score": 12,
+      "signals": [
+        "explicit_dispersion",
+        "outcome",
+        "medium",
+        "mean"
+      ],
+      "title": "Microbial lysates as low-cost serum replacements in cellular agriculture media formulation"
+    },
+    {
+      "bbox_points": "79.919,495.096,532.370,699.396",
+      "block_index": 2,
+      "block_text_sha256": "0b7064d01a2acee52cd591e3f2f5e7974062973f140824b856c433f4d2abfdaa",
+      "candidate_id": "Q015",
+      "doi": "10.1016/j.foodres.2024.115633",
+      "paper_id": "microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f",
+      "pdf_page": 16,
+      "pdf_path": "data/papers/microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f/microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f.pdf",
+      "pdf_sha256": "97830f99935a05b093ab1e3d8336d194604435bc0bd426560d72e52c43a80f36",
+      "record_id": "R045",
+      "selection_score": 12,
+      "signals": [
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "Microbial lysates as low-cost serum replacements in cellular agriculture media formulation"
+    },
+    {
+      "bbox_points": "78.300,575.854,519.602,713.256",
+      "block_index": 3,
+      "block_text_sha256": "02cae86533bfc1ee60ab5500b9bff1580227516b0c05014d7197b259196e1f95",
+      "candidate_id": "Q016",
+      "doi": "10.1016/j.foodres.2024.115633",
+      "paper_id": "microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f",
+      "pdf_page": 17,
+      "pdf_path": "data/papers/microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f/microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f.pdf",
+      "pdf_sha256": "97830f99935a05b093ab1e3d8336d194604435bc0bd426560d72e52c43a80f36",
+      "record_id": "R045",
+      "selection_score": 12,
+      "signals": [
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "Microbial lysates as low-cost serum replacements in cellular agriculture media formulation"
+    },
+    {
+      "bbox_points": "37.587,370.016,559.779,467.804",
+      "block_index": 2,
+      "block_text_sha256": "86221cd40e6f5334aae2b64a6146321313510c75f48a28b8458d0bbd6fd08a1b",
+      "candidate_id": "Q017",
+      "doi": "10.1016/j.foodres.2023.113217",
+      "paper_id": "satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative",
+      "pdf_page": 4,
+      "pdf_path": "data/papers/satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative/satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative.pdf",
+      "pdf_sha256": "bb96285cf82254d0497028a221062e95a921d7e1181e608c38e2d29a18f8e839",
+      "record_id": "R047",
+      "selection_score": 16,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "Satellite cells sourced from bull calves and dairy cows differs in proliferative and myogenic capacity - Implications for cultivated meat"
+    },
+    {
+      "bbox_points": "37.587,459.024,559.777,556.811",
+      "block_index": 2,
+      "block_text_sha256": "9cd7db7d38cd2580cf3b93c64e336911b786a2acd5f57bf62e76011af3dc5c65",
+      "candidate_id": "Q018",
+      "doi": "10.1016/j.foodres.2023.113217",
+      "paper_id": "satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative",
+      "pdf_page": 5,
+      "pdf_path": "data/papers/satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative/satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative.pdf",
+      "pdf_sha256": "bb96285cf82254d0497028a221062e95a921d7e1181e608c38e2d29a18f8e839",
+      "record_id": "R047",
+      "selection_score": 19,
+      "signals": [
+        "sample_size",
+        "sd",
+        "sem",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "Satellite cells sourced from bull calves and dairy cows differs in proliferative and myogenic capacity - Implications for cultivated meat"
+    },
+    {
+      "bbox_points": "37.587,614.250,559.776,692.931",
+      "block_index": 2,
+      "block_text_sha256": "065c421ead3c4428ad7c9765b96155721edc1ea37268f1f9282c04a5c3484579",
+      "candidate_id": "Q019",
+      "doi": "10.1016/j.foodres.2023.113217",
+      "paper_id": "satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative",
+      "pdf_page": 6,
+      "pdf_path": "data/papers/satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative/satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative.pdf",
+      "pdf_sha256": "bb96285cf82254d0497028a221062e95a921d7e1181e608c38e2d29a18f8e839",
+      "record_id": "R047",
+      "selection_score": 16,
+      "signals": [
+        "sample_size",
+        "sd",
+        "outcome",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "Satellite cells sourced from bull calves and dairy cows differs in proliferative and myogenic capacity - Implications for cultivated meat"
+    },
+    {
+      "bbox_points": "37.587,541.796,559.776,610.953",
+      "block_index": 2,
+      "block_text_sha256": "551e4b4ed9508219fc3100fee7aba70d681d388d352188e5feef1f8da58916b6",
+      "candidate_id": "Q020",
+      "doi": "10.1016/j.foodres.2023.113217",
+      "paper_id": "satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative",
+      "pdf_page": 8,
+      "pdf_path": "data/papers/satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative/satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative.pdf",
+      "pdf_sha256": "bb96285cf82254d0497028a221062e95a921d7e1181e608c38e2d29a18f8e839",
+      "record_id": "R047",
+      "selection_score": 13,
+      "signals": [
+        "sample_size",
+        "sd",
+        "medium",
+        "figure_caption",
+        "mean"
+      ],
+      "title": "Satellite cells sourced from bull calves and dairy cows differs in proliferative and myogenic capacity - Implications for cultivated meat"
+    }
+  ],
+  "format_version": 1,
+  "linked_fields": [
+    "J.key_numeric_results",
+    "J.experimental_comparison_groups",
+    "J.sample_size_or_replicate_info"
+  ],
+  "parent_schema_sha256": "bc5283193d7a57e0969682b473425915ed7b826facc5bb7ff01e192990c4db72",
+  "selector_version": "pdf-stat-block-v1",
+  "sources": [
+    {
+      "doi": "10.1007/s10616-019-00361-y",
+      "pages": 10,
+      "paper_id": "serum-free-media-for-the-growth-of-primary-bovine-myoblasts",
+      "pdf_path": "data/papers/serum-free-media-for-the-growth-of-primary-bovine-myoblasts/serum-free-media-for-the-growth-of-primary-bovine-myoblasts.pdf",
+      "pdf_sha256": "98247b864a459cb28cc30e90f4dae9cfb565e4aed41094429c5ee0aee0d420c3",
+      "record_id": "R017",
+      "target_count": 4,
+      "title": "Serum-free media for the growth of primary bovine myoblasts",
+      "year": "2020"
+    },
+    {
+      "doi": "10.1038/s43016-021-00419-1",
+      "pages": 27,
+      "paper_id": "a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate",
+      "pdf_path": "data/papers/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate/a-serum-free-media-formulation-for-cultured-meat-production-supports-bovine-sate.pdf",
+      "pdf_sha256": "3985c2d8263a95f57ab46afa826bdf9714eac5f155c0627d5841f73851ca76a7",
+      "record_id": "R018",
+      "target_count": 8,
+      "title": "A serum-free media formulation for cultured meat production supports bovine satellite cell differentiation in the absence of serum starvation",
+      "year": "2022"
+    },
+    {
+      "doi": "10.1016/j.foodres.2024.115633",
+      "pages": 47,
+      "paper_id": "microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f",
+      "pdf_path": "data/papers/microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f/microbial-lysates-as-low-cost-serum-replacements-in-cellular-agriculture-media-f.pdf",
+      "pdf_sha256": "97830f99935a05b093ab1e3d8336d194604435bc0bd426560d72e52c43a80f36",
+      "record_id": "R045",
+      "target_count": 4,
+      "title": "Microbial lysates as low-cost serum replacements in cellular agriculture media formulation",
+      "year": "2025"
+    },
+    {
+      "doi": "10.1016/j.foodres.2023.113217",
+      "pages": 13,
+      "paper_id": "satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative",
+      "pdf_path": "data/papers/satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative/satellite-cells-sourced-from-bull-calves-and-dairy-cows-differs-in-proliferative.pdf",
+      "pdf_sha256": "bb96285cf82254d0497028a221062e95a921d7e1181e608c38e2d29a18f8e839",
+      "record_id": "R047",
+      "target_count": 4,
+      "title": "Satellite cells sourced from bull calves and dairy cows differs in proliferative and myogenic capacity - Implications for cultivated meat",
+      "year": "2023"
+    }
+  ]
+}

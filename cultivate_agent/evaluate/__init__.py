@@ -23,6 +23,13 @@ from .gold_review import (
     validate_gold_review,
     validation_markdown,
 )
+from .quantitative_review import (
+    QuantitativeComparison,
+    QuantitativeValidation,
+    compare_quantitative_reviews,
+    create_quantitative_review,
+    validate_quantitative_review,
+)
 
 __all__ = [
     "EvalReport",
@@ -30,8 +37,11 @@ __all__ = [
     "CorpusIssue",
     "FieldScore",
     "GoldValidation",
+    "QuantitativeComparison",
+    "QuantitativeValidation",
     "create_gold_review",
     "create_reviewer_template",
+    "create_quantitative_review",
     "evaluate_extraction",
     "audit_corpus_manifest",
     "corpus_gate_markdown",
@@ -39,7 +49,9 @@ __all__ = [
     "evaluate_corpus",
     "normalize_value",
     "merge_independent_reviews",
+    "compare_quantitative_reviews",
     "validate_gold_review",
+    "validate_quantitative_review",
     "validation_markdown",
     "write_corpus_issues_tsv",
 ]

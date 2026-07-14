@@ -3582,3 +3582,41 @@ that mixed directory.
 Build the bounded dual-blind quantitative locator packet from identity-verified
 R018, R045, R047, and a separately verified calibration source. Do not use R029
 as the planned PDF negative example because its valid local source is JATS-only.
+
+---
+
+# Session 46 (Codex) — quantitative pointer pilot prepared and held
+
+Date: 2026-07-15
+Branch: `codex/quantitative-review-pilot`
+
+## Result
+
+- Added a deterministic 20-locator quantitative review extension linked to the
+  existing A-M `J.*` gold fields: R017 (4), R018 (8), R045 (4), and R047 (4).
+- Locators contain PDF/page/block/bounding-box hashes and signal categories, but
+  no source text or transcribed value fields. DeepSeek cannot structurally emit
+  numeric values through this schema.
+- Added blind-review validation, agreement/kappa reporting, a strict
+  `tier1_ready` role-pointer gate, and local crop rendering. Twenty local crops
+  and two separate blank working sheets were generated under ignored data.
+- Representative crops from all four sources were visually checked. Full-width
+  crop context was used so two-column captions are not truncated.
+
+## Hold Decision
+
+The owner will first adjudicate H001-H014 with Claude and will start this pilot
+only after a second independent reviewer is available. DeepSeek must not be used
+as reviewer B. The committed benchmark and local working files remain blank.
+
+## Verification
+
+- Quantitative/gold focused tests: 11 passed.
+- Both local working sheets validate as 20/20 structurally present, 0 completed,
+  and 0 issues. This is expected `HOLD`, not a passed pilot.
+
+## Next Step
+
+Use DeepSeek only for a separate bounded candidate-generation capability probe,
+with temperature zero repeated runs, pointer/candidate outputs, hard budgets,
+atomic checkpoints, and deterministic Codex acceptance.

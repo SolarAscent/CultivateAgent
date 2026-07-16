@@ -31,6 +31,8 @@ data/**
 !data/evaluation/shadow/deepseek-locator-shadow-v2/**
 !data/evaluation/shadow/deepseek-zotero-heldout-v1/
 !data/evaluation/shadow/deepseek-zotero-heldout-v1/**
+!data/evaluation/shadow/deepseek-page-R053-R055-v1/
+!data/evaluation/shadow/deepseek-page-R053-R055-v1/**
 # Local backups created before forced adjudication worksheet overwrite.
 data/literature/*.tsv.bak.*
 *.sqlite

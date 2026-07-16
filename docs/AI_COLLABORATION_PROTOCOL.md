@@ -230,8 +230,12 @@ a number is supported.
   Coarser page-candidate localization with deterministic page summaries has
   passed both reused locator gold and a source-disjoint Zotero holdout: all six
   repeat recalls were 1.00, consistency was 0.95 then 1.00, and unadjudicated
-  decoy-based silver precision was 0.59-0.65 (diagnostic only). It is approved only for bounded shadow pointer
-  generation with deterministic/strong-model filtering, not evidence decisions.
+  decoy-based silver precision was 0.59-0.65 (diagnostic only). A subsequent
+  source-disjoint R053-R055 shadow was stable but reduced deterministic page
+  summaries by only 13.0%, versus 5.5% for the no-model signal baseline. The
+  incremental reduction is too weak and unlabeled shadow recall is unknown, so
+  production routing remains on hold. Retain page localization as an evaluation
+  tool only; it cannot create evidence decisions.
 
 ### 8.3 Allowed Delegation
 

@@ -1,0 +1,376 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "P0003",
+      "page_excerpt_sha256": "748f0acd26dd7e4bf33b3c117a4f426b0c6daab2038ec02f2d81a8fe7f494167",
+      "pdf_page": 3,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0004",
+      "page_excerpt_sha256": "18006bd1d63140e95db13bddee9bea90106b9037e811047fce03227624423a4e",
+      "pdf_page": 4,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0005",
+      "page_excerpt_sha256": "8b93d02e1c10f6f312ee1568e350608f222c0944f264d14aae8b243cc7032baf",
+      "pdf_page": 5,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0006",
+      "page_excerpt_sha256": "fd48029e5237689d7c88a5d8eaf94c665daea8cc2b67ad3995185ec288edb023",
+      "pdf_page": 6,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0007",
+      "page_excerpt_sha256": "bb7ed82cb1e8a14bbcac8f66544bbafdc8be4dd96654f53c71dbf3fa17d579dc",
+      "pdf_page": 7,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0008",
+      "page_excerpt_sha256": "1bb2ec553a0e4b53e09dee270ae547f52dbb393a40578c6f05f9d41bc1070bd6",
+      "pdf_page": 8,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0009",
+      "page_excerpt_sha256": "c614e010bcbaa7edbc07a26a882030a0047adb7844d4a06a2f785dc023ef329a",
+      "pdf_page": 9,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0010",
+      "page_excerpt_sha256": "9c985de254e9efafcb53e6533270127331b8727df4aca7f0e7af2626b3dd896f",
+      "pdf_page": 10,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0011",
+      "page_excerpt_sha256": "54e5635f3ee9e29a30b9a70d57d876862f0a0e43d56cee8af673e3bb690c7172",
+      "pdf_page": 11,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0012",
+      "page_excerpt_sha256": "78f8c5d6a00c90181d258a4e455819b3c00b4c9aed869257c05e5a82367e3bb6",
+      "pdf_page": 12,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0013",
+      "page_excerpt_sha256": "8b003cc0dccfe0b1f7ee954e8da17e15667df82e97328fe48b0dafa67433cf40",
+      "pdf_page": 13,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0014",
+      "page_excerpt_sha256": "fb86ead2fcc2bb8b95c23ce5bf7a63a5f54fd084cb7d0f9ccaa8b6f0f8c58898",
+      "pdf_page": 14,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0015",
+      "page_excerpt_sha256": "f6b4b85603d3cec7faa475af21c939ade4a8339e511ca669fe997d23d828f8eb",
+      "pdf_page": 15,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0016",
+      "page_excerpt_sha256": "09fa3d130d31c01149acedf2530d14449a86718ce238057dfb0202cb8fda59f8",
+      "pdf_page": 16,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0017",
+      "page_excerpt_sha256": "e736ac34feb16e8bf1c442ddb73c7d1f37ac551efe00009e23b89363ab272541",
+      "pdf_page": 17,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0018",
+      "page_excerpt_sha256": "e013b50269b08aa34d1fe087a9575c2479c4264008cd61d970ba9f7d34cf1e3d",
+      "pdf_page": 18,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0019",
+      "page_excerpt_sha256": "31b001ef4a790ac8efa2615787121e4b6bab3dbb35a21f68b624f88446bfbcac",
+      "pdf_page": 19,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0020",
+      "page_excerpt_sha256": "97aa5656ae0f384e01f172d8253c73272b0a81c8cc238e8534f0cd55abd5b01e",
+      "pdf_page": 20,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0021",
+      "page_excerpt_sha256": "03bfd1611bf3c1b6bc50d0cd6fd1057985fb7df4414b0664371379d7751c27be",
+      "pdf_page": 21,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0022",
+      "page_excerpt_sha256": "fe6b963e48df10cb7ec0f1f4092090c21af532f9a16eede8f3370f18e81bc9fe",
+      "pdf_page": 22,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0023",
+      "page_excerpt_sha256": "e9c12500ae50c12887d3de42f122c752083f493f8a8b951972182893b0f157b4",
+      "pdf_page": 23,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0024",
+      "page_excerpt_sha256": "522aa1a25d54deff05f9a8f683a9b31dcca755bbba3d054dc610bd9e7553fa1f",
+      "pdf_page": 24,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0025",
+      "page_excerpt_sha256": "74bb89e4f676ba9e42406b840b9e1b473d1e1c2f77fa325d8da6ed17edeebd7e",
+      "pdf_page": 25,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0026",
+      "page_excerpt_sha256": "dbaa903a197688d5ee38f53a77ca12c3a263dece81a3513f1fdfec2973ce7910",
+      "pdf_page": 26,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0027",
+      "page_excerpt_sha256": "cc7d0221b74413339ca0a3e581598f4f1f52caf206feafd92db4341601f7d31b",
+      "pdf_page": 27,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0028",
+      "page_excerpt_sha256": "c8593fc6cad2e5a6c5ef7d3325954c762c672a7f38a7ddf6fbfa06c41c65aede",
+      "pdf_page": 28,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0029",
+      "page_excerpt_sha256": "a72cac82ecb8466221c0e7da8c33ebb49175865ea8b5242293dff87f819c1a5f",
+      "pdf_page": 29,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0030",
+      "page_excerpt_sha256": "6ad6f2b666be0e8d79a2b50d2e7bfaea90cf6005204c721d14dbf2d498c173c8",
+      "pdf_page": 30,
+      "record_id": "R053",
+      "source_pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8"
+    },
+    {
+      "candidate_id": "P0034",
+      "page_excerpt_sha256": "658109bed083a4a3f0fea0df26df37f5b5f7b0f147ad04ff3beffbb72b584f3d",
+      "pdf_page": 1,
+      "record_id": "R054",
+      "source_pdf_sha256": "efd54df81de80e9c254302848d3c4a6c25886c5b959f7e408fddda9d4a6c3778"
+    },
+    {
+      "candidate_id": "P0035",
+      "page_excerpt_sha256": "f470127e6789dac153a1e7b6318615d4ccd457584725564f2938e5fe6063e1eb",
+      "pdf_page": 2,
+      "record_id": "R054",
+      "source_pdf_sha256": "efd54df81de80e9c254302848d3c4a6c25886c5b959f7e408fddda9d4a6c3778"
+    },
+    {
+      "candidate_id": "P0036",
+      "page_excerpt_sha256": "047c0157e8348249f3d7f9b3c958460606e259f0efc7c9e5140c4c5e38d7846f",
+      "pdf_page": 3,
+      "record_id": "R054",
+      "source_pdf_sha256": "efd54df81de80e9c254302848d3c4a6c25886c5b959f7e408fddda9d4a6c3778"
+    },
+    {
+      "candidate_id": "P0037",
+      "page_excerpt_sha256": "e4598f28587a1a7b7332deb5f1f030a05c5d75007cdf6321a99121ba90393a24",
+      "pdf_page": 4,
+      "record_id": "R054",
+      "source_pdf_sha256": "efd54df81de80e9c254302848d3c4a6c25886c5b959f7e408fddda9d4a6c3778"
+    },
+    {
+      "candidate_id": "P0038",
+      "page_excerpt_sha256": "f9e1417754ecd88c71ccad7f3d5bd818694d51e6ac68474e3733e7ee0b556a0b",
+      "pdf_page": 5,
+      "record_id": "R054",
+      "source_pdf_sha256": "efd54df81de80e9c254302848d3c4a6c25886c5b959f7e408fddda9d4a6c3778"
+    },
+    {
+      "candidate_id": "P0039",
+      "page_excerpt_sha256": "debce89edaaef102c02af0bfe6aa06072fb6449a5d8fc956e8a03a6dea153230",
+      "pdf_page": 6,
+      "record_id": "R054",
+      "source_pdf_sha256": "efd54df81de80e9c254302848d3c4a6c25886c5b959f7e408fddda9d4a6c3778"
+    },
+    {
+      "candidate_id": "P0040",
+      "page_excerpt_sha256": "608800f1d37966ecdcba19817b0b642f43b063e7db6042c392afba478348d371",
+      "pdf_page": 7,
+      "record_id": "R054",
+      "source_pdf_sha256": "efd54df81de80e9c254302848d3c4a6c25886c5b959f7e408fddda9d4a6c3778"
+    },
+    {
+      "candidate_id": "P0041",
+      "page_excerpt_sha256": "b550ea6096c16a0cd8b0e8e4fa70fe96caf40372352d8ecab4619221ded00828",
+      "pdf_page": 8,
+      "record_id": "R054",
+      "source_pdf_sha256": "efd54df81de80e9c254302848d3c4a6c25886c5b959f7e408fddda9d4a6c3778"
+    },
+    {
+      "candidate_id": "P0042",
+      "page_excerpt_sha256": "1efd9b384a8486bcaf5d17d7cfd8d49997030cf6332ce6a95595d120bdf00c2b",
+      "pdf_page": 9,
+      "record_id": "R054",
+      "source_pdf_sha256": "efd54df81de80e9c254302848d3c4a6c25886c5b959f7e408fddda9d4a6c3778"
+    },
+    {
+      "candidate_id": "P0044",
+      "page_excerpt_sha256": "360002d28a90304281219c31e5da6a1dbf0065c9848bcc543b23fcac65c8de7c",
+      "pdf_page": 1,
+      "record_id": "R055",
+      "source_pdf_sha256": "69b8ca0db676b59bfb96bebe4967d00ba104553c6ed0a2631509af1895f61603"
+    },
+    {
+      "candidate_id": "P0045",
+      "page_excerpt_sha256": "997a75d19a087de1c5798ebdefe86ca3765a8dc72cd8d9a25de62daf2b282178",
+      "pdf_page": 2,
+      "record_id": "R055",
+      "source_pdf_sha256": "69b8ca0db676b59bfb96bebe4967d00ba104553c6ed0a2631509af1895f61603"
+    },
+    {
+      "candidate_id": "P0046",
+      "page_excerpt_sha256": "8cf12b1b4486cc6bfa11feee2a81425de2c133029408cec4491353947efd00ce",
+      "pdf_page": 3,
+      "record_id": "R055",
+      "source_pdf_sha256": "69b8ca0db676b59bfb96bebe4967d00ba104553c6ed0a2631509af1895f61603"
+    },
+    {
+      "candidate_id": "P0047",
+      "page_excerpt_sha256": "93eb796cb51068e8fadca451dda5e3c2a0f545825989afbeb0d9232024610221",
+      "pdf_page": 4,
+      "record_id": "R055",
+      "source_pdf_sha256": "69b8ca0db676b59bfb96bebe4967d00ba104553c6ed0a2631509af1895f61603"
+    },
+    {
+      "candidate_id": "P0048",
+      "page_excerpt_sha256": "06ce0d609d914f12a18b32dc60892483397eb9efac3e59c0cb44a6e30921c45a",
+      "pdf_page": 5,
+      "record_id": "R055",
+      "source_pdf_sha256": "69b8ca0db676b59bfb96bebe4967d00ba104553c6ed0a2631509af1895f61603"
+    },
+    {
+      "candidate_id": "P0049",
+      "page_excerpt_sha256": "6236ae50573b1e4adc13fe393d3cab43e835d3c1425dd6735ab4675cd7e1cf0b",
+      "pdf_page": 6,
+      "record_id": "R055",
+      "source_pdf_sha256": "69b8ca0db676b59bfb96bebe4967d00ba104553c6ed0a2631509af1895f61603"
+    },
+    {
+      "candidate_id": "P0050",
+      "page_excerpt_sha256": "83014cc3b461eea73e5de8ac1477edde1828a742f73f22e8c4de7a84834eb31c",
+      "pdf_page": 7,
+      "record_id": "R055",
+      "source_pdf_sha256": "69b8ca0db676b59bfb96bebe4967d00ba104553c6ed0a2631509af1895f61603"
+    },
+    {
+      "candidate_id": "P0051",
+      "page_excerpt_sha256": "76a787c3eadedd3eccbcc466464580daa717d392270960938b7c14c43a0c4ce0",
+      "pdf_page": 8,
+      "record_id": "R055",
+      "source_pdf_sha256": "69b8ca0db676b59bfb96bebe4967d00ba104553c6ed0a2631509af1895f61603"
+    },
+    {
+      "candidate_id": "P0052",
+      "page_excerpt_sha256": "1d05f7baacb4e710b2dd7819407252889468279c67c5a641aa7957e2e3c25a35",
+      "pdf_page": 9,
+      "record_id": "R055",
+      "source_pdf_sha256": "69b8ca0db676b59bfb96bebe4967d00ba104553c6ed0a2631509af1895f61603"
+    },
+    {
+      "candidate_id": "P0053",
+      "page_excerpt_sha256": "ea3ae4ec446ef54c096e757f4a6aaae442ef8fb09a6d7bdcebe40b945203cd85",
+      "pdf_page": 10,
+      "record_id": "R055",
+      "source_pdf_sha256": "69b8ca0db676b59bfb96bebe4967d00ba104553c6ed0a2631509af1895f61603"
+    }
+  ],
+  "excerpt_reduction_fraction": 0.1303,
+  "format_version": 1,
+  "input_excerpt_chars": 63292,
+  "input_pages": 55,
+  "limitations": [
+    "DeepSeek returned page IDs only; excerpts and numeric values are absent.",
+    "Candidate pages are not evidence and require deterministic source revalidation.",
+    "A stronger model or human reviewer must decide relevance and evidence support."
+  ],
+  "model": "deepseek-v4-flash",
+  "prompt_version": "page-candidate-pointer-v1",
+  "repeats": 3,
+  "selected_excerpt_chars": 55042,
+  "selected_pages": 47,
+  "selection_consistency": 1.0,
+  "sources": [
+    {
+      "doi": "10.5851/kosfa.2024.e50",
+      "input_pages": 33,
+      "pdf_path": "data/papers/the-l-ascorbic-acid-increases-proliferation-and-differentiation-of-yanbian-cattl/the-l-ascorbic-acid-increases-proliferation-and-differentiation-of-yanbian-cattl.pdf",
+      "pdf_sha256": "49c5645781797b71954deaf1d82c116313c11621fb661e39f9f2bd63d0ace8f8",
+      "record_id": "R053",
+      "selected_pages": 28
+    },
+    {
+      "doi": "10.1016/j.crfs.2024.100879",
+      "input_pages": 10,
+      "pdf_path": "data/papers/effect-of-glucose-and-lysine-supplementation-on-myogenic-and-adipogenic-gene-exp/effect-of-glucose-and-lysine-supplementation-on-myogenic-and-adipogenic-gene-exp.pdf",
+      "pdf_sha256": "efd54df81de80e9c254302848d3c4a6c25886c5b959f7e408fddda9d4a6c3778",
+      "record_id": "R054",
+      "selected_pages": 9
+    },
+    {
+      "doi": "10.3390/foods13040563",
+      "input_pages": 12,
+      "pdf_path": "data/papers/effect-of-crude-polysaccharides-from-ecklonia-cava-hydrolysate-on-cell-prolifera/effect-of-crude-polysaccharides-from-ecklonia-cava-hydrolysate-on-cell-prolifera.pdf",
+      "pdf_sha256": "69b8ca0db676b59bfb96bebe4967d00ba104553c6ed0a2631509af1895f61603",
+      "record_id": "R055",
+      "selected_pages": 10
+    }
+  ],
+  "status": "candidate_pointers_for_expert_review",
+  "total_tokens": 52986
+}

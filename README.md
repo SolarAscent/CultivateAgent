@@ -67,7 +67,7 @@ python scripts/audit_bovine_corpus.py --require-pass
 ```
 
 The committed audit is currently `FAIL`: all six numerical checks and required
-metadata pass for 39 design-included peer-reviewed sources, but none of the 18
+metadata pass for 44 design-included peer-reviewed sources, but none of the 23
 P1 core/core-context records has an explicit human-verified review status. See
 [`docs/BOVINE_CORPUS_GATE1_AUDIT.md`](docs/BOVINE_CORPUS_GATE1_AUDIT.md); a
 nonzero exit is expected until human curation passes.

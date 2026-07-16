@@ -3774,6 +3774,59 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 59 (Codex) — unlabeled DeepSeek page shadow and utility hold
+
+Date: 2026-07-16
+Branch: `codex/deepseek-page-shadow`
+
+## Decision And Boundary
+
+- Implemented the next required step after the page capability gate: an unlabeled,
+  IDs-only shadow exporter. Selected R053-R055 because they are new bovine
+  core-context sources with hash-bound local PDFs and were absent from both gold
+  sets. R052/R056 were skipped because they lack a verified local PDF page source.
+- The artifact contains only record ID, PDF page, page-summary hash, and source-PDF
+  hash. It does not contain source excerpts, numbers, evidence tiers, or review
+  decisions. Failed stability suppresses all candidate output.
+
+## Implementation And Live Result
+
+- Added canonical DOI/PDF hash preflight, all-page deterministic summaries,
+  three-repeat shadow execution, request/token/wall-time caps, zero retries,
+  resumable atomic checkpoints, pointer-only export, deterministic output
+  validation, and excerpt-reduction accounting.
+- Replaced the prior ignored-PDF-dependent unit test with temporary hash-bound
+  files and a fake parser, so page-probe tests are portable to clean CI/worktrees.
+- Live input was 55 pages: R053 33, R054 10, and R055 12. All 18 requests were
+  valid and all three repeats were identical. The model selected 47/55 pages,
+  reducing page count 14.55% and summary characters 13.03% (63,292 to 55,042)
+  while consuming 52,986 DeepSeek tokens. Checkpoint replay used zero API calls.
+
+## Utility Comparator And Decision
+
+- A no-model signal baseline retained 20/20 and 13/13 gold pages in the capability
+  and source-disjoint sets. It reduced 11.34% and 0% of all pages respectively;
+  on R053-R055 it reduced 5.45%.
+- DeepSeek adds only about 7.58 percentage points over that deterministic shadow
+  baseline. The saving is real but small, and R053-R055 have no independent page
+  gold to prove the recall of omitted pages.
+- Decision: `HOLD_AFTER_SHADOW`. Keep the exporter and pointer JSON as evaluation
+  artifacts, but do not route its 47 pages into production evidence extraction.
+  This avoids spending cheap-model calls where instruction/review overhead is
+  likely greater than the strong-model quota saved.
+- Full non-loopback regression passes: 185 passed, 2 optional tests skipped,
+  and the known local HTTP/GROBID test deselected. CLI smoke passes; the
+  six-round synthetic optimization demo raises hypervolume 7.050 to 16.464.
+
+## Next
+
+Return to the primary evidence path: convert the verified R052-R056 JATS assets
+into portable canonical ingestion artifacts and generate hash-bound readiness/
+review packets. DeepSeek page routing remains held unless a new independent set
+shows materially stronger incremental reduction without recall loss.
+
+---
+
 # Session 58 (Codex) — DeepSeek page-candidate capability gate
 
 Date: 2026-07-16

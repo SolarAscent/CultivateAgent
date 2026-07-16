@@ -456,9 +456,12 @@ def run_shadow_localization(
     max_total_tokens: int,
     max_output_tokens: int,
     caller: Callable[[str, int], tuple[str, dict[str, int]]],
+    prompt_builder: Callable[[Sequence[LocatorItem]], str] = build_prompt,
+    prompt_version: str = PROMPT_VERSION,
+    max_wall_seconds: float = 600,
 ) -> ShadowLocalizationResult:
     """Run repeated unlabeled localization and retain only unanimous pointers."""
-    if not items or repeats < 2 or batch_size <= 0:
+    if not items or repeats < 2 or batch_size <= 0 or max_wall_seconds <= 0:
         raise ValueError("shadow items are empty or repeat/batch settings are invalid")
     batches = [list(items[index:index + batch_size]) for index in range(0, len(items), batch_size)]
     expected_requests = repeats * len(batches)
@@ -467,7 +470,7 @@ def run_shadow_localization(
     if expected_requests * max_output_tokens > max_total_tokens:
         raise ValueError("maximum possible completion tokens exceed hard total-token cap")
     input_hash = _sha256_json({
-        "prompt_version": PROMPT_VERSION, "mode": "shadow", "model": model,
+        "prompt_version": prompt_version, "mode": "shadow", "model": model,
         "items": [{"id": item.item_id, "snippet_sha256": _sha256(item.snippet.encode()),
                    "block_sha256": item.block_text_sha256} for item in items],
         "repeats": repeats, "batch_size": batch_size,
@@ -476,23 +479,28 @@ def run_shadow_localization(
     issues: list[str] = []
     valid_requests = 0
     total_tokens = 0
+    started = time.monotonic()
     for repeat in range(repeats):
         for batch_index, batch in enumerate(batches):
+            if time.monotonic() - started > max_wall_seconds:
+                raise RuntimeError("hard wall-time cap exceeded; shadow stopped before next request")
             checkpoint = checkpoint_dir / f"{input_hash[:12]}_r{repeat + 1}_b{batch_index + 1}.json"
             if checkpoint.exists():
                 record = json.loads(checkpoint.read_text(encoding="utf-8"))
                 if record.get("input_hash") != input_hash:
                     raise ValueError(f"checkpoint input hash mismatch: {checkpoint}")
             else:
-                response_text, usage = caller(build_prompt(batch), max_output_tokens)
+                response_text, usage = caller(prompt_builder(batch), max_output_tokens)
                 record = {
-                    "format_version": 1, "prompt_version": PROMPT_VERSION, "mode": "shadow",
+                    "format_version": 1, "prompt_version": prompt_version, "mode": "shadow",
                     "model": model, "temperature": 0, "thinking": "disabled",
                     "input_hash": input_hash, "repeat": repeat + 1, "batch": batch_index + 1,
                     "item_ids": [item.item_id for item in batch],
                     "response_text": response_text, "usage": usage,
                 }
                 _atomic_json(checkpoint, record)
+            if time.monotonic() - started > max_wall_seconds:
+                raise RuntimeError("hard wall-time cap exceeded; shadow stopped at checkpoint")
             total_tokens += int((record.get("usage") or {}).get("total_tokens") or 0)
             if total_tokens > max_total_tokens:
                 raise RuntimeError("hard total-token cap exceeded; shadow run stopped at checkpoint")

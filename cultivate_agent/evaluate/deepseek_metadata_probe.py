@@ -217,6 +217,16 @@ def _atomic_json(path: Path, value: object) -> None:
     os.replace(temporary, path)
 
 
+def _usage_record(usage: int | dict[str, int]) -> dict[str, int]:
+    if isinstance(usage, dict):
+        return {
+            "prompt_tokens": int(usage.get("prompt_tokens") or 0),
+            "completion_tokens": int(usage.get("completion_tokens") or 0),
+            "total_tokens": int(usage.get("total_tokens") or 0),
+        }
+    return {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": int(usage)}
+
+
 def _jaccard(left: set[str], right: set[str]) -> float:
     union = left | right
     return len(left & right) / len(union) if union else 1.0
@@ -232,7 +242,7 @@ def run_metadata_probe(
     max_requests: int,
     max_total_tokens: int,
     max_output_tokens: int,
-    caller: Callable[[str, int], tuple[str, int]],
+    caller: Callable[[str, int], tuple[str, int | dict[str, int]]],
 ) -> MetadataProbeResult:
     if repeats < 3:
         raise ValueError("metadata probe requires at least three repeats")
@@ -261,7 +271,8 @@ def run_metadata_probe(
                 if record.get("input_hash") != input_hash:
                     raise ValueError(f"checkpoint input hash mismatch: {checkpoint}")
             else:
-                response_text, usage = caller(prompt, max_output_tokens)
+                response_text, raw_usage = caller(prompt, max_output_tokens)
+                usage = _usage_record(raw_usage)
                 record = {
                     "input_hash": input_hash,
                     "model": model,
@@ -269,7 +280,8 @@ def run_metadata_probe(
                     "temperature": 0,
                     "thinking": "disabled",
                     "response": response_text,
-                    "total_tokens": int(usage),
+                    "usage": usage,
+                    "total_tokens": usage["total_tokens"],
                 }
                 _atomic_json(checkpoint, record)
             total_tokens += int(record.get("total_tokens") or 0)

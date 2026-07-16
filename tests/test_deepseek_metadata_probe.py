@@ -74,7 +74,9 @@ def test_repeated_probe_passes_and_resumes_without_calls(tmp_path):
             {"id": row["id"], "fields": ["abstract"]}
             for row in payload["records"] if row["id"] in {"M1", "M3"}
         ]
-        return json.dumps({"candidates": selected}), 100
+        return json.dumps({"candidates": selected}), {
+            "prompt_tokens": 80, "completion_tokens": 20, "total_tokens": 100,
+        }
 
     kwargs = dict(
         checkpoint_dir=tmp_path / "cp", model="deepseek-v4-flash", repeats=3,

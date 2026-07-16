@@ -3774,6 +3774,60 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 58 (Codex) — DeepSeek page-candidate capability gate
+
+Date: 2026-07-16
+Branch: `codex/deepseek-page-probe`
+
+## Decision And Boundary
+
+- Chose coarse page-candidate localization over metadata format checking: a
+  deterministic schema checker is cheaper than instructing a model, whereas
+  page preselection can reduce strong-model and human reading volume.
+- This is distinct from the closed quantitative-block task. Deterministic code
+  builds source-hash-bound page summaries; DeepSeek may return page IDs only.
+  It cannot return excerpts, numbers, replacements, evidence tiers, or
+  biological decisions.
+- Reused the existing quantitative-pilot locators and source-disjoint Zotero
+  locator holdout by aggregating their block gold to pages. No new manual gold
+  or duplicate annotation set was created.
+
+## Implementation And Live Result
+
+- Added a page-gold loader with PDF hash verification, deterministic page
+  summaries, gold-page aggregation, and deterministic decoy sampling. The
+  shared probe runner now accepts a versioned prompt builder while retaining
+  the old block-probe defaults.
+- Runtime controls are three temperature-zero/non-thinking repeats, strict
+  IDs-only JSON, zero retries, per-request timeout, total wall-time cap, hard
+  request/token caps, and atomic input-hash checkpoints.
+- Capability set: 40 pages (20 positives), 12/12 valid requests, repeat recall
+  1.00/1.00/1.00, consistency 0.95, precision 0.588/0.625/0.588, and 58,366
+  reported API tokens.
+- Source-disjoint holdout: 26 pages (13 positives), 9/9 valid requests, repeat
+  recall 1.00/1.00/1.00, consistency 1.00, precision 0.65/0.65/0.65, and
+  44,820 reported API tokens. The 0.59-0.65 precision values are silver
+  diagnostics because decoy pages were not independently adjudicated. All 21 calls are resumable from local checkpoints;
+  zero-call replay reproduced both reports.
+
+## Decision
+
+- `PASS_FOR_BOUNDED_SHADOW_LOCALIZATION`: page-pointer candidate generation may
+  be delegated in bounded batches. Precision is diagnostic and deliberately
+  not gated, but the observed 0.59-0.65 means every selected page still needs
+  deterministic filtering and strong-model or human review. No evidence or
+  wet-lab gate changed.
+- Full non-loopback regression passes: 182 passed, 2 optional tests skipped,
+  and the known local HTTP/GROBID test deselected. CLI smoke passes; the
+  six-round synthetic optimization demo raises hypervolume 7.050 to 16.464.
+
+## Next
+
+Add an unlabeled shadow-batch exporter that records source/page/hash pointers
+and sends only the reduced candidate pages to the strong-model review path.
+
+---
+
 # Session 57 (Codex) — hash-bound Europe PMC scope promotion
 
 Date: 2026-07-16

@@ -808,6 +808,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | P1 PDF structured-table off-ramp | `FAIL`; 10 identity-matched PDFs, 0 statistical line-table cells | 116 layout-text hits are locators only; use a bounded caption/prose and figure pilot |
 | DeepSeek quantitative-block delegation | `FAIL`; independent silver recall 10/13 (0.7692) after prior 10/12 (0.8333) | Task closed for this prompt/model; retain deterministic prefilter and route review to a stronger model |
 | DeepSeek metadata-linkage delegation | `FAIL`; recall 0.50 in all 3 repeats, precision 1.00, Jaccard 1.00 | Stable under-selection missed 3/6 same-domain cross-paper mismatches; do not delegate or auto-correct metadata |
+| DeepSeek page-candidate delegation | `PASS_FOR_BOUNDED_SHADOW`; gold and source-disjoint holdout recall 1.00 in all 3+3 repeats | IDs-only candidate generation may be shadow-delegated; unadjudicated-decoy silver precision 0.59-0.65 requires deterministic/strong-model filtering |
 | Zotero acquisition deduplication | `PASS`; 236 = 212 actionable + 23 excluded + 1 conflict | Acquire only from the actionable TSV; conflict is held for version review |
 | Zotero OA discovery audit | `PASS`; 212 = 75 EPMC JATS + 34 Crossref CC-VOR + 96 unverified + 7 no DOI | The 109 OA/license candidates are leads only; source-level verification is still required |
 | Europe PMC bovine JATS canary | `PASS`; 10/10 source-verified, 8/10 table-bearing, 3/10 with statistical-notation cells | Acquisition path works; scope review and canonical promotion remain separate |

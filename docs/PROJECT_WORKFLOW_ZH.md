@@ -749,6 +749,7 @@ Gate：论文 claims 可追溯到证据和结果。
 | Zotero 候选 packet/readiness | 4/4 locator-ready 且 direct-ready | H034-H037 对应 R048-R051；decision 全部保持 open |
 | DeepSeek 定量文本块下放 | `FAIL`；独立 silver recall 10/13（0.7692），此前为 10/12（0.8333） | 当前 prompt/model 的任务关闭；保留确定性预筛，复核转交更强模型 |
 | DeepSeek metadata-linkage 下放 | `FAIL`；3 次 recall 均为 0.50，precision 1.00，Jaccard 1.00 | 稳定漏掉 3/6 个同领域跨论文错配；不得下放或自动修正 metadata |
+| DeepSeek 页级候选定位下放 | `PASS_FOR_BOUNDED_SHADOW`；gold 与来源独立 holdout 的 3+3 次 recall 均为 1.00 | 只允许 shadow 下放 IDs-only 候选生成；未裁决 decoy 的 silver precision 为 0.59-0.65，必须由确定性规则/强模型去伪 |
 | Zotero acquisition 去重 | `PASS`；236 = 212 actionable + 23 excluded + 1 conflict | 只能从 actionable TSV 获取；冲突等待版本人工复核 |
 | Zotero OA 发现审计 | `PASS`；212 = 75 EPMC JATS + 34 Crossref CC-VOR + 96 未验证 + 7 缺 DOI | 109 条 OA/许可候选只是线索，仍需来源级验证 |
 | Europe PMC bovine JATS canary | `PASS`；10/10 来源验证，8/10 有表格，3/10 有统计记号单元格 | 获取路径可用；scope review 与 canonical promotion 仍是独立环节 |

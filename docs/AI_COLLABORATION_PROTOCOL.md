@@ -227,6 +227,11 @@ a number is supported.
   precision 1.00). Metadata-linkage screening is therefore not delegated.
   Quantitative-block localization is closed for this DeepSeek prompt/model; do
   not tune on missed held-out items and reuse them as an independent test.
+  Coarser page-candidate localization with deterministic page summaries has
+  passed both reused locator gold and a source-disjoint Zotero holdout: all six
+  repeat recalls were 1.00, consistency was 0.95 then 1.00, and unadjudicated
+  decoy-based silver precision was 0.59-0.65 (diagnostic only). It is approved only for bounded shadow pointer
+  generation with deterministic/strong-model filtering, not evidence decisions.
 
 ### 8.3 Allowed Delegation
 

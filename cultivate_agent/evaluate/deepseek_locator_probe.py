@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import tempfile
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Sequence
@@ -348,11 +349,14 @@ def run_locator_probe(
     max_total_tokens: int,
     max_output_tokens: int,
     caller: Callable[[str, int], tuple[str, dict[str, int]]],
+    prompt_builder: Callable[[Sequence[LocatorItem]], str] = build_prompt,
+    prompt_version: str = PROMPT_VERSION,
+    max_wall_seconds: float = 600,
 ) -> LocatorProbeResult:
     if not items or not any(item.positive for item in items):
         raise ValueError("locator silver is empty or has no positives")
-    if repeats <= 0 or batch_size <= 0:
-        raise ValueError("repeats and batch_size must be positive")
+    if repeats <= 0 or batch_size <= 0 or max_wall_seconds <= 0:
+        raise ValueError("repeats, batch_size, and max_wall_seconds must be positive")
     batches = [list(items[index:index + batch_size]) for index in range(0, len(items), batch_size)]
     expected_requests = repeats * len(batches)
     if expected_requests > max_requests:
@@ -360,7 +364,7 @@ def run_locator_probe(
     if expected_requests * max_output_tokens > max_total_tokens:
         raise ValueError("maximum possible completion tokens exceed hard total-token cap")
     input_hash = _sha256_json({
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": prompt_version,
         "model": model,
         "items": [
             {"id": item.item_id, "snippet_sha256": _sha256(item.snippet.encode()),
@@ -375,23 +379,28 @@ def run_locator_probe(
     issues: list[str] = []
     valid_requests = 0
     total_tokens = 0
+    started = time.monotonic()
     for repeat in range(repeats):
         for batch_index, batch in enumerate(batches):
+            if time.monotonic() - started > max_wall_seconds:
+                raise RuntimeError("hard wall-time cap exceeded; probe stopped before next request")
             checkpoint = checkpoint_dir / f"{input_hash[:12]}_r{repeat + 1}_b{batch_index + 1}.json"
             if checkpoint.exists():
                 record = json.loads(checkpoint.read_text(encoding="utf-8"))
                 if record.get("input_hash") != input_hash:
                     raise ValueError(f"checkpoint input hash mismatch: {checkpoint}")
             else:
-                response_text, usage = caller(build_prompt(batch), max_output_tokens)
+                response_text, usage = caller(prompt_builder(batch), max_output_tokens)
                 record = {
-                    "format_version": 1, "prompt_version": PROMPT_VERSION, "model": model,
+                    "format_version": 1, "prompt_version": prompt_version, "model": model,
                     "temperature": 0, "thinking": "disabled", "input_hash": input_hash,
                     "repeat": repeat + 1, "batch": batch_index + 1,
                     "item_ids": [item.item_id for item in batch],
                     "response_text": response_text, "usage": usage,
                 }
                 _atomic_json(checkpoint, record)
+            if time.monotonic() - started > max_wall_seconds:
+                raise RuntimeError("hard wall-time cap exceeded; probe stopped at checkpoint")
             total_tokens += int((record.get("usage") or {}).get("total_tokens") or 0)
             if total_tokens > max_total_tokens:
                 raise RuntimeError("hard total-token cap exceeded; probe stopped at checkpoint")
@@ -645,17 +654,25 @@ def validate_shadow_manifest(payload: dict[str, object], items: Sequence[Locator
     return issues
 
 
-def report_markdown(result: LocatorProbeResult, *, model: str, max_requests: int) -> str:
+def report_markdown(
+    result: LocatorProbeResult,
+    *,
+    model: str,
+    max_requests: int,
+    title: str = "DeepSeek Quantitative-Block Localization Probe",
+    prompt_version: str = PROMPT_VERSION,
+    precision_label: str = "Precision by repeat (reported, not gated)",
+) -> str:
     status = "PASS_FOR_BOUNDED_SHADOW_LOCALIZATION" if result.gate_pass else "FAIL"
     lines = [
-        "# DeepSeek Quantitative-Block Localization Probe", "", f"**Status: {status}**", "",
+        f"# {title}", "", f"**Status: {status}**", "",
         f"- Model: `{model}` (non-thinking, temperature 0)",
-        f"- Prompt/schema version: `{PROMPT_VERSION}`",
+        f"- Prompt/schema version: `{prompt_version}`",
         f"- Hash-verified silver items: {result.items} ({result.positives} positives)",
         f"- Valid requests: {result.requests_valid}/{result.requests_expected}",
         f"- Hard request cap: {max_requests}",
         f"- Recall by repeat: {', '.join(f'{value:.3f}' for value in result.repeat_recalls)}",
-        "- Precision by repeat (reported, not gated): "
+        f"- {precision_label}: "
         + ", ".join(f"{value:.3f}" for value in result.repeat_precisions),
         f"- Run-to-run selection consistency: {result.selection_consistency:.3f}",
         f"- Total API tokens reported: {result.total_tokens}",

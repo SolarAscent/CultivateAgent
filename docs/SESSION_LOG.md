@@ -3774,6 +3774,58 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 61 (Codex) — R016 metadata identity repair
+
+Date: 2026-07-16
+Branch: `codex/repair-r016-identity`
+
+## Finding And Scope
+
+- Rechecked R016 at file level instead of inferring identity from its bad
+  `metadata.json`. Its PDF, PDF-derived plain text, and Europe PMC JATS are all
+  the correct 2022 Frontiers paper. Their committed/audited SHA-256 values are
+  respectively `4d2d8aee...e7c04`, `25fabce9...17a6`, and
+  `2f4b21e9...4643`.
+- The actual defect was limited to `metadata.json` and `assets.json`. The root
+  cause was `data/library.example.bib`, whose R016 title/authors had been
+  combined with R020's 2023 Scientific Reports DOI, venue, and abstract.
+- No DeepSeek call was made: source identity and bibliographic repair are
+  deterministic validation tasks, and the metadata-linkage capability gate has
+  already rejected model delegation.
+
+## Implementation And Local Repair
+
+- Corrected the example BibTeX entry to the JATS-verified R016 authors, 2022
+  year, Frontiers venue, and DOI `10.3389/fbioe.2022.895289`.
+- Added a metadata-only repair utility. It refuses to write unless corpus,
+  source manifest, acquisition report, JATS title/DOI/license/hash, plain-text
+  DOI, and audited PDF hash all agree. It never modifies PDF, plain text, or
+  JATS source files.
+- Before replacement, the utility copies the original metadata and assets into
+  a content-addressed local quarantine with a hash-only audit record. The R016
+  snapshot is `data/quarantine/identity-repair/R016/6bb9f0113a82490c/`;
+  original metadata/assets hashes are `c054b1f5...cb55` and
+  `b4b35bb7...c947`.
+- Repaired R016 locally and replayed the utility to `already_verified`. The
+  original acquisition command then reproduced `existing_verified`, CC-BY-4.0,
+  2 tables, 128 cells, and the historical JATS hash without network access.
+- Added regression coverage that requires every example-BibTeX title matching
+  the canonical corpus to agree on DOI and year.
+
+## Verification
+
+- Focused identity/acquisition/materialization tests: 17 passed.
+- Non-loopback suite: 193 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected. CLI smoke passed; the six-round optimization demo
+  increased synthetic hypervolume from 7.050 to 16.464.
+- The R016 PDF, plain-text, and JATS hashes were identical before and after the
+  repair. Existing human-pilot source locators therefore remain hash-valid.
+- The local repaired metadata now identifies the canonical R016 paper and
+  records 15 pages, 8 figures, 2 tables, and Europe PMC JATS provenance.
+- `git diff --check` and the repository API-key pattern scan passed.
+
+---
+
 # Session 60 (Codex) — portable R052-R056 JATS review path
 
 Date: 2026-07-16

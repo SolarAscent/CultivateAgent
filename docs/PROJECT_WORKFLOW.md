@@ -784,6 +784,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | Zotero candidate packet/readiness | 4/4 locator-ready and direct-ready | H034-H037 cover R048-R051; all decisions remain open |
 | P1 PDF structured-table off-ramp | `FAIL`; 10 identity-matched PDFs, 0 statistical line-table cells | 116 layout-text hits are locators only; use a bounded caption/prose and figure pilot |
 | DeepSeek quantitative-block delegation | `FAIL`; independent silver recall 10/13 (0.7692) after prior 10/12 (0.8333) | Task closed for this prompt/model; retain deterministic prefilter and route review to a stronger model |
+| DeepSeek metadata-linkage delegation | `FAIL`; recall 0.50 in all 3 repeats, precision 1.00, Jaccard 1.00 | Stable under-selection missed 3/6 same-domain cross-paper mismatches; do not delegate or auto-correct metadata |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
 

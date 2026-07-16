@@ -729,6 +729,7 @@ Gate：论文 claims 可追溯到证据和结果。
 | 新来源 extraction readiness | 3/3 direct-ready | R046 使用 Europe PMC JATS；R045/R047 来自合法本地或开放 PDF |
 | Zotero 候选 packet/readiness | 4/4 locator-ready 且 direct-ready | H034-H037 对应 R048-R051；decision 全部保持 open |
 | DeepSeek 定量文本块下放 | `FAIL`；独立 silver recall 10/13（0.7692），此前为 10/12（0.8333） | 当前 prompt/model 的任务关闭；保留确定性预筛，复核转交更强模型 |
+| DeepSeek metadata-linkage 下放 | `FAIL`；3 次 recall 均为 0.50，precision 1.00，Jaccard 1.00 | 稳定漏掉 3/6 个同领域跨论文错配；不得下放或自动修正 metadata |
 | 缺失 review-packet source | 2/16 | H015-H016 对应 R024，需要机构访问或人工提供主文全文 |
 | Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
 

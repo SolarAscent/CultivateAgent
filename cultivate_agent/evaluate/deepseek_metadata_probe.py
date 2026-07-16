@@ -46,6 +46,8 @@ class MetadataProbeResult:
     issues: tuple[str, ...]
     selections: tuple[tuple[str, ...], ...]
     input_hashes: tuple[tuple[str, str], ...]
+    false_negative_ids: tuple[str, ...]
+    false_positive_ids: tuple[str, ...]
 
     @property
     def gate_pass(self) -> bool:
@@ -309,6 +311,8 @@ def run_metadata_probe(
         for i in range(len(all_selections)) for j in range(i + 1, len(all_selections))
     ]
     counts = [len(selected) for selected in all_selections]
+    selected_union = set().union(*all_selections) if all_selections else set()
+    selected_intersection = set.intersection(*all_selections) if all_selections else set()
     return MetadataProbeResult(
         items=len(items), positives=len(gold), requests_expected=expected_requests,
         requests_valid=requests_valid, repeat_recalls=tuple(recalls),
@@ -318,10 +322,14 @@ def run_metadata_probe(
         total_tokens=total_tokens, issues=tuple(issues),
         selections=tuple(tuple(sorted(selected)) for selected in all_selections),
         input_hashes=tuple((item.item_id, item.input_sha256) for item in items),
+        false_negative_ids=tuple(sorted(gold - selected_intersection)),
+        false_positive_ids=tuple(sorted(selected_union - gold)),
     )
 
 
-def manifest_payload(result: MetadataProbeResult, *, model: str) -> dict[str, object]:
+def manifest_payload(
+    result: MetadataProbeResult, *, model: str, prior_invalid_requests: int = 0
+) -> dict[str, object]:
     return {
         "task": "cross-paper metadata-linkage anomaly pointer localization",
         "prompt_version": PROMPT_VERSION,
@@ -340,13 +348,101 @@ def manifest_payload(result: MetadataProbeResult, *, model: str) -> dict[str, ob
         "total_tokens": result.total_tokens,
         "issues": list(result.issues),
         "gate_pass": result.gate_pass,
+        "false_negative_ids": list(result.false_negative_ids),
+        "false_positive_ids": list(result.false_positive_ids),
+        "prior_invalid_requests": prior_invalid_requests,
+        "prior_invalid_usage_unknown": prior_invalid_requests > 0,
         "input_hashes": dict(result.input_hashes),
         "selections": [list(selection) for selection in result.selections],
         "boundary": "candidate pointers only; no automatic metadata correction",
     }
 
 
-def report_markdown(result: MetadataProbeResult, *, model: str, max_requests: int, max_total_tokens: int) -> str:
+def validate_manifest_payload(
+    payload: dict[str, object], items: Sequence[MetadataCanaryItem]
+) -> list[str]:
+    expected_keys = {
+        "task", "prompt_version", "model", "temperature", "thinking", "items",
+        "positives", "requests_expected", "requests_valid", "repeat_recalls",
+        "repeat_precisions", "repeat_candidate_counts", "selection_consistency",
+        "candidate_count_stddev", "total_tokens", "issues", "gate_pass",
+        "false_negative_ids", "false_positive_ids", "prior_invalid_requests",
+        "prior_invalid_usage_unknown", "input_hashes", "selections", "boundary",
+    }
+    issues: list[str] = []
+    if set(payload) != expected_keys:
+        issues.append("manifest has invalid top-level keys")
+        return issues
+    expected_hashes = {item.item_id: item.input_sha256 for item in items}
+    if payload["input_hashes"] != expected_hashes:
+        issues.append("manifest input hashes do not match resolved source metadata")
+    if payload["items"] != len(items):
+        issues.append("manifest item count mismatch")
+    gold = {item.item_id for item in items if item.expected_mismatch}
+    if payload["positives"] != len(gold):
+        issues.append("manifest positive count mismatch")
+
+    raw_selections = payload.get("selections")
+    if not isinstance(raw_selections, list) or len(raw_selections) < 3:
+        issues.append("manifest must contain at least three repeat selections")
+        return issues
+    allowed_ids = set(expected_hashes)
+    selections: list[set[str]] = []
+    for index, raw in enumerate(raw_selections):
+        if not isinstance(raw, list) or not all(isinstance(item_id, str) for item_id in raw):
+            issues.append(f"selection {index + 1} is not an ID list")
+            continue
+        if len(raw) != len(set(raw)) or not set(raw) <= allowed_ids:
+            issues.append(f"selection {index + 1} has duplicate or unknown IDs")
+            continue
+        selections.append(set(raw))
+    if len(selections) != len(raw_selections):
+        return issues
+
+    recalls = [len(selected & gold) / len(gold) if gold else 1.0 for selected in selections]
+    precisions = [
+        len(selected & gold) / len(selected) if selected else (1.0 if not gold else 0.0)
+        for selected in selections
+    ]
+    counts = [len(selected) for selected in selections]
+    pairwise = [
+        _jaccard(selections[i], selections[j])
+        for i in range(len(selections)) for j in range(i + 1, len(selections))
+    ]
+    selected_union = set().union(*selections)
+    selected_intersection = set.intersection(*selections)
+    expected_values = {
+        "repeat_recalls": recalls,
+        "repeat_precisions": precisions,
+        "repeat_candidate_counts": counts,
+        "selection_consistency": sum(pairwise) / len(pairwise) if pairwise else 1.0,
+        "candidate_count_stddev": statistics.pstdev(counts),
+        "false_negative_ids": sorted(gold - selected_intersection),
+        "false_positive_ids": sorted(selected_union - gold),
+    }
+    for key, expected in expected_values.items():
+        if payload[key] != expected:
+            issues.append(f"manifest {key} does not recompute from selections")
+    recomputed_gate = (
+        not payload["issues"]
+        and payload["requests_valid"] == payload["requests_expected"]
+        and min(recalls) >= 0.95
+        and min(precisions) >= 0.75
+        and expected_values["selection_consistency"] >= 0.95
+    )
+    if payload["gate_pass"] is not recomputed_gate:
+        issues.append("manifest gate decision does not recompute")
+    return issues
+
+
+def report_markdown(
+    result: MetadataProbeResult,
+    *,
+    model: str,
+    max_requests: int,
+    max_total_tokens: int,
+    prior_invalid_requests: int = 0,
+) -> str:
     decision = "PASS" if result.gate_pass else "FAIL"
     routing = (
         "Eligible only for a bounded metadata-QA shadow run; every candidate still requires "
@@ -379,6 +475,10 @@ def report_markdown(result: MetadataProbeResult, *, model: str, max_requests: in
         f"- Pairwise selection Jaccard: {result.selection_consistency:.4f}",
         f"- Reported tokens: {result.total_tokens}",
         f"- Schema/runtime issues: {len(result.issues)}",
+        f"- False-negative pointers: {', '.join(result.false_negative_ids) or 'none'}",
+        f"- False-positive pointers: {', '.join(result.false_positive_ids) or 'none'}",
+        f"- Prior invalid implementation attempts: {prior_invalid_requests}; token usage unknown "
+        "and excluded from the valid-run metrics",
         "",
         "## Routing Decision",
         "",

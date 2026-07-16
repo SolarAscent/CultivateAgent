@@ -6,7 +6,9 @@ import pytest
 from cultivate_agent.evaluate.deepseek_metadata_probe import (
     MetadataCanaryItem,
     load_metadata_canary,
+    manifest_payload,
     run_metadata_probe,
+    validate_manifest_payload,
     validate_response,
 )
 
@@ -112,3 +114,8 @@ def test_flag_everything_fails_work_reduction_precision_gate(tmp_path):
     assert result.repeat_recalls == (1.0, 1.0, 1.0)
     assert result.repeat_precisions == (0.25, 0.25, 0.25)
     assert not result.gate_pass
+
+    payload = manifest_payload(result, model="deepseek-v4-flash")
+    assert not validate_manifest_payload(payload, items)
+    payload["abstract"] = "forbidden source text"
+    assert validate_manifest_payload(payload, items) == ["manifest has invalid top-level keys"]

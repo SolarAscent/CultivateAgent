@@ -222,9 +222,11 @@ a number is supported.
   and quantitative-block localization passed its first-source canary but failed
   held-out R018/R045 silver recall (10/12, 0.8333), then failed a source-disjoint
   Zotero silver set (10/13, 0.7692). Neither task is approved for bulk
-  delegation. Quantitative-block localization is closed for this DeepSeek
-  prompt/model; do not tune on missed held-out items and reuse them as an
-  independent test.
+  delegation. A source-authentic title/abstract linkage canary also failed:
+  three stable runs each found only 3/6 cross-paper mismatches (recall 0.50,
+  precision 1.00). Metadata-linkage screening is therefore not delegated.
+  Quantitative-block localization is closed for this DeepSeek prompt/model; do
+  not tune on missed held-out items and reuse them as an independent test.
 
 ### 8.3 Allowed Delegation
 

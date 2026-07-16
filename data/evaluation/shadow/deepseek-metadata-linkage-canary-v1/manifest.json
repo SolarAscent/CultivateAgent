@@ -1,0 +1,71 @@
+{
+  "boundary": "candidate pointers only; no automatic metadata correction",
+  "candidate_count_stddev": 0.0,
+  "false_negative_ids": [
+    "M002",
+    "M006",
+    "M008"
+  ],
+  "false_positive_ids": [],
+  "gate_pass": false,
+  "input_hashes": {
+    "M001": "0c48100c91a0129ee647ea77232425f05239badbbce4e5cb601314c8a05dcf5a",
+    "M002": "605ffa3b7b63b076892965c9fef55bf0b4df2a2265d0e9aa5fc8407db418e3bb",
+    "M003": "6ac596f37131de6cae334821e109cb7f4bdec58bdcd0e011b52509ea3de27c31",
+    "M004": "05c1614d00b2e1f1153116d487748fb88d65bf19e8ef347017bb344bc1b9bcfc",
+    "M005": "4c5044151fbcbf528afa08b80ba209f439b4bbb582bbd62bf4761a487ac6f780",
+    "M006": "5fa0153719fcedc105bb2129f0dc9f4643d734575ac67abf549b34c39ff0c428",
+    "M007": "da77641887050095bd82051198b833fedd8cb919a8ee78b87856251b10d2eca5",
+    "M008": "f545c1d9f9e610042f3bbac15da7b2ecc8559f2dc9faeed3f6d5a5d2006e03ee",
+    "M009": "656ec6f231346225ca00c9d40f58a044e060f3fcbf91c0c1d345819c8c1fa206",
+    "M010": "30873865bc7349a7a983343f50cbb9edd884b9272d6ccce329b815b5b79c6474",
+    "M011": "12234ccb23dc6a753871a6719e0edfc53725533d540db0b6667fd3ccac7e8a52",
+    "M012": "feffeffcd7a7b0240873ef26e7fc063aafa11fccc31c67d0616c9c96e8d6987d"
+  },
+  "issues": [],
+  "items": 12,
+  "model": "deepseek-v4-flash",
+  "positives": 6,
+  "prior_invalid_requests": 1,
+  "prior_invalid_usage_unknown": true,
+  "prompt_version": "metadata-linkage-pointer-v1",
+  "repeat_candidate_counts": [
+    3,
+    3,
+    3
+  ],
+  "repeat_precisions": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "repeat_recalls": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "requests_expected": 6,
+  "requests_valid": 6,
+  "selection_consistency": 1.0,
+  "selections": [
+    [
+      "M004",
+      "M010",
+      "M012"
+    ],
+    [
+      "M004",
+      "M010",
+      "M012"
+    ],
+    [
+      "M004",
+      "M010",
+      "M012"
+    ]
+  ],
+  "task": "cross-paper metadata-linkage anomaly pointer localization",
+  "temperature": 0,
+  "thinking": "disabled",
+  "total_tokens": 11934
+}

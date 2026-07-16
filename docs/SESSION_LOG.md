@@ -3774,6 +3774,63 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 53 (Codex) — DeepSeek metadata-linkage canary rejects delegation
+
+Date: 2026-07-16
+Branch: `codex/deepseek-metadata-linkage-probe`
+
+## Task And Frozen Gate
+
+- Selected semantic title/abstract linkage anomaly localization because
+  deterministic syntax checks are cheaper without an LLM and the repository
+  previously experienced cross-paper source-identity mixing.
+- Froze 12 source-authentic, DOI/title-verified Zotero pairs before the first
+  live call: six correct pairs and six same-domain cross-links. The spec stores
+  record pointers only; exact prompt inputs are represented by SHA-256 hashes.
+- DeepSeek could return only item IDs and the literal `abstract` field pointer.
+  Replacement metadata, explanations, DOI/year values, and arbitrary fields
+  fail schema validation.
+- The fixed gate required each of three temperature-zero repeats to reach
+  recall >= 0.95 and precision >= 0.75, with pairwise Jaccard >= 0.95 and all
+  requests schema-valid. Flagging every record cannot pass the precision gate.
+
+## Live Result And Routing
+
+- The valid run used `deepseek-v4-flash`, thinking disabled, no retries, two
+  batches per repeat, six requests, atomic checkpoints, and 11,934 reported
+  tokens under a 15,000-token cap.
+- All three repeats selected exactly M004, M010, and M012: recall 0.50,
+  precision 1.00, Jaccard 1.00, and candidate-count SD 0. The stable misses were
+  M002, M006, and M008, all deliberate same-domain cross-paper linkages.
+- The capability gate failed. Do not delegate semantic metadata-linkage
+  screening or metadata correction to this model/prompt. Deterministic
+  DOI/title/hash checks remain authoritative; ambiguous semantic consistency
+  routes to Codex, Claude, or human review.
+- One earlier implementation attempt made one API request and then crashed
+  before checkpointing because the runner treated the shared usage dictionary
+  as an integer. The response was not inspected or used for tuning. Commit
+  `d446714` fixed usage accounting only; that call's unknown token usage is
+  explicitly excluded from valid-run metrics.
+
+## Verification
+
+- Metadata-probe tests: 4 passed, covering DOI/title resolution, pointer-only
+  schema rejection, three-repeat stability/resume, and the all-flag precision
+  failure.
+- Non-loopback suite: 157 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected. CLI smoke passed; the six-round optimization demo
+  increased synthetic hypervolume from 7.050 to 16.464.
+- Six checkpoint records independently show the frozen prompt version,
+  temperature 0, thinking disabled, schema-valid ID pointers, and token counts.
+- Checkpoint replay made no API mutation, reproduced the same metrics, and
+  returned the expected nonzero gate-failure exit.
+- Committed report and manifest contain hashes and pointers, not source
+  abstracts, replacement metadata, or API credentials.
+- Deterministic manifest validation recomputed all metrics, source-input hashes,
+  false-negative/false-positive IDs, and the failed gate with zero issues.
+
+---
+
 # Session 52 (Codex) — verified Zotero sources enter canonical review flow
 
 Date: 2026-07-15

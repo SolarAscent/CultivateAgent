@@ -1,6 +1,6 @@
 # Metadata Linkage Canary v1
 
-Status: frozen before the first live model call.
+Status: evaluated; capability gate failed.
 
 This canary tests a narrow metadata-QA task motivated by the repository's prior
 cross-paper source-identity mixing failure. Each item combines the canonical
@@ -20,3 +20,11 @@ Flagging every item therefore fails the precision/work-reduction gate.
 This is a capability canary, not scientific evidence and not authorization to
 correct metadata automatically. A passing result permits only a bounded shadow
 run whose candidates still require deterministic or human confirmation.
+
+The valid run selected M004, M010, and M012 in all three repeats but missed
+M002, M006, and M008 in all three. Recall was 0.50, precision 1.00, and
+pairwise Jaccard 1.00. The task is not delegated. One earlier implementation
+attempt made a single API request and then failed before checkpointing because
+usage metadata was parsed with the wrong type; its response was not inspected
+or used to tune the frozen prompt, and its unknown token usage is excluded from
+the valid-run metrics.

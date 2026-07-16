@@ -13,6 +13,7 @@ from cultivate_agent.evaluate.deepseek_metadata_probe import (
     manifest_payload,
     report_markdown,
     run_metadata_probe,
+    validate_manifest_payload,
 )
 
 
@@ -36,6 +37,10 @@ def main() -> int:
     parser.add_argument("--checkpoint-dir", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument(
+        "--prior-invalid-requests", type=int, default=0,
+        help="record earlier implementation calls excluded from valid-run metrics",
+    )
     args = parser.parse_args()
 
     items = load_metadata_canary(
@@ -52,13 +57,20 @@ def main() -> int:
         report_markdown(
             result, model=args.model, max_requests=args.max_requests,
             max_total_tokens=args.max_total_tokens,
+            prior_invalid_requests=args.prior_invalid_requests,
         ),
         encoding="utf-8",
     )
     args.manifest.parent.mkdir(parents=True, exist_ok=True)
+    payload = manifest_payload(
+        result, model=args.model,
+        prior_invalid_requests=args.prior_invalid_requests,
+    )
+    manifest_issues = validate_manifest_payload(payload, items)
+    if manifest_issues:
+        raise ValueError("invalid metadata-probe manifest: " + "; ".join(manifest_issues))
     args.manifest.write_text(
-        json.dumps(manifest_payload(result, model=args.model), indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     print(f"+ wrote {args.report}")
     print(f"+ wrote {args.manifest}")

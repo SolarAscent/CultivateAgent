@@ -158,6 +158,9 @@ python scripts/ingest_europe_pmc_jats.py --max-items 9
 # Before any new Zotero acquisition, derive the corpus-deduplicated queue. Use
 # only the actionable output; conflicts remain held for human/version review:
 python scripts/deduplicate_zotero_acquisition.py
+# Discover license-verifiable OA candidates without downloading full text.
+# The audit is request-bounded and resumes from local DOI/source checkpoints:
+python scripts/audit_zotero_oa.py --max-requests 410
 # Reproduce the P1 PDF table off-ramp audit (counts/hashes only):
 python scripts/audit_bovine_pdf_tables.py --max-items 14
 

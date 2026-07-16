@@ -3774,6 +3774,60 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 55 (Codex) — resumable OA discovery for actionable Zotero records
+
+Date: 2026-07-16
+Branch: `codex/zotero-oa-audit`
+
+## Decision And Boundary
+
+- Audited all 212 corpus-deduplicated Zotero candidates with Europe PMC and
+  Crossref metadata. OpenAlex was excluded because its current API requires a
+  key; no LLM or paid provider was needed.
+- Metadata produces acquisition leads only. Crossref CC fields do not prove the
+  linked file's license, and Europe PMC hits still require the existing JATS
+  DOI, in-document license, and structure checks before corpus entry.
+- This work did not touch Claude-owned normalization, synthesis, or tier-1
+  audit files and did not download or adjudicate scientific evidence.
+
+## Implementation And Result
+
+- Added a zero-retry audit with a global request cap, timeout, rate delay,
+  atomic DOI/source checkpoints, bounded workers, exact DOI checks, and
+  markup-aware title checks. A 4-worker attempt hit Crossref HTTP 429 and
+  stopped cleanly; the resumed 2-worker run reused 225 checkpoints and made
+  185 successful requests. The final replay reused all 410 checkpoints with
+  zero network requests.
+- Results: 75 `epmc_jats_candidate`, 34 `crossref_cc_vor_candidate`, 96
+  `metadata_only_license_unverified`, and 7 `missing_doi`. Eighteen initial
+  title warnings were all deterministic HTML/encoding/truncation variants;
+  markup decoding plus a 0.90 similarity guard resolved them, leaving zero
+  identity conflicts.
+- The original actionable TSV remained unchanged. The committed audit has 212
+  rows and SHA-256
+  `4a2eb46365f3fb75721456a3012aff1ee003901090f0ff0a4d9ddef67b5d6255`.
+
+## Verification
+
+- OA-audit focused tests: 6 passed, including hard-budget stop, atomic resume,
+  zero-call replay, DOI mismatch rejection, true title mismatch quarantine, and
+  harmless HTML/encoding title variants.
+- Zero-network replay reproduced the 212-row TSV byte-for-byte and reused
+  410/410 source checkpoints.
+- Non-loopback suite: 166 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected. CLI smoke passed; the six-round optimization demo
+  increased synthetic hypervolume from 7.050 to 16.464.
+- Artifact count/hash validation, `git diff --check`, and the repository
+  API-key pattern scan passed.
+
+## Next
+
+Run a bounded canary of the existing Europe PMC fullTextXML verifier on the 75
+JATS candidates, then promote only source-verified bovine primary papers into
+the canonical manifest/review flow.
+
+---
+
 # Session 54 (Codex) — canonical-corpus deduplication of Zotero acquisitions
 
 Date: 2026-07-16

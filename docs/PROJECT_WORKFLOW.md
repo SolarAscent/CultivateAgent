@@ -750,6 +750,11 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   212 actionable records, 23 exclusions (22 canonical DOI duplicates and one
   DOI-less queue duplicate), and one held title/different-DOI version conflict.
   The original model output remains unchanged.
+- The 212 actionable records now have a resumable Europe PMC/Crossref metadata
+  audit: 75 Europe PMC JATS candidates, 34 additional Crossref CC-VOR
+  candidates, 96 license-unverified metadata records, and 7 DOI-less records.
+  No full text was downloaded; all 109 candidates still require deterministic
+  source DOI, in-document license, and structure verification.
 - AI-for-science method review exists.
 - DeepSeek compatibility-route vs explicit v4-flash effect-extraction
   comparison exists in `docs/MODEL_COMPARISON_DEEPSEEK.md`; it found the
@@ -790,6 +795,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | DeepSeek quantitative-block delegation | `FAIL`; independent silver recall 10/13 (0.7692) after prior 10/12 (0.8333) | Task closed for this prompt/model; retain deterministic prefilter and route review to a stronger model |
 | DeepSeek metadata-linkage delegation | `FAIL`; recall 0.50 in all 3 repeats, precision 1.00, Jaccard 1.00 | Stable under-selection missed 3/6 same-domain cross-paper mismatches; do not delegate or auto-correct metadata |
 | Zotero acquisition deduplication | `PASS`; 236 = 212 actionable + 23 excluded + 1 conflict | Acquire only from the actionable TSV; conflict is held for version review |
+| Zotero OA discovery audit | `PASS`; 212 = 75 EPMC JATS + 34 Crossref CC-VOR + 96 unverified + 7 no DOI | The 109 OA/license candidates are leads only; source-level verification is still required |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
 
@@ -849,8 +855,11 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    table-formatted group statistics, and more notation variants only when all
    required values are explicitly quoted and human numeric review remains in the
    loop.
-8. `[REVIEW]` Decide which variables can enter S5 search-space design.
-9. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
+8. `[AI]` Run the existing Europe PMC JATS identity/license/structure verifier
+   on the 75 EPMC candidates as a bounded acquisition canary before attempting
+   Crossref-linked sources.
+9. `[REVIEW]` Decide which variables can enter S5 search-space design.
+10. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 
 ## 9. AI Handoff Protocol
 

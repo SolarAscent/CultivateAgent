@@ -329,6 +329,10 @@ Checklist：
 - [x] `[AI]` 将通过身份/许可验证的 Zotero 来源 R048-R051 纳入正式候选语料和
   H034-H037 队列。精确 metadata/全文均经过哈希检查；4/4 有 locator 且可直接
   operator routing，但未赋予任何 evidence decision。
+- [x] `[AI]` 按固定 bovine satellite-cell/myoblast expansion scope 复核全部
+  7 条来源验证的直接培养基 Europe PMC canary：5 条作为 open core-context
+  候选进入 R052-R056/H038-H042，2 条 embryonic/mesenchymal stem-cell 研究因
+  细胞谱系错误排除；所有裁决绑定来源与段落哈希，不代表证据批准。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、
   source record IDs 或 paper IDs 精确选择 paper set。
 - [x] `[AI]` 把全 operator provider-call failure 视为抽取失败；当所有
@@ -684,16 +688,16 @@ Gate：论文 claims 可追溯到证据和结果。
 ### 8.2 已完成的文献和计划工作
 
 - 第一阶段 wet-lab-facing target 已记录。
-- Bovine manifest 有 51 条记录。
-- 可执行 Gate 1 审计只统计设计纳入记录：39 篇同行评审来源、18 篇综述、21 篇
-  原始研究、17 篇 bovine primary、21 篇含剂量的 primary，以及 8 篇 bovine
-  serum-free primary。六项数量门槛和必需 metadata 均通过；但 18 条 P1
+- Bovine manifest 有 56 条记录。
+- 可执行 Gate 1 审计只统计设计纳入记录：44 篇同行评审来源、18 篇综述、26 篇
+  原始研究、22 篇 bovine primary、26 篇含剂量的 primary，以及 9 篇 bovine
+  serum-free primary。六项数量门槛和必需 metadata 均通过；但 23 条 P1
   core/core-context 中 0 条具有明确 human-verified 状态，因此 Gate 1 仍为
   `FAIL`。
 - R045-R047 分别补充 microbial lysate 血清替代、Pichia 来源重组白蛋白，以及
   无血清条件下 donor variance 的边界明确证据。题名和 DOI 均由 Crossref 加
   PubMed 或出版社记录核对；它们均不视为已裁决证据。
-- Human review queue 有 37 个 open tasks。
+- Human review queue 有 42 个 open tasks。
 - 236 行 Zotero acquisition funnel 已确定性分区为：212 条 actionable、23 条
   exclusion（22 条 canonical DOI duplicate 和 1 条无 DOI 队内重复），以及 1 条
   暂停的同标题/不同 DOI 版本冲突；原始模型输出保持不变。
@@ -705,6 +709,10 @@ Gate：论文 claims 可追溯到证据和结果。
   7 条为直接培养基干预 primary study，3 条为牛细胞扩增背景研究。8/10 含结构化
   表格，3/10 含统计记号单元格；25 张表、996 个单元格和 58 个记号命中都只是
   extraction locator，不是定量证据，也不代表已进入 canonical corpus。
+- 哈希绑定的 scope review 将 7 条 direct-medium canary 中 5 条纳入
+  R052-R056 和 open tasks H038-H042，另 2 条因细胞谱系错误排除。独立
+  acquisition replay 已验证 5/5 的来源哈希和 canonical DOI/PMCID 绑定；这只
+  证明 scope eligibility，不是 evidence adjudication。
 - AI-for-science 方法综述已存在。
 - DeepSeek compatibility route 与显式 `deepseek-v4-flash` 的 effect-extraction
   对比已记录在 `docs/MODEL_COMPARISON_DEEPSEEK.md`；结论是显式 v4-flash run
@@ -728,7 +736,7 @@ Gate：论文 claims 可追溯到证据和结果。
 
 | Gate | 当前结果 | 含义 |
 |---|---|---|
-| Corpus Gate 1 | `FAIL`；6/6 数量检查和 metadata 通过 | 纳入同行评审来源 39/39；P1 core/core-context 人工确认 0/18 |
+| Corpus Gate 1 | `FAIL`；6/6 数量检查和 metadata 通过 | 纳入同行评审来源 44/44；P1 core/core-context 人工确认 0/23 |
 | Proliferation evidence audit | `NO-GO` | 当前 extracted evidence 不能支持湿实验入口 |
 | Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 可跑 section-routed operators；H015-H016 需要 R024 |
 | Gate 2 关键字段覆盖 | `FAIL`：当前 committed live benchmark 为 0/17 applicable concept-paper cells | 返回了 paper IDs，但没有 B-M 关键内容；fixture gold 的 stage、medium type 不可评估 |
@@ -744,6 +752,7 @@ Gate：论文 claims 可追溯到证据和结果。
 | Zotero acquisition 去重 | `PASS`；236 = 212 actionable + 23 excluded + 1 conflict | 只能从 actionable TSV 获取；冲突等待版本人工复核 |
 | Zotero OA 发现审计 | `PASS`；212 = 75 EPMC JATS + 34 Crossref CC-VOR + 96 未验证 + 7 缺 DOI | 109 条 OA/许可候选只是线索，仍需来源级验证 |
 | Europe PMC bovine JATS canary | `PASS`；10/10 来源验证，8/10 有表格，3/10 有统计记号单元格 | 获取路径可用；scope review 与 canonical promotion 仍是独立环节 |
+| Europe PMC bovine scope promotion | `PASS`；7/7 已复核，5 条 open 纳入，2 条错误谱系排除 | 来源/哈希 scope 裁决完成；纳入记录均未获得 evidence approval |
 | 缺失 review-packet source | 2/16 | H015-H016 对应 R024，需要机构访问或人工提供主文全文 |
 | Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
 
@@ -767,6 +776,10 @@ Gate：论文 claims 可追溯到证据和结果。
 - DeepSeek compatibility route 与显式 v4-flash 的对比是质量检查，不是湿实验
   证据；两组输出都是 direction-only，必须经过人工裁决后才可能影响变量选择。
 - 当前 corpus manifest 尚未完整全文抽取。
+- R052-R056 已有来源验证的本地 JATS，但还没有可移植的 canonical
+  `metadata.json`/`fulltext.txt` 或 review packet。历史 acquisition 全量回放还发现
+  既有 R016 本地目录的 metadata DOI 实际属于 R020；在从已验证 R016 来源修复前，
+  不得信任或覆盖该附件。
 - GROBID service 是否可用属于外部条件；已有合法来源的 JATS/Open Access XML
   也可以直接解析。
 - Cost、supplier、food-grade annotations 不完整。
@@ -778,8 +791,8 @@ Gate：论文 claims 可追溯到证据和结果。
 
 ### 8.5 近期下一步
 
-1. `[HUMAN]` 确认或修正 18 条 P1 core/core-context 的 manifest decision，特别
-   检查 R045/R047 的外推限制和新增 H034-H037 的候选边界。
+1. `[HUMAN]` 确认或修正 23 条 P1 core/core-context 的 manifest decision，特别
+   检查 R045/R047 的外推限制和新增 H034-H042 的候选边界。
 2. `[HUMAN]` 用当前 locator packet 和 `data/literature/bovine_adjudication_H001_H014.tsv`
    复核 H001-H014。
 3. `[HUMAN]` 提供 R024 主文全文，或确认 R024 暂时 defer。
@@ -792,8 +805,8 @@ Gate：论文 claims 可追溯到证据和结果。
 7. `[AI]` 继续把 deterministic number-aware extraction 扩展到 confidence
    intervals、表格化 group statistics 和更多 notation variants；前提是所需数值都
    明确出现在 quote 中，并且保留人工数字复核。
-8. `[AI]` 按固定 bovine expansion scope 复核 7 条已验证的直接培养基 canary
-   论文，只把符合范围的候选作为 open、未裁决记录加入 canonical manifest。
+8. `[AI]` 将已验证的 R052-R056 JATS 转成可移植 canonical ingestion artifacts，
+   再生成 extraction-readiness 与哈希绑定的 review packets。
 9. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 10. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 

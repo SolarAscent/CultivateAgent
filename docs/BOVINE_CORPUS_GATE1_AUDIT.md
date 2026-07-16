@@ -11,14 +11,14 @@ explicit human curation status.
 
 | Metric | Value |
 |---|---:|
-| peer_reviewed_sources | 39 |
+| peer_reviewed_sources | 44 |
 | reviews | 18 |
-| primary_papers | 21 |
-| bovine_primary | 17 |
-| dose_primary | 21 |
-| serum_free_bovine_primary | 8 |
-| included_rows | 43 |
-| p1_core_rows | 18 |
+| primary_papers | 26 |
+| bovine_primary | 22 |
+| dose_primary | 26 |
+| serum_free_bovine_primary | 9 |
+| included_rows | 48 |
+| p1_core_rows | 23 |
 | p1_core_human_verified | 0 |
 
 ## Checks
@@ -56,3 +56,8 @@ explicit human curation status.
 - `R049` [human_curation_pending]: fulltext_ingested_for_review_packet
 - `R050` [human_curation_pending]: fulltext_ingested_for_review_packet
 - `R051` [human_curation_pending]: fulltext_ingested_for_review_packet
+- `R052` [human_curation_pending]: source_verified_scope_review_open
+- `R053` [human_curation_pending]: source_verified_scope_review_open
+- `R054` [human_curation_pending]: source_verified_scope_review_open
+- `R055` [human_curation_pending]: source_verified_scope_review_open
+- `R056` [human_curation_pending]: source_verified_scope_review_open

@@ -352,6 +352,11 @@ Checklist:
   the canonical candidate corpus and H034-H037 queue. Exact metadata/full text
   are hash-checked; 4/4 have locators and operator-ready routing, with no
   evidence decision assigned.
+- [x] `[AI]` Review all 7 source-verified direct-medium Europe PMC canaries
+  against the fixed bovine satellite-cell/myoblast expansion scope. Promote
+  5 as open core-context candidates R052-R056/H038-H042 and exclude 2
+  embryonic/mesenchymal stem-cell studies; bind every decision to source and
+  paragraph hashes without approving evidence.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,
   source record IDs, or paper IDs select an explicit paper set.
 - [x] `[AI]` Treat total provider-call failure as extraction failure; do not
@@ -734,18 +739,18 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 ### 8.2 Completed Literature And Planning Work
 
 - First wet-lab-facing target is documented.
-- Bovine manifest contains 51 records.
-- The executable Gate 1 audit counts only design-included records: 39
-  peer-reviewed records, 18 reviews, 21 primary papers, 17 bovine primary
-  papers, 21 dose-bearing primary papers, and 8 serum-free bovine primary
+- Bovine manifest contains 56 records.
+- The executable Gate 1 audit counts only design-included records: 44
+  peer-reviewed records, 18 reviews, 26 primary papers, 22 bovine primary
+  papers, 26 dose-bearing primary papers, and 9 serum-free bovine primary
   papers. All six numerical thresholds and required metadata pass. Gate 1
-  remains `FAIL` because 0/18 P1 core/core-context records have an explicit
+  remains `FAIL` because 0/23 P1 core/core-context records have an explicit
   human-verified status.
 - R045-R047 add directly bounded evidence on microbial lysate serum replacement,
   Pichia-derived recombinant albumin, and donor variance under serum-free
   culture. Titles and DOI metadata were checked against Crossref plus PubMed or
   publisher records; none is treated as adjudicated evidence.
-- Human review queue contains 37 open tasks.
+- Human review queue contains 42 open tasks.
 - The 236-row Zotero acquisition funnel is now deterministically partitioned:
   212 actionable records, 23 exclusions (22 canonical DOI duplicates and one
   DOI-less queue duplicate), and one held title/different-DOI version conflict.
@@ -760,6 +765,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   expansion-context studies. Eight contain structured tables; three contain
   cells with statistical notation. The 25 tables, 996 cells, and 58 notation
   hits are extraction locators only, not quantitative evidence or corpus entry.
+- Hash-bound scope review promoted 5/7 direct-medium canaries into R052-R056
+  and open tasks H038-H042; 2/7 were excluded for wrong cell lineage. The
+  dedicated acquisition replay verified all 5 source hashes and canonical
+  DOI/PMCID bindings. This is scope eligibility, not evidence adjudication.
 - AI-for-science method review exists.
 - DeepSeek compatibility-route vs explicit v4-flash effect-extraction
   comparison exists in `docs/MODEL_COMPARISON_DEEPSEEK.md`; it found the
@@ -785,7 +794,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 | Gate | Current result | Meaning |
 |---|---|---|
-| Corpus Gate 1 | `FAIL`; 6/6 numerical checks and metadata pass | 39/39 included peer-reviewed sources; 0/18 P1 core/core-context rows are human verified |
+| Corpus Gate 1 | `FAIL`; 6/6 numerical checks and metadata pass | 44/44 included peer-reviewed sources; 0/23 P1 core/core-context rows are human verified |
 | Proliferation evidence audit | `NO-GO` | Current extracted evidence cannot justify wet-lab entry |
 | Extraction readiness | 14 direct-ready, 0 fallback-ready, 2 missing | H001-H014 are ready for section-routed operators; H015-H016 need R024 |
 | Gate 2 critical-field coverage | `FAIL`: 0/17 applicable concept-paper cells in the committed live benchmark | Paper IDs were returned, but no B-M critical content was extracted; stage and medium type fixture gold are not evaluable |
@@ -802,6 +811,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | Zotero acquisition deduplication | `PASS`; 236 = 212 actionable + 23 excluded + 1 conflict | Acquire only from the actionable TSV; conflict is held for version review |
 | Zotero OA discovery audit | `PASS`; 212 = 75 EPMC JATS + 34 Crossref CC-VOR + 96 unverified + 7 no DOI | The 109 OA/license candidates are leads only; source-level verification is still required |
 | Europe PMC bovine JATS canary | `PASS`; 10/10 source-verified, 8/10 table-bearing, 3/10 with statistical-notation cells | Acquisition path works; scope review and canonical promotion remain separate |
+| Europe PMC bovine scope promotion | `PASS`; 7/7 reviewed, 5 promoted open, 2 wrong-lineage exclusions | Source/hash scope decision is complete; no promoted record is evidence-approved |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
 
@@ -831,6 +841,11 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   quality check, not wet-lab evidence: both outputs were direction-only and need
   human adjudication before any variable is promoted.
 - Current corpus manifest is not yet fully extracted.
+- R052-R056 have verified local JATS assets but not yet portable canonical
+  `metadata.json`/`fulltext.txt` artifacts or review packets. A full historical
+  acquisition replay also exposed a pre-existing R016 local directory whose
+  metadata DOI belongs to R020; do not trust or overwrite that local attachment
+  until it is repaired from the verified R016 source.
 - GROBID service availability is external; legally obtained JATS/Open Access XML
   can also be parsed when available.
 - Cost, supplier, and food-grade annotations are incomplete.
@@ -844,8 +859,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 
 ### 8.5 Immediate Next Actions
 
-1. `[HUMAN]` Confirm or correct the 18 P1 core/core-context manifest decisions,
-   including R045/R047 transfer limits and the new H034-H037 candidate bounds.
+1. `[HUMAN]` Confirm or correct the 23 P1 core/core-context manifest decisions,
+   including R045/R047 transfer limits and the new H034-H042 candidate bounds.
 2. `[HUMAN]` Adjudicate H001-H014 using the current
    locator packet and `data/literature/bovine_adjudication_H001_H014.tsv`.
 3. `[HUMAN]` Provide R024 main full text, or confirm it should remain deferred.
@@ -861,9 +876,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    table-formatted group statistics, and more notation variants only when all
    required values are explicitly quoted and human numeric review remains in the
    loop.
-8. `[AI]` Review the 7 source-verified direct-medium canary papers against the
-   fixed bovine expansion scope, then promote only valid candidates into the
-   canonical manifest as open, unadjudicated review items.
+8. `[AI]` Convert verified R052-R056 JATS into portable canonical ingestion
+   artifacts, then generate extraction-readiness and hash-bound review packets.
 9. `[REVIEW]` Decide which variables can enter S5 search-space design.
 10. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 

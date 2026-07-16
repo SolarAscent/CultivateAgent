@@ -118,7 +118,7 @@ def test_non_research_article_fails_primary_canary_without_checkpoint(tmp_path):
     assert not list(tmp_path.glob("*.xml"))
 
 
-def test_committed_canary_is_audited_corpus_new_and_source_hashed():
+def test_committed_canary_is_audited_scope_bound_and_source_hashed():
     root = Path(__file__).parents[1]
 
     def read(name):
@@ -128,11 +128,21 @@ def test_committed_canary_is_audited_corpus_new_and_source_hashed():
     canary = read("data/literature/zotero_epmc_bovine_canary.tsv")
     audit = read("data/literature/zotero_oa_audit.tsv")
     verification = read("data/literature/zotero_epmc_bovine_canary_verification.tsv")
+    scope_review = read("data/literature/zotero_epmc_bovine_scope_review.tsv")
     corpus = read("data/literature/bovine_corpus_manifest.tsv")
     assert len(validate_canary_manifest(canary, audit)) == 10
     assert sum(row["scope_role"] == "direct_medium_primary" for row in canary) == 7
     corpus_dois = {normalize_doi(row["doi"]) for row in corpus if row["doi"] != "NONE"}
-    assert not {normalize_doi(row["doi"]) for row in canary} & corpus_dois
+    canary_by_id = {row["canary_id"]: row for row in canary}
+    promoted_dois = {
+        normalize_doi(canary_by_id[row["canary_id"]]["doi"])
+        for row in scope_review if row["decision"].startswith("promote_")
+    }
+    held_dois = {
+        normalize_doi(row["doi"]) for row in canary
+    } - promoted_dois
+    assert promoted_dois <= corpus_dois
+    assert held_dois.isdisjoint(corpus_dois)
     assert [row["canary_id"] for row in verification] == [row["canary_id"] for row in canary]
     assert all(row["status"] == "verified" for row in verification)
     assert all(row["article_type"] == "research-article" for row in verification)

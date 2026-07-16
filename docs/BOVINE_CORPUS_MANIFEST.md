@@ -48,9 +48,9 @@ First wet-lab-facing target:
 
 ## Manifest Summary
 
-The manifest contains 51 records:
+The manifest contains 56 records:
 
-- 12 core records and 6 core-context records relevant to the first bovine
+- 12 core records and 11 core-context records relevant to the first bovine
   expansion-medium scope.
 - 21 context records covering reviews, safety, cost, systems biology, or
   optimization methods.
@@ -90,10 +90,14 @@ The highest-priority direct wet-lab sources are:
 - Ock et al. 2023, serum and basal-medium effects under oxygen context.
 - Lee et al. 2025, insulin effects in bovine muscle satellite cells under
   reduced-serum conditions.
+- Five source-verified Europe PMC additions, R052-R056: drone-pupae extract,
+  L-ascorbic acid, glucose/lysine, Ecklonia polysaccharides, and conditioned
+  serum-free medium. All retain explicit serum/composition/genotype/source-cell
+  transfer limits and remain open for human evidence review.
 
 ## Human Review Queue
 
-The human review queue contains 37 open review tasks. It is intentionally
+The human review queue contains 42 open review tasks. It is intentionally
 smaller than the manifest: it focuses on decision-critical evidence that could
 change the first wet-lab batch.
 
@@ -118,11 +122,11 @@ Run `python scripts/audit_bovine_corpus.py --require-pass`. The generated
 [`BOVINE_CORPUS_GATE1_AUDIT.md`](BOVINE_CORPUS_GATE1_AUDIT.md) and
 `data/literature/bovine_corpus_gate1_issues.tsv` currently show:
 
-- 39 design-included peer-reviewed records, 18 reviews, 21 primary papers, 17
-  bovine primary papers, 21 dose-bearing primary papers, and 8 serum-free
+- 44 design-included peer-reviewed records, 18 reviews, 26 primary papers, 22
+  bovine primary papers, 26 dose-bearing primary papers, and 9 serum-free
   bovine primary papers; all six numerical thresholds pass;
 - required included-record metadata passes after DOI repair; and
-- 0/18 P1 core/core-context rows have an explicit human-verified status.
+- 0/23 P1 core/core-context rows have an explicit human-verified status.
 
 The audit deliberately prevents numerical coverage from being mistaken for a
 curated, approved corpus.
@@ -166,6 +170,12 @@ are reproducibly rebuilt by `scripts/ingest_verified_sources.py`.
 [`EXTRACTION_READINESS_H034_H037.md`](EXTRACTION_READINESS_H034_H037.md) report
 4/4 hash-bound locator-ready and 4/4 operator-ready. All four decisions remain
 open; these artifacts do not establish quantitative support.
+
+The Europe PMC scope review covers all seven source-verified direct-medium
+canaries. Five are now canonical open candidates R052-R056/H038-H042; two were
+excluded because the experimental cells were embryonic and/or mesenchymal stem
+cells rather than bovine satellite cells/myoblasts. The decision, source, and
+paragraph hashes are reproducible with `python scripts/validate_epmc_scope_review.py`.
 
 The Glycyrrhiza/licochalcone paper (`10.1038/s41598-025-98386-1`) was screened
 but not added: its bovine and porcine effects were negligible and its positive

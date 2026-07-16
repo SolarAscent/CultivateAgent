@@ -3774,6 +3774,68 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 57 (Codex) — hash-bound Europe PMC scope promotion
+
+Date: 2026-07-16
+Branch: `codex/epmc-scope-promotion`
+
+## Decision And Boundary
+
+- Reviewed all seven source-verified `direct_medium_primary` canaries against
+  the fixed first-round bovine satellite-cell/myoblast expansion scope. Each
+  decision resolves hash-bound paragraph locators for experimental cell type,
+  medium intervention, and culture outcome.
+- Promoted EBC01/EBC04-EBC07 as open `core_context` candidates R052-R056 with
+  review tasks H038-H042. They cover drone-pupae extract, L-ascorbic acid,
+  glucose/lysine, Ecklonia polysaccharides, and conditioned serum-free medium.
+  Serum, composition, genotype, source-cell, cytotoxicity, or surface-context
+  limits remain explicit.
+- Excluded EBC02 and EBC03 because the experimental systems use bovine
+  embryonic stem aggregates and mesenchymal stem cells rather than the target
+  satellite-cell/myoblast lineage. No decision in this session approves
+  evidence or supplies a wet-lab variable.
+
+## Implementation And Live Result
+
+- Added a deterministic scope-review validator that requires exact coverage of
+  the seven direct-medium canaries, verified source hashes, three complete
+  locator/hash groups, non-colliding canonical IDs, open review tasks, and exact
+  corpus/source/acquisition DOI and PMCID bindings. Scope-excluded DOIs are
+  prohibited from both the canonical corpus and JATS source manifest.
+- A dedicated R052-R056 acquisition replay reused local JATS checkpoints and
+  verified 5/5 sources. Together they contain 20 structured tables, 845 cells,
+  and 48 statistical-notation candidate cells; these counts remain locators,
+  not transcribed numbers or tier-1 evidence.
+- The full historical replay exposed a pre-existing local R016 directory whose
+  `metadata.json` DOI belongs to R020. The historical nine-row acquisition
+  report was left as its committed baseline, while the new five records use a
+  separate report. R016 must be repaired from its verified source in a focused
+  follow-up; this session did not overwrite ambiguous local assets.
+- Europe PMC local-asset validation now permits a legacy paper-directory ID
+  only after metadata title and DOI both match the expected canonical record.
+  DOI/title disagreement still fails before any source is trusted.
+
+## Verification
+
+- Scope validation passes: 7/7 decisions, 5 promotions, 2 exclusions, exact
+  acquisition/canonical bindings, and regenerated hash-bearing report.
+- Full non-loopback suite passes: 179 passed, 2 optional tests skipped, and the
+  known local HTTP/GROBID test deselected. The committed-data test reads the real TSV
+  assets and checks R052-R056, H038-H042, source hashes, open status, and absence
+  of the two excluded DOIs.
+- Gate 1 numerical, metadata, and identifier checks pass; overall status remains
+  `FAIL` solely because 0/23 P1 core/core-context records are human verified.
+- CLI smoke passes, and the six-round synthetic optimization demo increases
+  hypervolume from 7.050 to 16.464.
+
+## Next
+
+Convert R052-R056 verified JATS into portable canonical `metadata.json` and
+`fulltext.txt` artifacts, then generate extraction-readiness and hash-bound
+review packets without touching the held quantitative dual-review pilot.
+
+---
+
 # Session 56 (Codex) — source-verified bovine Europe PMC canary
 
 Date: 2026-07-16

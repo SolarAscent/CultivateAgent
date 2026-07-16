@@ -226,20 +226,10 @@ def acquire_europe_pmc_jats(
     assets_path = paper_dir / "assets.json"
     assets = json.loads(assets_path.read_text(encoding="utf-8")) if assets_path.exists() else {}
     allowed_ids = {None, expected_paper_id, expected_record_id}
-    if expected_paper_id and assets.get("paper_id") not in allowed_ids:
-        raise EuropePMCError(
-            f"assets paper_id mismatch: expected {expected_paper_id}, "
-            f"found {assets['paper_id']}"
-        )
     metadata_path = paper_dir / "metadata.json"
     metadata = None
     if metadata_path.exists():
         metadata = PaperMetadata.model_validate_json(metadata_path.read_text(encoding="utf-8"))
-        if expected_paper_id and metadata.ref.paper_id not in allowed_ids:
-            raise EuropePMCError(
-                f"metadata paper_id mismatch: expected {expected_paper_id}, "
-                f"found {metadata.ref.paper_id}"
-            )
         if expected_paper_id and slugify(metadata.ref.title) != expected_paper_id:
             raise EuropePMCError(
                 f"metadata title mismatch for {expected_paper_id}: {metadata.ref.title!r}"
@@ -248,6 +238,12 @@ def acquire_europe_pmc_jats(
             raise EuropePMCError(
                 f"metadata DOI mismatch: expected {acquisition.doi}, found {metadata.ref.doi}"
             )
+        allowed_ids.add(metadata.ref.paper_id)
+    if expected_paper_id and assets.get("paper_id") not in allowed_ids:
+        raise EuropePMCError(
+            f"assets paper_id mismatch: expected {expected_paper_id}, "
+            f"found {assets['paper_id']}"
+        )
 
     if status == "downloaded":
         _atomic_write(xml_path, acquisition.xml_bytes)

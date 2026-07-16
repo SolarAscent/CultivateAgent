@@ -114,7 +114,7 @@ def test_acquire_rejects_jats_title_or_existing_metadata_identity_mismatch(tmp_p
         "ref": {"paper_id": "other-paper", "title": "Other Paper"},
         "status": {},
     }))
-    with pytest.raises(EuropePMCError, match="metadata paper_id mismatch"):
+    with pytest.raises(EuropePMCError, match="metadata title mismatch"):
         acquire_europe_pmc_jats(
             paper_dir,
             pmcid="PMC123",
@@ -145,6 +145,29 @@ def test_acquire_accepts_record_id_as_existing_local_paper_id(tmp_path):
         fetcher=lambda *_: _jats(),
     )
     assert json.loads((paper_dir / "assets.json").read_text())["paper_id"] == "R001"
+
+
+def test_acquire_accepts_legacy_paper_id_only_with_matching_metadata(tmp_path):
+    paper_dir = tmp_path / "example-paper"
+    paper_dir.mkdir()
+    (paper_dir / "assets.json").write_text(json.dumps({"paper_id": "legacy-bibtex-key"}))
+    (paper_dir / "metadata.json").write_text(json.dumps({
+        "ref": {
+            "paper_id": "legacy-bibtex-key",
+            "title": "Example Paper",
+            "doi": "10.1234/example",
+        },
+        "status": {},
+    }))
+    acquire_europe_pmc_jats(
+        paper_dir,
+        pmcid="PMC123",
+        expected_doi="10.1234/example",
+        expected_paper_id="example-paper",
+        expected_record_id="R001",
+        fetcher=lambda *_: _jats(),
+    )
+    assert json.loads((paper_dir / "assets.json").read_text())["paper_id"] == "legacy-bibtex-key"
 
 
 def test_existing_mismatched_xml_fails_without_overwrite(tmp_path):

@@ -17,6 +17,7 @@ from .europe_pmc import (
     fetch_europe_pmc_jats,
     inspect_europe_pmc_jats,
 )
+from .jats_materialize import JATSMaterialization, materialize_verified_jats
 from .pdf_table_audit import (
     PDFTableAudit,
     PDFTableAuditError,
@@ -37,6 +38,7 @@ __all__ = [
     "GrobidError", "grobid_is_alive", "process_fulltext_document",
     "write_fulltext_tei", "structured_paper_from_grobid_pdf",
     "EUROPE_PMC_REST", "EuropePMCError", "JATSAcquisition",
+    "JATSMaterialization", "materialize_verified_jats",
     "inspect_europe_pmc_jats", "fetch_europe_pmc_jats", "acquire_europe_pmc_jats",
     "TableStrategyAudit", "PDFTableAudit", "PDFTableAuditError",
     "is_stat_candidate", "audit_pdf_tables",

@@ -191,6 +191,12 @@ python scripts/ingest_verified_sources.py \
 cultivate extraction-readiness --ids H034-H037 \
   --out docs/EXTRACTION_READINESS_H034_H037.md \
   --tsv data/literature/bovine_extraction_readiness_H034_H037.tsv
+# Rebuild R052-R056 metadata/plain text from source-verified local JATS, then
+# reproduce their readiness report:
+python scripts/materialize_verified_jats.py
+cultivate extraction-readiness --ids H038-H042 \
+  --out docs/EXTRACTION_READINESS_H038_H042.md \
+  --tsv data/literature/bovine_extraction_readiness_H038_H042.tsv
 # For a controlled live pilot, target review IDs/source IDs instead of the whole tier:
 cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
 # If every operator fails at the provider-call layer, the command exits nonzero
@@ -213,6 +219,8 @@ cultivate review-packet --ids H001-H016 --out docs/HUMAN_REVIEW_PACKET_H001_H016
 cultivate review-packet --ids H031-H033 --out docs/HUMAN_REVIEW_PACKET_H031_H033.md
 # R048-R051 likewise remain open human-review candidates:
 cultivate review-packet --ids H034-H037 --out docs/HUMAN_REVIEW_PACKET_H034_H037.md
+# R052-R056 are source-hash-bound JATS candidates; all decisions remain open:
+cultivate review-packet --ids H038-H042 --out docs/HUMAN_REVIEW_PACKET_H038_H042.md
 # Create and check the human-fillable adjudication worksheet for ready tasks:
 cultivate adjudication-template --ids H001-H014 --out data/literature/bovine_adjudication_H001_H014.tsv
 cultivate adjudication-validate --worksheet data/literature/bovine_adjudication_H001_H014.tsv

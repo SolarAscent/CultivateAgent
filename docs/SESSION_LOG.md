@@ -3774,6 +3774,54 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 60 (Codex) — portable R052-R056 JATS review path
+
+Date: 2026-07-16
+Branch: `codex/jats-portable-review`
+
+## Decision And Boundary
+
+- Selected the primary evidence-path blocker after holding DeepSeek page routing:
+  R052/R056 had verified JATS but no canonical metadata/plain text, while
+  R053-R055 depended on local PDF-import side effects. A single verified-JATS
+  path is required before extraction or human navigation can be reproduced.
+- This task materializes source text and locators only. It does not run an LLM,
+  transcribe table numbers, adjudicate support, or alter H038-H042 open status.
+
+## Implementation And Live Result
+
+- Added a two-phase offline materializer. Before any write, the whole batch must
+  agree across canonical corpus, JATS source manifest, and acquisition report on
+  DOI, paper ID, PMCID, license, source SHA-256, title slug, and table/cell counts.
+  Missing XML fails locally and cannot trigger a network request.
+- Deterministic JATS parsing now writes canonical `metadata.json`, `fulltext.txt`,
+  and provenance fields in `assets.json`. Existing PDFs may remain local but are
+  not required. A hash-only TSV records 5 source hashes, generated full-text
+  hashes, character counts, section/table/figure counts, and local-PDF presence.
+- R052-R056 materialized successfully: 242,024 total plain-text characters across
+  107 sections, 20 tables, and 30 figures. The report replays byte-for-byte with
+  SHA-256 `7be94cf752f8eb6446bbe09bc20bcd94b842a9833faffca52219d55abd7136af`.
+- H038-H042 readiness is 5/5 directly operator-ready; the human review packet is
+  5/5 locator-ready. Every packet source hash exactly matches the materialization
+  report. All five decisions remain open.
+
+## Verification
+
+- Tests cover successful materialization, hash drift, missing-local-source
+  refusal, whole-batch validation before writes, and committed report/packet/
+  readiness bindings. Generated readiness and review artifacts replay
+  byte-for-byte.
+- Full non-loopback regression passes: 190 passed, 2 optional tests skipped,
+  and the known local HTTP/GROBID test deselected. CLI smoke passes; the
+  six-round synthetic optimization demo raises hypervolume 7.050 to 16.464.
+
+## Next
+
+Repair the quarantined R016 local-source mismatch using its verified JATS identity
+without overwriting ambiguous user assets, then replay the historical JATS path.
+
+---
+
 # Session 59 (Codex) — unlabeled DeepSeek page shadow and utility hold
 
 Date: 2026-07-16

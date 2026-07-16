@@ -357,6 +357,9 @@ Checklist:
   5 as open core-context candidates R052-R056/H038-H042 and exclude 2
   embryonic/mesenchymal stem-cell studies; bind every decision to source and
   paragraph hashes without approving evidence.
+- [x] `[AI]` Materialize R052-R056 canonical metadata/plain text from verified
+  local JATS with DOI/PMCID/license/source-hash checks. H038-H042 are 5/5
+  directly operator-ready and 5/5 hash-bound locator-ready; decisions remain open.
 - [x] `[AI]` Use `cultivate extract --ids ...` for live pilots so H review IDs,
   source record IDs, or paper IDs select an explicit paper set.
 - [x] `[AI]` Treat total provider-call failure as extraction failure; do not
@@ -387,6 +390,11 @@ cultivate extraction-readiness --ids H034-H037 \
   --out docs/EXTRACTION_READINESS_H034_H037.md \
   --tsv data/literature/bovine_extraction_readiness_H034_H037.tsv
 cultivate review-packet --ids H034-H037 --out docs/HUMAN_REVIEW_PACKET_H034_H037.md
+python scripts/materialize_verified_jats.py
+cultivate extraction-readiness --ids H038-H042 \
+  --out docs/EXTRACTION_READINESS_H038_H042.md \
+  --tsv data/literature/bovine_extraction_readiness_H038_H042.tsv
+cultivate review-packet --ids H038-H042 --out docs/HUMAN_REVIEW_PACKET_H038_H042.md
 cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate extract --ids H001-H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate export
@@ -769,6 +777,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   and open tasks H038-H042; 2/7 were excluded for wrong cell lineage. The
   dedicated acquisition replay verified all 5 source hashes and canonical
   DOI/PMCID bindings. This is scope eligibility, not evidence adjudication.
+- R052-R056 now have reproducible canonical metadata and plain text generated
+  from the verified JATS hashes. H038-H042 are 5/5 directly operator-ready and
+  5/5 locator-ready; the packet contains source hashes and no evidence approval.
 - AI-for-science method review exists.
 - DeepSeek compatibility-route vs explicit v4-flash effect-extraction
   comparison exists in `docs/MODEL_COMPARISON_DEEPSEEK.md`; it found the
@@ -805,6 +816,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | New-source review packet | 3/3 with SHA-256-bound local locators | H031-H033 cover R045-R047; all decisions remain open |
 | New-source extraction readiness | 3/3 direct-ready | R046 uses Europe PMC JATS; R045/R047 route from lawful local/open PDFs |
 | Zotero candidate packet/readiness | 4/4 locator-ready and direct-ready | H034-H037 cover R048-R051; all decisions remain open |
+| Europe PMC promoted-source packet/readiness | 5/5 locator-ready and direct-ready | H038-H042 cover R052-R056; deterministic JATS materialization is reproducible and all decisions remain open |
 | P1 PDF structured-table off-ramp | `FAIL`; 10 identity-matched PDFs, 0 statistical line-table cells | 116 layout-text hits are locators only; use a bounded caption/prose and figure pilot |
 | DeepSeek quantitative-block delegation | `FAIL`; independent silver recall 10/13 (0.7692) after prior 10/12 (0.8333) | Task closed for this prompt/model; retain deterministic prefilter and route review to a stronger model |
 | DeepSeek metadata-linkage delegation | `FAIL`; recall 0.50 in all 3 repeats, precision 1.00, Jaccard 1.00 | Stable under-selection missed 3/6 same-domain cross-paper mismatches; do not delegate or auto-correct metadata |
@@ -842,9 +854,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   quality check, not wet-lab evidence: both outputs were direction-only and need
   human adjudication before any variable is promoted.
 - Current corpus manifest is not yet fully extracted.
-- R052-R056 have verified local JATS assets but not yet portable canonical
-  `metadata.json`/`fulltext.txt` artifacts or review packets. A full historical
-  acquisition replay also exposed a pre-existing R016 local directory whose
+- A full historical acquisition replay exposed a pre-existing R016 local directory whose
   metadata DOI belongs to R020; do not trust or overwrite that local attachment
   until it is repaired from the verified R016 source.
 - GROBID service availability is external; legally obtained JATS/Open Access XML
@@ -877,8 +887,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    table-formatted group statistics, and more notation variants only when all
    required values are explicitly quoted and human numeric review remains in the
    loop.
-8. `[AI]` Convert verified R052-R056 JATS into portable canonical ingestion
-   artifacts, then generate extraction-readiness and hash-bound review packets.
+8. `[AI]` Repair the quarantined R016 local source mismatch from its verified
+   JATS identity, then rerun the historical acquisition/materialization path.
 9. `[REVIEW]` Decide which variables can enter S5 search-space design.
 10. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 

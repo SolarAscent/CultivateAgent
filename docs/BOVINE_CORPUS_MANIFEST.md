@@ -176,6 +176,12 @@ canaries. Five are now canonical open candidates R052-R056/H038-H042; two were
 excluded because the experimental cells were embryonic and/or mesenchymal stem
 cells rather than bovine satellite cells/myoblasts. The decision, source, and
 paragraph hashes are reproducible with `python scripts/validate_epmc_scope_review.py`.
+R052-R056 are now reproducibly materialized from those verified JATS sources.
+[`EXTRACTION_READINESS_H038_H042.md`](EXTRACTION_READINESS_H038_H042.md) reports
+5/5 directly operator-ready, and
+[`HUMAN_REVIEW_PACKET_H038_H042.md`](HUMAN_REVIEW_PACKET_H038_H042.md) reports
+5/5 hash-bound locator-ready. These artifacts improve navigation only; all five
+human decisions remain open.
 
 The Glycyrrhiza/licochalcone paper (`10.1038/s41598-025-98386-1`) was screened
 but not added: its bovine and porcine effects were negligible and its positive

@@ -333,6 +333,9 @@ Checklist：
   7 条来源验证的直接培养基 Europe PMC canary：5 条作为 open core-context
   候选进入 R052-R056/H038-H042，2 条 embryonic/mesenchymal stem-cell 研究因
   细胞谱系错误排除；所有裁决绑定来源与段落哈希，不代表证据批准。
+- [x] `[AI]` 从来源验证的本地 JATS 重建 R052-R056 canonical metadata/plain
+  text，并检查 DOI/PMCID/license/source hash。H038-H042 达到 5/5 direct
+  operator-ready 和 5/5 hash-bound locator-ready；decision 仍全部 open。
 - [x] `[AI]` live pilot 使用 `cultivate extract --ids ...`，让 H review IDs、
   source record IDs 或 paper IDs 精确选择 paper set。
 - [x] `[AI]` 把全 operator provider-call failure 视为抽取失败；当所有
@@ -363,6 +366,11 @@ cultivate extraction-readiness --ids H034-H037 \
   --out docs/EXTRACTION_READINESS_H034_H037.md \
   --tsv data/literature/bovine_extraction_readiness_H034_H037.tsv
 cultivate review-packet --ids H034-H037 --out docs/HUMAN_REVIEW_PACKET_H034_H037.md
+python scripts/materialize_verified_jats.py
+cultivate extraction-readiness --ids H038-H042 \
+  --out docs/EXTRACTION_READINESS_H038_H042.md \
+  --tsv data/literature/bovine_extraction_readiness_H038_H042.tsv
+cultivate review-packet --ids H038-H042 --out docs/HUMAN_REVIEW_PACKET_H038_H042.md
 cultivate extract --ids H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate extract --ids H001-H014 --mode operators --provider openai --model deepseek-v4-flash
 cultivate export
@@ -713,6 +721,9 @@ Gate：论文 claims 可追溯到证据和结果。
   R052-R056 和 open tasks H038-H042，另 2 条因细胞谱系错误排除。独立
   acquisition replay 已验证 5/5 的来源哈希和 canonical DOI/PMCID 绑定；这只
   证明 scope eligibility，不是 evidence adjudication。
+- R052-R056 已可从验证过的 JATS 哈希重复生成 canonical metadata 和 plain
+  text。H038-H042 为 5/5 direct operator-ready、5/5 locator-ready；复核包带
+  source hash，但不代表 evidence approval。
 - AI-for-science 方法综述已存在。
 - DeepSeek compatibility route 与显式 `deepseek-v4-flash` 的 effect-extraction
   对比已记录在 `docs/MODEL_COMPARISON_DEEPSEEK.md`；结论是显式 v4-flash run
@@ -747,6 +758,7 @@ Gate：论文 claims 可追溯到证据和结果。
 | 新来源 review packet | 3/3 有 SHA-256 绑定的本地 locators | H031-H033 对应 R045-R047；decision 全部保持 open |
 | 新来源 extraction readiness | 3/3 direct-ready | R046 使用 Europe PMC JATS；R045/R047 来自合法本地或开放 PDF |
 | Zotero 候选 packet/readiness | 4/4 locator-ready 且 direct-ready | H034-H037 对应 R048-R051；decision 全部保持 open |
+| Europe PMC 纳入来源 packet/readiness | 5/5 locator-ready 且 direct-ready | H038-H042 对应 R052-R056；JATS materialization 可重复，decision 全部保持 open |
 | DeepSeek 定量文本块下放 | `FAIL`；独立 silver recall 10/13（0.7692），此前为 10/12（0.8333） | 当前 prompt/model 的任务关闭；保留确定性预筛，复核转交更强模型 |
 | DeepSeek metadata-linkage 下放 | `FAIL`；3 次 recall 均为 0.50，precision 1.00，Jaccard 1.00 | 稳定漏掉 3/6 个同领域跨论文错配；不得下放或自动修正 metadata |
 | DeepSeek 页级候选定位下放 | `HOLD_AFTER_SHADOW`；gold 与来源独立 holdout 的 3+3 次 recall 均为 1.00，但 R053-R055 shadow 只减少 13.0% 摘要输入 | IDs-only 能力稳定，但相对 5.5% 确定性基线的增量太小，且无标签 shadow recall 未知，因此不接入生产路由 |
@@ -777,9 +789,8 @@ Gate：论文 claims 可追溯到证据和结果。
 - DeepSeek compatibility route 与显式 v4-flash 的对比是质量检查，不是湿实验
   证据；两组输出都是 direction-only，必须经过人工裁决后才可能影响变量选择。
 - 当前 corpus manifest 尚未完整全文抽取。
-- R052-R056 已有来源验证的本地 JATS，但还没有可移植的 canonical
-  `metadata.json`/`fulltext.txt` 或 review packet。历史 acquisition 全量回放还发现
-  既有 R016 本地目录的 metadata DOI 实际属于 R020；在从已验证 R016 来源修复前，
+- 历史 acquisition 全量回放发现既有 R016 本地目录的 metadata DOI 实际属于
+  R020；在从已验证 R016 来源修复前，
   不得信任或覆盖该附件。
 - GROBID service 是否可用属于外部条件；已有合法来源的 JATS/Open Access XML
   也可以直接解析。
@@ -806,8 +817,8 @@ Gate：论文 claims 可追溯到证据和结果。
 7. `[AI]` 继续把 deterministic number-aware extraction 扩展到 confidence
    intervals、表格化 group statistics 和更多 notation variants；前提是所需数值都
    明确出现在 quote 中，并且保留人工数字复核。
-8. `[AI]` 将已验证的 R052-R056 JATS 转成可移植 canonical ingestion artifacts，
-   再生成 extraction-readiness 与哈希绑定的 review packets。
+8. `[AI]` 从验证过的 R016 JATS identity 隔离修复本地 source mismatch，然后
+   重跑历史 acquisition/materialization 路径。
 9. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 10. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 

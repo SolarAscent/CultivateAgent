@@ -724,6 +724,10 @@ Gate：论文 claims 可追溯到证据和结果。
 - R052-R056 已可从验证过的 JATS 哈希重复生成 canonical metadata 和 plain
   text。H038-H042 为 5/5 direct operator-ready、5/5 locator-ready；复核包带
   source hash，但不代表 evidence approval。
+- R016 本地 identity 缺陷已修复。逐文件审计证明 PDF、plain text 和 JATS 原本
+  就是正确来源，受污染的只有 mixed example-BibTeX 生成的 metadata 和 assets。
+  原文件已保存在内容寻址的本地隔离目录，示例条目已纠正；离线 acquisition 回放
+  已通过，且没有改变人工试点绑定的 source hash。
 - AI-for-science 方法综述已存在。
 - DeepSeek compatibility route 与显式 `deepseek-v4-flash` 的 effect-extraction
   对比已记录在 `docs/MODEL_COMPARISON_DEEPSEEK.md`；结论是显式 v4-flash run
@@ -789,9 +793,6 @@ Gate：论文 claims 可追溯到证据和结果。
 - DeepSeek compatibility route 与显式 v4-flash 的对比是质量检查，不是湿实验
   证据；两组输出都是 direction-only，必须经过人工裁决后才可能影响变量选择。
 - 当前 corpus manifest 尚未完整全文抽取。
-- 历史 acquisition 全量回放发现既有 R016 本地目录的 metadata DOI 实际属于
-  R020；在从已验证 R016 来源修复前，
-  不得信任或覆盖该附件。
 - GROBID service 是否可用属于外部条件；已有合法来源的 JATS/Open Access XML
   也可以直接解析。
 - Cost、supplier、food-grade annotations 不完整。
@@ -817,10 +818,8 @@ Gate：论文 claims 可追溯到证据和结果。
 7. `[AI]` 继续把 deterministic number-aware extraction 扩展到 confidence
    intervals、表格化 group statistics 和更多 notation variants；前提是所需数值都
    明确出现在 quote 中，并且保留人工数字复核。
-8. `[AI]` 从验证过的 R016 JATS identity 隔离修复本地 source mismatch，然后
-   重跑历史 acquisition/materialization 路径。
-9. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
-10. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
+8. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
+9. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 
 ## 9. AI 接管协议
 

@@ -3811,6 +3811,8 @@ Branch: `codex/repair-r016-identity`
   2 tables, 128 cells, and the historical JATS hash without network access.
 - Added regression coverage that requires every example-BibTeX title matching
   the canonical corpus to agree on DOI and year.
+- Updated both workflow manuals to remove the resolved R016 blocker and move
+  the repair from immediate actions into completed work.
 
 ## Verification
 

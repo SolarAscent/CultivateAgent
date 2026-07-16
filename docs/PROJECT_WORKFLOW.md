@@ -780,6 +780,12 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 - R052-R056 now have reproducible canonical metadata and plain text generated
   from the verified JATS hashes. H038-H042 are 5/5 directly operator-ready and
   5/5 locator-ready; the packet contains source hashes and no evidence approval.
+- R016's local identity defect is repaired. File-level audit showed that its
+  PDF, plain text, and JATS were already the correct source; only metadata and
+  assets were contaminated by a mixed example-BibTeX entry. The originals are
+  preserved in a content-addressed local quarantine, the example entry is
+  corrected, and offline acquisition replay now passes without changing the
+  human-pilot source hash.
 - AI-for-science method review exists.
 - DeepSeek compatibility-route vs explicit v4-flash effect-extraction
   comparison exists in `docs/MODEL_COMPARISON_DEEPSEEK.md`; it found the
@@ -854,9 +860,6 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   quality check, not wet-lab evidence: both outputs were direction-only and need
   human adjudication before any variable is promoted.
 - Current corpus manifest is not yet fully extracted.
-- A full historical acquisition replay exposed a pre-existing R016 local directory whose
-  metadata DOI belongs to R020; do not trust or overwrite that local attachment
-  until it is repaired from the verified R016 source.
 - GROBID service availability is external; legally obtained JATS/Open Access XML
   can also be parsed when available.
 - Cost, supplier, and food-grade annotations are incomplete.
@@ -887,10 +890,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    table-formatted group statistics, and more notation variants only when all
    required values are explicitly quoted and human numeric review remains in the
    loop.
-8. `[AI]` Repair the quarantined R016 local source mismatch from its verified
-   JATS identity, then rerun the historical acquisition/materialization path.
-9. `[REVIEW]` Decide which variables can enter S5 search-space design.
-10. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
+8. `[REVIEW]` Decide which variables can enter S5 search-space design.
+9. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 
 ## 9. AI Handoff Protocol
 

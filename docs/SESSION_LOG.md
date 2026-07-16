@@ -3774,6 +3774,62 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 54 (Codex) — canonical-corpus deduplication of Zotero acquisitions
+
+Date: 2026-07-16
+Branch: `codex/zotero-acquisition-dedup`
+
+## Decision And Implementation
+
+- Preserved `data/literature/zotero_acquire_list.tsv` as the immutable 236-row
+  DeepSeek funnel output and added a deterministic derivation step instead of
+  rewriting model provenance.
+- DOI normalization handles DOI URLs, prefixes, case, Unicode normalization,
+  and terminal citation punctuation. Title normalization converts Unicode
+  punctuation to separators while preserving Unicode letters during casefold,
+  preventing both em-dash word concatenation and Greek-letter collapse.
+- Automatic exclusion is conservative: canonical DOI matches are removed;
+  title-only matches are removed only when the candidate DOI is missing.
+  Equal titles with different non-empty DOI values are never auto-excluded and
+  are isolated in a conflict table.
+- Added `scripts/deduplicate_zotero_acquisition.py` and three derived artifacts:
+  the actionable queue, exclusion audit, and conflict audit. All outputs retain
+  original fields or source-row/match pointers and are hash-anchored in the
+  generated report.
+
+## Result And Boundary
+
+- Partitioned 236 source rows into 212 actionable acquisitions, 23 deterministic
+  exclusions, and one conflict. The exclusions comprise 22 DOI matches already
+  present in the 51-record canonical corpus and one DOI-less duplicate of a
+  DOI-bearing queue row.
+- The conflict is bioRxiv DOI `10.1101/2023.04.17.537163`, whose exact title
+  matches the final-publication queue row linked to corpus record R035. It is
+  held, not acquired or deleted, until a human checks for unique supplemental
+  material.
+- Only `data/literature/zotero_acquire_actionable.tsv` is authorized as the next
+  acquisition input. Neither the raw list nor the conflict table is an approved
+  download queue.
+
+## Verification
+
+- Deduplication tests: 3 passed, covering DOI URL normalization, Unicode title
+  punctuation, corpus DOI/title matches, DOI-less queue duplicates, and
+  different-DOI conflict preservation.
+- Non-loopback suite: 160 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected. CLI smoke passed; the six-round optimization demo
+  increased synthetic hypervolume from 7.050 to 16.464.
+- Every source row belongs to exactly one output category; actionable DOI
+  overlap with the corpus is zero and actionable DOI/title identities are
+  unique.
+- Repeated generation produced byte-identical TSV and Markdown artifacts with
+  source, corpus, and output SHA-256 values.
+- The raw 236-row source hash remained
+  `64930cd0cad2a79fb0ea4e943e5a1f77d106e4269b3b64dbaff681ed0a3de93c`;
+  repository API-key scanning and `git diff --check` passed.
+
+---
+
 # Session 53 (Codex) — DeepSeek metadata-linkage canary rejects delegation
 
 Date: 2026-07-16

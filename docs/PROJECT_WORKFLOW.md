@@ -746,6 +746,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   culture. Titles and DOI metadata were checked against Crossref plus PubMed or
   publisher records; none is treated as adjudicated evidence.
 - Human review queue contains 37 open tasks.
+- The 236-row Zotero acquisition funnel is now deterministically partitioned:
+  212 actionable records, 23 exclusions (22 canonical DOI duplicates and one
+  DOI-less queue duplicate), and one held title/different-DOI version conflict.
+  The original model output remains unchanged.
 - AI-for-science method review exists.
 - DeepSeek compatibility-route vs explicit v4-flash effect-extraction
   comparison exists in `docs/MODEL_COMPARISON_DEEPSEEK.md`; it found the
@@ -785,6 +789,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | P1 PDF structured-table off-ramp | `FAIL`; 10 identity-matched PDFs, 0 statistical line-table cells | 116 layout-text hits are locators only; use a bounded caption/prose and figure pilot |
 | DeepSeek quantitative-block delegation | `FAIL`; independent silver recall 10/13 (0.7692) after prior 10/12 (0.8333) | Task closed for this prompt/model; retain deterministic prefilter and route review to a stronger model |
 | DeepSeek metadata-linkage delegation | `FAIL`; recall 0.50 in all 3 repeats, precision 1.00, Jaccard 1.00 | Stable under-selection missed 3/6 same-domain cross-paper mismatches; do not delegate or auto-correct metadata |
+| Zotero acquisition deduplication | `PASS`; 236 = 212 actionable + 23 excluded + 1 conflict | Acquire only from the actionable TSV; conflict is held for version review |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
 
@@ -821,6 +826,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   proof.
 - In-silico robustness has not been run on reviewed bovine evidence.
 - No wet-lab design packet or wet-lab result exists.
+- One Zotero acquisition conflict remains: a bioRxiv DOI and the corpus-held
+  final publication share an exact title. Do not acquire it until a human checks
+  whether the preprint has unique supplemental material worth retaining.
 
 ### 8.5 Immediate Next Actions
 

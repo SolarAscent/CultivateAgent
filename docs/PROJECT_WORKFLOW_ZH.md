@@ -694,6 +694,9 @@ Gate：论文 claims 可追溯到证据和结果。
   无血清条件下 donor variance 的边界明确证据。题名和 DOI 均由 Crossref 加
   PubMed 或出版社记录核对；它们均不视为已裁决证据。
 - Human review queue 有 37 个 open tasks。
+- 236 行 Zotero acquisition funnel 已确定性分区为：212 条 actionable、23 条
+  exclusion（22 条 canonical DOI duplicate 和 1 条无 DOI 队内重复），以及 1 条
+  暂停的同标题/不同 DOI 版本冲突；原始模型输出保持不变。
 - AI-for-science 方法综述已存在。
 - DeepSeek compatibility route 与显式 `deepseek-v4-flash` 的 effect-extraction
   对比已记录在 `docs/MODEL_COMPARISON_DEEPSEEK.md`；结论是显式 v4-flash run
@@ -730,6 +733,7 @@ Gate：论文 claims 可追溯到证据和结果。
 | Zotero 候选 packet/readiness | 4/4 locator-ready 且 direct-ready | H034-H037 对应 R048-R051；decision 全部保持 open |
 | DeepSeek 定量文本块下放 | `FAIL`；独立 silver recall 10/13（0.7692），此前为 10/12（0.8333） | 当前 prompt/model 的任务关闭；保留确定性预筛，复核转交更强模型 |
 | DeepSeek metadata-linkage 下放 | `FAIL`；3 次 recall 均为 0.50，precision 1.00，Jaccard 1.00 | 稳定漏掉 3/6 个同领域跨论文错配；不得下放或自动修正 metadata |
+| Zotero acquisition 去重 | `PASS`；236 = 212 actionable + 23 excluded + 1 conflict | 只能从 actionable TSV 获取；冲突等待版本人工复核 |
 | 缺失 review-packet source | 2/16 | H015-H016 对应 R024，需要机构访问或人工提供主文全文 |
 | Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
 
@@ -759,6 +763,8 @@ Gate：论文 claims 可追溯到证据和结果。
 - 当前 audit candidates 是 direction-only，不能作为定量湿实验证明。
 - In-silico robustness 尚未在 reviewed bovine evidence 上运行。
 - 尚无 wet-lab design packet，也无湿实验结果。
+- 尚有 1 条 Zotero acquisition 版本冲突：bioRxiv DOI 与 corpus 中正式发表版本
+  同标题。在人工确认预印本是否含值得保留的独有补充材料前，不得获取。
 
 ### 8.5 近期下一步
 

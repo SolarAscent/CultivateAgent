@@ -155,6 +155,9 @@ cultivate ingest --grobid-tei --grobid-url http://localhost:8070
 python scripts/ingest_europe_pmc_jats.py --max-items 9
 # Acquisition also rejects record/DOI/title-derived directory mismatches against
 # the canonical bovine corpus manifest before writing source files.
+# Before any new Zotero acquisition, derive the corpus-deduplicated queue. Use
+# only the actionable output; conflicts remain held for human/version review:
+python scripts/deduplicate_zotero_acquisition.py
 # Reproduce the P1 PDF table off-ramp audit (counts/hashes only):
 python scripts/audit_bovine_pdf_tables.py --max-items 14
 

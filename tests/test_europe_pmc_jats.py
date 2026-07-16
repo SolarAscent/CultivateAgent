@@ -42,6 +42,15 @@ def test_inspect_jats_requires_exact_doi_and_recognized_license():
         )
 
 
+def test_inspect_jats_accepts_explicit_older_creative_commons_url():
+    result = inspect_europe_pmc_jats(
+        _jats(license_url="https://creativecommons.org/licenses/by-nc/3.0/"),
+        pmcid="PMC123",
+        expected_doi="10.1234/example",
+    )
+    assert result.license_name == "CC-BY-NC-3.0"
+
+
 def test_fetch_validates_pmcid_and_uses_bounded_injected_fetcher():
     seen = {}
 

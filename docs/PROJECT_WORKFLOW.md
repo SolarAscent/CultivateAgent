@@ -755,6 +755,11 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   candidates, 96 license-unverified metadata records, and 7 DOI-less records.
   No full text was downloaded; all 109 candidates still require deterministic
   source DOI, in-document license, and structure verification.
+- A bounded bovine-focused Europe PMC canary has now source-verified 10/10 JATS
+  candidates: 7 direct medium-intervention primary studies and 3 bovine
+  expansion-context studies. Eight contain structured tables; three contain
+  cells with statistical notation. The 25 tables, 996 cells, and 58 notation
+  hits are extraction locators only, not quantitative evidence or corpus entry.
 - AI-for-science method review exists.
 - DeepSeek compatibility-route vs explicit v4-flash effect-extraction
   comparison exists in `docs/MODEL_COMPARISON_DEEPSEEK.md`; it found the
@@ -796,6 +801,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | DeepSeek metadata-linkage delegation | `FAIL`; recall 0.50 in all 3 repeats, precision 1.00, Jaccard 1.00 | Stable under-selection missed 3/6 same-domain cross-paper mismatches; do not delegate or auto-correct metadata |
 | Zotero acquisition deduplication | `PASS`; 236 = 212 actionable + 23 excluded + 1 conflict | Acquire only from the actionable TSV; conflict is held for version review |
 | Zotero OA discovery audit | `PASS`; 212 = 75 EPMC JATS + 34 Crossref CC-VOR + 96 unverified + 7 no DOI | The 109 OA/license candidates are leads only; source-level verification is still required |
+| Europe PMC bovine JATS canary | `PASS`; 10/10 source-verified, 8/10 table-bearing, 3/10 with statistical-notation cells | Acquisition path works; scope review and canonical promotion remain separate |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
 
@@ -855,9 +861,9 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    table-formatted group statistics, and more notation variants only when all
    required values are explicitly quoted and human numeric review remains in the
    loop.
-8. `[AI]` Run the existing Europe PMC JATS identity/license/structure verifier
-   on the 75 EPMC candidates as a bounded acquisition canary before attempting
-   Crossref-linked sources.
+8. `[AI]` Review the 7 source-verified direct-medium canary papers against the
+   fixed bovine expansion scope, then promote only valid candidates into the
+   canonical manifest as open, unadjudicated review items.
 9. `[REVIEW]` Decide which variables can enter S5 search-space design.
 10. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 

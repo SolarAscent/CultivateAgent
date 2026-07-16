@@ -701,6 +701,10 @@ Gate：论文 claims 可追溯到证据和结果。
   75 条 Europe PMC JATS 候选、34 条额外 Crossref CC-VOR 候选、96 条许可未验证
   metadata，以及 7 条缺 DOI 记录。本轮没有下载全文；109 条候选仍必须通过来源
   DOI、文内许可和结构完整性的确定性验证。
+- 有界 bovine-focused Europe PMC canary 已完成 10/10 条 JATS 来源级验证：其中
+  7 条为直接培养基干预 primary study，3 条为牛细胞扩增背景研究。8/10 含结构化
+  表格，3/10 含统计记号单元格；25 张表、996 个单元格和 58 个记号命中都只是
+  extraction locator，不是定量证据，也不代表已进入 canonical corpus。
 - AI-for-science 方法综述已存在。
 - DeepSeek compatibility route 与显式 `deepseek-v4-flash` 的 effect-extraction
   对比已记录在 `docs/MODEL_COMPARISON_DEEPSEEK.md`；结论是显式 v4-flash run
@@ -739,6 +743,7 @@ Gate：论文 claims 可追溯到证据和结果。
 | DeepSeek metadata-linkage 下放 | `FAIL`；3 次 recall 均为 0.50，precision 1.00，Jaccard 1.00 | 稳定漏掉 3/6 个同领域跨论文错配；不得下放或自动修正 metadata |
 | Zotero acquisition 去重 | `PASS`；236 = 212 actionable + 23 excluded + 1 conflict | 只能从 actionable TSV 获取；冲突等待版本人工复核 |
 | Zotero OA 发现审计 | `PASS`；212 = 75 EPMC JATS + 34 Crossref CC-VOR + 96 未验证 + 7 缺 DOI | 109 条 OA/许可候选只是线索，仍需来源级验证 |
+| Europe PMC bovine JATS canary | `PASS`；10/10 来源验证，8/10 有表格，3/10 有统计记号单元格 | 获取路径可用；scope review 与 canonical promotion 仍是独立环节 |
 | 缺失 review-packet source | 2/16 | H015-H016 对应 R024，需要机构访问或人工提供主文全文 |
 | Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
 
@@ -787,8 +792,8 @@ Gate：论文 claims 可追溯到证据和结果。
 7. `[AI]` 继续把 deterministic number-aware extraction 扩展到 confidence
    intervals、表格化 group statistics 和更多 notation variants；前提是所需数值都
    明确出现在 quote 中，并且保留人工数字复核。
-8. `[AI]` 先对 75 条 Europe PMC 候选运行现有 JATS DOI/文内许可/结构验证器的
-   有界 acquisition canary，再处理 Crossref 链接来源。
+8. `[AI]` 按固定 bovine expansion scope 复核 7 条已验证的直接培养基 canary
+   论文，只把符合范围的候选作为 open、未裁决记录加入 canonical manifest。
 9. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 10. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 

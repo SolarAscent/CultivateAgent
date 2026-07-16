@@ -51,17 +51,16 @@ def _normalize_doi(value: str) -> str:
 
 def _classify_cc_license(license_text: str, license_url: str) -> str:
     value = f"{license_url} {license_text}".lower()
-    for marker, name in (
-        ("by-nc-nd/4.0", "CC-BY-NC-ND-4.0"),
-        ("by-nc-sa/4.0", "CC-BY-NC-SA-4.0"),
-        ("by-nc/4.0", "CC-BY-NC-4.0"),
-        ("by-nd/4.0", "CC-BY-ND-4.0"),
-        ("by-sa/4.0", "CC-BY-SA-4.0"),
-        ("by/4.0", "CC-BY-4.0"),
-        ("publicdomain/zero/1.0", "CC0-1.0"),
-    ):
-        if marker in value:
-            return name
+    license_match = re.search(
+        r"creativecommons\.org/licenses/"
+        r"(by(?:-nc)?(?:-nd|-sa)?)/(2\.0|2\.5|3\.0|4\.0)(?:/|\b)",
+        value,
+    )
+    if license_match:
+        code, version = license_match.groups()
+        return f"CC-{code.upper()}-{version}"
+    if "creativecommons.org/publicdomain/zero/1.0" in value:
+        return "CC0-1.0"
     if "creative commons attribution 4.0" in value:
         return "CC-BY-4.0"
     raise EuropePMCError("full-text XML lacks a recognized Creative Commons license")

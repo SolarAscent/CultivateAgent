@@ -80,7 +80,7 @@ def normalize_title(value: str) -> str:
     return " ".join(re.sub(r"[\W_]+", " ", normalized).split())
 
 
-def _titles_compatible(left: str, right: str) -> bool:
+def titles_compatible(left: str, right: str) -> bool:
     left_normalized = normalize_title(left)
     right_normalized = normalize_title(right)
     if not left_normalized or not right_normalized:
@@ -244,7 +244,7 @@ def _classify(row: dict[str, str], epmc: dict, crossref: dict) -> dict[str, str]
     identity_conflict = False
     for source, record in (("Europe PMC", epmc), ("Crossref", crossref)):
         title = record.get("title", "") if record.get("found") else ""
-        if title and not _titles_compatible(title, source_title):
+        if title and not titles_compatible(title, source_title):
             identity_conflict = True
             notes.append(f"{source} title mismatch")
 

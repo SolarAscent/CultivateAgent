@@ -161,6 +161,8 @@ python scripts/deduplicate_zotero_acquisition.py
 # Discover license-verifiable OA candidates without downloading full text.
 # The audit is request-bounded and resumes from local DOI/source checkpoints:
 python scripts/audit_zotero_oa.py --max-requests 410
+# Verify the bounded bovine-focused Europe PMC canary without corpus entry:
+python scripts/verify_zotero_epmc_canary.py --max-items 10 --max-downloads 10
 # Reproduce the P1 PDF table off-ramp audit (counts/hashes only):
 python scripts/audit_bovine_pdf_tables.py --max-items 14
 

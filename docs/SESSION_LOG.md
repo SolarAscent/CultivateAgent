@@ -3774,6 +3774,66 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 56 (Codex) — source-verified bovine Europe PMC canary
+
+Date: 2026-07-16
+Branch: `codex/epmc-bovine-canary`
+
+## Selection And Boundary
+
+- Selected 10 corpus-new Europe PMC candidates from the committed OA audit: 7
+  title-level direct bovine medium-intervention primary studies and 3 bovine
+  expansion-context studies. The explicit canary manifest is bound to source
+  row, DOI, PMCID, title, scope hint, and selection reason.
+- This is acquisition-path verification only. No XML entered the canonical
+  corpus, no biological scope decision was approved, no numeric value was
+  extracted, and no human evidence or wet-lab decision was changed.
+- Claude's worktree remained clean at `e27f0e3`; this work stayed in Codex-owned
+  ingest files and did not touch normalization, synthesis, or tier-1 audit.
+
+## Implementation And Live Result
+
+- Added a bounded verifier with manifest-to-OA-audit identity checks, hard item
+  and download limits, zero retries, atomic local XML checkpoints, exact JATS
+  DOI validation, markup-aware title validation, `research-article` type
+  validation, in-document CC validation, source hashes, and deterministic
+  table/statistical-notation counts.
+- The first live run verified 9/10. EBC04 correctly failed because the existing
+  parser recognized CC 4.0 and CC0 but not its explicit CC BY-NC 3.0 URL. Direct
+  inspection of the Europe PMC JATS license element confirmed the official
+  Creative Commons URL; the parser was narrowly extended to BY-family versions
+  2.0, 2.5, 3.0, and 4.0. It still rejects vague open-access prose.
+- The one-request resume verified EBC04 and reused the other 9 checkpoints.
+  Final result: 10/10 source-verified, comprising all 7 direct-medium and all 3
+  context candidates. Eight JATS contain tables and three contain cells with
+  statistical notation: 25 tables, 996 cells, and 58 notation hits total.
+  These are locators, not tier-1 evidence.
+- A zero-network replay reused 10/10 checkpoints and reproduced the verification
+  TSV byte-for-byte. The committed verification SHA-256 is
+  `ac0877a5500c006bd96196ff322eb0ce20e9cad0735da8dc999f0e863b5647eb`.
+
+## Verification
+
+- Non-loopback suite: 174 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected. New tests cover audit binding, corpus DOI
+  non-overlap, hard-budget behavior, checkpoint replay, source DOI/title
+  rejection before checkpointing, non-research article rejection, source
+  hashes, and explicit CC BY-NC 3.0 parsing.
+- CLI smoke passed. The six-round optimization demo increased synthetic
+  hypervolume from 7.050 to 16.464.
+- Local checkpoint hashes match every committed source hash; table/cell totals,
+  status counts, artifact hashes, `git diff --check`, and API-key scanning pass.
+
+## Next
+
+Review the 7 source-verified direct-medium papers against the fixed bovine
+satellite-cell/myoblast expansion scope using their JATS metadata and methods.
+Promote only valid papers as open, unadjudicated corpus/review candidates; keep
+the held double-blind quantitative pilot untouched until the second reviewer is
+available.
+
+---
+
 # Session 55 (Codex) — resumable OA discovery for actionable Zotero records
 
 Date: 2026-07-16

@@ -11,11 +11,15 @@ from typing import Sequence
 
 from .deepseek_locator_probe import LocatorItem, LocatorProbeResult
 from .deepseek_page_probe import _page_excerpt
-from .quantitative_review import _sha256
+from .quantitative_review import _sha256, _signals
 
 
 PROMPT_VERSION = "visual-result-page-pointer-v1"
 SELECTOR_VERSION = "jats-caption-stat-context-v1"
+PDF_HELDOUT_SELECTOR_VERSION = "pdf-visual-stat-block-v1"
+_PDF_DISPERSION_SIGNALS = {
+    "explicit_dispersion", "named_dispersion_value", "sd", "sem", "error_policy",
+}
 _DISPERSION = re.compile(r"\b(?:sd|sem)\b|standard deviation|standard error|error bars?", re.I)
 _SAMPLE = re.compile(r"\bn\s*[=><]|replicat|observations|independent experiments?", re.I)
 _OUTCOME = re.compile(
@@ -156,8 +160,8 @@ def load_visual_page_silver(
     if fitz_module is None:
         import fitz as fitz_module  # type: ignore[no-redef]
     payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if payload.get("selector_version") != SELECTOR_VERSION:
-        raise ValueError("visual silver selector version mismatch")
+    if payload.get("selector_version") not in {SELECTOR_VERSION, PDF_HELDOUT_SELECTOR_VERSION}:
+        raise ValueError("visual page selector version mismatch")
     positives = {
         (str(row["record_id"]), int(row["pdf_page"])): str(row["page_excerpt_sha256"])
         for row in payload.get("candidates", [])
@@ -189,6 +193,95 @@ def load_visual_page_silver(
     if len({(item.record_id, item.pdf_page) for item in items if item.positive}) != len(positives):
         raise ValueError("one or more visual silver pages were not loaded")
     return items
+
+
+def build_pdf_visual_heldout_manifest(
+    record_ids: Sequence[str],
+    *,
+    corpus_rows: Sequence[dict[str, str]],
+    pdf_audits: Sequence[dict[str, str]],
+    repo_root: Path,
+    max_excerpt_chars: int = 2400,
+    fitz_module=None,
+) -> dict[str, object]:
+    """Freeze strict visual-result page locators from audited PDFs before an API run."""
+    if not record_ids or len(record_ids) != len(set(record_ids)):
+        raise ValueError("held-out record IDs are empty or duplicated")
+    if fitz_module is None:
+        import fitz as fitz_module  # type: ignore[no-redef]
+    corpus = {row["record_id"]: row for row in corpus_rows}
+    audits = {row["record_id"]: row for row in pdf_audits}
+    sources: list[dict[str, object]] = []
+    candidates: list[dict[str, object]] = []
+    for record_id in record_ids:
+        canonical = corpus.get(record_id)
+        audit = audits.get(record_id)
+        if canonical is None or audit is None or audit.get("pdf_status") != "audited":
+            raise ValueError(f"{record_id}: canonical audited PDF metadata is incomplete")
+        path = repo_root / audit["pdf_path"]
+        if not path.is_file() or _sha256(path.read_bytes()) != audit["pdf_sha256"]:
+            raise ValueError(f"{record_id}: PDF missing or hash mismatch")
+        document = fitz_module.open(path)
+        page_candidates: dict[int, list[dict[str, object]]] = {}
+        readable_pages = 0
+        try:
+            actual_pages = len(document)
+            for page_number, page in enumerate(document, 1):
+                if _page_excerpt(page, max_chars=max_excerpt_chars):
+                    readable_pages += 1
+                for block_index, block in enumerate(page.get_text("blocks", sort=True)):
+                    text = " ".join(str(block[4]).split())
+                    signals = set(_signals(text))
+                    required = {"figure_caption", "outcome", "medium", "sample_size"}
+                    if not required <= signals or not signals & _PDF_DISPERSION_SIGNALS:
+                        continue
+                    page_candidates.setdefault(page_number, []).append({
+                        "block_index": block_index,
+                        "block_text_sha256": _sha256(text.encode()),
+                    })
+        finally:
+            document.close()
+        if actual_pages != int(audit["pages"]):
+            raise ValueError(f"{record_id}: audited PDF page count mismatch")
+        for page_number, locators in sorted(page_candidates.items()):
+            document = fitz_module.open(path)
+            try:
+                excerpt = _page_excerpt(
+                    document[page_number - 1], max_chars=max_excerpt_chars
+                )
+            finally:
+                document.close()
+            if not excerpt:
+                raise ValueError(f"{record_id}: positive page {page_number} has no excerpt")
+            candidates.append({
+                "record_id": record_id,
+                "pdf_page": page_number,
+                "supporting_blocks": locators,
+                "page_excerpt_sha256": _sha256(excerpt.encode()),
+            })
+        sources.append({
+            "record_id": record_id,
+            "paper_id": audit["paper_id"],
+            "doi": canonical["doi"],
+            "pdf_path": audit["pdf_path"],
+            "pdf_sha256": audit["pdf_sha256"],
+            "pdf_pages": int(audit["pages"]),
+            "readable_pages": readable_pages,
+            "positive_pages": len(page_candidates),
+        })
+    if not candidates:
+        raise ValueError("PDF visual held-out set has no strict positive pages")
+    return {
+        "format_version": 1,
+        "selector_version": PDF_HELDOUT_SELECTOR_VERSION,
+        "sources": sources,
+        "candidates": candidates,
+        "limitations": [
+            "Positive pages are strict field-aware PDF locators, not adjudicated effects.",
+            "Unlabeled pages can still contain useful evidence and are not precision gold.",
+            "No source text or numeric value is stored in this manifest.",
+        ],
+    }
 
 
 def build_visual_page_prompt(batch: Sequence[LocatorItem]) -> str:
@@ -224,6 +317,7 @@ def result_manifest(
     *,
     model: str,
     max_selected_fraction: float = 0.60,
+    selector_version: str = SELECTOR_VERSION,
 ) -> dict[str, object]:
     by_id = {item.item_id: item for item in items}
     passed = deployment_gate_pass(result, max_selected_fraction=max_selected_fraction)
@@ -233,7 +327,7 @@ def result_manifest(
         "deployment_gate_pass": passed,
         "model": model,
         "prompt_version": PROMPT_VERSION,
-        "selector_version": SELECTOR_VERSION,
+        "selector_version": selector_version,
         "repeats": len(result.selections),
         "requests_expected": result.requests_expected,
         "requests_valid": result.requests_valid,
@@ -264,7 +358,12 @@ def result_manifest(
     }
 
 
-def validate_result_manifest(payload: dict[str, object], items: Sequence[LocatorItem]) -> list[str]:
+def validate_result_manifest(
+    payload: dict[str, object],
+    items: Sequence[LocatorItem],
+    *,
+    selector_version: str = SELECTOR_VERSION,
+) -> list[str]:
     issues: list[str] = []
     allowed = {
         "format_version", "status", "deployment_gate_pass", "model", "prompt_version",
@@ -275,6 +374,8 @@ def validate_result_manifest(payload: dict[str, object], items: Sequence[Locator
     }
     if set(payload) != allowed:
         issues.append("visual result manifest top-level schema mismatch")
+    if payload.get("selector_version") != selector_version:
+        issues.append("visual result selector version mismatch")
     expected = {item.item_id: item for item in items}
     selections = payload.get("repeat_selections")
     if not isinstance(selections, list):

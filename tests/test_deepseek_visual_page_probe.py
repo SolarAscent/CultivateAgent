@@ -3,8 +3,10 @@ import json
 
 from cultivate_agent.evaluate.deepseek_locator_probe import run_locator_probe
 from cultivate_agent.evaluate.deepseek_visual_page_probe import (
+    PDF_HELDOUT_SELECTOR_VERSION,
     PROMPT_VERSION,
     build_visual_page_prompt,
+    build_pdf_visual_heldout_manifest,
     build_visual_silver_manifest,
     deployment_gate_pass,
     load_visual_page_silver,
@@ -154,3 +156,62 @@ def test_visual_gate_requires_three_repeats_and_validator_recomputes_metrics(tmp
     assert validate_result_manifest(output, items) == []
     output["repeat_recalls"] = [1.0, 1.0, 1.0]
     assert "repeat recall mismatch" in validate_result_manifest(output, items)
+
+
+def test_pdf_visual_heldout_freezes_strict_hash_bound_page_pointers(tmp_path):
+    directory = tmp_path / "data/papers/paper"
+    directory.mkdir(parents=True)
+    pdf = directory / "paper.pdf"
+    pdf.write_bytes(b"pdf-heldout")
+    positive = (
+        "Fig. 1. Cell proliferation in treatment and control media. Values are mean and "
+        "standard deviation from n = 3 independent experiments."
+    )
+    fitz = _Fitz(["Introduction.", positive, "Discussion."])
+    corpus = [{"record_id": "R1", "doi": "10.1/example"}]
+    audits = [{
+        "record_id": "R1", "paper_id": "paper", "pdf_status": "audited",
+        "pdf_path": str(pdf.relative_to(tmp_path)),
+        "pdf_sha256": hashlib.sha256(pdf.read_bytes()).hexdigest(), "pages": "3",
+    }]
+    payload = build_pdf_visual_heldout_manifest(
+        ["R1"], corpus_rows=corpus, pdf_audits=audits, repo_root=tmp_path,
+        fitz_module=fitz,
+    )
+    assert payload["selector_version"] == PDF_HELDOUT_SELECTOR_VERSION
+    assert payload["candidates"][0]["pdf_page"] == 2
+    assert set(payload["candidates"][0]["supporting_blocks"][0]) == {
+        "block_index", "block_text_sha256",
+    }
+    assert "cell proliferation" not in json.dumps(payload).casefold()
+
+    manifest = tmp_path / "heldout.json"
+    manifest.write_text(json.dumps(payload), encoding="utf-8")
+    items = load_visual_page_silver(manifest, repo_root=tmp_path, fitz_module=fitz)
+    assert [item.pdf_page for item in items if item.positive] == [2]
+
+
+def test_pdf_visual_heldout_rejects_source_hash_and_page_count_drift(tmp_path):
+    directory = tmp_path / "data/papers/paper"
+    directory.mkdir(parents=True)
+    pdf = directory / "paper.pdf"
+    pdf.write_bytes(b"pdf-heldout")
+    rows = [{
+        "record_id": "R1", "paper_id": "paper", "pdf_status": "audited",
+        "pdf_path": str(pdf.relative_to(tmp_path)),
+        "pdf_sha256": hashlib.sha256(pdf.read_bytes()).hexdigest(), "pages": "2",
+    }]
+    import pytest
+    with pytest.raises(ValueError, match="page count mismatch"):
+        build_pdf_visual_heldout_manifest(
+            ["R1"], corpus_rows=[{"record_id": "R1", "doi": "10.1/example"}],
+            pdf_audits=rows, repo_root=tmp_path,
+            fitz_module=_Fitz(["one", "two", "three"]),
+        )
+    rows[0]["pdf_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="hash mismatch"):
+        build_pdf_visual_heldout_manifest(
+            ["R1"], corpus_rows=[{"record_id": "R1", "doi": "10.1/example"}],
+            pdf_audits=rows, repo_root=tmp_path,
+            fitz_module=_Fitz(["one", "two"]),
+        )

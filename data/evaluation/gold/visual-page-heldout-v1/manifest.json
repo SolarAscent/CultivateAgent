@@ -1,0 +1,109 @@
+{
+  "candidates": [
+    {
+      "page_excerpt_sha256": "0706665acd5bfd6744b878c67d64f8e13aa14cac4a2e92ab29dca3d8878dfdee",
+      "pdf_page": 6,
+      "record_id": "R021",
+      "supporting_blocks": [
+        {
+          "block_index": 2,
+          "block_text_sha256": "af66ddec4fc6942f3fc5262407f3378fc4f61d35bf3e41ed86c3cd0f451fed18"
+        }
+      ]
+    },
+    {
+      "page_excerpt_sha256": "d7940cc55d168594be27b72ffcca3eee9f4b33863d053996de7c774de5c7f463",
+      "pdf_page": 7,
+      "record_id": "R021",
+      "supporting_blocks": [
+        {
+          "block_index": 2,
+          "block_text_sha256": "aa6852db9836052d9ec1581713373a6a473efc6f59902879be6b95e33bb1df76"
+        }
+      ]
+    },
+    {
+      "page_excerpt_sha256": "70b5eda913b3751783236e96b77767618e6d369982ee6d1e832d2444a4eadcf0",
+      "pdf_page": 8,
+      "record_id": "R021",
+      "supporting_blocks": [
+        {
+          "block_index": 2,
+          "block_text_sha256": "8347efe8360bb4d104d4acec397da7c9cc4f170d9c23e67955ccd682d9eee0f2"
+        }
+      ]
+    },
+    {
+      "page_excerpt_sha256": "439ffbd83f649a6c529ab87cd93069f75bf1e8e7c5fa3874089b2d438325f6a7",
+      "pdf_page": 9,
+      "record_id": "R021",
+      "supporting_blocks": [
+        {
+          "block_index": 2,
+          "block_text_sha256": "c9b43c3e581edf3e83dab1042287e35f07debd90984a98ef6c10fb01aa949ddd"
+        }
+      ]
+    },
+    {
+      "page_excerpt_sha256": "51c376bd9334dcef3caf9517b65b0bbb5ccbac12c8eb9fd953f0230c0cc38b8f",
+      "pdf_page": 10,
+      "record_id": "R021",
+      "supporting_blocks": [
+        {
+          "block_index": 10,
+          "block_text_sha256": "c79b9ecae57b325a823f5a71b87b3df9166647fb80873a3251dd54ba0ada220e"
+        }
+      ]
+    },
+    {
+      "page_excerpt_sha256": "4677982091840b25453de799e72b205e20fd816ff3bd10c1a4000d2df6112a96",
+      "pdf_page": 11,
+      "record_id": "R021",
+      "supporting_blocks": [
+        {
+          "block_index": 2,
+          "block_text_sha256": "03b5c345b3c8c945d395b9d378124065367befe4fc49a815b0ed64d7b475d807"
+        }
+      ]
+    }
+  ],
+  "format_version": 1,
+  "limitations": [
+    "Positive pages are strict field-aware PDF locators, not adjudicated effects.",
+    "Unlabeled pages can still contain useful evidence and are not precision gold.",
+    "No source text or numeric value is stored in this manifest."
+  ],
+  "selector_version": "pdf-visual-stat-block-v1",
+  "sources": [
+    {
+      "doi": "10.3389/fbioe.2022.895289",
+      "paper_id": "development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov",
+      "pdf_pages": 15,
+      "pdf_path": "data/papers/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov/development-of-a-chemically-defined-medium-for-in-vitro-expansion-of-primary-bov.pdf",
+      "pdf_sha256": "4d2d8aee7a7ab69d7504f3bd67f743cdb1e8a35825e22244699bd4033b2e7c04",
+      "positive_pages": 0,
+      "readable_pages": 15,
+      "record_id": "R016"
+    },
+    {
+      "doi": "10.1016/j.foodres.2023.113194",
+      "paper_id": "a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells",
+      "pdf_pages": 17,
+      "pdf_path": "data/papers/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells/a-simple-and-robust-serum-free-media-for-the-proliferation-of-muscle-cells.pdf",
+      "pdf_sha256": "dc6170936fc6e49ffa7109d5985988bc5454ff4211cd3ed4ba042828f9610b35",
+      "positive_pages": 6,
+      "readable_pages": 17,
+      "record_id": "R021"
+    },
+    {
+      "doi": "10.1038/s41598-025-99603-7",
+      "paper_id": "low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med",
+      "pdf_pages": 16,
+      "pdf_path": "data/papers/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med/low-cost-food-grade-alternatives-for-serum-albumins-in-fbs-free-cell-culture-med.pdf",
+      "pdf_sha256": "cff8bbad90f958f6a0a311c5692c482cd3e8420462d2502bd949fc64869719f4",
+      "positive_pages": 0,
+      "readable_pages": 16,
+      "record_id": "R022"
+    }
+  ]
+}

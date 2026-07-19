@@ -48,6 +48,7 @@ def main() -> int:
     parser.add_argument("--checkpoint-dir", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
+    selector_version = json.loads(args.silver.read_text(encoding="utf-8"))["selector_version"]
     items = load_visual_page_silver(args.silver, repo_root=args.repo_root.resolve())
     result = run_locator_probe(
         items,
@@ -66,8 +67,9 @@ def main() -> int:
     payload = result_manifest(
         result, items, model=args.model,
         max_selected_fraction=args.max_selected_fraction,
+        selector_version=selector_version,
     )
-    issues = validate_result_manifest(payload, items)
+    issues = validate_result_manifest(payload, items, selector_version=selector_version)
     if issues:
         raise ValueError("; ".join(issues))
     _atomic_json(args.out, payload)

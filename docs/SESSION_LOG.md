@@ -3774,6 +3774,61 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 62 (Codex) — verified JATS group-statistics off-ramp
+
+Date: 2026-07-19
+Branch: `codex/audit-jats-group-stats`
+
+## Decision And Safety Boundary
+
+- Selected deterministic table-structure inventory before any DeepSeek
+  cell-role call. A weak model cannot create a missing sample-size source, and
+  running it on structurally incomplete tables would spend tokens without
+  producing a valid tier-1 pointer set.
+- The audit emits source/table/cell/footnote pointers and counts only. It does
+  not transcribe table numbers, assign treatment/control semantics, approve an
+  evidence tier, or change the held human quantitative pilot.
+- Footnote/caption sample-size locators are diagnostic only. They cannot satisfy
+  the frozen `TableEffectPointers` contract, which requires n to resolve from an
+  addressable table cell.
+
+## Implementation And Result
+
+- Added a source-verified JATS group-statistics auditor. It refuses output
+  unless corpus/source/acquisition DOI and paper IDs, PMCID, license, XML hash,
+  and table/cell counts all agree for every source.
+- Classification distinguishes complete response group-stat structures from
+  missing dispersion/sample size and from composition, model-coefficient, or
+  non-medium statistics. A regression test prevents response tables containing
+  concentration or p-value columns from being falsely excluded.
+- Audited 14 verified bovine JATS sources, 37 tables, and 2,103 cells. No table
+  contains a complete response mean-dispersion-n structure. Nine are incomplete,
+  twelve statistical tables are excluded non-effect outputs, and sixteen have
+  no group-stat structure.
+- R054 T5-T12 contain source-bound SEM locators but no table/caption/footnote
+  sample-size locator. A separate local paragraph scan also found no explicit
+  n/replicate/independent-experiment statement; this scan is diagnostic and is
+  not represented as table evidence.
+- R052 T5-T6 contain SD and sample-size context, but they quantify ingredient
+  vitamin/mineral composition rather than treatment/control cell outcomes.
+  DeepSeek cell-role labeling is therefore off-ramped for this source set.
+
+## Verification
+
+- Focused table readiness/pointer/parser tests: 16 passed.
+- Final focused suite after the committed-artifact regression: 17 passed.
+- Non-loopback suite: 200 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected. CLI smoke passed; the six-round optimization demo
+  increased synthetic hypervolume from 7.050 to 16.464.
+- Re-running the audit reproduced the same source/table hashes and zero
+  structural candidates. Committed TSVs contain no source numeric-value fields;
+  a regression test validates pointer syntax, source-hash binding, row counts,
+  and the zero-candidate decision.
+- `git diff --check`, API-key scanning, and source-number leakage scanning of
+  the committed audit artifacts passed.
+
+---
+
 # Session 61 (Codex) — R016 metadata identity repair
 
 Date: 2026-07-16

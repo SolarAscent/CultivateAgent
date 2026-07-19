@@ -170,6 +170,9 @@ python scripts/validate_epmc_scope_review.py
 python scripts/run_deepseek_page_probe.py --manifest data/evaluation/gold/quantitative-pilot-v1/manifest.json --checkpoint-dir data/checkpoints/deepseek-page-capability-v1 --report docs/DEEPSEEK_PAGE_CAPABILITY.md
 # Reproduce the P1 PDF table off-ramp audit (counts/hashes only):
 python scripts/audit_bovine_pdf_tables.py --max-items 14
+# Audit all source-verified bovine JATS tables for complete group-statistics
+# structure before spending any model calls on treatment/control cell roles:
+python scripts/audit_bovine_jats_group_stats.py
 
 # 2. Tier papers A/B/C (evidence-backed, reproducible):
 cultivate triage

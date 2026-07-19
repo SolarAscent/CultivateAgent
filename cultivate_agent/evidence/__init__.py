@@ -45,6 +45,13 @@ from .tables import (
     parse_cell_number,
     validate_table_pointers,
 )
+from .table_readiness import (
+    SourceTableReadinessAudit,
+    TableReadinessAudit,
+    audit_table_structure,
+    audit_verified_jats_group_stats,
+    merge_acquisition_rows,
+)
 
 __all__ = [
     "EvidenceItem", "EvidenceSummary",
@@ -64,4 +71,6 @@ __all__ = [
     "TableCellRole", "TableCellPointer", "TableEffectPointers",
     "ResolvedGroupStatistics", "TableNumericEffect", "TablePointerError",
     "parse_cell_number", "validate_table_pointers", "numeric_effect_from_table_pointers",
+    "TableReadinessAudit", "SourceTableReadinessAudit", "audit_table_structure",
+    "audit_verified_jats_group_stats", "merge_acquisition_rows",
 ]

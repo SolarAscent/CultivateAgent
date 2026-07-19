@@ -174,6 +174,7 @@ Artifact registry:
 | Extraction reports | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | Evaluation run |
 | Extraction readiness report | `docs/EXTRACTION_READINESS_H001_H016.md`, `docs/EXTRACTION_READINESS_H031_H033.md`, matching TSV files | `[AI]` + `[REVIEW]` | Before live operator extraction |
 | Evidence audit | `docs/EVIDENCE_AUDIT_PROLIFERATION.md` | `[AI]` + `[REVIEW]` | Evidence export or gate update |
+| JATS group-statistics audit | `docs/BOVINE_JATS_GROUP_STATS_AUDIT.md`, `data/literature/bovine_jats_group_stats_*_audit.tsv` | `[AI]` + `[REVIEW]` | Verified JATS source or table-path change |
 | Review packet | `docs/HUMAN_REVIEW_PACKET_H001_H016.md`, `docs/HUMAN_REVIEW_PACKET_H031_H033.md` | `[AI]` + `[HUMAN]` | Source availability or review queue update |
 | Human adjudication worksheet | `data/literature/bovine_adjudication_H001_H014.tsv` | `[HUMAN]` + `[AI]` | Before and after human evidence review |
 | Worksheet validation report | `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` | `[AI]` + `[REVIEW]` | After worksheet creation or edits |
@@ -786,6 +787,12 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   preserved in a content-addressed local quarantine, the example entry is
   corrected, and offline acquisition replay now passes without changing the
   human-pilot source hash.
+- The verified bovine JATS group-statistics audit covers 14 sources, 37 tables,
+  and 2,103 cells without transcribing source values. It found zero complete
+  treatment/control mean-dispersion-n structures: nine tables are incomplete,
+  twelve statistical tables are composition/model/non-medium outputs, and
+  sixteen have no group-stat structure. DeepSeek cell-role labeling is therefore
+  off-ramped for this source set rather than run on structurally incomplete input.
 - AI-for-science method review exists.
 - DeepSeek compatibility-route vs explicit v4-flash effect-extraction
   comparison exists in `docs/MODEL_COMPARISON_DEEPSEEK.md`; it found the
@@ -830,6 +837,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | Zotero acquisition deduplication | `PASS`; 236 = 212 actionable + 23 excluded + 1 conflict | Acquire only from the actionable TSV; conflict is held for version review |
 | Zotero OA discovery audit | `PASS`; 212 = 75 EPMC JATS + 34 Crossref CC-VOR + 96 unverified + 7 no DOI | The 109 OA/license candidates are leads only; source-level verification is still required |
 | Europe PMC bovine JATS canary | `PASS`; 10/10 source-verified, 8/10 table-bearing, 3/10 with statistical-notation cells | Acquisition path works; scope review and canonical promotion remain separate |
+| Verified JATS group-statistics readiness | `OFF_RAMP`; 14 sources, 37 tables, 2,103 cells, 0 complete structures | R054 T5-T12 have SEM pointers but no table-bound sample size; do not spend DeepSeek calls until a complete structure exists |
 | Europe PMC bovine scope promotion | `PASS`; 7/7 reviewed, 5 promoted open, 2 wrong-lineage exclusions | Source/hash scope decision is complete; no promoted record is evidence-approved |
 | Missing review-packet sources | 2/16 | H015-H016 map to R024 and need institutional or human-provided main full text |
 | Wet-lab design packet | Missing | Must wait for evidence review, search-space, robustness, and pre-registration gates |
@@ -886,10 +894,10 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    `cultivate extract --ids H014 --mode operators`, inspect grounding and raw
    extraction metadata, then scale to `--ids H001-H014` only if the pilot is
    acceptable.
-7. `[AI]` Extend deterministic number-aware extraction to confidence intervals,
-   table-formatted group statistics, and more notation variants only when all
-   required values are explicitly quoted and human numeric review remains in the
-   loop.
+7. `[AI]` Search source-verified figures/supplements for complete
+   treatment/control mean-dispersion-n structures. Keep the JATS table path
+   off-ramped until a complete pointer set exists; all required values must be
+   source-bound and remain under human numeric review.
 8. `[REVIEW]` Decide which variables can enter S5 search-space design.
 9. `[LAB]` In parallel, confirm assay constraints and reagent feasibility.
 

@@ -166,6 +166,7 @@ CultivateAgent/
 | 抽取评估 | `docs/EVAL_RESULTS.md`, `docs/MODEL_AGREEMENT.md` | `[AI]` | Evaluation run 后 |
 | 抽取就绪度报告 | `docs/EXTRACTION_READINESS_H001_H016.md`, `docs/EXTRACTION_READINESS_H031_H033.md` 及对应 TSV | `[AI]` + `[REVIEW]` | live operator extraction 前 |
 | 证据审计 | `docs/EVIDENCE_AUDIT_PROLIFERATION.md` | `[AI]` + `[REVIEW]` | Evidence export 或 gate 更新 |
+| JATS group-statistics 审计 | `docs/BOVINE_JATS_GROUP_STATS_AUDIT.md`, `data/literature/bovine_jats_group_stats_*_audit.tsv` | `[AI]` + `[REVIEW]` | 已验证 JATS 来源或 table path 变化 |
 | 复核定位包 | `docs/HUMAN_REVIEW_PACKET_H001_H016.md`, `docs/HUMAN_REVIEW_PACKET_H031_H033.md` | `[AI]` + `[HUMAN]` | source 可用性或 review queue 更新 |
 | 人工裁决工作表 | `data/literature/bovine_adjudication_H001_H014.tsv` | `[HUMAN]` + `[AI]` | 人工证据复核前后 |
 | 工作表校验报告 | `docs/HUMAN_ADJUDICATION_VALIDATION_H001_H014.md` | `[AI]` + `[REVIEW]` | 工作表创建或编辑后 |
@@ -728,6 +729,10 @@ Gate：论文 claims 可追溯到证据和结果。
   就是正确来源，受污染的只有 mixed example-BibTeX 生成的 metadata 和 assets。
   原文件已保存在内容寻址的本地隔离目录，示例条目已纠正；离线 acquisition 回放
   已通过，且没有改变人工试点绑定的 source hash。
+- 已验证 bovine JATS group-statistics 审计覆盖 14 个来源、37 张表和 2,103 个
+  单元格，且不转录源数字。结果为 0 个完整 treatment/control
+  mean-dispersion-n 结构：9 张表不完整、12 张统计表属于组成/模型/非培养基输出，
+  16 张没有 group-stat 结构。因此该来源集不进入 DeepSeek cell-role 标注。
 - AI-for-science 方法综述已存在。
 - DeepSeek compatibility route 与显式 `deepseek-v4-flash` 的 effect-extraction
   对比已记录在 `docs/MODEL_COMPARISON_DEEPSEEK.md`；结论是显式 v4-flash run
@@ -769,6 +774,7 @@ Gate：论文 claims 可追溯到证据和结果。
 | Zotero acquisition 去重 | `PASS`；236 = 212 actionable + 23 excluded + 1 conflict | 只能从 actionable TSV 获取；冲突等待版本人工复核 |
 | Zotero OA 发现审计 | `PASS`；212 = 75 EPMC JATS + 34 Crossref CC-VOR + 96 未验证 + 7 缺 DOI | 109 条 OA/许可候选只是线索，仍需来源级验证 |
 | Europe PMC bovine JATS canary | `PASS`；10/10 来源验证，8/10 有表格，3/10 有统计记号单元格 | 获取路径可用；scope review 与 canonical promotion 仍是独立环节 |
+| 已验证 JATS group-statistics readiness | `OFF_RAMP`；14 个来源、37 张表、2,103 个单元格、0 个完整结构 | R054 T5-T12 有 SEM 指针但没有表内 sample size；出现完整结构前不花 DeepSeek 调用 |
 | Europe PMC bovine scope promotion | `PASS`；7/7 已复核，5 条 open 纳入，2 条错误谱系排除 | 来源/哈希 scope 裁决完成；纳入记录均未获得 evidence approval |
 | 缺失 review-packet source | 2/16 | H015-H016 对应 R024，需要机构访问或人工提供主文全文 |
 | Wet-lab design packet | 缺失 | 必须等待证据复核、search-space、稳健性和预注册 gate |
@@ -815,9 +821,9 @@ Gate：论文 claims 可追溯到证据和结果。
 6. `[AI]` 先用 `cultivate extract --ids H014 --mode operators` 跑小规模 live
    operator-extraction pilot，检查 grounding 和 raw extraction metadata；只有
    pilot 可接受后再扩大到 `--ids H001-H014`。
-7. `[AI]` 继续把 deterministic number-aware extraction 扩展到 confidence
-   intervals、表格化 group statistics 和更多 notation variants；前提是所需数值都
-   明确出现在 quote 中，并且保留人工数字复核。
+7. `[AI]` 在 source-verified figures/supplements 中寻找完整的 treatment/control
+   mean-dispersion-n 结构。完整 pointer set 出现前保持 JATS table path off-ramp；
+   所有数值必须绑定来源，并继续接受人工数字复核。
 8. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 9. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 

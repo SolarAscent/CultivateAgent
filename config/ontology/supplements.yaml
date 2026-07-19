@@ -16,7 +16,7 @@
   aliases: ["insulin-transferrin-selenium", "ITS-G", "ITS premix", "insulin transferrin selenium"]
   category: defined_supplement
 - canonical: sodium-selenite
-  aliases: ["selenium", "selenite", "Na2SeO3"]
+  aliases: ["selenium", "selenite", "sodium selenite", "Na2SeO3"]
   category: trace_element
 - canonical: copper-ions
   aliases: ["copper ions", "Cu2+", "Cu(II)", "copper ion", "Cu ions"]
@@ -30,7 +30,7 @@
   aliases: ["pea hydrolysate", "pea peptone"]
   category: hydrolysate
 - canonical: yeast-extract
-  aliases: ["yeast hydrolysate", "yeast peptone"]
+  aliases: ["yeast hydrolysate", "yeast peptone", "yeast extract"]
   category: hydrolysate
 - canonical: rice-protein-hydrolysate
   aliases: ["rice hydrolysate", "grain-derived hydrolysate"]
@@ -56,3 +56,17 @@
 - canonical: glucose
   aliases: ["D-glucose", "dextrose"]
   category: carbon_source
+- canonical: horse-serum
+  aliases: ["horse serum", "equine serum"]
+  category: serum
+  notes: "Animal serum used mainly in differentiation media; animal-derived, so outside the animal-component-free target but recorded for evidence completeness."
+- canonical: sodium-pyruvate
+  aliases: ["sodium pyruvate", "pyruvate"]
+  category: energy_substrate
+- canonical: linoleic-acid
+  aliases: ["linoleic acid"]
+  category: lipid
+  notes: "Fatty-acid supplement; among factors reported to improve bovine satellite-cell proliferation in B8-derived media (often paired with oleic acid)."
+- canonical: fetuin
+  aliases: ["fetuin-A", "fetuin A", "alpha-2-HS-glycoprotein"]
+  category: serum_protein

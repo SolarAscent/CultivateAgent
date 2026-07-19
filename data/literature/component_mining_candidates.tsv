@@ -1,0 +1,1084 @@
+raw_name	paper_count	category	canonical	matched_via	model	run_id
+PBS	22	other	PBS	none	deepseek-chat	20260719T104535
+vitamins	13	vitamin	vitamins	none	deepseek-chat	20260719T104535
+growth factors	12	growth_factor	growth factors	none	deepseek-chat	20260719T104535
+horse serum	10	serum	horse serum	none	deepseek-chat	20260719T104535
+hydrolysates	9	hydrolysate	hydrolysates	none	deepseek-chat	20260719T104535
+recombinant proteins	9	protein	recombinant proteins	none	deepseek-chat	20260719T104535
+amino acids	9	supplement	amino acids	none	deepseek-chat	20260719T104535
+defined supplements	8	supplement	defined supplements	none	deepseek-chat	20260719T104535
+small molecules	8	small_molecule	small molecules	none	deepseek-chat	20260719T104535
+albumin	8	protein	albumin	none	deepseek-chat	20260719T104535
+phosphate-buffered saline	8	other	phosphate-buffered saline	none	deepseek-chat	20260719T104535
+paraformaldehyde	8	other	paraformaldehyde	none	deepseek-chat	20260719T104535
+serum/albumin	7	albumin	serum/albumin	none	deepseek-chat	20260719T104535
+lipids	7	lipid	lipids	none	deepseek-chat	20260719T104535
+basal media	7	basal	basal media	none	deepseek-chat	20260719T104535
+Matrigel	7	other	Matrigel	none	deepseek-chat	20260719T104535
+ethanol	7	other	ethanol	none	deepseek-chat	20260719T104535
+Dulbecco's modified Eagle's medium	6	basal	Dulbecco's modified Eagle's medium	none	deepseek-chat	20260719T104535
+sodium bicarbonate	6	small_molecule	sodium bicarbonate	none	deepseek-chat	20260719T104535
+fibronectin	6	protein	fibronectin	none	deepseek-chat	20260719T104535
+TGF-β	6	growth_factor	TGF-β	none	deepseek-chat	20260719T104535
+fetuin	6	protein	fetuin	none	deepseek-chat	20260719T104535
+trypan blue	6	other	trypan blue	none	deepseek-chat	20260719T104535
+trypsin	5	other	trypsin	none	deepseek-chat	20260719T104535
+IL-6	5	growth_factor	IL-6	none	deepseek-chat	20260719T104535
+sodium selenite	5	small_molecule	sodium selenite	none	deepseek-chat	20260719T104535
+trypsin-EDTA	5	other	trypsin-EDTA	none	deepseek-chat	20260719T104535
+Hoechst 33342	5	other	Hoechst 33342	none	deepseek-chat	20260719T104535
+HEPES	5	small_molecule	HEPES	none	deepseek-chat	20260719T104535
+NaOH	5	small_molecule	NaOH	none	deepseek-chat	20260719T104535
+Triton X-100	5	other	Triton X-100	none	deepseek-chat	20260719T104535
+platelet-derived growth factor	4	growth_factor	platelet-derived growth factor	none	deepseek-chat	20260719T104535
+sodium hydroxide	4	other	sodium hydroxide	none	deepseek-chat	20260719T104535
+inorganic salts	4	other	inorganic salts	none	deepseek-chat	20260719T104535
+vitronectin	4	protein	vitronectin	none	deepseek-chat	20260719T104535
+Ham's F-10 Nutrient Mix	4	basal	Ham's F-10 Nutrient Mix	none	deepseek-chat	20260719T104535
+laminin	4	protein	laminin	none	deepseek-chat	20260719T104535
+sodium pyruvate	4	small_molecule	sodium pyruvate	none	deepseek-chat	20260719T104535
+penicillin–streptomycin	4	other	penicillin–streptomycin	none	deepseek-chat	20260719T104535
+streptomycin	4	other	streptomycin	none	deepseek-chat	20260719T104535
+HS	4	other	HS	none	deepseek-chat	20260719T104535
+DPBS	4	other	DPBS	none	deepseek-chat	20260719T104535
+DMSO	4	other	DMSO	none	deepseek-chat	20260719T104535
+amphotericin B	4	other	amphotericin B	none	deepseek-chat	20260719T104535
+penicillin	4	other	penicillin	none	deepseek-chat	20260719T104535
+linoleic acid	4	lipid	linoleic acid	none	deepseek-chat	20260719T104535
+PMSF	4	other	PMSF	none	deepseek-chat	20260719T104535
+dimethyl sulfoxide	4	small_molecule	dimethyl sulfoxide	none	deepseek-chat	20260719T104535
+pyruvate	3	small_molecule	pyruvate	none	deepseek-chat	20260719T104535
+hydrochloric acid	3	other	hydrochloric acid	none	deepseek-chat	20260719T104535
+penicillin/streptomycin	3	supplement	penicillin/streptomycin	none	deepseek-chat	20260719T104535
+methanol	3	small_molecule	methanol	none	deepseek-chat	20260719T104535
+yeast extract	3	supplement	yeast extract	none	deepseek-chat	20260719T104535
+α-linolenic acid	3	lipid	α-linolenic acid	none	deepseek-chat	20260719T104535
+LIF	3	growth_factor	LIF	none	deepseek-chat	20260719T104535
+collagen	3	protein	collagen	none	deepseek-chat	20260719T104535
+GlutaMAX™	3	supplement	GlutaMAX™	none	deepseek-chat	20260719T104535
+EGF1	3	growth_factor	EGF1	none	deepseek-chat	20260719T104535
+Primocin	3	other	Primocin	none	deepseek-chat	20260719T104535
+FACS buffer	3	other	FACS buffer	none	deepseek-chat	20260719T104535
+gentamicin	3	other	gentamicin	none	deepseek-chat	20260719T104535
+BODIPY 493/503	3	other	BODIPY 493/503	none	deepseek-chat	20260719T104535
+basal medium	3	basal	basal medium	none	deepseek-chat	20260719T104535
+collagenase type II	3	other	collagenase type II	none	deepseek-chat	20260719T104535
+bovine collagen type I	3	protein	bovine collagen type I	none	deepseek-chat	20260719T104535
+freezing medium	3	other	freezing medium	none	deepseek-chat	20260719T104535
+Chlorella vulgaris extract	3	hydrolysate	Chlorella vulgaris extract	none	deepseek-chat	20260719T104535
+sodium chloride	3	supplement	sodium chloride	none	deepseek-chat	20260719T104535
+calcium chloride	3	inorganic_salt	calcium chloride	none	deepseek-chat	20260719T104535
+CVE	3	hydrolysate	CVE	none	deepseek-chat	20260719T104535
+FGF	3	growth_factor	FGF	none	deepseek-chat	20260719T104535
+puromycin	3	supplement	puromycin	none	deepseek-chat	20260719T104535
+EdU	3	other	EdU	none	deepseek-chat	20260719T104535
+foetal bovine serum	3	serum	foetal bovine serum	none	deepseek-chat	20260719T104535
+TGFβ3	3	growth_factor	TGFβ3	none	deepseek-chat	20260719T104535
+rAlbumin	3	albumin	rAlbumin	none	deepseek-chat	20260719T104535
+oleic acid	3	lipid	oleic acid	none	deepseek-chat	20260719T104535
+serum-free media	3	basal	serum-free media	none	deepseek-chat	20260719T104535
+gelatin	3	other	gelatin	none	deepseek-chat	20260719T104535
+TBST	3	other	TBST	none	deepseek-chat	20260719T104535
+salts	3	supplement	salts	none	deepseek-chat	20260719T104535
+E8	2	basal	E8	none	deepseek-chat	20260719T104535
+lactate	2	small_molecule	lactate	none	deepseek-chat	20260719T104535
+IGF-2	2	growth_factor	IGF-2	none	deepseek-chat	20260719T104535
+ammonia	2	small_molecule	ammonia	none	deepseek-chat	20260719T104535
+PS	2	supplement	PS	none	deepseek-chat	20260719T104535
+HCl	2	small_molecule	HCl	none	deepseek-chat	20260719T104535
+serine	2	small_molecule	serine	none	deepseek-chat	20260719T104535
+sodium dodecyl sulfate	2	small_molecule	sodium dodecyl sulfate	none	deepseek-chat	20260719T104535
+recombinant protein	2	protein	recombinant protein	none	deepseek-chat	20260719T104535
+NRG-1	2	growth_factor	NRG-1	none	deepseek-chat	20260719T104535
+cell culture media	2	basal	cell culture media	none	deepseek-chat	20260719T104535
+SB202190	2	small_molecule	SB202190	none	deepseek-chat	20260719T104535
+hydrocortisone	2	small_molecule	hydrocortisone	none	deepseek-chat	20260719T104535
+human serum albumin	2	albumin	human serum albumin	none	deepseek-chat	20260719T104535
+Vitamin C	2	vitamin	Vitamin C	none	deepseek-chat	20260719T104535
+Advanced DMEM	2	basal	Advanced DMEM	none	deepseek-chat	20260719T104535
+penicillin-streptomycin	2	supplement	penicillin-streptomycin	none	deepseek-chat	20260719T104535
+fibroblast growth factor-2	2	growth_factor	fibroblast growth factor-2	none	deepseek-chat	20260719T104535
+L-ascorbic acid	2	vitamin	L-ascorbic acid	none	deepseek-chat	20260719T104535
+non-essential amino acids	2	supplement	non-essential amino acids	none	deepseek-chat	20260719T104535
+TGF-β3	2	growth_factor	TGF-β3	none	deepseek-chat	20260719T104535
+collagenase type I	2	other	collagenase type I	none	deepseek-chat	20260719T104535
+collagenase 2	2	other	collagenase 2	none	deepseek-chat	20260719T104535
+Essential 8	2	other	Essential 8	none	deepseek-chat	20260719T104535
+Hoechst 33,342	2	other	Hoechst 33,342	none	deepseek-chat	20260719T104535
+proliferation medium	2	other	proliferation medium	none	deepseek-chat	20260719T104535
+hormones	2	growth_factor	hormones	none	deepseek-chat	20260719T104535
+Oil Red O	2	other	Oil Red O	none	deepseek-chat	20260719T104535
+RIPA lysis buffer	2	other	RIPA lysis buffer	none	deepseek-chat	20260719T104535
+TRIzol reagent	2	other	TRIzol reagent	none	deepseek-chat	20260719T104535
+isopropanol	2	other	isopropanol	none	deepseek-chat	20260719T104535
+Ham's F-10 medium	2	basal	Ham's F-10 medium	none	deepseek-chat	20260719T104535
+PSA	2	supplement	PSA	none	deepseek-chat	20260719T104535
+secondary antibody	2	other	secondary antibody	none	deepseek-chat	20260719T104535
+Triton-X	2	other	Triton-X	none	deepseek-chat	20260719T104535
+distilled water	2	other	distilled water	none	deepseek-chat	20260719T104535
+transforming growth factor beta	2	growth_factor	transforming growth factor beta	none	deepseek-chat	20260719T104535
+HSA	2	albumin	HSA	none	deepseek-chat	20260719T104535
+Fetuin	2	protein	Fetuin	none	deepseek-chat	20260719T104535
+Hoechst	2	other	Hoechst	none	deepseek-chat	20260719T104535
+formaldehyde	2	other	formaldehyde	none	deepseek-chat	20260719T104535
+ISS	2	basal	ISS	none	deepseek-chat	20260719T104535
+inorganic salt solution	2	basal	inorganic salt solution	none	deepseek-chat	20260719T104535
+phenol red	2	indicator	phenol red	none	deepseek-chat	20260719T104535
+SYBR Green	2	other	SYBR Green	none	deepseek-chat	20260719T104535
+MTS reagent	2	other	MTS reagent	none	deepseek-chat	20260719T104535
+collagenase II	2	other	collagenase II	none	deepseek-chat	20260719T104535
+CaCl2	2	small_molecule	CaCl2	none	deepseek-chat	20260719T104535
+Pax7	2	other	Pax7	none	deepseek-chat	20260719T104535
+RIPA buffer	2	other	RIPA buffer	none	deepseek-chat	20260719T104535
+MyoD	2	other	MyoD	none	deepseek-chat	20260719T104535
+BCA protein assay kit	2	other	BCA protein assay kit	none	deepseek-chat	20260719T104535
+F10	2	basal	F10	none	deepseek-chat	20260719T104535
+collagenase	2	other	collagenase	none	deepseek-chat	20260719T104535
+antibiotic-antimycotic solution	2	supplement	antibiotic-antimycotic solution	none	deepseek-chat	20260719T104535
+commercial heat stable FGF2	2	growth_factor	commercial heat stable FGF2	none	deepseek-chat	20260719T104535
+NaCl	2	small_molecule	NaCl	none	deepseek-chat	20260719T104535
+nisin	2	small_molecule	nisin	none	deepseek-chat	20260719T104535
+recombinant FGF2-G3	2	growth_factor	recombinant FGF2-G3	none	deepseek-chat	20260719T104535
+indomethacin	2	small_molecule	indomethacin	none	deepseek-chat	20260719T104535
+Trizol reagent	2	other	Trizol reagent	none	deepseek-chat	20260719T104535
+collagenase type IV	2	other	collagenase type IV	none	deepseek-chat	20260719T104535
+Hydrocortisone	2	small_molecule	Hydrocortisone	none	deepseek-chat	20260719T104535
+Progesterone	2	small_molecule	Progesterone	none	deepseek-chat	20260719T104535
+linolenic acid	2	lipid	linolenic acid	none	deepseek-chat	20260719T104535
+palmitic acid	2	lipid	palmitic acid	none	deepseek-chat	20260719T104535
+Matrigel Matrix	2	other	Matrigel Matrix	none	deepseek-chat	20260719T104535
+neutral buffered formalin	2	other	neutral buffered formalin	none	deepseek-chat	20260719T104535
+Dulbecco’s Modified Eagle’s Medium	2	basal	Dulbecco’s Modified Eagle’s Medium	none	deepseek-chat	20260719T104535
+Trypsin–EDTA	2	other	Trypsin–EDTA	none	deepseek-chat	20260719T104535
+NRG1	2	growth_factor	NRG1	none	deepseek-chat	20260719T104535
+FGF2-G3	2	growth_factor	FGF2-G3	none	deepseek-chat	20260719T104535
+cDNA synthesis kit	2	other	cDNA synthesis kit	none	deepseek-chat	20260719T104535
+growth medium	2	basal	growth medium	none	deepseek-chat	20260719T104535
+phenyl methyl sulfonyl fluoride	2	other	phenyl methyl sulfonyl fluoride	none	deepseek-chat	20260719T104535
+myoglobin	2	protein	myoglobin	none	deepseek-chat	20260719T104535
+methionine	2	small_molecule	methionine	none	deepseek-chat	20260719T104535
+LIVE stain	2	other	LIVE stain	none	deepseek-chat	20260719T104535
+AlamarBlue	2	other	AlamarBlue	none	deepseek-chat	20260719T104535
+water	2	other	water	none	deepseek-chat	20260719T104535
+ascorbic acid-2-phosphate	2	vitamin	ascorbic acid-2-phosphate	none	deepseek-chat	20260719T104535
+P/S	2	supplement	P/S	none	deepseek-chat	20260719T104535
+Hoechst 33342 solution	2	small_molecule	Hoechst 33342 solution	none	deepseek-chat	20260719T104535
+minerals	2	other	minerals	none	deepseek-chat	20260719T104535
+antibodies	2	other	antibodies	none	deepseek-chat	20260719T104535
+protease inhibitor	2	other	protease inhibitor	none	deepseek-chat	20260719T104535
+decorin	2	growth_factor	decorin	none	deepseek-chat	20260719T104535
+MS	2	basal	MS	none	deepseek-chat	20260719T104535
+CCK-8	2	other	CCK-8	none	deepseek-chat	20260719T104535
+mTOR	2	protein	mTOR	none	deepseek-chat	20260719T104535
+p38 MAPK inhibitor	1	small_molecule	p38 MAPK inhibitor	none	deepseek-chat	20260719T104535
+PM+ medium	1	basal	PM+ medium	none	deepseek-chat	20260719T104535
+SkFM medium	1	basal	SkFM medium	none	deepseek-chat	20260719T104535
+Ultroser	1	supplement	Ultroser	none	deepseek-chat	20260719T104535
+ERK inhibitor	1	small_molecule	ERK inhibitor	none	deepseek-chat	20260719T104535
+TGFβ	1	growth_factor	TGFβ	none	deepseek-chat	20260719T104535
+SFDM	1	basal	SFDM	none	deepseek-chat	20260719T104535
+ERKi	1	small_molecule	ERKi	none	deepseek-chat	20260719T104535
+NL15 medium	1	basal	NL15 medium	none	deepseek-chat	20260719T104535
+Laminin521	1	protein	Laminin521	none	deepseek-chat	20260719T104535
+LDH	1	protein	LDH	none	deepseek-chat	20260719T104535
+ammonium	1	small_molecule	ammonium	none	deepseek-chat	20260719T104535
+lactate dehydrogenase	1	protein	lactate dehydrogenase	none	deepseek-chat	20260719T104535
+insulin-like growth factor 2	1	growth_factor	insulin-like growth factor 2	none	deepseek-chat	20260719T104535
+Trypan blue staining solution	1	other	Trypan blue staining solution	none	deepseek-chat	20260719T104535
+trypsin–EDTA solution	1	other	trypsin–EDTA solution	none	deepseek-chat	20260719T104535
+Daigo IMK medium	1	basal	Daigo IMK medium	none	deepseek-chat	20260719T104535
+Daigo artificial seawater SP	1	basal	Daigo artificial seawater SP	none	deepseek-chat	20260719T104535
+pepsin	1	other	pepsin	none	deepseek-chat	20260719T104535
+sodium tetrahydroborate	1	small_molecule	sodium tetrahydroborate	none	deepseek-chat	20260719T104535
+o-phthalaldehyde	1	other	o-phthalaldehyde	none	deepseek-chat	20260719T104535
+2-mercaptoethanol	1	small_molecule	2-mercaptoethanol	none	deepseek-chat	20260719T104535
+SDS	1	small_molecule	SDS	none	deepseek-chat	20260719T104535
+Tryptic Soy Broth	1	basal	Tryptic Soy Broth	none	deepseek-chat	20260719T104535
+TSB	1	basal	TSB	none	deepseek-chat	20260719T104535
+OPA	1	other	OPA	none	deepseek-chat	20260719T104535
+culture media	1	basal	culture media	none	deepseek-chat	20260719T104535
+TGF-1	1	growth_factor	TGF-1	none	deepseek-chat	20260719T104535
+TGF-3	1	growth_factor	TGF-3	none	deepseek-chat	20260719T104535
+recombinant growth factor	1	growth_factor	recombinant growth factor	none	deepseek-chat	20260719T104535
+TGFβ-3	1	growth_factor	TGFβ-3	none	deepseek-chat	20260719T104535
+culture medium	1	basal	culture medium	none	deepseek-chat	20260719T104535
+neuregulin 1 (NRG-1)	1	growth_factor	neuregulin 1	none	deepseek-chat	20260719T104535
+interleukin 6 (IL-6)	1	growth_factor	interleukin 6	none	deepseek-chat	20260719T104535
+PY-60	1	small_molecule	PY-60	none	deepseek-chat	20260719T104535
+5-azacytidine (5-Aza)	1	small_molecule	5-azacytidine	none	deepseek-chat	20260719T104535
+CP-690550	1	small_molecule	CP-690550	none	deepseek-chat	20260719T104535
+SB203580	1	small_molecule	SB203580	none	deepseek-chat	20260719T104535
+Beefy-F	1	basal	Beefy-F	none	deepseek-chat	20260719T104535
+rutaecarpine	1	small_molecule	rutaecarpine	none	deepseek-chat	20260719T104535
+Beefy-S	1	basal	Beefy-S	none	deepseek-chat	20260719T104535
+metformin	1	small_molecule	metformin	none	deepseek-chat	20260719T104535
+LPA	1	small_molecule	LPA	none	deepseek-chat	20260719T104535
+β-Nicotinamide mononucleotide (β-NM)	1	small_molecule	β-Nicotinamide mononucleotide	none	deepseek-chat	20260719T104535
+SP600125	1	small_molecule	SP600125	none	deepseek-chat	20260719T104535
+repsox	1	small_molecule	repsox	none	deepseek-chat	20260719T104535
+GA-017	1	small_molecule	GA-017	none	deepseek-chat	20260719T104535
+Beefy-F + S	1	basal	Beefy-F + S	none	deepseek-chat	20260719T104535
+ISX9	1	small_molecule	ISX9	none	deepseek-chat	20260719T104535
+B8 basal medium	1	basal	B8 basal medium	none	deepseek-chat	20260719T104535
+PD0325901	1	small_molecule	PD0325901	none	deepseek-chat	20260719T104535
+BML-284	1	small_molecule	BML-284	none	deepseek-chat	20260719T104535
+limonin	1	small_molecule	limonin	none	deepseek-chat	20260719T104535
+LY2090314	1	small_molecule	LY2090314	none	deepseek-chat	20260719T104535
+valproic acid (VPA)	1	small_molecule	valproic acid	none	deepseek-chat	20260719T104535
+Penicillin-Streptomycin-Amphotericin B	1	supplement	Penicillin-Streptomycin-Amphotericin B	none	deepseek-chat	20260719T104535
+MEM amino acids solution	1	supplement	MEM amino acids solution	none	deepseek-chat	20260719T104535
+heat inactivated fetal bovine serum	1	serum	heat inactivated fetal bovine serum	none	deepseek-chat	20260719T104535
+ITSE	1	supplement	ITSE	none	deepseek-chat	20260719T104535
+lysophosphatidic acid	1	lipid	lysophosphatidic acid	none	deepseek-chat	20260719T104535
+bHGF	1	growth_factor	bHGF	none	deepseek-chat	20260719T104535
+TrypLE™Select Enzyme	1	other	TrypLE™Select Enzyme	none	deepseek-chat	20260719T104535
+acetylcholine	1	small_molecule	acetylcholine	none	deepseek-chat	20260719T104535
+bFGF-2	1	growth_factor	bFGF-2	none	deepseek-chat	20260719T104535
+phosphate-buffered saline (PBS)	1	other	phosphate-buffered saline	none	deepseek-chat	20260719T104535
+chemically defined media	1	other	chemically defined media	none	deepseek-chat	20260719T104535
+nicotinamide	1	vitamin	nicotinamide	none	deepseek-chat	20260719T104535
+Advanced Dulbecco's modified Eagle's medium (DMEM)	1	basal	Advanced Dulbecco's modified Eagle's medium	none	deepseek-chat	20260719T104535
+mouse EGF	1	growth_factor	mouse EGF	none	deepseek-chat	20260719T104535
+B-27 supplement	1	supplement	B-27 supplement	none	deepseek-chat	20260719T104535
+low-glucose DMEM	1	basal	low-glucose DMEM	none	deepseek-chat	20260719T104535
+serum-free low-glucose DMEM	1	basal	serum-free low-glucose DMEM	none	deepseek-chat	20260719T104535
+A83-01	1	small_molecule	A83-01	none	deepseek-chat	20260719T104535
+TrypLE Express Enzyme solution	1	other	TrypLE Express Enzyme solution	none	deepseek-chat	20260719T104535
+human platelet lysate	1	other	human platelet lysate	none	deepseek-chat	20260719T104535
+Wnt, Noggin, and R-Spondin conditioned medium	1	growth_factor	Wnt, Noggin, and R-Spondin conditioned medium	none	deepseek-chat	20260719T104535
+N-Acetyl-L-cysteine	1	small_molecule	N-Acetyl-L-cysteine	none	deepseek-chat	20260719T104535
+Liberase TM	1	other	Liberase TM	none	deepseek-chat	20260719T104535
+algal extracts	1	other	algal extracts	none	deepseek-chat	20260719T104535
+insect-derived components	1	other	insect-derived components	none	deepseek-chat	20260719T104535
+FITC-labeled anti-sheep CD45	1	other	FITC-labeled anti-sheep CD45	none	deepseek-chat	20260719T104535
+G-CSF	1	growth_factor	G-CSF	none	deepseek-chat	20260719T104535
+C. vulgaris extract	1	hydrolysate	C. vulgaris extract	none	deepseek-chat	20260719T104535
+epidermal growth factor-1	1	growth_factor	epidermal growth factor-1	none	deepseek-chat	20260719T104535
+transforming growth factor-β3	1	growth_factor	transforming growth factor-β3	none	deepseek-chat	20260719T104535
+transferrin-insulin-LPA complex	1	supplement	transferrin-insulin-LPA complex	none	deepseek-chat	20260719T104535
+FITC-labeled anti-sheep CD31	1	other	FITC-labeled anti-sheep CD31	none	deepseek-chat	20260719T104535
+L-ascorbic acid (2-phosphate)	1	vitamin	L-ascorbic acid	none	deepseek-chat	20260719T104535
+neuregulin-1	1	growth_factor	neuregulin-1	none	deepseek-chat	20260719T104535
+APC-labeled anti-human CD29 antibody	1	other	APC-labeled anti-human CD29 antibody	none	deepseek-chat	20260719T104535
+PE-Cy7-labeled anti-human CD56	1	other	PE-Cy7-labeled anti-human CD56	none	deepseek-chat	20260719T104535
+buffers	1	other	buffers	none	deepseek-chat	20260719T104535
+penicilline/streptomycin/amphotericin	1	supplement	penicilline/streptomycin/amphotericin	none	deepseek-chat	20260719T104535
+penicillin/streptomycin/amphotericin	1	supplement	penicillin/streptomycin/amphotericin	none	deepseek-chat	20260719T104535
+cellTiter96 AQueous reagent	1	other	cellTiter96 AQueous reagent	none	deepseek-chat	20260719T104535
+MatrigelTM	1	other	MatrigelTM	none	deepseek-chat	20260719T104535
+Optimem I	1	basal	Optimem I	none	deepseek-chat	20260719T104535
+Qubit dsDNA BR assay	1	other	Qubit dsDNA BR assay	none	deepseek-chat	20260719T104535
+Rhodamine	1	other	Rhodamine	none	deepseek-chat	20260719T104535
+iQ SYBR Green supermix	1	other	iQ SYBR Green supermix	none	deepseek-chat	20260719T104535
+Trypsin/EDTA	1	other	Trypsin/EDTA	none	deepseek-chat	20260719T104535
+RLT lysis buffer	1	other	RLT lysis buffer	none	deepseek-chat	20260719T104535
+advanced Dulbecco’s modified Eagle’s medium	1	basal	advanced Dulbecco’s modified Eagle’s medium	none	deepseek-chat	20260719T104535
+FGF1	1	growth_factor	FGF1	none	deepseek-chat	20260719T104535
+proliferative growth media	1	other	proliferative growth media	none	deepseek-chat	20260719T104535
+fetuin powder	1	protein	fetuin powder	none	deepseek-chat	20260719T104535
+Tri-basal 2.0+	1	other	Tri-basal 2.0+	none	deepseek-chat	20260719T104535
+HT	1	supplement	HT	none	deepseek-chat	20260719T104535
+FGF2 Ento-version	1	growth_factor	FGF2 Ento-version	none	deepseek-chat	20260719T104535
+Tri-basal	1	other	Tri-basal	none	deepseek-chat	20260719T104535
+VTN-N	1	protein	VTN-N	none	deepseek-chat	20260719T104535
+NEAA	1	supplement	NEAA	none	deepseek-chat	20260719T104535
+Tri-basal 2.0	1	other	Tri-basal 2.0	none	deepseek-chat	20260719T104535
+EntoEngine FGF2	1	growth_factor	EntoEngine FGF2	none	deepseek-chat	20260719T104535
+WST-1	1	other	WST-1	none	deepseek-chat	20260719T104535
+Tri-basal 2.0+ Ento	1	other	Tri-basal 2.0+ Ento	none	deepseek-chat	20260719T104535
+PGM	1	other	PGM	none	deepseek-chat	20260719T104535
+BSA solution	1	albumin	BSA solution	none	deepseek-chat	20260719T104535
+IGF2	1	growth_factor	IGF2	none	deepseek-chat	20260719T104535
+platelet lysate	1	supplement	platelet lysate	none	deepseek-chat	20260719T104535
+CEE + 3%HS-DM	1	other	CEE + 3%HS-DM	none	deepseek-chat	20260719T104535
+differentiation medium	1	other	differentiation medium	none	deepseek-chat	20260719T104535
+Wnt signaling	1	other	Wnt signaling	none	deepseek-chat	20260719T104535
+sericin protein	1	protein	sericin protein	none	deepseek-chat	20260719T104535
+5% FBS-DM	1	other	FBS-DM	none	deepseek-chat	20260719T104535
+decellularized green onion scaffold	1	other	decellularized green onion scaffold	none	deepseek-chat	20260719T104535
+serum albumin	1	protein	serum albumin	none	deepseek-chat	20260719T104535
+15% FBS-containing medium	1	other	FBS-containing medium	none	deepseek-chat	20260719T104535
+plant origin	1	other	plant origin	none	deepseek-chat	20260719T104535
+high-glucose DMEM	1	basal	high-glucose DMEM	none	deepseek-chat	20260719T104535
+chick embryo extract	1	supplement	chick embryo extract	none	deepseek-chat	20260719T104535
+bovine colostrum	1	supplement	bovine colostrum	none	deepseek-chat	20260719T104535
+CEE	1	supplement	CEE	none	deepseek-chat	20260719T104535
+growth medium (GM)	1	basal	growth medium	none	deepseek-chat	20260719T104535
+induction medium (DM1)	1	basal	induction medium	none	deepseek-chat	20260719T104535
+serum-containing media (FBS)	1	basal	serum-containing media	none	deepseek-chat	20260719T104535
+serum-free medium (SFM)	1	basal	serum-free medium	none	deepseek-chat	20260719T104535
+acetate	1	small_molecule	acetate	none	deepseek-chat	20260719T104535
+maintenance medium (DM2)	1	basal	maintenance medium	none	deepseek-chat	20260719T104535
+PVDF membrane	1	other	PVDF membrane	none	deepseek-chat	20260719T104535
+glacial acetic acid	1	other	glacial acetic acid	none	deepseek-chat	20260719T104535
+Reverse Transcription Master Premix	1	other	Reverse Transcription Master Premix	none	deepseek-chat	20260719T104535
+CD29 antibody	1	other	CD29 antibody	none	deepseek-chat	20260719T104535
+SYBR Green solution	1	other	SYBR Green solution	none	deepseek-chat	20260719T104535
+freezing media	1	other	freezing media	none	deepseek-chat	20260719T104535
+Bradford assay	1	other	Bradford assay	none	deepseek-chat	20260719T104535
+Affinity Purified Goat Anti-Mouse IgG (H+L) HRP-conjugated antibody	1	other	Affinity Purified Goat Anti-Mouse IgG HRP-conjugated antibody	none	deepseek-chat	20260719T104535
+CPE	1	supplement	CPE	none	deepseek-chat	20260719T104535
+3-isobutyl-1-methylxanthine	1	small_molecule	3-isobutyl-1-methylxanthine	none	deepseek-chat	20260719T104535
+nobiletin	1	small_molecule	nobiletin	none	deepseek-chat	20260719T104535
+dimethyl-sulfoxide	1	small_molecule	dimethyl-sulfoxide	none	deepseek-chat	20260719T104535
+MTS solution	1	other	MTS solution	none	deepseek-chat	20260719T104535
+TGX Precast Gels	1	other	TGX Precast Gels	none	deepseek-chat	20260719T104535
+PDGARA primary antibody	1	other	PDGARA primary antibody	none	deepseek-chat	20260719T104535
+CD56 antibody	1	other	CD56 antibody	none	deepseek-chat	20260719T104535
+ultrapure water	1	other	ultrapure water	none	deepseek-chat	20260719T104535
+lipoic acid	1	small_molecule	lipoic acid	none	deepseek-chat	20260719T104535
+2-phospho-L-ascorbic acid trisodium salt	1	small_molecule	2-phospho-L-ascorbic acid trisodium salt	none	deepseek-chat	20260719T104535
+cottonseed oil	1	lipid	cottonseed oil	none	deepseek-chat	20260719T104535
+Dulbecco's Modified Eagle Medium/Hams’ F12	1	basal	Dulbecco's Modified Eagle Medium/Hams’ F12	none	deepseek-chat	20260719T104535
+starch hydrolysate	1	hydrolysate	starch hydrolysate	none	deepseek-chat	20260719T104535
+4-(2-hydroxyethyl)-1-piperazineethanesulfonic acid	1	small_molecule	4--1-piperazineethanesulfonic acid	none	deepseek-chat	20260719T104535
+antibiotics/antimycotics	1	supplement	antibiotics/antimycotics	none	deepseek-chat	20260719T104535
+Essential 8TM	1	basal	Essential 8TM	none	deepseek-chat	20260719T104535
+neuregulin	1	growth_factor	neuregulin	none	deepseek-chat	20260719T104535
+Additional NaHCO3	1	small_molecule	Additional NaHCO3	none	deepseek-chat	20260719T104535
+hIL-6	1	growth_factor	hIL-6	none	deepseek-chat	20260719T104535
+Gibco™TrypLE™Select Enzyme	1	other	Gibco™TrypLE™Select Enzyme	none	deepseek-chat	20260719T104535
+Gibco™ 0.25% Trypsin-EDTA	1	other	Gibco™ 0.25% Trypsin-EDTA	none	deepseek-chat	20260719T104535
+Somatotropin	1	growth_factor	Somatotropin	none	deepseek-chat	20260719T104535
+ITS-X	1	supplement	ITS-X	none	deepseek-chat	20260719T104535
+Asc-2-P	1	vitamin	Asc-2-P	none	deepseek-chat	20260719T104535
+CellTiter 96® Aqueous One Solution Reagent	1	other	CellTiter 96® Aqueous One Solution Reagent	none	deepseek-chat	20260719T104535
+Heparan sulphate	1	supplement	Heparan sulphate	none	deepseek-chat	20260719T104535
+bIL-6	1	growth_factor	bIL-6	none	deepseek-chat	20260719T104535
+Vitronectin	1	protein	Vitronectin	none	deepseek-chat	20260719T104535
+Chloroform	1	other	Chloroform	none	deepseek-chat	20260719T104535
+DEPC Water	1	other	DEPC Water	none	deepseek-chat	20260719T104535
+Trizol	1	other	Trizol	none	deepseek-chat	20260719T104535
+MG Stain	1	other	MG Stain	none	deepseek-chat	20260719T104535
+Antibiotic-Antimycotic (A.A)	1	supplement	Antibiotic-Antimycotic	none	deepseek-chat	20260719T104535
+Dulbecco's Modified Eagle's Medium/Nutrient Mixture F-12 (DMEM/F-12)	1	basal	Dulbecco's Modified Eagle's Medium/Nutrient Mixture F-12	none	deepseek-chat	20260719T104535
+Hoechst 33,342 dye	1	other	Hoechst 33,342 dye	none	deepseek-chat	20260719T104535
+Horse Serum (HS)	1	supplement	Horse Serum	none	deepseek-chat	20260719T104535
+Kanamycin	1	supplement	Kanamycin	none	deepseek-chat	20260719T104535
+Mito Tracker Red CMX-ROS	1	other	Mito Tracker Red CMX-ROS	none	deepseek-chat	20260719T104535
+Dulbecco's Modified Eagle's Medium (DMEM)	1	basal	Dulbecco's Modified Eagle's Medium	none	deepseek-chat	20260719T104535
+Giemsa staining solution	1	other	Giemsa staining solution	none	deepseek-chat	20260719T104535
+pronase solution	1	other	pronase solution	none	deepseek-chat	20260719T104535
+lysine	1	small_molecule	lysine	none	deepseek-chat	20260719T104535
+sterile distilled water	1	other	sterile distilled water	none	deepseek-chat	20260719T104535
+conditioned medium	1	other	conditioned medium	none	deepseek-chat	20260719T104535
+DMEM-CM	1	other	DMEM-CM	none	deepseek-chat	20260719T104535
+CVNM-based conditioned media	1	other	CVNM-based conditioned media	none	deepseek-chat	20260719T104535
+UFE	1	hydrolysate	UFE	none	deepseek-chat	20260719T104535
+acid hydrolysis extract	1	hydrolysate	acid hydrolysis extract	none	deepseek-chat	20260719T104535
+CVNM-CM	1	other	CVNM-CM	none	deepseek-chat	20260719T104535
+AHE	1	hydrolysate	AHE	none	deepseek-chat	20260719T104535
+sodium chloride solution	1	supplement	sodium chloride solution	none	deepseek-chat	20260719T104535
+DMEM-based conditioned media	1	other	DMEM-based conditioned media	none	deepseek-chat	20260719T104535
+C. vulgaris-derived nutrient media	1	basal	C. vulgaris-derived nutrient media	none	deepseek-chat	20260719T104535
+ultrasonic fractionated extract	1	hydrolysate	ultrasonic fractionated extract	none	deepseek-chat	20260719T104535
+CVNM	1	basal	CVNM	none	deepseek-chat	20260719T104535
+sodium dihydrogenphosphate	1	inorganic_salt	sodium dihydrogenphosphate	none	deepseek-chat	20260719T104535
+asparagine	1	amino_acid	asparagine	none	deepseek-chat	20260719T104535
+iron(III) nitrate enneahydrate	1	inorganic_salt	iron nitrate enneahydrate	none	deepseek-chat	20260719T104535
+potassium chloride	1	inorganic_salt	potassium chloride	none	deepseek-chat	20260719T104535
+magnesium sulfate	1	inorganic_salt	magnesium sulfate	none	deepseek-chat	20260719T104535
+CM	1	other	CM	none	deepseek-chat	20260719T104535
+ECC	1	hydrolysate	ECC	none	deepseek-chat	20260719T104535
+ECC_CPS1	1	hydrolysate	ECC_CPS1	none	deepseek-chat	20260719T104535
+antibiotic mixture	1	supplement	antibiotic mixture	none	deepseek-chat	20260719T104535
+cDNA Reverse Transcription Kit	1	other	cDNA Reverse Transcription Kit	none	deepseek-chat	20260719T104535
+ECC_CPS3	1	hydrolysate	ECC_CPS3	none	deepseek-chat	20260719T104535
+ECC_CPS	1	hydrolysate	ECC_CPS	none	deepseek-chat	20260719T104535
+CellTiter 96® Proliferation Assay	1	other	CellTiter 96® Proliferation Assay	none	deepseek-chat	20260719T104535
+Total RNA Extraction Kit	1	other	Total RNA Extraction Kit	none	deepseek-chat	20260719T104535
+ECC_CPS2	1	hydrolysate	ECC_CPS2	none	deepseek-chat	20260719T104535
+trifluoroacetic acid	1	small_molecule	trifluoroacetic acid	none	deepseek-chat	20260719T104535
+ACK lysis buffer	1	other	ACK lysis buffer	none	deepseek-chat	20260719T104535
+egg yolk extract	1	supplement	egg yolk extract	none	deepseek-chat	20260719T104535
+complex serum substitutes	1	supplement	complex serum substitutes	none	deepseek-chat	20260719T104535
+serum substitute	1	supplement	serum substitute	none	deepseek-chat	20260719T104535
+food ingredient basal medium	1	basal	food ingredient basal medium	none	deepseek-chat	20260719T104535
+Dulbecco's Modified Eagle's Medium	1	basal	Dulbecco's Modified Eagle's Medium	none	deepseek-chat	20260719T104535
+luria bertani	1	basal	luria bertani	none	deepseek-chat	20260719T104535
+amino acid	1	supplement	amino acid	none	deepseek-chat	20260719T104535
+TGF-ß	1	growth_factor	TGF-ß	none	deepseek-chat	20260719T104535
+terrific broth	1	basal	terrific broth	none	deepseek-chat	20260719T104535
+DMEM + GlutaMax	1	basal	DMEM + GlutaMax	none	deepseek-chat	20260719T104535
+CyQuant Reagent	1	other	CyQuant Reagent	none	deepseek-chat	20260719T104535
+human FGF-basic	1	growth_factor	human FGF-basic	none	deepseek-chat	20260719T104535
+mouse laminin	1	protein	mouse laminin	none	deepseek-chat	20260719T104535
+Pluronic F-127	1	other	Pluronic F-127	none	deepseek-chat	20260719T104535
+aminocaproic acid	1	small_molecule	aminocaproic acid	none	deepseek-chat	20260719T104535
+hemoglobin from bovine blood	1	protein	hemoglobin from bovine blood	none	deepseek-chat	20260719T104535
+myoglobin from equine skeletal muscle	1	protein	myoglobin from equine skeletal muscle	none	deepseek-chat	20260719T104535
+thrombin from bovine plasma	1	protein	thrombin from bovine plasma	none	deepseek-chat	20260719T104535
+antibiotic–antimycotic	1	supplement	antibiotic–antimycotic	none	deepseek-chat	20260719T104535
+bovine concentrated plasma fibrinogen	1	protein	bovine concentrated plasma fibrinogen	none	deepseek-chat	20260719T104535
+DMEM Glutamax	1	basal	DMEM Glutamax	none	deepseek-chat	20260719T104535
+iMatrix recombinant laminin-511	1	protein	iMatrix recombinant laminin-511	none	deepseek-chat	20260719T104535
+DMEM + Glutamax	1	basal	DMEM + Glutamax	none	deepseek-chat	20260719T104535
+Griess reagent	1	other	Griess reagent	none	deepseek-chat	20260719T104535
+FITC anti-sheep CD45	1	other	FITC anti-sheep CD45	none	deepseek-chat	20260719T104535
+myosin 4 monoclonal antibody	1	other	myosin 4 monoclonal antibody	none	deepseek-chat	20260719T104535
+antibiotics	1	supplement	antibiotics	none	deepseek-chat	20260719T104535
+PE-CyTM7 anti-human CD56	1	other	PE-CyTM7 anti-human CD56	none	deepseek-chat	20260719T104535
+secondary goat anti-mouse IgG1 cross-adsorbed antibody	1	other	secondary goat anti-mouse IgG1 cross-adsorbed antibody	none	deepseek-chat	20260719T104535
+EveryBlot Blocking buffer	1	other	EveryBlot Blocking buffer	none	deepseek-chat	20260719T104535
+CellTiter 96® AQueous One Solution Cell Proliferation Assay	1	other	CellTiter 96® AQueous One Solution Cell Proliferation Assay	none	deepseek-chat	20260719T104535
+PSA antibiotics	1	supplement	PSA antibiotics	none	deepseek-chat	20260719T104535
+myosin	1	other	myosin	none	deepseek-chat	20260719T104535
+sodium orthovanadate	1	other	sodium orthovanadate	none	deepseek-chat	20260719T104535
+SDS sample buffer	1	other	SDS sample buffer	none	deepseek-chat	20260719T104535
+penicillin-streptomycin-amphotericin B solution	1	supplement	penicillin-streptomycin-amphotericin B solution	none	deepseek-chat	20260719T104535
+FITC anti-sheep CD31	1	other	FITC anti-sheep CD31	none	deepseek-chat	20260719T104535
+Ham's F-10 nutrient mix	1	basal	Ham's F-10 nutrient mix	none	deepseek-chat	20260719T104535
+APC anti-human CD29 Antibody	1	other	APC anti-human CD29 Antibody	none	deepseek-chat	20260719T104535
+trypsin neutralization solution	1	other	trypsin neutralization solution	none	deepseek-chat	20260719T104535
+cell culture freezing medium	1	other	cell culture freezing medium	none	deepseek-chat	20260719T104535
+protease inhibitor cocktail	1	other	protease inhibitor cocktail	none	deepseek-chat	20260719T104535
+monoclonal anti-β-actin antibody	1	other	monoclonal anti-β-actin antibody	none	deepseek-chat	20260719T104535
+Tom20	1	other	Tom20	none	deepseek-chat	20260719T104535
+secondary goat anti-rabbit IgG cross-adsorbed antibody	1	other	secondary goat anti-rabbit IgG cross-adsorbed antibody	none	deepseek-chat	20260719T104535
+MTS	1	other	MTS	none	deepseek-chat	20260719T104535
+advanced Dulbecco's modified Eagle's medium	1	basal	advanced Dulbecco's modified Eagle's medium	none	deepseek-chat	20260719T104535
+skeletal muscle cell basal medium	1	basal	skeletal muscle cell basal medium	none	deepseek-chat	20260719T104535
+propidium iodide	1	other	propidium iodide	none	deepseek-chat	20260719T104535
+goat anti-mouse IgG (H+L)-Alexa Fluor 488	1	other	goat anti-mouse IgG-Alexa Fluor 488	none	deepseek-chat	20260719T104535
+DAPI	1	other	DAPI	none	deepseek-chat	20260719T104535
+collagen type 1	1	other	collagen type 1	none	deepseek-chat	20260719T104535
+anti-APC microbeads	1	other	anti-APC microbeads	none	deepseek-chat	20260719T104535
+ADMEM	1	basal	ADMEM	none	deepseek-chat	20260719T104535
+PI	1	other	PI	none	deepseek-chat	20260719T104535
+human allophycocyanin (hAPC)-CD29+	1	other	human allophycocyanin-CD29+	none	deepseek-chat	20260719T104535
+anti-myosin (Skeletal, Fast) antibody	1	other	anti-myosin antibody	none	deepseek-chat	20260719T104535
+4',6-diamidino-2-phenylindole	1	other	4',6-diamidino-2-phenylindole	none	deepseek-chat	20260719T104535
+Dulbecco's PBS	1	other	Dulbecco's PBS	none	deepseek-chat	20260719T104535
+Alexa Fluor 488	1	other	Alexa Fluor 488	none	deepseek-chat	20260719T104535
+Alexa Fluor 594	1	other	Alexa Fluor 594	none	deepseek-chat	20260719T104535
+PromoCell GM	1	supplement	PromoCell GM	none	deepseek-chat	20260719T104535
+PromoCell DM	1	supplement	PromoCell DM	none	deepseek-chat	20260719T104535
+formalin	1	other	formalin	none	deepseek-chat	20260719T104535
+B9	1	supplement	B9	none	deepseek-chat	20260719T104535
+hAPC-CD59+	1	other	hAPC-CD59+	none	deepseek-chat	20260719T104535
+supplement mix	1	supplement	supplement mix	none	deepseek-chat	20260719T104535
+skeletal muscle cell DM	1	basal	skeletal muscle cell DM	none	deepseek-chat	20260719T104535
+His-Tag Antibody HRP Conjugate	1	other	His-Tag Antibody HRP Conjugate	none	deepseek-chat	20260719T104535
+Dulbecco's modified Eagle's medium (DMEM)/F12 media	1	basal	Dulbecco's modified Eagle's medium/F12 media	none	deepseek-chat	20260719T104535
+mutanolysin	1	protein	mutanolysin	none	deepseek-chat	20260719T104535
+Imidazole	1	small_molecule	Imidazole	none	deepseek-chat	20260719T104535
+chloramphenicol	1	small_molecule	chloramphenicol	none	deepseek-chat	20260719T104535
+CyQuant XTT cell viability assay	1	other	CyQuant XTT cell viability assay	none	deepseek-chat	20260719T104535
+Ni-NTA Agarose	1	other	Ni-NTA Agarose	none	deepseek-chat	20260719T104535
+M17	1	basal	M17	none	deepseek-chat	20260719T104535
+urea	1	small_molecule	urea	none	deepseek-chat	20260719T104535
+Clarity Western ECL Blotting Substrate	1	other	Clarity Western ECL Blotting Substrate	none	deepseek-chat	20260719T104535
+lysozyme	1	protein	lysozyme	none	deepseek-chat	20260719T104535
+InstantBlue Coomassie Protein stain	1	other	InstantBlue Coomassie Protein stain	none	deepseek-chat	20260719T104535
+NaH2PO4	1	small_molecule	NaH2PO4	none	deepseek-chat	20260719T104535
+D-galactose	1	small_molecule	D-galactose	none	deepseek-chat	20260719T104535
+β-glycerophosphate	1	small_molecule	β-glycerophosphate	none	deepseek-chat	20260719T104535
+Rg2	1	small_molecule	Rg2	none	deepseek-chat	20260719T104535
+alizarin red S	1	other	alizarin red S	none	deepseek-chat	20260719T104535
+vitamin C	1	vitamin	vitamin C	none	deepseek-chat	20260719T104535
+ginsenoside Rg2	1	small_molecule	ginsenoside Rg2	none	deepseek-chat	20260719T104535
+oil red O	1	other	oil red O	none	deepseek-chat	20260719T104535
+Dulbecco's modified Eagle's medium/F12	1	basal	Dulbecco's modified Eagle's medium/F12	none	deepseek-chat	20260719T104535
+EDTA	1	other	EDTA	none	deepseek-chat	20260719T104535
+Fast SYBR	1	other	Fast SYBR	none	deepseek-chat	20260719T104535
+D-gal	1	small_molecule	D-gal	none	deepseek-chat	20260719T104535
+M-MLV reverse transcriptase	1	other	M-MLV reverse transcriptase	none	deepseek-chat	20260719T104535
+DCFH-DA	1	other	DCFH-DA	none	deepseek-chat	20260719T104535
+food-grade NaOH	1	other	food-grade NaOH	none	deepseek-chat	20260719T104535
+L-arginine HCl	1	other	L-arginine HCl	none	deepseek-chat	20260719T104535
+L-histidine	1	other	L-histidine	none	deepseek-chat	20260719T104535
+FeCl3·6H2O	1	other	FeCl3·6H2O	none	deepseek-chat	20260719T104535
+Fe(NO3)3·9H2O	1	other	Fe3·9H2O	none	deepseek-chat	20260719T104535
+Dulbecco's Modified Eagle’s Medium	1	basal	Dulbecco's Modified Eagle’s Medium	none	deepseek-chat	20260719T104535
+glycerophosphatidylcholine	1	other	glycerophosphatidylcholine	none	deepseek-chat	20260719T104535
+chlorhexidine gluconate solution	1	other	chlorhexidine gluconate solution	none	deepseek-chat	20260719T104535
+food-grade-Dulbecco’s Modified Eagle’s Medium	1	basal	food-grade-Dulbecco’s Modified Eagle’s Medium	none	deepseek-chat	20260719T104535
+food-grade HCl	1	other	food-grade HCl	none	deepseek-chat	20260719T104535
+penicillin-streptomycin-amphotericin B	1	supplement	penicillin-streptomycin-amphotericin B	none	deepseek-chat	20260719T104535
+L-histidine HCl·H2O	1	other	L-histidine HCl·H2O	none	deepseek-chat	20260719T104535
+FG-DMEM	1	basal	FG-DMEM	none	deepseek-chat	20260719T104535
+choline chloride	1	other	choline chloride	none	deepseek-chat	20260719T104535
+L-arginine	1	other	L-arginine	none	deepseek-chat	20260719T104535
+insulin-transferrin-selenium supplement	1	supplement	insulin-transferrin-selenium supplement	none	deepseek-chat	20260719T104535
+Fibronectin	1	protein	Fibronectin	none	deepseek-chat	20260719T104535
+Neuregulin	1	growth_factor	Neuregulin	none	deepseek-chat	20260719T104535
+Calcium chloride	1	other	Calcium chloride	none	deepseek-chat	20260719T104535
+Insulin-Transferrin-Selenium-Ethanolamine	1	supplement	Insulin-Transferrin-Selenium-Ethanolamine	none	deepseek-chat	20260719T104535
+ClearX9	1	supplement	ClearX9	none	deepseek-chat	20260719T104535
+Putrescine	1	small_molecule	Putrescine	none	deepseek-chat	20260719T104535
+Ham's F10	1	basal	Ham's F10	none	deepseek-chat	20260719T104535
+Sodium Selenite	1	supplement	Sodium Selenite	none	deepseek-chat	20260719T104535
+Lipid concentrate	1	lipid	Lipid concentrate	none	deepseek-chat	20260719T104535
+Human IL-6	1	growth_factor	Human IL-6	none	deepseek-chat	20260719T104535
+Lysophosphatidic acid	1	lipid	Lysophosphatidic acid	none	deepseek-chat	20260719T104535
+BMP4	1	growth_factor	BMP4	none	deepseek-chat	20260719T104535
+Human serum albumin	1	albumin	Human serum albumin	none	deepseek-chat	20260719T104535
+NouSerum	1	supplement	NouSerum	none	deepseek-chat	20260719T104535
+microorganism-based growth medium supplement	1	supplement	microorganism-based growth medium supplement	none	deepseek-chat	20260719T104535
+FGF receptors	1	growth_factor	FGF receptors	none	deepseek-chat	20260719T104535
+Proliferum M	1	supplement	Proliferum M	none	deepseek-chat	20260719T104535
+RASG12V	1	growth_factor	RASG12V	none	deepseek-chat	20260719T104535
+Rosiglitazone	1	small_molecule	Rosiglitazone	none	deepseek-chat	20260719T104535
+Canola lipid mixture	1	lipid	Canola lipid mixture	none	deepseek-chat	20260719T104535
+Sodium Bicarbonate	1	other	Sodium Bicarbonate	none	deepseek-chat	20260719T104535
+B814	1	basal	B814	none	deepseek-chat	20260719T104535
+MEM Amino acid solution	1	supplement	MEM Amino acid solution	none	deepseek-chat	20260719T104535
+IGF1R	1	growth_factor	IGF1R	none	deepseek-chat	20260719T104535
+Dulbecco's phosphate-buffered saline	1	basal	Dulbecco's phosphate-buffered saline	none	deepseek-chat	20260719T104535
+stearic acid	1	lipid	stearic acid	none	deepseek-chat	20260719T104535
+CellTiter solution	1	other	CellTiter solution	none	deepseek-chat	20260719T104535
+CellTiter Blue Assay	1	other	CellTiter Blue Assay	none	deepseek-chat	20260719T104535
+Phosphate Buffered Saline	1	other	Phosphate Buffered Saline	none	deepseek-chat	20260719T104535
+Low-glucose DMEM	1	basal	Low-glucose DMEM	none	deepseek-chat	20260719T104535
+mitogenic factor	1	growth_factor	mitogenic factor	none	deepseek-chat	20260719T104535
+PBS buffer	1	other	PBS buffer	none	deepseek-chat	20260719T104535
+Skeletal Muscle Cell Medium	1	basal	Skeletal Muscle Cell Medium	none	deepseek-chat	20260719T104535
+bovine serum	1	supplement	bovine serum	none	deepseek-chat	20260719T104535
+hs	1	supplement	hs	none	deepseek-chat	20260719T104535
+NAD(H)/NADP(H)	1	small_molecule	NAD/NADP	none	deepseek-chat	20260719T104535
+sodium L-ascorbate	1	vitamin	sodium L-ascorbate	none	deepseek-chat	20260719T104535
+CGF	1	hydrolysate	CGF	none	deepseek-chat	20260719T104535
+bovine insulin	1	growth_factor	bovine insulin	none	deepseek-chat	20260719T104535
+Chlorella pyrenoidosa	1	hydrolysate	Chlorella pyrenoidosa	none	deepseek-chat	20260719T104535
+selenium dioxide	1	supplement	selenium dioxide	none	deepseek-chat	20260719T104535
+Chlorella algae extracts	1	hydrolysate	Chlorella algae extracts	none	deepseek-chat	20260719T104535
+algae extract	1	hydrolysate	algae extract	none	deepseek-chat	20260719T104535
+liquid chlorella growth factor	1	hydrolysate	liquid chlorella growth factor	none	deepseek-chat	20260719T104535
+Chlorella vulgaris extract capsules	1	hydrolysate	Chlorella vulgaris extract capsules	none	deepseek-chat	20260719T104535
+E8™	1	basal	E8™	none	deepseek-chat	20260719T104535
+recombinant human fibroblast growth factor	1	growth_factor	recombinant human fibroblast growth factor	none	deepseek-chat	20260719T104535
+TAP medium	1	basal	TAP medium	none	deepseek-chat	20260719T104535
+Ampicillin	1	antibiotic	Ampicillin	none	deepseek-chat	20260719T104535
+PCM	1	basal	PCM	none	deepseek-chat	20260719T104535
+Wnt3a	1	growth_factor	Wnt3a	none	deepseek-chat	20260719T104535
+racemic alanine	1	small_molecule	racemic alanine	none	deepseek-chat	20260719T104535
+L-ALA	1	small_molecule	L-ALA	none	deepseek-chat	20260719T104535
+rhPDGF	1	growth_factor	rhPDGF	none	deepseek-chat	20260719T104535
+methyl cellulose	1	supplement	methyl cellulose	none	deepseek-chat	20260719T104535
+17β-Estradiol	1	small_molecule	17β-Estradiol	none	deepseek-chat	20260719T104535
+recombinant human serum albumin	1	albumin	recombinant human serum albumin	none	deepseek-chat	20260719T104535
+rhHGF	1	growth_factor	rhHGF	none	deepseek-chat	20260719T104535
+MC	1	supplement	MC	none	deepseek-chat	20260719T104535
+Estrogen	1	small_molecule	Estrogen	none	deepseek-chat	20260719T104535
+Wnt5b	1	growth_factor	Wnt5b	none	deepseek-chat	20260719T104535
+B9 medium	1	basal	B9 medium	none	deepseek-chat	20260719T104535
+ALA	1	small_molecule	ALA	none	deepseek-chat	20260719T104535
+recombinant human Hepatocyte Growth Factor	1	growth_factor	recombinant human Hepatocyte Growth Factor	none	deepseek-chat	20260719T104535
+chemiluminescence detection kit	1	other	chemiluminescence detection kit	none	deepseek-chat	20260719T104535
+adipogenic differentiation medium	1	basal	adipogenic differentiation medium	none	deepseek-chat	20260719T104535
+rosiglitazone	1	small_molecule	rosiglitazone	none	deepseek-chat	20260719T104535
+hematoxylin	1	other	hematoxylin	none	deepseek-chat	20260719T104535
+recombinant fibroblast growth factor 2	1	growth_factor	recombinant fibroblast growth factor 2	none	deepseek-chat	20260719T104535
+anti-FABP4	1	other	anti-FABP4	none	deepseek-chat	20260719T104535
+ECL	1	other	ECL	none	deepseek-chat	20260719T104535
+red blood cell lysis buffer	1	other	red blood cell lysis buffer	none	deepseek-chat	20260719T104535
+RNA extraction kit	1	other	RNA extraction kit	none	deepseek-chat	20260719T104535
+anti-GAPDH	1	other	anti-GAPDH	none	deepseek-chat	20260719T104535
+primary antibody	1	other	primary antibody	none	deepseek-chat	20260719T104535
+RIPA	1	other	RIPA	none	deepseek-chat	20260719T104535
+live/dead viability assay kit	1	other	live/dead viability assay kit	none	deepseek-chat	20260719T104535
+sodium alginate	1	other	sodium alginate	none	deepseek-chat	20260719T104535
+SYBR Green master mix	1	other	SYBR Green master mix	none	deepseek-chat	20260719T104535
+anti-PPARγ	1	other	anti-PPARγ	none	deepseek-chat	20260719T104535
+Nile red	1	other	Nile red	none	deepseek-chat	20260719T104535
+eosin	1	other	eosin	none	deepseek-chat	20260719T104535
+RBC lysis buffer	1	other	RBC lysis buffer	none	deepseek-chat	20260719T104535
+ADM	1	basal	ADM	none	deepseek-chat	20260719T104535
+BCA	1	other	BCA	none	deepseek-chat	20260719T104535
+MC lysis buffer	1	other	MC lysis buffer	none	deepseek-chat	20260719T104535
+penicillin streptomycin	1	supplement	penicillin streptomycin	none	deepseek-chat	20260719T104535
+anti-plin 1	1	other	anti-plin 1	none	deepseek-chat	20260719T104535
+live/dead staining reagent	1	other	live/dead staining reagent	none	deepseek-chat	20260719T104535
+isobutylmethylxanthine	1	small_molecule	isobutylmethylxanthine	none	deepseek-chat	20260719T104535
+thiamine	1	vitamin	thiamine	none	deepseek-chat	20260719T104535
+SAM	1	small_molecule	SAM	none	deepseek-chat	20260719T104535
+thiamine-HCl	1	vitamin	thiamine-HCl	none	deepseek-chat	20260719T104535
+S-adenosyl-L-homocysteine	1	small_molecule	S-adenosyl-L-homocysteine	none	deepseek-chat	20260719T104535
+S-adenosyl-L-methionine	1	small_molecule	S-adenosyl-L-methionine	none	deepseek-chat	20260719T104535
+L-methionine	1	small_molecule	L-methionine	none	deepseek-chat	20260719T104535
+A 83-01	1	small_molecule	A 83-01	none	deepseek-chat	20260719T104535
+SAH	1	small_molecule	SAH	none	deepseek-chat	20260719T104535
+methionine sulfoxide	1	small_molecule	methionine sulfoxide	none	deepseek-chat	20260719T104535
+B8 media	1	basal	B8 media	none	deepseek-chat	20260719T104535
+MRS	1	basal	MRS	none	deepseek-chat	20260719T104535
+antibiotic/antimycotic	1	supplement	antibiotic/antimycotic	none	deepseek-chat	20260719T104535
+extracts from Enterococcus hirae	1	hydrolysate	extracts from Enterococcus hirae	none	deepseek-chat	20260719T104535
+Yeast peptone adenine dextrose	1	basal	Yeast peptone adenine dextrose	none	deepseek-chat	20260719T104535
+pre-stained SDS-PAGE standards	1	other	pre-stained SDS-PAGE standards	none	deepseek-chat	20260719T104535
+Coomasie PlusTM Protein Assay Reagent	1	other	Coomasie PlusTM Protein Assay Reagent	none	deepseek-chat	20260719T104535
+extracts from Saccharomyces cerevisiae	1	hydrolysate	extracts from Saccharomyces cerevisiae	none	deepseek-chat	20260719T104535
+iBSCGM	1	other	iBSCGM	none	deepseek-chat	20260719T104535
+De Man–Rogosa–Sharpe	1	basal	De Man–Rogosa–Sharpe	none	deepseek-chat	20260719T104535
+SDS loading buffer	1	other	SDS loading buffer	none	deepseek-chat	20260719T104535
+VN40	1	other	VN40	none	deepseek-chat	20260719T104535
+iBSC growth media	1	other	iBSC growth media	none	deepseek-chat	20260719T104535
+MilliporeSigma™ Amicon™ Ultra-15 Centrifugal Filter	1	other	MilliporeSigma™ Amicon™ Ultra-15 Centrifugal Filter	none	deepseek-chat	20260719T104535
+2-morpholinoethanesulphonic acid	1	small_molecule	2-morpholinoethanesulphonic acid	none	deepseek-chat	20260719T104535
+NuPAGE Novex 4-12% Bis-Tris 1.0 mm mini-gel	1	other	NuPAGE Novex 4-12% Bis-Tris 1.0 mm mini-gel	none	deepseek-chat	20260719T104535
+LB	1	basal	LB	none	deepseek-chat	20260719T104535
+Vibrio natriegens lysate	1	hydrolysate	Vibrio natriegens lysate	none	deepseek-chat	20260719T104535
+lysates from Vibrio natriegens	1	hydrolysate	lysates from Vibrio natriegens	none	deepseek-chat	20260719T104535
+Leiovitz’s L-15 medium	1	basal	Leiovitz’s L-15 medium	none	deepseek-chat	20260719T104535
+human fibroblast growth factor 2	1	growth_factor	human fibroblast growth factor 2	none	deepseek-chat	20260719T104535
+phosphate buffer saline	1	other	phosphate buffer saline	none	deepseek-chat	20260719T104535
+MES	1	small_molecule	MES	none	deepseek-chat	20260719T104535
+Mack growth media	1	other	Mack growth media	none	deepseek-chat	20260719T104535
+extracts from Chlorella algae	1	hydrolysate	extracts from Chlorella algae	none	deepseek-chat	20260719T104535
+lysates from Saccharomyces cerevisiae	1	hydrolysate	lysates from Saccharomyces cerevisiae	none	deepseek-chat	20260719T104535
+DMEM+Glutamax	1	basal	DMEM+Glutamax	none	deepseek-chat	20260719T104535
+MackGM	1	other	MackGM	none	deepseek-chat	20260719T104535
+3 kDa molecular weight cutoff filter	1	other	3 kDa molecular weight cutoff filter	none	deepseek-chat	20260719T104535
+Lysogeny Broth	1	basal	Lysogeny Broth	none	deepseek-chat	20260719T104535
+YPAD	1	basal	YPAD	none	deepseek-chat	20260719T104535
+microbial lysates	1	hydrolysate	microbial lysates	none	deepseek-chat	20260719T104535
+Yeast hydrolysates	1	hydrolysate	Yeast hydrolysates	none	deepseek-chat	20260719T104535
+extracts from cyanobacteria	1	hydrolysate	extracts from cyanobacteria	none	deepseek-chat	20260719T104535
+Bradford Assay	1	other	Bradford Assay	none	deepseek-chat	20260719T104535
+estradiol	1	small_molecule	estradiol	none	deepseek-chat	20260719T104535
+Synth-a-Freeze	1	other	Synth-a-Freeze	none	deepseek-chat	20260719T104535
+progesterone	1	small_molecule	progesterone	none	deepseek-chat	20260719T104535
+ascorbic acid	1	vitamin	ascorbic acid	none	deepseek-chat	20260719T104535
+trace metals	1	supplement	trace metals	none	deepseek-chat	20260719T104535
+PEDF	1	growth_factor	PEDF	none	deepseek-chat	20260719T104535
+DNA precursors	1	supplement	DNA precursors	none	deepseek-chat	20260719T104535
+tripLE	1	other	tripLE	none	deepseek-chat	20260719T104535
+fatty acids	1	lipid	fatty acids	none	deepseek-chat	20260719T104535
+essential amino acids	1	supplement	essential amino acids	none	deepseek-chat	20260719T104535
+Calcein AM	1	other	Calcein AM	none	deepseek-chat	20260719T104535
+Albumin (AlbuMAX)	1	albumin	Albumin	none	deepseek-chat	20260719T104535
+DMEM supplement	1	basal	DMEM supplement	none	deepseek-chat	20260719T104535
+Ascorbic acid	1	vitamin	Ascorbic acid	none	deepseek-chat	20260719T104535
+Sodium selenite	1	small_molecule	Sodium selenite	none	deepseek-chat	20260719T104535
+Glutathione	1	small_molecule	Glutathione	none	deepseek-chat	20260719T104535
+LIVE stain Calcein AM	1	other	LIVE stain Calcein AM	none	deepseek-chat	20260719T104535
+tripLE solution	1	other	tripLE solution	none	deepseek-chat	20260719T104535
+Phosphate Buffer Solution	1	other	Phosphate Buffer Solution	none	deepseek-chat	20260719T104535
+Estradiol	1	small_molecule	Estradiol	none	deepseek-chat	20260719T104535
+Ethanolamine	1	lipid	Ethanolamine	none	deepseek-chat	20260719T104535
+thermostable FGF2/bFGF	1	growth_factor	thermostable FGF2/bFGF	none	deepseek-chat	20260719T104535
+Dulbecco's Phosphate-Buffered Saline	1	other	Dulbecco's Phosphate-Buffered Saline	none	deepseek-chat	20260719T104535
+CyQUANT™ NF	1	other	CyQUANT™ NF	none	deepseek-chat	20260719T104535
+mung bean protein isolate	1	hydrolysate	mung bean protein isolate	none	deepseek-chat	20260719T104535
+trypsin-EDTA solution	1	other	trypsin-EDTA solution	none	deepseek-chat	20260719T104535
+human Fibroblast Growth Factor-2	1	growth_factor	human Fibroblast Growth Factor-2	none	deepseek-chat	20260719T104535
+ultra-glutamine	1	supplement	ultra-glutamine	none	deepseek-chat	20260719T104535
+25200072	1	other	25200072	none	deepseek-chat	20260719T104535
+BE12-169F	1	basal	BE12-169F	none	deepseek-chat	20260719T104535
+Sigmacote	1	other	Sigmacote	none	deepseek-chat	20260719T104535
+D-PBS	1	other	D-PBS	none	deepseek-chat	20260719T104535
+SoloHill Plastic microcarriers	1	other	SoloHill Plastic microcarriers	none	deepseek-chat	20260719T104535
+BE17-605E/U1	1	supplement	BE17-605E/U1	none	deepseek-chat	20260719T104535
+100-18B	1	growth_factor	100-18B	none	deepseek-chat	20260719T104535
+α-Modified Eagle Medium	1	basal	α-Modified Eagle Medium	none	deepseek-chat	20260719T104535
+F7524	1	supplement	F7524	none	deepseek-chat	20260719T104535
+BE17-516F	1	other	BE17-516F	none	deepseek-chat	20260719T104535
+Easy iMatrix-511	1	protein	Easy iMatrix-511	none	deepseek-chat	20260719T104535
+Hanks' balanced salt solution	1	basal	Hanks' balanced salt solution	none	deepseek-chat	20260719T104535
+Gamborg's B5 medium	1	basal	Gamborg's B5 medium	none	deepseek-chat	20260719T104535
+Hyponex	1	supplement	Hyponex	none	deepseek-chat	20260719T104535
+b-FGF	1	growth_factor	b-FGF	none	deepseek-chat	20260719T104535
+penicillin–streptomycin-amphotericin B solution	1	supplement	penicillin–streptomycin-amphotericin B solution	none	deepseek-chat	20260719T104535
+Pronase	1	other	Pronase	none	deepseek-chat	20260719T104535
+proteins	1	other	proteins	none	deepseek-chat	20260719T104535
+β-2-Glycoprotein I	1	protein	β-2-Glycoprotein I	none	deepseek-chat	20260719T104535
+Immunoglobulins	1	protein	Immunoglobulins	none	deepseek-chat	20260719T104535
+Serum spreading factor	1	protein	Serum spreading factor	none	deepseek-chat	20260719T104535
+α1-Lipoprotein	1	protein	α1-Lipoprotein	none	deepseek-chat	20260719T104535
+cytokines	1	growth_factor	cytokines	none	deepseek-chat	20260719T104535
+IGF	1	growth_factor	IGF	none	deepseek-chat	20260719T104535
+non-protein nitrogen	1	other	non-protein nitrogen	none	deepseek-chat	20260719T104535
+edible media	1	other	edible media	none	deepseek-chat	20260719T104535
+β1-Lipoprotein	1	protein	β1-Lipoprotein	none	deepseek-chat	20260719T104535
+Alanine aminotransferase	1	protein	Alanine aminotransferase	none	deepseek-chat	20260719T104535
+α1-Antitrypsin	1	protein	α1-Antitrypsin	none	deepseek-chat	20260719T104535
+Hemoglobin beta fetal chain	1	protein	Hemoglobin beta fetal chain	none	deepseek-chat	20260719T104535
+serum spreading factors	1	other	serum spreading factors	none	deepseek-chat	20260719T104535
+insulin-like growth factor	1	growth_factor	insulin-like growth factor	none	deepseek-chat	20260719T104535
+Kininogen	1	protein	Kininogen	none	deepseek-chat	20260719T104535
+precursor of plasmin	1	protein	precursor of plasmin	none	deepseek-chat	20260719T104535
+Saccharides	1	other	Saccharides	none	deepseek-chat	20260719T104535
+fats	1	lipid	fats	none	deepseek-chat	20260719T104535
+globulin	1	protein	globulin	none	deepseek-chat	20260719T104535
+Cone cGMP-specific 3',5'-cyclic phosphodiesterase	1	protein	Cone cGMP-specific 3',5'-cyclic phosphodiesterase	none	deepseek-chat	20260719T104535
+FBS replacers	1	other	FBS replacers	none	deepseek-chat	20260719T104535
+α2-Macroglobulin	1	protein	α2-Macroglobulin	none	deepseek-chat	20260719T104535
+Lactate dehydrogenase	1	protein	Lactate dehydrogenase	none	deepseek-chat	20260719T104535
+ALT/GPT	1	protein	ALT/GPT	none	deepseek-chat	20260719T104535
+enzymes	1	other	enzymes	none	deepseek-chat	20260719T104535
+AST/GOT	1	protein	AST/GOT	none	deepseek-chat	20260719T104535
+carbohydrates	1	other	carbohydrates	none	deepseek-chat	20260719T104535
+hemoglobin	1	protein	hemoglobin	none	deepseek-chat	20260719T104535
+immunoglobulin	1	protein	immunoglobulin	none	deepseek-chat	20260719T104535
+Apolipoprotein	1	protein	Apolipoprotein	none	deepseek-chat	20260719T104535
+α-2-HS-glycoprotein	1	protein	α-2-HS-glycoprotein	none	deepseek-chat	20260719T104535
+Transcortin	1	protein	Transcortin	none	deepseek-chat	20260719T104535
+Antithrombin-III	1	protein	Antithrombin-III	none	deepseek-chat	20260719T104535
+Globulins	1	protein	Globulins	none	deepseek-chat	20260719T104535
+inorganic compounds	1	other	inorganic compounds	none	deepseek-chat	20260719T104535
+IgG	1	protein	IgG	none	deepseek-chat	20260719T104535
+Plasminogen	1	protein	Plasminogen	none	deepseek-chat	20260719T104535
+Hemiferrin	1	protein	Hemiferrin	none	deepseek-chat	20260719T104535
+Aspartate aminotransferase/Glutamic oxaloacetic transaminase	1	protein	Aspartate aminotransferase/Glutamic oxaloacetic transaminase	none	deepseek-chat	20260719T104535
+Alkaline phosphatase	1	protein	Alkaline phosphatase	none	deepseek-chat	20260719T104535
+DNase	1	enzyme	DNase	none	deepseek-chat	20260719T104535
+erucic acid	1	lipid	erucic acid	none	deepseek-chat	20260719T104535
+Trypsin	1	enzyme	Trypsin	none	deepseek-chat	20260719T104535
+DMEM-Glutamax	1	basal	DMEM-Glutamax	none	deepseek-chat	20260719T104535
+serum-free medium	1	basal	serum-free medium	none	deepseek-chat	20260719T104535
+Phalloidin-AF647	1	other	Phalloidin-AF647	none	deepseek-chat	20260719T104535
+Dulbecco's phosphate buffered saline	1	other	Dulbecco's phosphate buffered saline	none	deepseek-chat	20260719T104535
+FBM	1	basal	FBM	none	deepseek-chat	20260719T104535
+XerumFree	1	supplement	XerumFree	none	deepseek-chat	20260719T104535
+L-Glutamin	1	small_molecule	L-Glutamin	none	deepseek-chat	20260719T104535
+StemPro MSC SFM	1	basal	StemPro MSC SFM	none	deepseek-chat	20260719T104535
+TeSR-E8	1	basal	TeSR-E8	none	deepseek-chat	20260719T104535
+LipoGro	1	supplement	LipoGro	none	deepseek-chat	20260719T104535
+MesenCult ACF Culture Kit	1	basal	MesenCult ACF Culture Kit	none	deepseek-chat	20260719T104535
+Essential 8 Medium	1	basal	Essential 8 Medium	none	deepseek-chat	20260719T104535
+STEMmacs HSC Expansion Media XF	1	basal	STEMmacs HSC Expansion Media XF	none	deepseek-chat	20260719T104535
+mTeSR1	1	basal	mTeSR1	none	deepseek-chat	20260719T104535
+Penicillin/Streptomycin/Amphotericin-B	1	other	Penicillin/Streptomycin/Amphotericin-B	none	deepseek-chat	20260719T104535
+FGM-CD SingleQuots Kit	1	supplement	FGM-CD SingleQuots Kit	none	deepseek-chat	20260719T104535
+TNS	1	other	TNS	none	deepseek-chat	20260719T104535
+CellTiter 96 AQueous One Solution Reagent	1	other	CellTiter 96 AQueous One Solution Reagent	none	deepseek-chat	20260719T104535
+Penicillin/Streptomycin/Amphotericin B	1	other	Penicillin/Streptomycin/Amphotericin B	none	deepseek-chat	20260719T104535
+curcumin	1	small_molecule	curcumin	none	deepseek-chat	20260719T104535
+PDL	1	protein	PDL	none	deepseek-chat	20260719T104535
+interleukin-6	1	growth_factor	interleukin-6	none	deepseek-chat	20260719T104535
+Poly-D-Lysine	1	protein	Poly-D-Lysine	none	deepseek-chat	20260719T104535
+MHC	1	protein	MHC	none	deepseek-chat	20260719T104535
+Vtn-N	1	protein	Vtn-N	none	deepseek-chat	20260719T104535
+iMatrix-511	1	protein	iMatrix-511	none	deepseek-chat	20260719T104535
+Platelet-derived growth factor	1	growth_factor	Platelet-derived growth factor	none	deepseek-chat	20260719T104535
+myosin heavy chain	1	protein	myosin heavy chain	none	deepseek-chat	20260719T104535
+laminin-511	1	protein	laminin-511	none	deepseek-chat	20260719T104535
+HEPES buffer solution	1	supplement	HEPES buffer solution	none	deepseek-chat	20260719T104535
+trypsin–EDTA	1	other	trypsin–EDTA	none	deepseek-chat	20260719T104535
+Medium 199	1	basal	Medium 199	none	deepseek-chat	20260719T104535
+Alamar Blue	1	other	Alamar Blue	none	deepseek-chat	20260719T104535
+7-hydroxy-3H-phenoxazin-3-one-10-oxide	1	other	7-hydroxy-3H-phenoxazin-3-one-10-oxide	none	deepseek-chat	20260719T104535
+3-(4,5-dimethylthiazol-2-yl)-2,5-diphenyltetrazolium bromide	1	other	3--2,5-diphenyltetrazolium bromide	none	deepseek-chat	20260719T104535
+neutral red	1	other	neutral red	none	deepseek-chat	20260719T104535
+L-15 Medium Leibovitz	1	basal	L-15 Medium Leibovitz	none	deepseek-chat	20260719T104535
+AB	1	other	AB	none	deepseek-chat	20260719T104535
+TPTZ	1	other	TPTZ	none	deepseek-chat	20260719T104535
+6-hydroxy-2,5,7,8-tetramethylchroman-2-carboxylic acid	1	other	6-hydroxy-2,5,7,8-tetramethylchroman-2-carboxylic acid	none	deepseek-chat	20260719T104535
+sodium acetate	1	other	sodium acetate	none	deepseek-chat	20260719T104535
+NR	1	other	NR	none	deepseek-chat	20260719T104535
+Folin–Ciocalteu's phenol reagent	1	other	Folin–Ciocalteu's phenol reagent	none	deepseek-chat	20260719T104535
+Trolox	1	other	Trolox	none	deepseek-chat	20260719T104535
+Dulbecco's Modified Eagle's Medium high glucose	1	basal	Dulbecco's Modified Eagle's Medium high glucose	none	deepseek-chat	20260719T104535
+3-amino-7-dimethylamino-2-methylphenazine hydrochloride	1	other	3-amino-7-dimethylamino-2-methylphenazine hydrochloride	none	deepseek-chat	20260719T104535
+resazurin	1	other	resazurin	none	deepseek-chat	20260719T104535
+Trypan blue	1	other	Trypan blue	none	deepseek-chat	20260719T104535
+Nutrient Mixture F-12 Ham	1	basal	Nutrient Mixture F-12 Ham	none	deepseek-chat	20260719T104535
+resorufin	1	other	resorufin	none	deepseek-chat	20260719T104535
+2,4,6-tris (2-pyridyl)-s-triazine	1	other	2,4,6-tris-s-triazine	none	deepseek-chat	20260719T104535
+BrdU	1	other	BrdU	none	deepseek-chat	20260719T104535
+mouse monoclonal anti-BrdU antibody	1	other	mouse monoclonal anti-BrdU antibody	none	deepseek-chat	20260719T104535
+MTT	1	other	MTT	none	deepseek-chat	20260719T104535
+ferric chloride hexahydrate	1	other	ferric chloride hexahydrate	none	deepseek-chat	20260719T104535
+Earle's BSS	1	basal	Earle's BSS	none	deepseek-chat	20260719T104535
+TPB	1	hydrolysate	TPB	none	deepseek-chat	20260719T104535
+goat anti-mouse IgG-AP antibody	1	other	goat anti-mouse IgG-AP antibody	none	deepseek-chat	20260719T104535
+tryptose phosphate broth	1	hydrolysate	tryptose phosphate broth	none	deepseek-chat	20260719T104535
+5-bromo-2′-deoxyuridine	1	other	5-bromo-2′-deoxyuridine	none	deepseek-chat	20260719T104535
+phosphate buffer	1	other	phosphate buffer	none	deepseek-chat	20260719T104535
+p-nitrophenyl phosphate	1	other	p-nitrophenyl phosphate	none	deepseek-chat	20260719T104535
+leucine	1	supplement	leucine	none	deepseek-chat	20260719T104535
+interferon γ-induced protein 10	1	growth_factor	interferon γ-induced protein 10	none	deepseek-chat	20260719T104535
+water-soluble vitamins	1	vitamin	water-soluble vitamins	none	deepseek-chat	20260719T104535
+NCAM-1	1	growth_factor	NCAM-1	none	deepseek-chat	20260719T104535
+IP-10	1	growth_factor	IP-10	none	deepseek-chat	20260719T104535
+trace elements	1	supplement	trace elements	none	deepseek-chat	20260719T104535
+Ham’s F10	1	basal	Ham’s F10	none	deepseek-chat	20260719T104535
+neural cell adhesion molecule 1	1	growth_factor	neural cell adhesion molecule 1	none	deepseek-chat	20260719T104535
+proline	1	supplement	proline	none	deepseek-chat	20260719T104535
+arginine	1	supplement	arginine	none	deepseek-chat	20260719T104535
+isoleucine	1	supplement	isoleucine	none	deepseek-chat	20260719T104535
+penicillin-streptomycin (PS)	1	supplement	penicillin-streptomycin	none	deepseek-chat	20260719T104535
+RNase A	1	other	RNase A	none	deepseek-chat	20260719T104535
+ethyl alcohol	1	other	ethyl alcohol	none	deepseek-chat	20260719T104535
+DispaseII	1	other	DispaseII	none	deepseek-chat	20260719T104535
+Trypsin-EDTA (TE)	1	other	Trypsin-EDTA	none	deepseek-chat	20260719T104535
+4’6-diamidino-2-phenylindole (DAPI)	1	other	4’6-diamidino-2-phenylindole	none	deepseek-chat	20260719T104535
+bovine serum albumin [BSA]	1	albumin	bovine serum albumin [BSA]	none	deepseek-chat	20260719T104535
+Collagenase D	1	other	Collagenase D	none	deepseek-chat	20260719T104535
+Dulbecco's modified eagle medium (DMEM)/F12	1	basal	Dulbecco's modified eagle medium/F12	none	deepseek-chat	20260719T104535
+penicillin-streptomycin-glutamine (PSG)	1	supplement	penicillin-streptomycin-glutamine	none	deepseek-chat	20260719T104535
+propiodium iodide (PI)	1	other	propiodium iodide	none	deepseek-chat	20260719T104535
+ACK lysing buffer	1	other	ACK lysing buffer	none	deepseek-chat	20260719T104535
+Mesenchymal Stem Cell Growth Medium DXF	1	basal	Mesenchymal Stem Cell Growth Medium DXF	none	deepseek-chat	20260719T104535
+trypan blue solution	1	other	trypan blue solution	none	deepseek-chat	20260719T104535
+collagen I	1	other	collagen I	none	deepseek-chat	20260719T104535
+goat serum	1	supplement	goat serum	none	deepseek-chat	20260719T104535
+Geltrex	1	other	Geltrex	none	deepseek-chat	20260719T104535
+ORO solution	1	other	ORO solution	none	deepseek-chat	20260719T104535
+CT	1	basal	CT	none	deepseek-chat	20260719T104535
+SF	1	basal	SF	none	deepseek-chat	20260719T104535
+SYBR Green Master Mix	1	other	SYBR Green Master Mix	none	deepseek-chat	20260719T104535
+NucleoSpin RNA Mini kit	1	other	NucleoSpin RNA Mini kit	none	deepseek-chat	20260719T104535
+Tween 20	1	other	Tween 20	none	deepseek-chat	20260719T104535
+StemFlex™ Medium	1	basal	StemFlex™ Medium	none	deepseek-chat	20260719T104535
+DMEM/EMEM	1	basal	DMEM/EMEM	none	deepseek-chat	20260719T104535
+NP	1	basal	NP	none	deepseek-chat	20260719T104535
+PD173074	1	small_molecule	PD173074	none	deepseek-chat	20260719T104535
+ECL solution	1	other	ECL solution	none	deepseek-chat	20260719T104535
+bp-insulin	1	growth_factor	bp-insulin	none	deepseek-chat	20260719T104535
+human recombinant insulin	1	growth_factor	human recombinant insulin	none	deepseek-chat	20260719T104535
+Interleukin 2	1	growth_factor	Interleukin 2	none	deepseek-chat	20260719T104535
+IL-2	1	growth_factor	IL-2	none	deepseek-chat	20260719T104535
+Platelet-Derived Growth Factor	1	growth_factor	Platelet-Derived Growth Factor	none	deepseek-chat	20260719T104535
+Transforming Growth Factor-beta 1	1	growth_factor	Transforming Growth Factor-beta 1	none	deepseek-chat	20260719T104535
+bovine pancreatic insulin	1	growth_factor	bovine pancreatic insulin	none	deepseek-chat	20260719T104535
+pronase	1	other	pronase	none	deepseek-chat	20260719T104535
+5-ethyl-2′-deoxyuridine	1	small_molecule	5-ethyl-2′-deoxyuridine	none	deepseek-chat	20260719T104535
+penicillin-streptomycin mixture	1	supplement	penicillin-streptomycin mixture	none	deepseek-chat	20260719T104535
+DMEM differentiation medium	1	basal	DMEM differentiation medium	none	deepseek-chat	20260719T104535
+AA	1	vitamin	AA	none	deepseek-chat	20260719T104535
+DAPI-containing blocking agent	1	other	DAPI-containing blocking agent	none	deepseek-chat	20260719T104535
+phosphate buffer solution	1	other	phosphate buffer solution	none	deepseek-chat	20260719T104535
+DMEM growth medium	1	basal	DMEM growth medium	none	deepseek-chat	20260719T104535
+Glycine	1	small_molecule	Glycine	none	deepseek-chat	20260719T104535
+Rapamycin	1	small_molecule	Rapamycin	none	deepseek-chat	20260719T104535
+pregnant horse serum	1	supplement	pregnant horse serum	none	deepseek-chat	20260719T104535
+L-Ascorbic Acid 2-Phosphate Sesquimagnesium Salt Hydrate	1	vitamin	L-Ascorbic Acid 2-Phosphate Sesquimagnesium Salt Hydrate	none	deepseek-chat	20260719T104535
+Na-Q	1	small_molecule	Na-Q	none	deepseek-chat	20260719T104535
+double-distilled water	1	other	double-distilled water	none	deepseek-chat	20260719T104535
+Sodium-Curcumin	1	small_molecule	Sodium-Curcumin	none	deepseek-chat	20260719T104535
+Naringin	1	small_molecule	Naringin	none	deepseek-chat	20260719T104535
+Na-Quercetin	1	small_molecule	Na-Quercetin	none	deepseek-chat	20260719T104535
+Li-Cur	1	small_molecule	Li-Cur	none	deepseek-chat	20260719T104535
+ITS-Plus	1	supplement	ITS-Plus	none	deepseek-chat	20260719T104535
+DDW	1	other	DDW	none	deepseek-chat	20260719T104535
+Sodium-Quercetin	1	small_molecule	Sodium-Quercetin	none	deepseek-chat	20260719T104535
+Lithium Curcumin	1	small_molecule	Lithium Curcumin	none	deepseek-chat	20260719T104535
+Potassium-Naringenin	1	small_molecule	Potassium-Naringenin	none	deepseek-chat	20260719T104535
+Curcumin	1	small_molecule	Curcumin	none	deepseek-chat	20260719T104535
+K-Ng	1	small_molecule	K-Ng	none	deepseek-chat	20260719T104535
+potassium hydroxide	1	other	potassium hydroxide	none	deepseek-chat	20260719T104535
+NaCur	1	small_molecule	NaCur	none	deepseek-chat	20260719T104535
+Naringenin	1	small_molecule	Naringenin	none	deepseek-chat	20260719T104535
+Quercetin	1	small_molecule	Quercetin	none	deepseek-chat	20260719T104535
+KOH	1	other	KOH	none	deepseek-chat	20260719T104535
+Alcalase®	1	other	Alcalase®	none	deepseek-chat	20260719T104535
+DPPH	1	other	DPPH	none	deepseek-chat	20260719T104535
+protein hydrolysates	1	hydrolysate	protein hydrolysates	none	deepseek-chat	20260719T104535
+phospha	1	other	phospha	none	deepseek-chat	20260719T104535
+2,2-diphenyl-1-picrylhydrazyl	1	other	2,2-diphenyl-1-picrylhydrazyl	none	deepseek-chat	20260719T104535
+Gallic acid	1	other	Gallic acid	none	deepseek-chat	20260719T104535
+Alcalase	1	other	Alcalase	none	deepseek-chat	20260719T104535
+5 N NaOH	1	other	5 N NaOH	none	deepseek-chat	20260719T104535
+CCM	1	basal	CCM	none	deepseek-chat	20260719T104535
+spent mammalian culture media	1	other	spent mammalian culture media	none	deepseek-chat	20260719T104535
+serum-free cell culture medium	1	other	serum-free cell culture medium	none	deepseek-chat	20260719T104535
+HBSS	1	other	HBSS	none	deepseek-chat	20260719T104535
+F12	1	basal	F12	none	deepseek-chat	20260719T104535
+Ni-NTA resin	1	other	Ni-NTA resin	none	deepseek-chat	20260719T104535
+sodium phosphate buffer	1	other	sodium phosphate buffer	none	deepseek-chat	20260719T104535
+TGF-beta	1	growth_factor	TGF-beta	none	deepseek-chat	20260719T104535
+imidazole	1	other	imidazole	none	deepseek-chat	20260719T104535
+Liquid Essential 8 Media	1	other	Liquid Essential 8 Media	none	deepseek-chat	20260719T104535
+H2SO4	1	other	H2SO4	none	deepseek-chat	20260719T104535
+fibroblast growth factor	1	growth_factor	fibroblast growth factor	none	deepseek-chat	20260719T104535
+NH4OH	1	other	NH4OH	none	deepseek-chat	20260719T104535
+protein-free chemically defined medium	1	other	protein-free chemically defined medium	none	deepseek-chat	20260719T104535
+spent media	1	other	spent media	none	deepseek-chat	20260719T104535
+reduced fetal bovine serum	1	serum/albumin	reduced fetal bovine serum	none	deepseek-chat	20260719T104535
+glycosaminoglycan	1	other	glycosaminoglycan	none	deepseek-chat	20260719T104535
+creatine	1	small_molecule	creatine	none	deepseek-chat	20260719T104535
+fibromodulin	1	protein	fibromodulin	none	deepseek-chat	20260719T104535
+testosterone	1	hormone	testosterone	none	deepseek-chat	20260719T104535
+type IV collagen	1	protein	type IV collagen	none	deepseek-chat	20260719T104535
+FGF-1	1	growth_factor	FGF-1	none	deepseek-chat	20260719T104535
+Pax3	1	protein	Pax3	none	deepseek-chat	20260719T104535
+integrin	1	protein	integrin	none	deepseek-chat	20260719T104535
+thyroid hormones	1	hormone	thyroid hormones	none	deepseek-chat	20260719T104535
+biglycan	1	protein	biglycan	none	deepseek-chat	20260719T104535
+fibroblast growth factors	1	growth_factor	fibroblast growth factors	none	deepseek-chat	20260719T104535
+DPT	1	protein	DPT	none	deepseek-chat	20260719T104535
+Hemoglobin	1	protein	Hemoglobin	none	deepseek-chat	20260719T104535
+BMP	1	growth_factor	BMP	none	deepseek-chat	20260719T104535
+matrix gla protein	1	protein	matrix gla protein	none	deepseek-chat	20260719T104535
+dermatopontin	1	protein	dermatopontin	none	deepseek-chat	20260719T104535
+PDGF D	1	growth_factor	PDGF D	none	deepseek-chat	20260719T104535
+IGF-1 and 2	1	growth_factor	IGF-1 and 2	none	deepseek-chat	20260719T104535
+Myf5	1	protein	Myf5	none	deepseek-chat	20260719T104535
+Myf6	1	protein	Myf6	none	deepseek-chat	20260719T104535
+growth hormone	1	hormone	growth hormone	none	deepseek-chat	20260719T104535
+PDGF A	1	growth_factor	PDGF A	none	deepseek-chat	20260719T104535
+myogenin	1	protein	myogenin	none	deepseek-chat	20260719T104535
+heparin sulfate	1	other	heparin sulfate	none	deepseek-chat	20260719T104535
+FGF-21	1	growth_factor	FGF-21	none	deepseek-chat	20260719T104535
+heme protein	1	protein	heme protein	none	deepseek-chat	20260719T104535
+PDGF B	1	growth_factor	PDGF B	none	deepseek-chat	20260719T104535
+PDGF C	1	growth_factor	PDGF C	none	deepseek-chat	20260719T104535
+dystrophin	1	protein	dystrophin	none	deepseek-chat	20260719T104535
+insulin-like growth factors	1	growth_factor	insulin-like growth factors	none	deepseek-chat	20260719T104535
+MyoG	1	protein	MyoG	none	deepseek-chat	20260719T104535
+glucocorticoids	1	hormone	glucocorticoids	none	deepseek-chat	20260719T104535
+PDGFs	1	growth_factor	PDGFs	none	deepseek-chat	20260719T104535
+thyroxine	1	hormone	thyroxine	none	deepseek-chat	20260719T104535
+FMOD	1	protein	FMOD	none	deepseek-chat	20260719T104535
+matrigel	1	other	matrigel	none	deepseek-chat	20260719T104535
+F10 medium	1	basal	F10 medium	none	deepseek-chat	20260719T104535
+Dox	1	small_molecule	Dox	none	deepseek-chat	20260719T104535
+Fast MultiSite Mutagenesis System	1	other	Fast MultiSite Mutagenesis System	none	deepseek-chat	20260719T104535
+pMD2.G	1	other	pMD2.G	none	deepseek-chat	20260719T104535
+skimmed milk powder	1	other	skimmed milk powder	none	deepseek-chat	20260719T104535
+TB Green Premix Ex Taq II	1	other	TB Green Premix Ex Taq II	none	deepseek-chat	20260719T104535
+lysophosphatidic acid (LPA)	1	small_molecule	lysophosphatidic acid	none	deepseek-chat	20260719T104535
+lentiviral constructs	1	other	lentiviral constructs	none	deepseek-chat	20260719T104535
+psPAX2	1	other	psPAX2	none	deepseek-chat	20260719T104535
+4–20% precast polyacrylamide gels	1	other	4–20% precast polyacrylamide gels	none	deepseek-chat	20260719T104535
+collagenase D	1	other	collagenase D	none	deepseek-chat	20260719T104535
+Lipofectamine 3000	1	other	Lipofectamine 3000	none	deepseek-chat	20260719T104535
+VECTASHIELD mounting medium with DAPI	1	other	VECTASHIELD mounting medium with DAPI	none	deepseek-chat	20260719T104535
+polybrene	1	other	polybrene	none	deepseek-chat	20260719T104535
+2 × Phanta Max Master Mix (Dye Plus)	1	other	Phanta Max Master Mix	none	deepseek-chat	20260719T104535
+dispase II	1	other	dispase II	none	deepseek-chat	20260719T104535
+phosphatase inhibitors	1	supplement	phosphatase inhibitors	none	deepseek-chat	20260719T104535
+PrimerScript RT Master Mix	1	other	PrimerScript RT Master Mix	none	deepseek-chat	20260719T104535
+polyvinylidene difluoride (PVDF) membranes	1	other	polyvinylidene difluoride membranes	none	deepseek-chat	20260719T104535
+pEASY-Blunt Simple Cloning Vector	1	other	pEASY-Blunt Simple Cloning Vector	none	deepseek-chat	20260719T104535
+pLVX-TetOne-Puro	1	other	pLVX-TetOne-Puro	none	deepseek-chat	20260719T104535
+rat tail collagen type I	1	other	rat tail collagen type I	none	deepseek-chat	20260719T104535
+serum-free medium formulations	1	supplement	serum-free medium formulations	none	deepseek-chat	20260719T104535
+serum replacer formulations	1	supplement	serum replacer formulations	none	deepseek-chat	20260719T104535
+lysates	1	hydrolysate	lysates	none	deepseek-chat	20260719T104535
+extracts	1	hydrolysate	extracts	none	deepseek-chat	20260719T104535
+medium 1	1	supplement	medium 1	none	deepseek-chat	20260719T104535
+medium 2	1	supplement	medium 2	none	deepseek-chat	20260719T104535
+ELISA	1	other	ELISA	none	deepseek-chat	20260719T104535
+serum-free formulations	1	supplement	serum-free formulations	none	deepseek-chat	20260719T104535
+Multus serum-free formulations	1	supplement	Multus serum-free formulations	none	deepseek-chat	20260719T104535
+hydrolysate from yeast	1	hydrolysate	hydrolysate from yeast	none	deepseek-chat	20260719T104535
+recombinant DNA	1	other	recombinant DNA	none	deepseek-chat	20260719T104535
+Multus serum replacer formulations	1	supplement	Multus serum replacer formulations	none	deepseek-chat	20260719T104535
+growth factor	1	growth_factor	growth factor	none	deepseek-chat	20260719T104535
+basal medium of DMEM/F-12	1	basal	basal medium of DMEM/F-12	none	deepseek-chat	20260719T104535
+ELISAs	1	other	ELISAs	none	deepseek-chat	20260719T104535
+soy	1	hydrolysate	soy	none	deepseek-chat	20260719T104535
+plant hydrolysates	1	hydrolysate	plant hydrolysates	none	deepseek-chat	20260719T104535
+Multus medium	1	supplement	Multus medium	none	deepseek-chat	20260719T104535
+mass spectrometry	1	other	mass spectrometry	none	deepseek-chat	20260719T104535
+Pierce BCA Protein Assay Kit	1	other	Pierce BCA Protein Assay Kit	none	deepseek-chat	20260719T104535
+β-actin	1	other	β-actin	none	deepseek-chat	20260719T104535
+p-mTOR	1	other	p-mTOR	none	deepseek-chat	20260719T104535
+goat anti-rabbit IgG H&L/FITC	1	other	goat anti-rabbit IgG H&L/FITC	none	deepseek-chat	20260719T104535
+L-cysteine	1	other	L-cysteine	none	deepseek-chat	20260719T104535
+hoechst	1	other	hoechst	none	deepseek-chat	20260719T104535
+p-FOXO1	1	other	p-FOXO1	none	deepseek-chat	20260719T104535
+AKT	1	other	AKT	none	deepseek-chat	20260719T104535
+SOD2	1	other	SOD2	none	deepseek-chat	20260719T104535
+Super Real PreMix Plus	1	other	Super Real PreMix Plus	none	deepseek-chat	20260719T104535
+p53	1	other	p53	none	deepseek-chat	20260719T104535
+CDK2	1	other	CDK2	none	deepseek-chat	20260719T104535
+GAPDH	1	other	GAPDH	none	deepseek-chat	20260719T104535
+penicillin-streptomycin-gentamicin	1	supplement	penicillin-streptomycin-gentamicin	none	deepseek-chat	20260719T104535
+N-acetylcysteine	1	small_molecule	N-acetylcysteine	none	deepseek-chat	20260719T104535
+SOD1	1	other	SOD1	none	deepseek-chat	20260719T104535
+5-ethynyl-2'-deoxyuridine	1	other	5-ethynyl-2'-deoxyuridine	none	deepseek-chat	20260719T104535
+glutathione	1	other	glutathione	none	deepseek-chat	20260719T104535
+glyceraldehyde-3-phosphate dehydrogenase	1	other	glyceraldehyde-3-phosphate dehydrogenase	none	deepseek-chat	20260719T104535
+Cell counting kit	1	other	Cell counting kit	none	deepseek-chat	20260719T104535
+CD105	1	other	CD105	none	deepseek-chat	20260719T104535
+Radioimmunoprecipitation analysis buffer	1	other	Radioimmunoprecipitation analysis buffer	none	deepseek-chat	20260719T104535
+P21	1	other	P21	none	deepseek-chat	20260719T104535
+catalase	1	other	catalase	none	deepseek-chat	20260719T104535
+CD34	1	other	CD34	none	deepseek-chat	20260719T104535
+FastKing One Step kit	1	other	FastKing One Step kit	none	deepseek-chat	20260719T104535
+p-P70S6K	1	other	p-P70S6K	none	deepseek-chat	20260719T104535
+sodium dodecyl sulfate polyacrylamide gels	1	other	sodium dodecyl sulfate polyacrylamide gels	none	deepseek-chat	20260719T104535
+CD73	1	other	CD73	none	deepseek-chat	20260719T104535
+p-AKT	1	other	p-AKT	none	deepseek-chat	20260719T104535
+5x loading buffer	1	other	loading buffer	none	deepseek-chat	20260719T104535
+P70S6K	1	other	P70S6K	none	deepseek-chat	20260719T104535
+CDK1	1	other	CDK1	none	deepseek-chat	20260719T104535
+FBS	39	serum	FBS	exact	deepseek-chat	20260719T104535
+fetal bovine serum	30	serum	FBS	alias	deepseek-chat	20260719T104535
+DMEM	25	basal	DMEM	exact	deepseek-chat	20260719T104535
+insulin	17	growth_factor	Insulin	exact	deepseek-chat	20260719T104535
+glucose	14	small_molecule	glucose	exact	deepseek-chat	20260719T104535
+BSA	13	serum/albumin	BSA	exact	deepseek-chat	20260719T104535
+DMEM/F12	12	basal	DMEM/F12	exact	deepseek-chat	20260719T104535
+FGF-2	11	growth_factor	FGF2	alias	deepseek-chat	20260719T104535
+bovine serum albumin	10	albumin	BSA	alias	deepseek-chat	20260719T104535
+FGF2	10	growth_factor	FGF2	exact	deepseek-chat	20260719T104535
+bFGF	9	growth_factor	FGF2	alias	deepseek-chat	20260719T104535
+transferrin	9	protein	Transferrin	exact	deepseek-chat	20260719T104535
+IGF-1	8	growth_factor	IGF-1	exact	deepseek-chat	20260719T104535
+HGF	8	growth_factor	HGF	exact	deepseek-chat	20260719T104535
+glutamine	7	small_molecule	L-glutamine	alias	deepseek-chat	20260719T104535
+DMEM/F-12	7	basal	DMEM/F12	alias	deepseek-chat	20260719T104535
+PDGF	6	growth_factor	PDGF-BB	alias	deepseek-chat	20260719T104535
+recombinant albumin	6	protein	recombinant-albumin	alias	deepseek-chat	20260719T104535
+basic fibroblast growth factor	6	growth_factor	FGF2	alias	deepseek-chat	20260719T104535
+PDGF-BB	5	growth_factor	PDGF-BB	exact	deepseek-chat	20260719T104535
+EGF	5	growth_factor	EGF	exact	deepseek-chat	20260719T104535
+Beefy-9	5	basal	Beefy-9	exact	deepseek-chat	20260719T104535
+dexamethasone	5	small_molecule	Dexamethasone	exact	deepseek-chat	20260719T104535
+Dulbecco's Modified Eagle Medium	5	basal	DMEM	alias	deepseek-chat	20260719T104535
+serum	4	serum	FBS	alias	deepseek-chat	20260719T104535
+VEGF	4	growth_factor	VEGF	exact	deepseek-chat	20260719T104535
+L-glutamine	4	supplement	L-glutamine	exact	deepseek-chat	20260719T104535
+IGF1	4	growth_factor	IGF-1	alias	deepseek-chat	20260719T104535
+Insulin	4	growth_factor	Insulin	exact	deepseek-chat	20260719T104535
+Transferrin	4	protein	Transferrin	exact	deepseek-chat	20260719T104535
+fetal bovine serum (FBS)	3	supplement	FBS	stripped	deepseek-chat	20260719T104535
+L-ascorbic acid 2-phosphate	3	vitamin	Ascorbic-acid-2-phosphate	alias	deepseek-chat	20260719T104535
+D-glucose	3	small_molecule	glucose	alias	deepseek-chat	20260719T104535
+ITS	3	supplement	ITS	exact	deepseek-chat	20260719T104535
+hepatocyte growth factor	3	growth_factor	HGF	alias	deepseek-chat	20260719T104535
+B8	3	other	B8	exact	deepseek-chat	20260719T104535
+transforming growth factor beta 1	3	growth_factor	TGF-beta1	alias	deepseek-chat	20260719T104535
+epidermal growth factor	3	growth_factor	EGF	alias	deepseek-chat	20260719T104535
+TGF-β1	3	growth_factor	TGF-beta1	alias	deepseek-chat	20260719T104535
+fibroblast growth factor 2	3	growth_factor	FGF2	alias	deepseek-chat	20260719T104535
+Bovine Serum Albumin	2	serum/albumin	BSA	alias	deepseek-chat	20260719T104535
+CHIR99021	2	small_molecule	CHIR99021	exact	deepseek-chat	20260719T104535
+Glutamax	2	supplement	L-glutamine	alias	deepseek-chat	20260719T104535
+Y-27632	2	small_molecule	Y-27632	exact	deepseek-chat	20260719T104535
+selenium	2	supplement	sodium-selenite	alias	deepseek-chat	20260719T104535
+insulin-transferrin-selenium	2	supplement	ITS	alias	deepseek-chat	20260719T104535
+Dexamethasone	2	small_molecule	Dexamethasone	exact	deepseek-chat	20260719T104535
+insulin-like growth factor 1	2	growth_factor	IGF-1	alias	deepseek-chat	20260719T104535
+TGFβ1	2	growth_factor	TGF-beta1	alias	deepseek-chat	20260719T104535
+Glucose	2	small_molecule	glucose	exact	deepseek-chat	20260719T104535
+Fetal bovine serum	2	serum	FBS	alias	deepseek-chat	20260719T104535
+platelet-derived growth factor BB (PDGF-BB)	1	growth_factor	PDGF-BB	stripped	deepseek-chat	20260719T104535
+fibroblast growth factor 2 (FGF-2)	1	growth_factor	FGF2	stripped	deepseek-chat	20260719T104535
+hepatocyte growth factor (HGF)	1	growth_factor	HGF	stripped	deepseek-chat	20260719T104535
+insulin-like growth factor 1 (IGF-1)	1	growth_factor	IGF-1	stripped	deepseek-chat	20260719T104535
+vascular endothelial growth factor (VEGF)	1	growth_factor	VEGF	stripped	deepseek-chat	20260719T104535
+transforming growth factor beta 1 (TGFβ-1)	1	growth_factor	TGF-beta1	stripped	deepseek-chat	20260719T104535
+epidermal growth factor (EGF)	1	growth_factor	EGF	stripped	deepseek-chat	20260719T104535
+Beefy-R	1	basal	Beefy-R	exact	deepseek-chat	20260719T104535
+rapeseed protein isolate	1	protein	rapeseed-protein-isolate	alias	deepseek-chat	20260719T104535
+SB431542	1	small_molecule	SB431542	exact	deepseek-chat	20260719T104535
+forskolin	1	small_molecule	Forskolin	exact	deepseek-chat	20260719T104535
+GlutaMax	1	supplement	L-glutamine	alias	deepseek-chat	20260719T104535
+APE	1	hydrolysate	Auxenochlorella-pyrenoidosa-protein-extract	alias	deepseek-chat	20260719T104535
+Auxenochlorella pyrenoidosa protein extract	1	hydrolysate	Auxenochlorella-pyrenoidosa-protein-extract	alias	deepseek-chat	20260719T104535
+Grifola frondosa extract	1	hydrolysate	Grifola-frondosa-extract	alias	deepseek-chat	20260719T104535
+GFE	1	hydrolysate	Grifola-frondosa-extract	alias	deepseek-chat	20260719T104535
+RPMI 1640	1	basal	RPMI-1640	alias	deepseek-chat	20260719T104535
+Insulin-Transferrin-Selenium	1	supplement	ITS	alias	deepseek-chat	20260719T104535
+Fetal Bovine Serum (FBS)	1	supplement	FBS	stripped	deepseek-chat	20260719T104535
+DEX	1	small_molecule	Dexamethasone	alias	deepseek-chat	20260719T104535
+fetal calf serum	1	serum	FBS	alias	deepseek-chat	20260719T104535
+Bovine serum albumin	1	albumin	BSA	alias	deepseek-chat	20260719T104535
+fbs	1	supplement	FBS	exact	deepseek-chat	20260719T104535
+basic FGF	1	growth_factor	FGF2	alias	deepseek-chat	20260719T104535
+L-Glutamine	1	amino_acid	L-glutamine	exact	deepseek-chat	20260719T104535
+B8 medium	1	basal	B8	alias	deepseek-chat	20260719T104535
+Beefy 9	1	other	Beefy-9	alias	deepseek-chat	20260719T104535
+FBS (% v/v)	1	supplement	FBS	stripped	deepseek-chat	20260719T104535
+Glutamine (GlutaMAX)	1	small_molecule	L-glutamine	stripped	deepseek-chat	20260719T104535
+recombinant human albumin	1	albumin	recombinant-albumin	alias	deepseek-chat	20260719T104535
+basic fibroblast growth factor (bFGF)	1	growth_factor	FGF2	stripped	deepseek-chat	20260719T104535
+Insulin-like growth factor 1	1	growth_factor	IGF-1	alias	deepseek-chat	20260719T104535
+Hepatocyte Growth Factor	1	growth_factor	HGF	alias	deepseek-chat	20260719T104535
+Epidermal Growth Factor	1	growth_factor	EGF	alias	deepseek-chat	20260719T104535
+selenite	1	small_molecule	sodium-selenite	alias	deepseek-chat	20260719T104535
+FCS	1	supplement	FBS	alias	deepseek-chat	20260719T104535

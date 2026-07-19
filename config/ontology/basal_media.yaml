@@ -2,13 +2,13 @@
 # the knowledge base; `aliases` are matched case-insensitively (and via fuzzy
 # match when rapidfuzz is installed). Extend freely — this is a seed list.
 - canonical: DMEM
-  aliases: ["Dulbecco's Modified Eagle Medium", "dulbecco modified eagle medium", "D-MEM"]
+  aliases: ["Dulbecco's Modified Eagle Medium", "Dulbecco's modified Eagle's medium", "dulbecco modified eagle medium", "D-MEM"]
   category: basal_medium
 - canonical: DMEM/F12
   aliases: ["DMEM/F-12", "DMEM:F12", "DMEM F12", "Dulbecco's Modified Eagle Medium/Nutrient Mixture F-12"]
   category: basal_medium
 - canonical: Ham's F-10
-  aliases: ["Hams F10", "F-10", "F10 nutrient mixture"]
+  aliases: ["Hams F10", "F-10", "F10 nutrient mixture", "Ham's F-10 Nutrient Mix", "Ham's F-10 Nutrient Mixture"]
   category: basal_medium
 - canonical: Ham's F-12
   aliases: ["Hams F12", "F-12", "F12 nutrient mixture"]
@@ -23,7 +23,7 @@
   aliases: ["neurobasal medium"]
   category: basal_medium
 - canonical: B8
-  aliases: ["B8 medium", "Beefy-9 base", "essential 8 derived", "E8-derived"]
+  aliases: ["B8 medium", "B8 basal medium", "Beefy-9 base", "essential 8 derived", "E8-derived"]
   category: basal_medium
   notes: "Serum-free formulation family adapted for bovine satellite cells; Beefy-9 = B8 + recombinant albumin."
 - canonical: Beefy-9

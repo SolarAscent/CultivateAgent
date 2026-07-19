@@ -14,11 +14,11 @@
   category: growth_factor
   typical_role: proliferation
 - canonical: TGF-beta1
-  aliases: ["TGFβ1", "TGF-β1", "transforming growth factor beta 1", "TGFb1"]
+  aliases: ["TGFβ1", "TGF-β1", "TGF-β", "TGFβ", "TGF-beta", "transforming growth factor beta 1", "transforming growth factor beta", "TGFb1"]
   category: growth_factor
   typical_role: signaling (often inhibited for expansion)
 - canonical: PDGF-BB
-  aliases: ["PDGF", "platelet-derived growth factor BB"]
+  aliases: ["PDGF", "platelet-derived growth factor BB", "platelet-derived growth factor"]
   category: growth_factor
   typical_role: proliferation
 - canonical: HGF
@@ -37,3 +37,12 @@
   aliases: ["holo-transferrin", "apo-transferrin", "iron carrier"]
   category: growth_factor
   typical_role: iron transport
+- canonical: IL-6
+  aliases: ["interleukin-6", "interleukin 6", "IL6"]
+  category: growth_factor
+  typical_role: proliferation
+  notes: "Cytokine reported among factors that significantly improve bovine satellite-cell proliferation in B8-derived serum-free media."
+- canonical: LIF
+  aliases: ["leukemia inhibitory factor", "leukaemia inhibitory factor"]
+  category: growth_factor
+  typical_role: stemness/self-renewal

@@ -1,0 +1,399 @@
+{
+  "deployment_gate_pass": true,
+  "format_version": 1,
+  "items": 40,
+  "limitations": [
+    "DeepSeek returned page pointers only; no source number or excerpt is stored.",
+    "Passing authorizes a bounded shadow run only, not evidence or tier decisions."
+  ],
+  "max_selected_fraction_gate": 0.6,
+  "model": "deepseek-v4-flash",
+  "positives": 6,
+  "prompt_version": "visual-result-page-pointer-v1",
+  "repeat_recalls": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "repeat_selected_fractions": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "repeat_selections": [
+    [
+      {
+        "candidate_id": "V003",
+        "page_excerpt_sha256": "9aa184074dddbd2151662dbbd955895f1c2d41b143f677a01d81177be54b4530",
+        "pdf_page": 3,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V004",
+        "page_excerpt_sha256": "c0a3274c0b9c1529f5887d27053428dbb3ca595696500a7dcfdc3f3ab0ce014e",
+        "pdf_page": 4,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V005",
+        "page_excerpt_sha256": "5dc6d5b2b101f02153dc376ce50ce7e6b8c93793756ea105428658e0088e9b54",
+        "pdf_page": 5,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V006",
+        "page_excerpt_sha256": "7a16b845d468b51a975353d31b73ffd00cce4a4aa63c011b74248f2fbfb4dcf6",
+        "pdf_page": 6,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V007",
+        "page_excerpt_sha256": "046201640f9cbfa0955d6be39e26d0466e8760366b97c05ce5b97d3a564e574c",
+        "pdf_page": 7,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V008",
+        "page_excerpt_sha256": "b795da8a33544cc752d330816c19942f9ed8a349a4331d575a7dc611eb7ab36e",
+        "pdf_page": 8,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V009",
+        "page_excerpt_sha256": "5bfc0e97eca68b6a9027f8275067822192066bd4df8fe463a2c49be5e4bc8182",
+        "pdf_page": 9,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V019",
+        "page_excerpt_sha256": "b2b7c6f4705bb72042b089acc6300e34890cb3d1075b5400155544a294985702",
+        "pdf_page": 2,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V020",
+        "page_excerpt_sha256": "dac0165ac1c3030c686f943aeaab023ff64a7964ea0d75405ccc02ab3b4efb91",
+        "pdf_page": 3,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V021",
+        "page_excerpt_sha256": "d0b23ca760345005e22e26ed7d86ce3a11319a31e36dbf122c95e4f50f7f36f1",
+        "pdf_page": 4,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V022",
+        "page_excerpt_sha256": "41f9a777b481f52455562ff6c5ff81e67d693b8f392861677c8cb2503d29aa18",
+        "pdf_page": 5,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V023",
+        "page_excerpt_sha256": "bd641092ae1fc21d55b93345c11153a74fd12ab26b84d5b8aba12d6484c5c6a0",
+        "pdf_page": 6,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V024",
+        "page_excerpt_sha256": "e99bd81b6d9aa7e843350767d3aaba68c992ecaa9bf699e16c262655d1ce98fc",
+        "pdf_page": 7,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V030",
+        "page_excerpt_sha256": "e06aa8eb90912aaf35ccacd274fe2741f73b70c8d2dbae93760287b5e3b09eaf",
+        "pdf_page": 3,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V031",
+        "page_excerpt_sha256": "a763c45a8d7b91e027aaebee99c4807180b18d29c589e17b12942c8f3013dd20",
+        "pdf_page": 4,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V032",
+        "page_excerpt_sha256": "e2172cb009b85e974f8c2eeccbf9c1c6b1eeff4d002877ed21353f8c1172bff1",
+        "pdf_page": 5,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V033",
+        "page_excerpt_sha256": "c08f0d46e6a2d2fcb84d7bf4543d43bac8588c5f09c3742e23a5bd5c89052460",
+        "pdf_page": 6,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V034",
+        "page_excerpt_sha256": "299dbd40dfab9d501304863f95fcaabbf09c36b45cf6bbe3944be9027d1b9d7e",
+        "pdf_page": 7,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V035",
+        "page_excerpt_sha256": "c76ba6fdc076cae96c34f28e9997019e0d6086da882c028e757afacb8e49201a",
+        "pdf_page": 8,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V038",
+        "page_excerpt_sha256": "b018081cdefb8b94a24252a635c2dd40bd4a8923fcf98965f08fe92e43df79b8",
+        "pdf_page": 11,
+        "record_id": "R020"
+      }
+    ],
+    [
+      {
+        "candidate_id": "V003",
+        "page_excerpt_sha256": "9aa184074dddbd2151662dbbd955895f1c2d41b143f677a01d81177be54b4530",
+        "pdf_page": 3,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V004",
+        "page_excerpt_sha256": "c0a3274c0b9c1529f5887d27053428dbb3ca595696500a7dcfdc3f3ab0ce014e",
+        "pdf_page": 4,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V005",
+        "page_excerpt_sha256": "5dc6d5b2b101f02153dc376ce50ce7e6b8c93793756ea105428658e0088e9b54",
+        "pdf_page": 5,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V006",
+        "page_excerpt_sha256": "7a16b845d468b51a975353d31b73ffd00cce4a4aa63c011b74248f2fbfb4dcf6",
+        "pdf_page": 6,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V007",
+        "page_excerpt_sha256": "046201640f9cbfa0955d6be39e26d0466e8760366b97c05ce5b97d3a564e574c",
+        "pdf_page": 7,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V008",
+        "page_excerpt_sha256": "b795da8a33544cc752d330816c19942f9ed8a349a4331d575a7dc611eb7ab36e",
+        "pdf_page": 8,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V009",
+        "page_excerpt_sha256": "5bfc0e97eca68b6a9027f8275067822192066bd4df8fe463a2c49be5e4bc8182",
+        "pdf_page": 9,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V019",
+        "page_excerpt_sha256": "b2b7c6f4705bb72042b089acc6300e34890cb3d1075b5400155544a294985702",
+        "pdf_page": 2,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V020",
+        "page_excerpt_sha256": "dac0165ac1c3030c686f943aeaab023ff64a7964ea0d75405ccc02ab3b4efb91",
+        "pdf_page": 3,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V021",
+        "page_excerpt_sha256": "d0b23ca760345005e22e26ed7d86ce3a11319a31e36dbf122c95e4f50f7f36f1",
+        "pdf_page": 4,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V022",
+        "page_excerpt_sha256": "41f9a777b481f52455562ff6c5ff81e67d693b8f392861677c8cb2503d29aa18",
+        "pdf_page": 5,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V023",
+        "page_excerpt_sha256": "bd641092ae1fc21d55b93345c11153a74fd12ab26b84d5b8aba12d6484c5c6a0",
+        "pdf_page": 6,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V024",
+        "page_excerpt_sha256": "e99bd81b6d9aa7e843350767d3aaba68c992ecaa9bf699e16c262655d1ce98fc",
+        "pdf_page": 7,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V030",
+        "page_excerpt_sha256": "e06aa8eb90912aaf35ccacd274fe2741f73b70c8d2dbae93760287b5e3b09eaf",
+        "pdf_page": 3,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V031",
+        "page_excerpt_sha256": "a763c45a8d7b91e027aaebee99c4807180b18d29c589e17b12942c8f3013dd20",
+        "pdf_page": 4,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V032",
+        "page_excerpt_sha256": "e2172cb009b85e974f8c2eeccbf9c1c6b1eeff4d002877ed21353f8c1172bff1",
+        "pdf_page": 5,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V033",
+        "page_excerpt_sha256": "c08f0d46e6a2d2fcb84d7bf4543d43bac8588c5f09c3742e23a5bd5c89052460",
+        "pdf_page": 6,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V034",
+        "page_excerpt_sha256": "299dbd40dfab9d501304863f95fcaabbf09c36b45cf6bbe3944be9027d1b9d7e",
+        "pdf_page": 7,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V035",
+        "page_excerpt_sha256": "c76ba6fdc076cae96c34f28e9997019e0d6086da882c028e757afacb8e49201a",
+        "pdf_page": 8,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V038",
+        "page_excerpt_sha256": "b018081cdefb8b94a24252a635c2dd40bd4a8923fcf98965f08fe92e43df79b8",
+        "pdf_page": 11,
+        "record_id": "R020"
+      }
+    ],
+    [
+      {
+        "candidate_id": "V003",
+        "page_excerpt_sha256": "9aa184074dddbd2151662dbbd955895f1c2d41b143f677a01d81177be54b4530",
+        "pdf_page": 3,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V004",
+        "page_excerpt_sha256": "c0a3274c0b9c1529f5887d27053428dbb3ca595696500a7dcfdc3f3ab0ce014e",
+        "pdf_page": 4,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V005",
+        "page_excerpt_sha256": "5dc6d5b2b101f02153dc376ce50ce7e6b8c93793756ea105428658e0088e9b54",
+        "pdf_page": 5,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V006",
+        "page_excerpt_sha256": "7a16b845d468b51a975353d31b73ffd00cce4a4aa63c011b74248f2fbfb4dcf6",
+        "pdf_page": 6,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V007",
+        "page_excerpt_sha256": "046201640f9cbfa0955d6be39e26d0466e8760366b97c05ce5b97d3a564e574c",
+        "pdf_page": 7,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V008",
+        "page_excerpt_sha256": "b795da8a33544cc752d330816c19942f9ed8a349a4331d575a7dc611eb7ab36e",
+        "pdf_page": 8,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V009",
+        "page_excerpt_sha256": "5bfc0e97eca68b6a9027f8275067822192066bd4df8fe463a2c49be5e4bc8182",
+        "pdf_page": 9,
+        "record_id": "R015"
+      },
+      {
+        "candidate_id": "V019",
+        "page_excerpt_sha256": "b2b7c6f4705bb72042b089acc6300e34890cb3d1075b5400155544a294985702",
+        "pdf_page": 2,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V020",
+        "page_excerpt_sha256": "dac0165ac1c3030c686f943aeaab023ff64a7964ea0d75405ccc02ab3b4efb91",
+        "pdf_page": 3,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V021",
+        "page_excerpt_sha256": "d0b23ca760345005e22e26ed7d86ce3a11319a31e36dbf122c95e4f50f7f36f1",
+        "pdf_page": 4,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V022",
+        "page_excerpt_sha256": "41f9a777b481f52455562ff6c5ff81e67d693b8f392861677c8cb2503d29aa18",
+        "pdf_page": 5,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V023",
+        "page_excerpt_sha256": "bd641092ae1fc21d55b93345c11153a74fd12ab26b84d5b8aba12d6484c5c6a0",
+        "pdf_page": 6,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V024",
+        "page_excerpt_sha256": "e99bd81b6d9aa7e843350767d3aaba68c992ecaa9bf699e16c262655d1ce98fc",
+        "pdf_page": 7,
+        "record_id": "R019"
+      },
+      {
+        "candidate_id": "V030",
+        "page_excerpt_sha256": "e06aa8eb90912aaf35ccacd274fe2741f73b70c8d2dbae93760287b5e3b09eaf",
+        "pdf_page": 3,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V031",
+        "page_excerpt_sha256": "a763c45a8d7b91e027aaebee99c4807180b18d29c589e17b12942c8f3013dd20",
+        "pdf_page": 4,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V032",
+        "page_excerpt_sha256": "e2172cb009b85e974f8c2eeccbf9c1c6b1eeff4d002877ed21353f8c1172bff1",
+        "pdf_page": 5,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V033",
+        "page_excerpt_sha256": "c08f0d46e6a2d2fcb84d7bf4543d43bac8588c5f09c3742e23a5bd5c89052460",
+        "pdf_page": 6,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V034",
+        "page_excerpt_sha256": "299dbd40dfab9d501304863f95fcaabbf09c36b45cf6bbe3944be9027d1b9d7e",
+        "pdf_page": 7,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V035",
+        "page_excerpt_sha256": "c76ba6fdc076cae96c34f28e9997019e0d6086da882c028e757afacb8e49201a",
+        "pdf_page": 8,
+        "record_id": "R020"
+      },
+      {
+        "candidate_id": "V038",
+        "page_excerpt_sha256": "b018081cdefb8b94a24252a635c2dd40bd4a8923fcf98965f08fe92e43df79b8",
+        "pdf_page": 11,
+        "record_id": "R020"
+      }
+    ]
+  ],
+  "repeats": 3,
+  "requests_expected": 12,
+  "requests_valid": 12,
+  "selection_consistency": 1.0,
+  "selector_version": "jats-caption-stat-context-v1",
+  "status": "pass_for_bounded_shadow",
+  "total_tokens": 68562,
+  "validation_issues": []
+}

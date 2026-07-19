@@ -235,7 +235,11 @@ a number is supported.
   summaries by only 13.0%, versus 5.5% for the no-model signal baseline. The
   incremental reduction is too weak and unlabeled shadow recall is unknown, so
   production routing remains on hold. Retain page localization as an evaluation
-  tool only; it cannot create evidence decisions.
+  tool only; it cannot create evidence decisions. A narrower visual-result page
+  task has passed its first source-disjoint silver gate: three identical runs
+  recovered 6/6 JATS-derived positive pages and reduced 40 readable pages to 20.
+  This authorizes only a bounded source-disjoint shadow; production routing
+  remains prohibited until shadow utility and recall safeguards pass.
 
 ### 8.3 Allowed Delegation
 

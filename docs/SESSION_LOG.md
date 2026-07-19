@@ -3774,6 +3774,55 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 63 (Codex) — DeepSeek visual-result page capability gate
+
+Date: 2026-07-19
+Branch: `codex/deepseek-visual-page-gate`
+
+## Decision And Boundary
+
+- Metadata-linkage and broad quantitative-page tasks were not rerun: the former
+  already failed recall and the latter produced too little shadow work reduction.
+- A narrower task was tested instead: locate pages likely to contain visual
+  treatment/control group statistics. DeepSeek may return page IDs only; source
+  text, numbers, evidence tiers, and treatment/control roles remain prohibited.
+- Passing this gate authorizes one bounded source-disjoint shadow only. It does
+  not authorize production batching.
+
+## Implementation And Live Result
+
+- Added a deterministic JATS-caption-to-PDF silver builder. It verifies JATS and
+  PDF hashes, requires outcome/comparison/dispersion/sample-size caption context,
+  and commits figure/page pointers and hashes only.
+- Frozen R015/R019/R020 as a source-disjoint set with 6 positive pages among 40
+  readable excerpts. One qualifying R015 figure was excluded due to ambiguous
+  PDF text matching rather than being forced into silver.
+- Added a dedicated `visual-result-page-pointer-v1` prompt, exact repeated
+  predictions in the audit manifest, a hard 40% work-reduction gate, atomic
+  checkpoints, request/token/wall-time caps, and deterministic validators.
+- `deepseek-v4-flash`, thinking disabled and temperature 0, made 12 requests
+  under a hard cap of 15. All three repeats recovered 6/6 positives, selected the identical 20/40 pages,
+  and reported 68,562 tokens. Recall was 1.00, consistency 1.00, and reduction
+  50%, so the capability gate passed for bounded shadow only.
+
+## Verification And Next Steps
+
+- Focused DeepSeek tests passed, including source-hash checks, no-text pointer
+  artifacts, checkpoint behavior, and rejection of select-every-page outputs.
+- Checkpoint replay completed without a provider call and reproduced a
+  byte-identical result manifest.
+- Non-loopback suite: 204 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected. CLI smoke passed; the six-round optimization demo
+  increased synthetic hypervolume from 7.050 to 16.464.
+- Deterministic silver regeneration was byte-identical, result-manifest
+  validation returned zero issues, `git diff --check` passed, and no API key was
+  added to tracked artifacts.
+- Next: run a small source-disjoint shadow, deterministically validate every
+  pointer, and keep production routing disabled unless utility and recall
+  safeguards pass. Continue figure/supplement asset readiness in parallel.
+
+---
+
 # Session 62 (Codex) — verified JATS group-statistics off-ramp
 
 Date: 2026-07-19

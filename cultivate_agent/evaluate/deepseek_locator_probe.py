@@ -83,6 +83,7 @@ class LocatorProbeResult:
     issues: tuple[str, ...]
     false_negative_ids: tuple[str, ...]
     false_positive_ids: tuple[str, ...]
+    selections: tuple[tuple[str, ...], ...]
 
     @property
     def gate_pass(self) -> bool:
@@ -442,6 +443,7 @@ def run_locator_probe(
         repeat_precisions=tuple(precisions), selection_consistency=round(consistency, 4),
         total_tokens=total_tokens, issues=tuple(issues),
         false_negative_ids=tuple(false_negatives), false_positive_ids=tuple(false_positives),
+        selections=tuple(tuple(sorted(outputs[repeat])) for repeat in range(repeats)),
     )
 
 

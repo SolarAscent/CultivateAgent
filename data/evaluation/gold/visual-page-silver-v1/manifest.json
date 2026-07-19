@@ -1,0 +1,92 @@
+{
+  "candidates": [
+    {
+      "figure_ids": [
+        "Fig5"
+      ],
+      "page_excerpt_sha256": "5bfc0e97eca68b6a9027f8275067822192066bd4df8fe463a2c49be5e4bc8182",
+      "pdf_page": 9,
+      "record_id": "R015"
+    },
+    {
+      "figure_ids": [
+        "Fig1"
+      ],
+      "page_excerpt_sha256": "b2b7c6f4705bb72042b089acc6300e34890cb3d1075b5400155544a294985702",
+      "pdf_page": 2,
+      "record_id": "R019"
+    },
+    {
+      "figure_ids": [
+        "Fig3"
+      ],
+      "page_excerpt_sha256": "e2172cb009b85e974f8c2eeccbf9c1c6b1eeff4d002877ed21353f8c1172bff1",
+      "pdf_page": 5,
+      "record_id": "R020"
+    },
+    {
+      "figure_ids": [
+        "Fig4",
+        "Fig5"
+      ],
+      "page_excerpt_sha256": "c08f0d46e6a2d2fcb84d7bf4543d43bac8588c5f09c3742e23a5bd5c89052460",
+      "pdf_page": 6,
+      "record_id": "R020"
+    },
+    {
+      "figure_ids": [
+        "Fig7"
+      ],
+      "page_excerpt_sha256": "299dbd40dfab9d501304863f95fcaabbf09c36b45cf6bbe3944be9027d1b9d7e",
+      "pdf_page": 7,
+      "record_id": "R020"
+    },
+    {
+      "figure_ids": [
+        "Fig8"
+      ],
+      "page_excerpt_sha256": "c76ba6fdc076cae96c34f28e9997019e0d6086da882c028e757afacb8e49201a",
+      "pdf_page": 8,
+      "record_id": "R020"
+    }
+  ],
+  "format_version": 1,
+  "limitations": [
+    "Silver positives are deterministic JATS-caption-to-PDF-page pointers, not biological evidence.",
+    "Qualifying captions without an unambiguous PDF text match are excluded from silver.",
+    "No caption text or numeric value is stored in this manifest."
+  ],
+  "selector_version": "jats-caption-stat-context-v1",
+  "sources": [
+    {
+      "jats_path": "data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/fulltext.xml",
+      "jats_sha256": "46d9481903bb21d91e26d1b2ef8483e572a68ce62f6f252057f7c3aa3c1a9bce",
+      "paper_id": "simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli",
+      "pdf_pages": 18,
+      "pdf_path": "data/papers/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli/simple-and-effective-serum-free-medium-for-sustained-expansion-of-bovine-satelli.pdf",
+      "pdf_sha256": "c132a2d416e341c9be246f9b10c32db346e9260607af564504ea66f19873e5aa",
+      "record_id": "R015",
+      "unmatched_qualifying_figures": 1
+    },
+    {
+      "jats_path": "data/papers/spent-media-analysis-suggests-cultivated-meat-media-will-require-species-and-cel/fulltext.xml",
+      "jats_sha256": "19741ef004cdecbcfef429918844f46a76264ab6fac5c0fcebf7f18b60f20cf9",
+      "paper_id": "spent-media-analysis-suggests-cultivated-meat-media-will-require-species-and-cel",
+      "pdf_pages": 10,
+      "pdf_path": "data/papers/spent-media-analysis-suggests-cultivated-meat-media-will-require-species-and-cel/spent-media-analysis-suggests-cultivated-meat-media-will-require-species-and-cel.pdf",
+      "pdf_sha256": "ca798e420752e8f6b04034b1ebaaef3e8cbaed82e9926efefb548319d2b75815",
+      "record_id": "R019",
+      "unmatched_qualifying_figures": 0
+    },
+    {
+      "jats_path": "data/papers/development-of-serum-free-and-grain-derived-nutrient-free-medium-using-microalga/fulltext.xml",
+      "jats_sha256": "8278ab8c2b4355321f6b0d672ee3f265102fb55a25b41540feb3e672593a05ec",
+      "paper_id": "development-of-serum-free-and-grain-derived-nutrient-free-medium-using-microalga",
+      "pdf_pages": 13,
+      "pdf_path": "data/papers/development-of-serum-free-and-grain-derived-nutrient-free-medium-using-microalga/development-of-serum-free-and-grain-derived-nutrient-free-medium-using-microalga.pdf",
+      "pdf_sha256": "1df2b7b9cd465dd858435f6a3867d54a66435d4402ef4d0e4b2080057dac0ea5",
+      "record_id": "R020",
+      "unmatched_qualifying_figures": 0
+    }
+  ]
+}

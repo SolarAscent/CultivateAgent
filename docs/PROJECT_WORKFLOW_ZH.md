@@ -738,6 +738,11 @@ Gate：论文 claims 可追溯到证据和结果。
   更宽的 field-aware sensitivity 集只命中 11/12（0.9167），漏掉 R016 的一个
   图页，而确定性 baseline 只需选择 12 页。当前 prompt/model 的生产路由关闭，
   仍禁止数字转录和证据裁决。
+- 确定性 12 页 visual baseline 已从哈希验证的 PDF 中提取 12/12 个非空嵌入图。
+  其中 6 个 R021 资产是严格 group-statistics visual candidate，另外 6 个是较宽
+  visual candidate；R016/R022 的 4 个资产已映射到验证过的 JATS figure ID/href。
+  2 个唯一 supplement 引用仍为 `referenced_not_local`。这只解锁有界视觉复核，
+  不允许数字转录或 evidence-tier 升级。
 - AI-for-science 方法综述已存在。
 - DeepSeek compatibility route 与显式 `deepseek-v4-flash` 的 effect-extraction
   对比已记录在 `docs/MODEL_COMPARISON_DEEPSEEK.md`；结论是显式 v4-flash run
@@ -777,6 +782,7 @@ Gate：论文 claims 可追溯到证据和结果。
 | DeepSeek metadata-linkage 下放 | `FAIL`；3 次 recall 均为 0.50，precision 1.00，Jaccard 1.00 | 稳定漏掉 3/6 个同领域跨论文错配；不得下放或自动修正 metadata |
 | DeepSeek 页级候选定位下放 | `HOLD_AFTER_SHADOW`；gold 与来源独立 holdout 的 3+3 次 recall 均为 1.00，但 R053-R055 shadow 只减少 13.0% 摘要输入 | IDs-only 能力稳定，但相对 5.5% 确定性基线的增量太小，且无标签 shadow recall 未知，因此不接入生产路由 |
 | DeepSeek 可视化定量结果页下放 | `FAIL_NO_PRODUCTION_ROUTING`；严格 shadow 命中 6/6，但 broad sensitivity 仅 11/12（0.9167），模型 26 页 vs 确定性 baseline 12 页 | 严格正例稳定命中未通过更宽 recall safeguard，且没有比现有代码节省工作；当前 prompt/model 的任务关闭 |
+| 确定性 visual asset readiness | `PASS_FOR_VISUAL_REVIEW`；12/12 候选页各提取 1 个非空嵌入图，6 个严格候选，4 个 JATS-mapped asset | 来源/版面哈希和本地生成资产已就绪；精确科学数值仍必须来自来源复核或 supplement |
 | Zotero acquisition 去重 | `PASS`；236 = 212 actionable + 23 excluded + 1 conflict | 只能从 actionable TSV 获取；冲突等待版本人工复核 |
 | Zotero OA 发现审计 | `PASS`；212 = 75 EPMC JATS + 34 Crossref CC-VOR + 96 未验证 + 7 缺 DOI | 109 条 OA/许可候选只是线索，仍需来源级验证 |
 | Europe PMC bovine JATS canary | `PASS`；10/10 来源验证，8/10 有表格，3/10 有统计记号单元格 | 获取路径可用；scope review 与 canonical promotion 仍是独立环节 |
@@ -827,11 +833,11 @@ Gate：论文 claims 可追溯到证据和结果。
 6. `[AI]` 先用 `cultivate extract --ids H014 --mode operators` 跑小规模 live
    operator-extraction pilot，检查 grounding 和 raw extraction metadata；只有
    pilot 可接受后再扩大到 `--ids H001-H014`。
-7. `[AI]` 使用确定性的 field-aware 12 页 visual baseline；当前 prompt/model
-   不再把可视化页面定位下放给 DeepSeek。
-8. `[AI]` 在 source-verified figures/supplements 中寻找完整的 treatment/control
-   mean-dispersion-n 结构。完整 pointer set 出现前保持 JATS table path off-ramp；
-   所有数值必须绑定来源，并继续接受人工数字复核。
+7. `[AI]` 先复核 6 个 R021 strict visual asset，寻找来源支持的 treatment/control
+   mean-dispersion-n 结构。像素估值不是 ground truth；优先使用 raw/supplement data
+   或来源明确给出的数值。
+8. `[AI]` 如果存在有界、许可有效的来源路径，获取并哈希验证 2 个已引用
+   supplement；未取得的文件继续明确标记 unavailable。
 9. `[REVIEW]` 决定哪些变量可以进入 S5 search-space design。
 10. `[LAB]` 并行确认 assay 限制和 reagent feasibility。
 

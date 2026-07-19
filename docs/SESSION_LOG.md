@@ -3774,6 +3774,55 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 65 (Codex) — deterministic visual assets ready for review
+
+Date: 2026-07-19
+Branch: `codex/visual-asset-readiness`
+
+## Decision And Boundary
+
+- Replaced the rejected DeepSeek visual-page route with the 12-page
+  deterministic field-aware baseline from R016/R021/R022.
+- Used only canonical DOI rows, audited PDF hashes/page counts, the frozen PDF
+  held-out manifest, and verified JATS hashes. No model was called.
+- Extracted embedded PDF images without interpreting plots or transcribing
+  scientific values. Generated image files remain ignored local assets; tracked
+  artifacts contain paths, hashes, dimensions, layout pointers, and availability.
+
+## Result
+
+- All 12 candidate pages contained exactly one embedded main image; all 12
+  extracted assets passed a nonblank pixel check. Six R021 pages are strict
+  group-statistics visual candidates and six pages are broader candidates.
+- Manual pixel inspection confirmed the six strict assets are readable
+  multi-panel quantitative plots with points/error bars rather than blank pages
+  or publisher decorations. This is visual readiness, not exact numeric support.
+- R016/R022 contributed four assets mapped to verified JATS figure IDs and
+  graphic hrefs. R021 has no registered JATS in the current source manifest;
+  its CC BY 4.0 status was verified from the hash-bound PDF text.
+- JATS contains two unique supplement references (R016 PDF and R022 DOCX), but
+  neither file is local. Both remain `referenced_not_local`; href presence was
+  not misreported as availability.
+
+## Verification And Next Steps
+
+- Focused visual-asset and visual-page tests passed, including PDF/JATS/hash
+  provenance, supplement deduplication, embedded-image extraction, nonblank
+  pixels, and source-drift rejection.
+- Non-loopback suite: 210 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected. CLI smoke passed; the six-round optimization demo
+  increased synthetic hypervolume from 7.050 to 16.464.
+- Re-running the builder reproduced the source, asset, supplement, and report
+  artifacts and rewrote local images to the same SHA-256 values.
+- `git diff --check` passed. Tracked artifacts contain no image bytes, source
+  scientific values, or API credentials.
+- Next: inspect the six strict plots for exact source-backed group statistics;
+  do not use chart-digitized pixel estimates as ground truth. Attempt bounded,
+  license-valid acquisition of the two referenced supplements because raw or
+  explicit values there would be stronger than image inference.
+
+---
+
 # Session 64 (Codex) — DeepSeek visual-page shadow rejects production routing
 
 Date: 2026-07-19

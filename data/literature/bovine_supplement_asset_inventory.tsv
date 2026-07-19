@@ -1,0 +1,3 @@
+record_id	doi	jats_source_sha256	supplement_id	href	local_path	local_sha256	status
+R016	10.3389/fbioe.2022.895289	2f4b21e9ee7e1fb83a6559551c7d96c227480b5170584666d7880db636764643	SM1	DataSheet1.PDF			referenced_not_local
+R022	10.1038/s41598-025-99603-7	2190eb7e56101a87e5d89664d20685d75120f1d4a1fc03e22a4bcb013cfe1ab1	MOESM1	41598_2025_99603_MOESM1_ESM.docx			referenced_not_local

@@ -793,11 +793,13 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
   twelve statistical tables are composition/model/non-medium outputs, and
   sixteen have no group-stat structure. DeepSeek cell-role labeling is therefore
   off-ramped for this source set rather than run on structurally incomplete input.
-- A narrower DeepSeek visual-result page probe passed its source-disjoint silver
-  gate. Three identical ID-only runs recovered 6/6 JATS-derived positive pages
-  and selected 20/40 readable pages (50% reduction). This permits only a bounded
-  shadow run; it does not reopen the failed text-block task or approve production
-  routing, numeric transcription, or evidence decisions.
+- A narrower DeepSeek visual-result page probe passed its first silver gate but
+  failed the PDF shadow deployment audit. Three identical shadow runs recovered
+  6/6 strict positives and selected 26/48 pages. A broader field-aware
+  sensitivity set exposed recall 11/12 (0.9167), including a missed R016 figure
+  page, while the deterministic baseline selected only 12 pages. Production
+  routing is closed for this prompt/model; numeric transcription and evidence
+  decisions remain prohibited.
 - AI-for-science method review exists.
 - DeepSeek compatibility-route vs explicit v4-flash effect-extraction
   comparison exists in `docs/MODEL_COMPARISON_DEEPSEEK.md`; it found the
@@ -839,7 +841,7 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
 | DeepSeek quantitative-block delegation | `FAIL`; independent silver recall 10/13 (0.7692) after prior 10/12 (0.8333) | Task closed for this prompt/model; retain deterministic prefilter and route review to a stronger model |
 | DeepSeek metadata-linkage delegation | `FAIL`; recall 0.50 in all 3 repeats, precision 1.00, Jaccard 1.00 | Stable under-selection missed 3/6 same-domain cross-paper mismatches; do not delegate or auto-correct metadata |
 | DeepSeek page-candidate delegation | `HOLD_AFTER_SHADOW`; gold and source-disjoint holdout recall 1.00 in all 3+3 repeats, but R053-R055 shadow reduced excerpts only 13.0% | Stable IDs-only capability is real; incremental reduction over the 5.5% deterministic baseline is too small and unlabeled recall is unknown, so no production routing |
-| DeepSeek visual-result page delegation | `PASS_FOR_BOUNDED_SHADOW`; 3 repeats recovered 6/6 silver pages, exact consistency 1.00, and selected 20/40 readable pages | Narrow task passed recall, stability, and >=40% work-reduction gates; production batching remains blocked pending a source-disjoint shadow |
+| DeepSeek visual-result page delegation | `FAIL_NO_PRODUCTION_ROUTING`; strict shadow recall 6/6 but broad sensitivity recall 11/12 (0.9167), model 26 pages vs deterministic baseline 12 | Stable strict recovery did not survive the broader recall safeguard and did not reduce work versus existing code; task closed for this prompt/model |
 | Zotero acquisition deduplication | `PASS`; 236 = 212 actionable + 23 excluded + 1 conflict | Acquire only from the actionable TSV; conflict is held for version review |
 | Zotero OA discovery audit | `PASS`; 212 = 75 EPMC JATS + 34 Crossref CC-VOR + 96 unverified + 7 no DOI | The 109 OA/license candidates are leads only; source-level verification is still required |
 | Europe PMC bovine JATS canary | `PASS`; 10/10 source-verified, 8/10 table-bearing, 3/10 with statistical-notation cells | Acquisition path works; scope review and canonical promotion remain separate |
@@ -900,9 +902,8 @@ work sessions; detailed history stays in `SESSION_LOG.md`.
    `cultivate extract --ids H014 --mode operators`, inspect grounding and raw
    extraction metadata, then scale to `--ids H001-H014` only if the pilot is
    acceptable.
-7. `[AI]` Run one small source-disjoint shadow of the passed visual-result page
-   pointer task. Keep production routing disabled unless shadow utility and
-   recall safeguards pass.
+7. `[AI]` Use the deterministic field-aware 12-page visual baseline; do not
+   route visual-page localization to DeepSeek under the current prompt/model.
 8. `[AI]` Search source-verified figures/supplements for complete
    treatment/control mean-dispersion-n structures. Keep the JATS table path
    off-ramped until a complete pointer set exists; all required values must be

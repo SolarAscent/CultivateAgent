@@ -3774,6 +3774,56 @@ task validity. The v1 artifact is retained as `superseded_audit_only`.
 
 ---
 
+# Session 64 (Codex) — DeepSeek visual-page shadow rejects production routing
+
+Date: 2026-07-19
+Branch: `codex/deepseek-visual-page-shadow`
+
+## Frozen Shadow Design
+
+- Froze R016/R021/R022 before the first API call; the held-out manifest SHA-256
+  is `aacb1ab9f73e1dc7bbb9fbf6a7cb3ad858153f94166d636c44964a3af8bb8b05`.
+  These sources are disjoint from the R015/R019/R020 visual capability set.
+- Reused the existing field-aware PDF signals rather than creating a parallel
+  hand-labeled set. Six strict figure/outcome/medium/sample-size/dispersion pages
+  from R021 are positives; all 48 readable pages enter the model input.
+- The prompt remained `visual-result-page-pointer-v1`. DeepSeek could return
+  page IDs only; source text, numbers, roles, and evidence decisions were absent.
+
+## Live Result And Utility Audit
+
+- `deepseek-v4-flash`, temperature 0 and thinking disabled, made 15 requests
+  under hard request/token/wall-time limits and reported 80,940 tokens.
+- All responses passed schema validation. The three runs were identical,
+  selected 26/48 pages, and recovered all 6/6 strict positives: strict recall
+  1.00, consistency 1.00, and 45.8% reduction versus reading every page.
+- A deterministic post-hoc sensitivity audit then evaluated all pages carrying
+  figure-caption, outcome, and medium signals. DeepSeek recovered 11/12
+  (0.9167), missing R016 page 12. The no-model field-aware baseline selected 12
+  pages, versus 26 model-selected pages.
+- Because the broad rule was applied after the run, it is explicitly marked
+  `post_hoc_not_independent_gold`: it may block deployment but cannot establish
+  a pass. Both broad recall and incremental-utility gates failed, so production
+  routing is disabled for this prompt/model.
+
+## Verification And Next Steps
+
+- Focused visual/locator/page tests passed after adding source-hash, selector,
+  strict-gold, broad-sensitivity, and production-gate checks.
+- Non-loopback suite: 207 passed, 2 optional tests skipped, and the known local
+  HTTP/GROBID test deselected. CLI smoke passed; the six-round optimization demo
+  increased synthetic hypervolume from 7.050 to 16.464.
+- Checkpoint replay reproduced the same provider manifest without a new API
+  call; deterministic utility replay was byte-identical and returned the
+  expected nonzero deployment-failure exit.
+- Held-out regeneration was byte-identical, `git diff --check` passed, and the
+  tracked artifact scan found no API key or source numeric-value field.
+- Next: use the deterministic 12-page baseline for visual review and continue
+  source-verified figure/supplement asset readiness. Do not spend more calls on
+  this exposed visual-page prompt/model.
+
+---
+
 # Session 63 (Codex) — DeepSeek visual-result page capability gate
 
 Date: 2026-07-19

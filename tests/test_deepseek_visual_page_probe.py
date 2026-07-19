@@ -7,10 +7,12 @@ from cultivate_agent.evaluate.deepseek_visual_page_probe import (
     PROMPT_VERSION,
     build_visual_page_prompt,
     build_pdf_visual_heldout_manifest,
+    audit_pdf_visual_shadow,
     build_visual_silver_manifest,
     deployment_gate_pass,
     load_visual_page_silver,
     result_manifest,
+    validate_pdf_visual_shadow_audit,
     validate_result_manifest,
 )
 
@@ -215,3 +217,48 @@ def test_pdf_visual_heldout_rejects_source_hash_and_page_count_drift(tmp_path):
             pdf_audits=rows, repo_root=tmp_path,
             fitz_module=_Fitz(["one", "two"]),
         )
+
+
+def test_shadow_audit_blocks_production_on_broad_recall_miss(tmp_path):
+    directory = tmp_path / "data/papers/paper"
+    directory.mkdir(parents=True)
+    pdf = directory / "paper.pdf"
+    pdf.write_bytes(b"pdf-shadow")
+    strict = (
+        "Fig. 1. Cell proliferation in treatment and control media. Values are mean and "
+        "standard deviation from n = 3 independent experiments."
+    )
+    broad_only = "Fig. 2. Cell proliferation in treatment and control media over time."
+    fitz = _Fitz(["Introduction.", strict, broad_only])
+    heldout = build_pdf_visual_heldout_manifest(
+        ["R1"], corpus_rows=[{"record_id": "R1", "doi": "10.1/example"}],
+        pdf_audits=[{
+            "record_id": "R1", "paper_id": "paper", "pdf_status": "audited",
+            "pdf_path": str(pdf.relative_to(tmp_path)),
+            "pdf_sha256": hashlib.sha256(pdf.read_bytes()).hexdigest(), "pages": "3",
+        }],
+        repo_root=tmp_path, fitz_module=fitz,
+    )
+    heldout_path = tmp_path / "heldout.json"
+    heldout_path.write_text(json.dumps(heldout), encoding="utf-8")
+    items = load_visual_page_silver(heldout_path, repo_root=tmp_path, fitz_module=fitz)
+    strict_id = next(item.item_id for item in items if item.positive)
+    result = run_locator_probe(
+        items, checkpoint_dir=tmp_path / "cp", model="test", repeats=3,
+        batch_size=3, max_requests=3, max_total_tokens=1000, max_output_tokens=50,
+        caller=lambda *_: (json.dumps({"candidate_ids": [strict_id]}), {"total_tokens": 10}),
+        prompt_builder=build_visual_page_prompt, prompt_version=PROMPT_VERSION,
+    )
+    result_path = tmp_path / "result.json"
+    result_path.write_text(json.dumps(result_manifest(
+        result, items, model="test", selector_version=PDF_HELDOUT_SELECTOR_VERSION,
+    )), encoding="utf-8")
+    audit = audit_pdf_visual_shadow(
+        heldout_path, result_path, repo_root=tmp_path, fitz_module=fitz,
+    )
+    assert audit["broad_baseline_pages"] == 2
+    assert audit["model_selected_pages"] == 1
+    assert audit["broad_recall"] == 0.5
+    assert audit["incremental_utility_pass"] is True
+    assert audit["production_gate_pass"] is False
+    assert validate_pdf_visual_shadow_audit(audit) == []

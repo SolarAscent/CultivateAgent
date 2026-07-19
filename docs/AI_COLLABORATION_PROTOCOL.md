@@ -236,10 +236,12 @@ a number is supported.
   incremental reduction is too weak and unlabeled shadow recall is unknown, so
   production routing remains on hold. Retain page localization as an evaluation
   tool only; it cannot create evidence decisions. A narrower visual-result page
-  task has passed its first source-disjoint silver gate: three identical runs
-  recovered 6/6 JATS-derived positive pages and reduced 40 readable pages to 20.
-  This authorizes only a bounded source-disjoint shadow; production routing
-  remains prohibited until shadow utility and recall safeguards pass.
+  task passed its first source-disjoint silver gate, but failed the subsequent
+  PDF shadow deployment audit. Three identical shadow runs recovered 6/6 strict
+  positives and selected 26/48 pages; a broader field-aware sensitivity set
+  exposed recall 11/12 (0.9167), and the deterministic baseline needed only 12
+  pages. Visual-page production routing is therefore closed for this
+  prompt/model; retain the deterministic field-aware locator.
 
 ### 8.3 Allowed Delegation
 

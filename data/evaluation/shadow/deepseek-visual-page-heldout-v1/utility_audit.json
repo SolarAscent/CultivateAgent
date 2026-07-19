@@ -1,0 +1,34 @@
+{
+  "broad_baseline_pages": 12,
+  "broad_recall": 0.9167,
+  "broad_selected_pages": 11,
+  "broad_sensitivity_timing": "post_hoc_not_independent_gold",
+  "format_version": 1,
+  "heldout_manifest_sha256": "aacb1ab9f73e1dc7bbb9fbf6a7cb3ad858153f94166d636c44964a3af8bb8b05",
+  "incremental_utility_pass": false,
+  "input_pages": 48,
+  "limitations": [
+    "The broad sensitivity rule was applied after the API run and cannot approve deployment.",
+    "Unlabeled pages are not precision negatives and no source text or numeric value is stored.",
+    "Production requires both high recall and less review work than the deterministic baseline."
+  ],
+  "missed_broad_pages": [
+    {
+      "candidate_id": "V012",
+      "page_excerpt_sha256": "5cc307150c84e66c6001eadd5215a9febb9e3d8a40e4df1c25dca3a5d188ad2e",
+      "pdf_page": 12,
+      "record_id": "R016"
+    }
+  ],
+  "model_selected_pages": 26,
+  "production_gate_pass": false,
+  "provider_result_sha256": "64f72223312048f5aeb3e249982f67b204ffd16a93d672380a00a1ef1286ba54",
+  "selector_version": "pdf-visual-stat-block-v1",
+  "status": "failed_no_production_routing",
+  "strict_positive_pages": 6,
+  "strict_repeat_recalls": [
+    1.0,
+    1.0,
+    1.0
+  ]
+}

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 import xml.etree.ElementTree as ET
@@ -438,4 +437,151 @@ def validate_result_manifest(
     expected_status = "pass_for_bounded_shadow" if recomputed_pass else "failed_no_routing"
     if payload.get("status") != expected_status:
         issues.append("deployment status mismatch")
+    return issues
+
+
+def audit_pdf_visual_shadow(
+    heldout_manifest_path: Path,
+    result_manifest_path: Path,
+    *,
+    repo_root: Path,
+    fitz_module=None,
+) -> dict[str, object]:
+    """Compare a strict held-out result with a broader deterministic post-hoc sensitivity set."""
+    if fitz_module is None:
+        import fitz as fitz_module  # type: ignore[no-redef]
+    heldout = json.loads(heldout_manifest_path.read_text(encoding="utf-8"))
+    if heldout.get("selector_version") != PDF_HELDOUT_SELECTOR_VERSION:
+        raise ValueError("PDF visual shadow requires the PDF held-out selector")
+    items = load_visual_page_silver(
+        heldout_manifest_path, repo_root=repo_root, fitz_module=fitz_module
+    )
+    result = json.loads(result_manifest_path.read_text(encoding="utf-8"))
+    result_issues = validate_result_manifest(
+        result, items, selector_version=PDF_HELDOUT_SELECTOR_VERSION
+    )
+    if result_issues:
+        raise ValueError("invalid visual shadow result: " + "; ".join(result_issues))
+    item_by_pointer = {(item.record_id, item.pdf_page): item for item in items}
+    repeat_sets = [
+        {str(row["candidate_id"]) for row in repeat}
+        for repeat in result["repeat_selections"]
+    ]
+    unanimous = set.intersection(*repeat_sets) if repeat_sets else set()
+    broad_pointers: set[tuple[str, int]] = set()
+    source_by_id = {str(row["record_id"]): row for row in heldout["sources"]}
+    for record_id, source in source_by_id.items():
+        path = repo_root / str(source["pdf_path"])
+        if not path.is_file() or _sha256(path.read_bytes()) != source["pdf_sha256"]:
+            raise ValueError(f"{record_id}: PDF missing or hash mismatch during shadow audit")
+        document = fitz_module.open(path)
+        try:
+            if len(document) != int(source["pdf_pages"]):
+                raise ValueError(f"{record_id}: PDF page count drift during shadow audit")
+            for page_number, page in enumerate(document, 1):
+                for block in page.get_text("blocks", sort=True):
+                    signals = set(_signals(" ".join(str(block[4]).split())))
+                    if {"figure_caption", "outcome", "medium"} <= signals:
+                        broad_pointers.add((record_id, page_number))
+                        break
+        finally:
+            document.close()
+    if not broad_pointers or not broad_pointers <= set(item_by_pointer):
+        raise ValueError("broad visual sensitivity pages are empty or absent from input pool")
+    broad_ids = {item_by_pointer[pointer].item_id for pointer in broad_pointers}
+    strict_ids = {item.item_id for item in items if item.positive}
+    if not strict_ids <= broad_ids:
+        raise ValueError("strict PDF held-out positives must be a subset of broad visual pages")
+    selected_broad = broad_ids & unanimous
+    broad_recall = round(len(selected_broad) / len(broad_ids), 4)
+    incremental_utility_pass = len(unanimous) < len(broad_ids)
+    independent_gold = False
+    production_pass = (
+        result["deployment_gate_pass"] is True
+        and broad_recall >= 0.95
+        and incremental_utility_pass
+        and independent_gold
+    )
+    missed = sorted(broad_ids - selected_broad)
+    return {
+        "format_version": 1,
+        "status": "pass_for_bounded_production" if production_pass else "failed_no_production_routing",
+        "production_gate_pass": production_pass,
+        "provider_result_sha256": _sha256(result_manifest_path.read_bytes()),
+        "heldout_manifest_sha256": _sha256(heldout_manifest_path.read_bytes()),
+        "selector_version": PDF_HELDOUT_SELECTOR_VERSION,
+        "broad_sensitivity_timing": "post_hoc_not_independent_gold",
+        "input_pages": len(items),
+        "strict_positive_pages": len(strict_ids),
+        "strict_repeat_recalls": result["repeat_recalls"],
+        "broad_baseline_pages": len(broad_ids),
+        "model_selected_pages": len(unanimous),
+        "broad_selected_pages": len(selected_broad),
+        "broad_recall": broad_recall,
+        "incremental_utility_pass": incremental_utility_pass,
+        "missed_broad_pages": [
+            {
+                "candidate_id": item_by_pointer[pointer].item_id,
+                "record_id": pointer[0],
+                "pdf_page": pointer[1],
+                "page_excerpt_sha256": item_by_pointer[pointer].block_text_sha256,
+            }
+            for pointer in sorted(broad_pointers)
+            if item_by_pointer[pointer].item_id in missed
+        ],
+        "limitations": [
+            "The broad sensitivity rule was applied after the API run and cannot approve deployment.",
+            "Unlabeled pages are not precision negatives and no source text or numeric value is stored.",
+            "Production requires both high recall and less review work than the deterministic baseline.",
+        ],
+    }
+
+
+def validate_pdf_visual_shadow_audit(payload: dict[str, object]) -> list[str]:
+    issues: list[str] = []
+    allowed = {
+        "format_version", "status", "production_gate_pass", "provider_result_sha256",
+        "heldout_manifest_sha256", "selector_version", "broad_sensitivity_timing",
+        "input_pages", "strict_positive_pages", "strict_repeat_recalls",
+        "broad_baseline_pages", "model_selected_pages", "broad_selected_pages",
+        "broad_recall", "incremental_utility_pass", "missed_broad_pages", "limitations",
+    }
+    if set(payload) != allowed:
+        issues.append("visual shadow audit top-level schema mismatch")
+    missed = payload.get("missed_broad_pages")
+    pointer_keys = {"candidate_id", "record_id", "pdf_page", "page_excerpt_sha256"}
+    if not isinstance(missed, list) or any(
+        not isinstance(row, dict) or set(row) != pointer_keys for row in missed
+    ):
+        issues.append("missed broad-page pointer schema mismatch")
+    broad_total = payload.get("broad_baseline_pages")
+    broad_selected = payload.get("broad_selected_pages")
+    if isinstance(broad_total, int) and broad_total > 0 and isinstance(broad_selected, int):
+        expected_recall = round(broad_selected / broad_total, 4)
+        if payload.get("broad_recall") != expected_recall:
+            issues.append("broad recall mismatch")
+    else:
+        issues.append("invalid broad sensitivity counts")
+    expected_utility = (
+        isinstance(payload.get("model_selected_pages"), int)
+        and isinstance(broad_total, int)
+        and payload["model_selected_pages"] < broad_total
+    )
+    if payload.get("incremental_utility_pass") != expected_utility:
+        issues.append("incremental utility mismatch")
+    strict_recalls = payload.get("strict_repeat_recalls", [])
+    expected_pass = (
+        isinstance(strict_recalls, list)
+        and len(strict_recalls) >= 3
+        and all(float(value) >= 0.95 for value in strict_recalls)
+        and isinstance(payload.get("broad_recall"), float)
+        and payload["broad_recall"] >= 0.95
+        and expected_utility
+        and payload.get("broad_sensitivity_timing") != "post_hoc_not_independent_gold"
+    )
+    if payload.get("production_gate_pass") != expected_pass:
+        issues.append("production gate mismatch")
+    expected_status = "pass_for_bounded_production" if expected_pass else "failed_no_production_routing"
+    if payload.get("status") != expected_status:
+        issues.append("production status mismatch")
     return issues

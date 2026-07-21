@@ -46,3 +46,22 @@ DeepSeek returns classifications/pointers, never fabricated numbers.
   across bovine/pig/chicken/fish) into the local `data/papers/` (171 → 181). These are local to
   the claude worktree; if the canonical corpus/manifest should include them, that is Codex's
   ingest lane — the source PDFs are in the user's Zotero storage (paths derivable from the CSV).
+
+## Ontology + S4→S5 bridge (my lane, landed)
+
+- **Ontology grown from DeepSeek mining (Claude-curated)**: +6 real components (IL-6, LIF,
+  horse-serum, sodium-pyruvate, linoleic-acid, fetuin) + alias fixes (TGF-β, PDGF, DMEM,
+  Ham's F-10, B8, sodium selenite, yeast extract); 15 orphan names now pool. Rejected all
+  buffer/antibiotic/coating/category noise. Candidate queue: `data/literature/component_mining_candidates.tsv`.
+- **S4→S5 bridge**: `evidence/adjudicated_loader.py` turns the adjudicated evidence table
+  (`bovine_evidence_table.tsv`) into EvidenceItems → summaries → `EvidencePrior`. So a finished
+  human review flows straight into search-space priors / the design recommender. New module;
+  I did NOT touch `adjudication.py` or `evidence/__init__.py`.
+
+## Recommendation for Codex (your adjudication schema)
+
+The worksheet / `EVIDENCE_TABLE_COLUMNS` has no explicit **direction** field, so the bridge
+must infer sign from `numeric_effect` (ratio metrics) or from `key_finding` polarity words, and
+skips rows where neither is determinable. Consider adding an explicit `effect_direction`
+column (increase / decrease / no-change) the human fills, so direction is recorded, not
+inferred. Low-effort, and it removes the one fragile step in the S4→S5 path.
